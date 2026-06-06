@@ -8,10 +8,19 @@ const fullSchema = { ...schema, ...authSchema }
 
 const connectionString = process.env.DATABASE_URL
 
+function poolSslConfig(connectionString: string) {
+  const needsSsl =
+    connectionString.includes("sslmode=") ||
+    connectionString.includes("supabase.com") ||
+    process.env.NODE_ENV === "production"
+  return needsSsl ? { rejectUnauthorized: false } : undefined
+}
+
 const pool = connectionString
   ? new Pool({
       connectionString,
       connectionTimeoutMillis: 5_000,
+      ssl: poolSslConfig(connectionString),
     })
   : null
 
