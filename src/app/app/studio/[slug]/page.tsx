@@ -27,6 +27,8 @@ import { BlockLeadForm } from "@/components/blocks/lead-form"
 import { StudioTracker } from "@/components/studio/studio-tracker"
 import type { AppointmentFormData, BlockType, Studio } from "@/lib/types"
 
+export const dynamic = "force-dynamic"
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type BlockComponent = React.ComponentType<{ data: any; waNumber?: string; slug?: string }>
 

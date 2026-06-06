@@ -8,21 +8,23 @@ const fullSchema = { ...schema, ...authSchema }
 
 const connectionString = process.env.DATABASE_URL
 
-function poolSslConfig(connectionString: string) {
-  const needsSsl =
-    connectionString.includes("sslmode=") ||
-    connectionString.includes("supabase.com") ||
-    process.env.NODE_ENV === "production"
-  return needsSsl ? { rejectUnauthorized: false } : undefined
+function isLocalDatabase(url: string) {
+  return /localhost|127\.0\.0\.1/.test(url)
 }
 
-const pool = connectionString
-  ? new Pool({
-      connectionString,
-      connectionTimeoutMillis: 5_000,
-      ssl: poolSslConfig(connectionString),
-    })
-  : null
+function buildPoolConfig(url: string) {
+  const normalized = new URL(url)
+  normalized.searchParams.delete("sslmode")
+  normalized.searchParams.delete("ssl")
+
+  return {
+    connectionString: normalized.toString(),
+    connectionTimeoutMillis: 5_000,
+    ssl: isLocalDatabase(url) ? undefined : { rejectUnauthorized: false },
+  }
+}
+
+const pool = connectionString ? new Pool(buildPoolConfig(connectionString)) : null
 
 export const db = pool ? drizzle(pool, { schema: fullSchema }) : null
 export { pool }
