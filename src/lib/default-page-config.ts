@@ -86,7 +86,7 @@ export const DEFAULT_BLOCK_DATA: Record<BlockType, BlockData> = {
         alt: "Tattoo work 3",
       },
       {
-        src: "https://images.unsplash.com/photo-1611505088553-4f8cf641d093?q=80&w=900&auto=format&fit=crop",
+        src: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=900&auto=format&fit=crop",
         alt: "Tattoo work 4",
       },
       {
@@ -94,7 +94,7 @@ export const DEFAULT_BLOCK_DATA: Record<BlockType, BlockData> = {
         alt: "Tattoo work 5",
       },
       {
-        src: "https://images.unsplash.com/photo-1564131072-90ec156d4dab?q=80&w=900&auto=format&fit=crop",
+        src: "https://images.unsplash.com/photo-1565058379802-bbe93b2f703a?q=80&w=900&auto=format&fit=crop",
         alt: "Tattoo work 6",
       },
     ],
@@ -108,7 +108,7 @@ export const DEFAULT_BLOCK_DATA: Record<BlockType, BlockData> = {
     image1:
       "https://images.unsplash.com/photo-1598371839696-5c5bb00bdc28?q=80&w=900&auto=format&fit=crop",
     image2:
-      "https://images.unsplash.com/photo-1611505088553-4f8cf641d093?q=80&w=900&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=900&auto=format&fit=crop",
   },
   Features: {
     title: "Specific Style Tattoos",
@@ -139,7 +139,7 @@ export const DEFAULT_BLOCK_DATA: Record<BlockType, BlockData> = {
         ctaText: "Learn More",
         ctaHref: "#contact",
         image:
-          "https://images.unsplash.com/photo-1611505088553-4f8cf641d093?q=80&w=900&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=900&auto=format&fit=crop",
       },
       {
         title: "Custom Design",

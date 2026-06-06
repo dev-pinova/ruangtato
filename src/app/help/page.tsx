@@ -10,12 +10,15 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion"
+import { createPageMetadata } from "@/lib/seo"
+import { SITE_DOMAIN, SUPPORT_EMAIL, studioPublicPath } from "@/lib/site"
 
-export const metadata: Metadata = {
-  title: "Pusat Bantuan - Ruang Tato",
+export const metadata: Metadata = createPageMetadata({
+  title: "Pusat Bantuan",
   description:
-    "Pertanyaan yang sering diajukan dan panduan menggunakan platform Ruang Tato.",
-}
+    "FAQ dan panduan menggunakan Ruang Tato: builder landing page, publikasi studio, billing, dan manajemen lead.",
+  path: "/help",
+})
 
 type Category = {
   id: string
@@ -59,7 +62,7 @@ const CATEGORIES: Category[] = [
       },
       {
         q: "Apa itu slug URL?",
-        a: "Slug adalah bagian akhir URL studio Anda, misalnya 'ink-and-iron' di ruangtato.com/app/studio/ink-and-iron. Slug bisa Anda atur dari panel atas builder atau halaman pengaturan studio.",
+        a: `Slug adalah bagian akhir URL studio Anda, misalnya 'ink-and-iron' di ${studioPublicPath("ink-and-iron")}. Slug bisa Anda atur dari panel atas builder atau halaman pengaturan studio.`,
       },
       {
         q: "Apakah saya bisa menyembunyikan blok tanpa menghapusnya?",
@@ -67,7 +70,7 @@ const CATEGORIES: Category[] = [
       },
       {
         q: "Bisakah saya menggunakan custom domain?",
-        a: "Fitur custom domain sedang dalam pengembangan dan akan tersedia di plan Pro dan Enterprise. Untuk saat ini, semua studio menggunakan subdomain ruangtato.com.",
+        a: `Fitur custom domain sedang dalam pengembangan dan akan tersedia di plan Pro dan Enterprise. Untuk saat ini, semua studio menggunakan domain ${SITE_DOMAIN}.`,
       },
     ],
   },
@@ -193,7 +196,7 @@ export default function HelpPage() {
 
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
               <a
-                href="mailto:support@ruangtato.id"
+                href={`mailto:${SUPPORT_EMAIL}`}
                 className="group flex items-center justify-between rounded-md border border-border bg-background p-4 transition-colors hover:border-foreground/30"
               >
                 <div className="flex items-center gap-3">
@@ -202,7 +205,7 @@ export default function HelpPage() {
                   </span>
                   <div>
                     <p className="text-sm font-medium text-foreground">Email Support</p>
-                    <p className="text-xs text-muted-foreground">support@ruangtato.id</p>
+                    <p className="text-xs text-muted-foreground">{SUPPORT_EMAIL}</p>
                   </div>
                 </div>
                 <ArrowRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />

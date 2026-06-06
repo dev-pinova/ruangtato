@@ -5,6 +5,7 @@ import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, us
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { cn } from "@/lib/utils"
+import { STUDIO_URL_DISPLAY_PREFIX, studioPublicPath } from "@/lib/site"
 import { H2, P, Small } from "@/components/ui/typography"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -1127,7 +1128,7 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
     }, 1500)
   }
 
-  const publishUrl = `ruangtato.com/app/studio/${slug}`
+  const publishUrl = studioPublicPath(slug)
   const [showMobileLeft, setShowMobileLeft] = useState(false)
   const [showMobileRight, setShowMobileRight] = useState(false)
   const [previewDevice, setPreviewDevice] = useState<PreviewDevice>("desktop")
@@ -1189,7 +1190,7 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
 
         <div className="flex w-full items-center gap-2 text-xs text-muted-foreground md:hidden">
           <Link2 className="h-3.5 w-3.5 shrink-0" />
-          <span className="shrink-0">ruangtato.com/app/studio/</span>
+          <span className="shrink-0">{STUDIO_URL_DISPLAY_PREFIX}</span>
           <Input
             className="h-7 min-w-0 flex-1 px-2 text-xs"
             value={slug}
@@ -1201,7 +1202,7 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
         <div className="hidden items-center gap-3 md:flex">
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <Link2 className="h-3.5 w-3.5" />
-            <span>ruangtato.com/app/studio/</span>
+            <span>{STUDIO_URL_DISPLAY_PREFIX}</span>
             <Input
               className="h-7 w-32 px-2 text-xs"
               value={slug}

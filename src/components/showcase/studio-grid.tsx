@@ -1,7 +1,17 @@
-import Link from "next/link"
-import { Eye, MapPin, MousePointerClick, BadgeCheck } from "lucide-react"
+"use client"
 
+import { useEffect, useState } from "react"
+import Link from "next/link"
+import { ArrowRight, BadgeCheck } from "lucide-react"
+
+import { LaurelWreath } from "@/components/showcase/laurel-wreath"
+import { VerifiedCheck } from "@/components/showcase/verified-check"
+import { Button } from "@/components/ui/button"
+import { SHOWCASE_GRID_SIZE } from "@/lib/showcase-demos"
+import { SITE_NAME } from "@/lib/site"
 import type { Studio } from "@/lib/types"
+
+const GRID_PREVIEW_LIMIT = SHOWCASE_GRID_SIZE // 3 kolom × 2 baris
 
 type SortBy = "views" | "clicks" | "name"
 
@@ -18,7 +28,12 @@ export function StudioGrid({
   trustedOnly: boolean
   selectedCity: string
 }) {
+  const [showAll, setShowAll] = useState(false)
   const query = searchQuery.toLowerCase()
+
+  useEffect(() => {
+    setShowAll(false)
+  }, [searchQuery, sortBy, trustedOnly, selectedCity])
 
   const filtered = studios.filter((studio) => {
     if (trustedOnly && !studio.isTrusted) return false
@@ -43,9 +58,15 @@ export function StudioGrid({
     return a.name.localeCompare(b.name)
   })
 
+  const hasMore = sorted.length > GRID_PREVIEW_LIMIT
+  const visibleStudios = showAll ? sorted : sorted.slice(0, GRID_PREVIEW_LIMIT)
+
   if (sorted.length === 0) {
     return (
-      <section className="mx-auto max-w-6xl px-4 py-16 md:px-6">
+      <section
+        id="browse"
+        className="mx-auto max-w-6xl scroll-mt-16 px-4 py-16 md:px-6"
+      >
         <div className="rounded-xl border border-border bg-card px-8 py-16 text-center">
           <p className="text-base font-medium text-foreground">
             Tidak ada studio ditemukan
@@ -59,71 +80,116 @@ export function StudioGrid({
   }
 
   return (
-    <section className="mx-auto max-w-6xl px-4 py-10 md:px-6 md:py-14">
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {sorted.map((studio) => (
+    <section
+      id="browse"
+      className="mx-auto max-w-6xl scroll-mt-16 px-4 py-10 md:px-6 md:py-14"
+    >
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3">
+        {visibleStudios.map((studio) => (
           <StudioCard key={studio.id} studio={studio} />
         ))}
       </div>
+
+      {hasMore && !showAll && (
+        <div className="mt-10 flex justify-center">
+          <Button
+            variant="outline"
+            size="lg"
+            onClick={() => setShowAll(true)}
+            className="gap-2"
+          >
+            Lihat Semua Studio
+            <ArrowRight className="size-4" />
+          </Button>
+        </div>
+      )}
     </section>
   )
 }
 
 function StudioCard({ studio }: { studio: Studio }) {
+  const avatarSrc = studio.artistImage || studio.image
+  const displayTags = [
+    ...studio.tags.slice(0, 3),
+    ...(studio.city && !studio.tags.includes(studio.city) ? [studio.city] : []),
+  ].slice(0, 4)
+
   return (
     <Link
       href={`/app/studio/${studio.slug}`}
-      className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-colors hover:border-foreground/30"
+      className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-shadow duration-300 hover:shadow-md"
     >
-      <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+      <div className="relative aspect-square overflow-hidden bg-muted">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={studio.image}
           alt={studio.name}
-          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+          className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
         />
+
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent transition-opacity duration-300 group-hover:from-black/90" />
+
         {studio.isTrusted && (
           <div className="absolute left-3 top-3">
-            <span className="inline-flex items-center gap-1 rounded-md bg-background/90 px-2 py-1 text-[10px] font-medium text-foreground backdrop-blur-sm">
-              <BadgeCheck className="size-3 text-primary" />
+            <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/40 px-2 py-1 text-[10px] font-medium text-white backdrop-blur-sm">
+              <BadgeCheck className="size-3" />
               Trusted
             </span>
           </div>
         )}
-      </div>
 
-      <div className="flex flex-1 flex-col p-4">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <h3 className="truncate text-base font-semibold tracking-tight text-foreground">
-              {studio.name}
-            </h3>
-            <p className="mt-0.5 truncate text-xs text-muted-foreground">
-              by {studio.artist}
-            </p>
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 px-4 pb-4 pt-10 text-center">
+          <div className="flex items-center justify-center gap-2">
+            <LaurelWreath side="left" className="h-5 w-auto shrink-0 text-white/60" />
+            <div className="min-w-0">
+              <p className="line-clamp-2 text-sm font-bold leading-snug tracking-tight text-white md:text-base">
+                {studio.name}
+              </p>
+              <p className="mt-1 text-[10px] leading-none text-white/55 md:text-[11px]">
+                Built with{" "}
+                <span className="font-medium text-white/90">{SITE_NAME}</span>
+              </p>
+            </div>
+            <LaurelWreath side="right" className="h-5 w-auto shrink-0 text-white/60" />
           </div>
         </div>
+      </div>
 
-        <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+      <div className="flex flex-1 flex-col gap-3 p-4">
+        <div className="flex items-center gap-2.5">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={avatarSrc}
+            alt={studio.artist}
+            className="size-9 shrink-0 rounded-full object-cover ring-1 ring-border"
+          />
+          <p className="min-w-0 text-sm text-foreground">
+            By{" "}
+            <span className="font-medium underline decoration-foreground/30 underline-offset-2">
+              {studio.artist}
+            </span>
+            {studio.isVerified && (
+              <VerifiedCheck className="ml-1 inline size-3.5 align-[-2px]" />
+            )}
+          </p>
+        </div>
+
+        <p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">
           {studio.description}
         </p>
 
-        <div className="mt-4 flex items-center justify-between">
-          <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-            <MapPin className="size-3" />
-            {studio.city}
-          </span>
-          <div className="flex items-center gap-3 text-xs text-muted-foreground">
-            <span className="inline-flex items-center gap-1">
-              <Eye className="size-3" />
-              {studio.viewCount.toLocaleString("id-ID")}
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <MousePointerClick className="size-3" />
-              {studio.clickCount.toLocaleString("id-ID")}
-            </span>
+        {displayTags.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {displayTags.map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full border border-border px-2.5 py-0.5 text-xs text-muted-foreground"
+              >
+                {tag}
+              </span>
+            ))}
           </div>
-        </div>
+        )}
       </div>
     </Link>
   )

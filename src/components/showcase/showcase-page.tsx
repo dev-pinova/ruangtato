@@ -44,7 +44,11 @@ export function ShowcasePage({
 
   return (
     <MarketingShell>
-      <ShowcaseHero searchQuery={searchQuery} onSearch={setSearchQuery} />
+      <ShowcaseHero
+        searchQuery={searchQuery}
+        onSearch={setSearchQuery}
+        featuredStudios={studios.slice(0, 5)}
+      />
       <FilterBar
         cities={cities}
         sortBy={sortBy}

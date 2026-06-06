@@ -1,19 +1,22 @@
 import type { Metadata } from "next"
 
 import { LegalShell, LegalSection } from "@/components/marketing/legal-shell"
+import { createPageMetadata } from "@/lib/seo"
+import { PRIVACY_EMAIL, SITE_DOMAIN } from "@/lib/site"
 
-export const metadata: Metadata = {
-  title: "Kebijakan Cookie - Ruang Tato",
+export const metadata: Metadata = createPageMetadata({
+  title: "Kebijakan Cookie",
   description:
     "Penjelasan tentang penggunaan cookie dan teknologi serupa di platform Ruang Tato.",
-}
+  path: "/cookies",
+})
 
 export default function CookiesPage() {
   return (
     <LegalShell
       eyebrow="Legal"
       title="Kebijakan Cookie"
-      description="Bagaimana Ruang Tato menggunakan cookie untuk meningkatkan pengalaman Anda."
+      description={`Bagaimana ${SITE_DOMAIN} menggunakan cookie untuk meningkatkan pengalaman Anda.`}
       updatedAt="1 Juni 2026"
     >
       <LegalSection title="1. Apa itu Cookie?">
@@ -125,7 +128,7 @@ export default function CookiesPage() {
       <LegalSection title="7. Kontak">
         <p>
           Pertanyaan terkait Kebijakan Cookie dapat dikirim ke{" "}
-          <span className="font-medium text-foreground">privacy@ruangtato.id</span>.
+          <span className="font-medium text-foreground">{PRIVACY_EMAIL}</span>.
         </p>
       </LegalSection>
     </LegalShell>

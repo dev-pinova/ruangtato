@@ -1,6 +1,9 @@
+import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { Eye, MousePointerClick } from "lucide-react"
 
+import { JsonLd } from "@/components/seo/json-ld"
+import { buildStudioJsonLd, createPageMetadata } from "@/lib/seo"
 import { getPublishedStudioBySlug } from "@/lib/studio-service"
 import { getVisibleBlocks } from "@/lib/studio-utils"
 import { BlockHeader } from "@/components/blocks/header"
@@ -28,6 +31,41 @@ import { StudioTracker } from "@/components/studio/studio-tracker"
 import type { AppointmentFormData, BlockType, Studio } from "@/lib/types"
 
 export const dynamic = "force-dynamic"
+
+type PageProps = { params: Promise<{ slug: string }> }
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params
+  const studio = await getPublishedStudioBySlug(slug)
+
+  if (!studio) {
+    return createPageMetadata({
+      title: "Studio Tidak Ditemukan",
+      description: "Halaman studio yang Anda cari tidak tersedia atau belum dipublikasikan.",
+      path: `/app/studio/${slug}`,
+      noIndex: true,
+    })
+  }
+
+  const description =
+    studio.description ||
+    `Studio tattoo ${studio.name} di ${studio.city}. Lihat portofolio dan booking konsultasi lewat WhatsApp.`
+
+  return createPageMetadata({
+    title: `${studio.name} — Studio Tattoo ${studio.city}`,
+    description,
+    path: `/app/studio/${slug}`,
+    image: studio.image,
+    keywords: [
+      studio.name,
+      studio.city,
+      studio.artist,
+      ...studio.tags,
+      "studio tattoo",
+      "booking tattoo",
+    ],
+  })
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type BlockComponent = React.ComponentType<{ data: any; waNumber?: string; slug?: string }>
@@ -71,11 +109,7 @@ const BLOCK_ANCHOR_IDS: Partial<Record<BlockType, string>> = {
   FinalCTA: "contact",
 }
 
-export default async function StudioRendererPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>
-}) {
+export default async function StudioRendererPage({ params }: PageProps) {
   const { slug } = await params
 
   const studio = await getPublishedStudioBySlug(slug)
@@ -89,6 +123,16 @@ export default async function StudioRendererPage({
 
   return (
     <main className="studio-template relative min-h-screen bg-black font-body text-white">
+      <JsonLd
+        data={buildStudioJsonLd({
+          name: studio.name,
+          slug: studio.slug,
+          description: studio.description,
+          city: studio.city,
+          image: studio.image,
+          artist: studio.artist,
+        })}
+      />
       <StudioTracker slug={slug} />
       {visibleBlocks.map((block) => {
         const anchorId = BLOCK_ANCHOR_IDS[block.type]

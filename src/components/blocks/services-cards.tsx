@@ -17,7 +17,7 @@ const DEFAULT_CARDS = [
     ctaText: "Read More",
     ctaHref: "#piercing",
     image:
-      "https://images.unsplash.com/photo-1611505088553-4f8cf641d093?q=80&w=900&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=900&auto=format&fit=crop",
   },
   {
     title: "Art & Merch",

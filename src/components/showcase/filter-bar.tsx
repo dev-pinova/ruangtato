@@ -77,7 +77,7 @@ export function FilterBar({
             )}
           >
             <BadgeCheck className="size-3.5" />
-            Trusted Only
+            Trusted
           </button>
         </div>
       </div>

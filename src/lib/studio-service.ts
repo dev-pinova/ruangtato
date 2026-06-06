@@ -1,4 +1,4 @@
-import { and, desc, eq, sql } from "drizzle-orm"
+import { and, desc, eq, inArray, sql } from "drizzle-orm"
 
 import { db, isDatabaseConfigured } from "@/db"
 import {
@@ -12,11 +12,25 @@ import {
   createDefaultPageConfig,
   createSlugFromName,
 } from "@/lib/default-page-config"
+import { DEFAULT_STUDIO_COVER } from "@/lib/placeholder-images"
+import { getStudioArtistImage } from "@/lib/studio-utils"
 import type { Block, Studio } from "@/lib/types"
+
+export function isActivePaidSubscription(sub: {
+  planType: string
+  status: string
+  expiresAt: Date | null
+}): boolean {
+  if (sub.status !== "active") return false
+  if (sub.planType === "trial") return false
+  if (sub.expiresAt && sub.expiresAt.getTime() <= Date.now()) return false
+  return true
+}
 
 function mapStudioRow(
   row: typeof studios.$inferSelect,
   blocks: Block[],
+  isVerified = false,
 ): Studio {
   return {
     id: row.id,
@@ -29,9 +43,11 @@ function mapStudioRow(
     viewCount: row.viewCount,
     clickCount: row.clickCount,
     isTrusted: row.isTrusted,
+    isVerified,
     isPublished: row.isPublished,
     tags: row.tags ?? [],
     artist: row.artist ?? "",
+    artistImage: getStudioArtistImage(blocks),
     blocks,
   }
 }
@@ -157,8 +173,7 @@ export async function createStudioForUser(input: {
       city: "Jakarta",
       waNumber: "",
       description: `Landing page resmi ${input.studioName}`,
-      image:
-        "https://images.unsplash.com/photo-1598371839696-5c5bb00bdc28?q=80&w=800&auto=format&fit=crop",
+      image: DEFAULT_STUDIO_COVER,
       artist: input.ownerName,
       tags: ["Custom", "Studio"],
       pageConfig,
@@ -385,7 +400,29 @@ export async function listPublishedStudios(): Promise<Studio[]> {
     .where(eq(studios.isPublished, true))
     .orderBy(desc(studios.viewCount))
 
-  return rows.map((row) => mapStudioRow(row, row.pageConfig ?? []))
+  if (rows.length === 0) return []
+
+  const studioIds = rows.map((row) => row.id)
+  const subRows = await db
+    .select({
+      studioId: subscriptions.studioId,
+      planType: subscriptions.planType,
+      status: subscriptions.status,
+      expiresAt: subscriptions.expiresAt,
+    })
+    .from(subscriptions)
+    .where(inArray(subscriptions.studioId, studioIds))
+
+  const verifiedByStudioId = new Map<string, boolean>()
+  for (const sub of subRows) {
+    if (isActivePaidSubscription(sub)) {
+      verifiedByStudioId.set(sub.studioId, true)
+    }
+  }
+
+  return rows.map((row) =>
+    mapStudioRow(row, row.pageConfig ?? [], verifiedByStudioId.get(row.id) ?? false),
+  )
 }
 
 export async function getLeadsForStudio(studioId: string) {

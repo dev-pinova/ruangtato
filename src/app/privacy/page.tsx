@@ -1,12 +1,15 @@
 import type { Metadata } from "next"
 
 import { LegalShell, LegalSection } from "@/components/marketing/legal-shell"
+import { createPageMetadata } from "@/lib/seo"
+import { PRIVACY_EMAIL, SITE_DOMAIN, SITE_URL } from "@/lib/site"
 
-export const metadata: Metadata = {
-  title: "Kebijakan Privasi - Ruang Tato",
+export const metadata: Metadata = createPageMetadata({
+  title: "Kebijakan Privasi",
   description:
     "Kebijakan privasi Ruang Tato menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi data pribadi Anda.",
-}
+  path: "/privacy",
+})
 
 export default function PrivacyPage() {
   return (
@@ -20,8 +23,15 @@ export default function PrivacyPage() {
         <p>
           Kebijakan Privasi ini berlaku untuk seluruh layanan yang disediakan
           oleh Ruang Tato (&ldquo;kami&rdquo;, &ldquo;platform&rdquo;), termasuk
-          situs web, aplikasi pembuat landing page, dan halaman studio publik
-          yang dihosting di domain kami. Dengan menggunakan layanan kami, Anda
+          situs web di{" "}
+          <a
+            href={SITE_URL}
+            className="font-medium text-foreground underline-offset-4 hover:underline"
+          >
+            {SITE_DOMAIN}
+          </a>
+          , aplikasi pembuat landing page, dan halaman studio publik yang
+          dihosting di domain kami. Dengan menggunakan layanan kami, Anda
           menyetujui praktik yang dijelaskan dalam kebijakan ini.
         </p>
         <p>
@@ -155,7 +165,7 @@ export default function PrivacyPage() {
         </ul>
         <p>
           Untuk menggunakan hak-hak ini, hubungi kami melalui email{" "}
-          <span className="font-medium text-foreground">privacy@ruangtato.id</span>.
+          <span className="font-medium text-foreground">{PRIVACY_EMAIL}</span>.
           Kami akan merespons dalam waktu 7 hari kerja.
         </p>
       </LegalSection>
@@ -185,7 +195,7 @@ export default function PrivacyPage() {
         </p>
         <p>
           Email:{" "}
-          <span className="font-medium text-foreground">privacy@ruangtato.id</span>
+          <span className="font-medium text-foreground">{PRIVACY_EMAIL}</span>
           <br />
           Alamat: Ruang Tato, Jakarta, Indonesia
         </p>

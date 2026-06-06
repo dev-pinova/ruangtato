@@ -1,0 +1,17 @@
+# RuangTato.com — Tattoo Studio Directory Marketplace
+
+## Quick Reference
+- **Stack**: Next.js 16 / Drizzle ORM / PostgreSQL / Better Auth / Tailwind v4
+- **Aliases**: `@/` → `src/`
+- **UI Library**: shadcn/ui (base-nova) from `@/components/ui/`
+- **Icons**: lucide-react
+- **Payments**: Midtrans
+
+## Rules
+Detailed rules are in `.cursor/rules/` — this file just loads them:
+- `00-global.mdc` — Stack, TypeScript, imports
+- `01-ui-ux.mdc` — Tailwind, spacing, responsive
+- `02-design-system.mdc` — shadcn/ui, icons, typography
+- `03-database.mdc` — Drizzle ORM, schema, queries
+- `04-api-routes.mdc` — Route handlers, auth, Midtrans
+- `05-copywriting.mdc` — Tone, glossary, conversion copy

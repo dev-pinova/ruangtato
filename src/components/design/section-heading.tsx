@@ -9,6 +9,7 @@ type SectionHeadingProps = {
   align?: "left" | "center"
   size?: "default" | "lg"
   as?: "h1" | "h2"
+  tone?: "default" | "inverse"
   className?: string
 }
 
@@ -19,17 +20,24 @@ export function SectionHeading({
   align = "left",
   size = "default",
   as: Heading = "h2",
+  tone = "default",
   className,
 }: SectionHeadingProps) {
-  const titleClass =
-    size === "lg"
-      ? "text-4xl font-semibold tracking-tight text-foreground md:text-5xl"
-      : "text-xl font-semibold tracking-tight text-foreground"
+  const isInverse = tone === "inverse"
 
-  const descriptionClass =
+  const titleClass = cn(
     size === "lg"
-      ? "text-base leading-relaxed text-muted-foreground md:text-lg"
-      : "text-sm text-muted-foreground"
+      ? "text-4xl font-semibold tracking-tight md:text-5xl"
+      : "text-xl font-semibold tracking-tight",
+    isInverse ? "text-white" : "text-foreground"
+  )
+
+  const descriptionClass = cn(
+    size === "lg"
+      ? "text-base leading-relaxed md:text-lg"
+      : "text-sm",
+    isInverse ? "text-white/75" : "text-muted-foreground"
+  )
 
   return (
     <div
@@ -39,7 +47,11 @@ export function SectionHeading({
         className
       )}
     >
-      {tagline && <Tagline>{tagline}</Tagline>}
+      {tagline && (
+        <Tagline className={isInverse ? "text-white/60" : undefined}>
+          {tagline}
+        </Tagline>
+      )}
       <Heading className={titleClass}>{title}</Heading>
       {description && (
         <p className={descriptionClass}>{description}</p>

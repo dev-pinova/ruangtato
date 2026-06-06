@@ -9,7 +9,7 @@ export function BlockCreatorBio({ data }: { data: any }) {
             <img
               src={
                 data?.image ||
-                "https://images.unsplash.com/photo-1612348457854-c5c0a9203ac1?q=80&w=800&auto=format&fit=crop"
+                "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop"
               }
               alt={data?.name || "Creator"}
               className="aspect-square w-full object-cover"

@@ -1,54 +1,71 @@
 import Link from "next/link"
+import { Heart } from "lucide-react"
 
 import { Tagline } from "@/components/design"
+import { SITE_DOMAIN, SITE_URL } from "@/lib/site"
 import { cn } from "@/lib/utils"
 
-function Logo({ className }: { className?: string }) {
+function Logo({
+  className,
+  variant = "header",
+}: {
+  className?: string
+  variant?: "header" | "footer"
+}) {
+  const image = (
+    /* eslint-disable-next-line @next/next/no-img-element */
+    <img
+      src="/ruang-tato/logo-putih.png"
+      alt="Ruang Tato"
+      className="h-11 w-auto max-w-[200px] object-contain object-left md:h-12 md:max-w-[220px]"
+    />
+  )
+
   return (
     <Link
       href="/"
       className={cn(
-        "inline-flex items-center gap-2 font-sans text-base font-semibold tracking-tight text-foreground",
+        "inline-flex shrink-0 items-center",
+        variant === "footer" && "rounded-lg bg-black px-3 py-2",
         className
       )}
+      aria-label="Ruang Tato"
     >
-      <span className="relative inline-flex size-6 items-center justify-center rounded-md bg-primary">
-        <span className="size-2 rounded-sm bg-primary-foreground" />
-      </span>
-      Ruang Tato
+      {image}
     </Link>
   )
 }
 
-const PRIMARY_NAV = [
-  { href: "/", label: "Direktori" },
-  { href: "/pricing", label: "Harga" },
-  { href: "/help", label: "Bantuan" },
-]
+const PRIMARY_NAV = [{ href: "/#browse", label: "Browse" }]
 
 const FOOTER_LINKS = {
   platform: [
-    { href: "/", label: "Direktori Studio" },
+    { href: "/#browse", label: "Browse" },
     { href: "/pricing", label: "Harga" },
-    { href: "/help", label: "Pusat Bantuan" },
+    { href: "/help", label: "Bantuan" },
     { href: "/register", label: "Daftar Studio" },
   ],
   legal: [
     { href: "/privacy", label: "Kebijakan Privasi" },
     { href: "/terms", label: "Syarat & Ketentuan" },
+    { href: "/subscription", label: "Kebijakan Langganan" },
     { href: "/cookies", label: "Kebijakan Cookie" },
   ],
   social: [
-    { href: "#", label: "Instagram" },
-    { href: "#", label: "Twitter" },
-    { href: "#", label: "Email" },
+    {
+      href: "https://api.whatsapp.com/send/?phone=628133985462&text&type=phone_number&app_absent=0",
+      label: "WhatsApp",
+    },
+    { href: "https://web.facebook.com/ruangtato", label: "Facebook" },
+    { href: "https://www.instagram.com/ruangtato", label: "Instagram" },
+    { href: "https://www.tiktok.com/@ruangtato", label: "TikTok" },
   ],
 }
 
 function MarketingHeader() {
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 md:px-6">
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-black/50 backdrop-blur-md">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:px-6">
         <div className="flex items-center gap-8">
           <Logo />
           <nav className="hidden items-center gap-6 md:flex">
@@ -56,7 +73,7 @@ function MarketingHeader() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                className="text-sm text-white/70 transition-colors hover:text-white"
               >
                 {item.label}
               </Link>
@@ -66,13 +83,13 @@ function MarketingHeader() {
         <div className="flex items-center gap-2">
           <Link
             href="/login"
-            className="hidden text-sm text-muted-foreground transition-colors hover:text-foreground md:inline-flex"
+            className="hidden text-sm text-white/70 transition-colors hover:text-white md:inline-flex"
           >
             Masuk
           </Link>
           <Link
             href="/register"
-            className="inline-flex h-8 items-center rounded-md bg-foreground px-3 text-xs font-medium text-background transition-colors hover:bg-foreground/90"
+            className="inline-flex h-8 items-center rounded-md bg-white/55 px-3 text-xs font-medium text-white/90 transition-all duration-200 hover:bg-white hover:text-black hover:shadow-[0_0_16px_rgba(255,255,255,0.35)]"
           >
             Daftar Studio
           </Link>
@@ -88,10 +105,16 @@ function MarketingFooter() {
       <div className="mx-auto max-w-6xl px-4 py-12 md:px-6 md:py-16">
         <div className="grid gap-8 md:grid-cols-4">
           <div className="md:col-span-1">
-            <Logo />
+            <Logo variant="footer" />
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
-              Platform landing page eksklusif untuk studio tato profesional di
-              Indonesia.
+              Platform landing page eksklusif untuk studio tattoo profesional di
+              Indonesia.{" "}
+              <a
+                href={SITE_URL}
+                className="font-medium text-foreground/80 underline-offset-4 hover:text-foreground hover:underline"
+              >
+                {SITE_DOMAIN}
+              </a>
             </p>
           </div>
 
@@ -134,6 +157,8 @@ function MarketingFooter() {
                 <li key={link.label}>
                   <a
                     href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="text-sm text-foreground/80 transition-colors hover:text-foreground"
                   >
                     {link.label}
@@ -146,10 +171,22 @@ function MarketingFooter() {
 
         <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-border pt-6 md:flex-row md:items-center">
           <p className="text-xs text-muted-foreground">
-            &copy; {new Date().getFullYear()} Ruang Tato. Hak cipta dilindungi.
+            &copy; {new Date().getFullYear()}{" "}
+            <a
+              href={SITE_URL}
+              className="underline-offset-4 hover:underline"
+            >
+              {SITE_DOMAIN}
+            </a>
+            . Hak cipta dilindungi.
           </p>
-          <p className="text-xs text-muted-foreground">
-            Dibuat untuk artist tato Indonesia.
+          <p className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+            Dibuat dengan
+            <Heart
+              className="size-3 fill-red-500 text-red-500"
+              aria-hidden
+            />
+            untuk artist tato Indonesia.
           </p>
         </div>
       </div>

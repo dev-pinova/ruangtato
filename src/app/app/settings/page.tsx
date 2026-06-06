@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react"
 import { UserPlus } from "lucide-react"
+
+import { STUDIO_URL_DISPLAY_PREFIX } from "@/lib/site"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -150,7 +152,7 @@ function ProfilStudioTab({
             <Label htmlFor="slug">Slug URL</Label>
             <div className="flex items-center gap-0">
               <span className="flex h-9 items-center rounded-l-md border border-r-0 border-input bg-muted/40 px-3 text-sm text-muted-foreground">
-                ruangtato.com/app/studio/
+                {STUDIO_URL_DISPLAY_PREFIX}
               </span>
               <Input
                 id="slug"

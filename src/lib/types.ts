@@ -264,9 +264,12 @@ export interface Studio {
   viewCount: number
   clickCount: number
   isTrusted: boolean
+  isVerified: boolean
   isPublished: boolean
   tags: string[]
   artist: string
+  /** Foto profil artist (dari Creator Bio / Artists Grid). */
+  artistImage: string
   blocks: Block[]
 }
 

@@ -1,12 +1,15 @@
 import type { Metadata } from "next"
 
 import { LegalShell, LegalSection } from "@/components/marketing/legal-shell"
+import { createPageMetadata } from "@/lib/seo"
+import { LEGAL_EMAIL, SITE_DOMAIN, SITE_URL, SUPPORT_EMAIL } from "@/lib/site"
 
-export const metadata: Metadata = {
-  title: "Syarat & Ketentuan - Ruang Tato",
+export const metadata: Metadata = createPageMetadata({
+  title: "Syarat & Ketentuan",
   description:
-    "Syarat dan ketentuan penggunaan platform Ruang Tato untuk studio tato di Indonesia.",
-}
+    "Syarat dan ketentuan penggunaan platform Ruang Tato untuk studio tattoo di Indonesia.",
+  path: "/terms",
+})
 
 export default function TermsPage() {
   return (
@@ -18,8 +21,14 @@ export default function TermsPage() {
     >
       <LegalSection title="1. Penerimaan Syarat">
         <p>
-          Dengan mendaftar, mengakses, atau menggunakan layanan Ruang Tato,
-          Anda menyetujui untuk terikat oleh Syarat & Ketentuan ini, serta
+          Dengan mendaftar, mengakses, atau menggunakan layanan Ruang Tato di{" "}
+          <a
+            href={SITE_URL}
+            className="font-medium text-foreground underline-offset-4 hover:underline"
+          >
+            {SITE_DOMAIN}
+          </a>
+          , Anda menyetujui untuk terikat oleh Syarat & Ketentuan ini, serta
           Kebijakan Privasi yang merupakan bagian tak terpisahkan dari dokumen
           ini. Jika Anda tidak menyetujui salah satu butir, mohon untuk tidak
           menggunakan layanan kami.
@@ -144,7 +153,7 @@ export default function TermsPage() {
           yang membuat layanan tidak dapat digunakan lebih dari 72 jam berturut
           turut. Permohonan refund harus diajukan dalam 7 hari sejak transaksi
           melalui email{" "}
-          <span className="font-medium text-foreground">support@ruangtato.id</span>.
+          <span className="font-medium text-foreground">{SUPPORT_EMAIL}</span>.
         </p>
         <p>
           Refund tidak berlaku untuk pembatalan sepihak setelah pembayaran
@@ -211,7 +220,7 @@ export default function TermsPage() {
       <LegalSection title="12. Kontak">
         <p>
           Pertanyaan terkait Syarat & Ketentuan dapat dikirim ke{" "}
-          <span className="font-medium text-foreground">legal@ruangtato.id</span>.
+          <span className="font-medium text-foreground">{LEGAL_EMAIL}</span>.
         </p>
       </LegalSection>
     </LegalShell>

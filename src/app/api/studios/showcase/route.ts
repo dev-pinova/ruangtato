@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server"
 
+import { buildShowcaseStudios } from "@/lib/showcase-demos"
 import { listPublishedStudios } from "@/lib/studio-service"
 
 export async function GET() {
-  const studios = await listPublishedStudios()
+  const studios = buildShowcaseStudios(await listPublishedStudios())
 
   return NextResponse.json({
     studios: studios.map((studio) => ({
@@ -14,10 +15,12 @@ export async function GET() {
       description: studio.description,
       image: studio.image,
       artist: studio.artist,
+      artistImage: studio.artistImage,
       tags: studio.tags,
       viewCount: studio.viewCount,
       clickCount: studio.clickCount,
       isTrusted: studio.isTrusted,
+      isVerified: studio.isVerified,
       isPublished: studio.isPublished,
     })),
   })
