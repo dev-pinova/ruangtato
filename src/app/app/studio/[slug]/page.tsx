@@ -1,71 +1,141 @@
 import { notFound } from "next/navigation"
 import { Eye, MousePointerClick } from "lucide-react"
 
-import { getStudioBySlug, getVisibleBlocks } from "@/lib/mock-data"
+import { getPublishedStudioBySlug } from "@/lib/studio-service"
+import { getVisibleBlocks } from "@/lib/studio-utils"
 import { BlockHeader } from "@/components/blocks/header"
+import { BlockHeaderOverlay } from "@/components/blocks/header-overlay"
 import { BlockHero } from "@/components/blocks/hero"
+import { BlockHeroSlider } from "@/components/blocks/hero-slider"
 import { BlockGoals } from "@/components/blocks/goals"
+import { BlockGallery } from "@/components/blocks/gallery"
 import { BlockOverview } from "@/components/blocks/overview"
 import { BlockFeatures } from "@/components/blocks/features"
+import { BlockServicesCards } from "@/components/blocks/services-cards"
 import { BlockHowItWorks } from "@/components/blocks/how-it-works"
 import { BlockCreatorBio } from "@/components/blocks/creator-bio"
+import { BlockArtistsGrid } from "@/components/blocks/artists-grid"
+import { BlockStatsCounter } from "@/components/blocks/stats-counter"
 import { BlockTestimonials } from "@/components/blocks/testimonials"
+import { BlockLatestNews } from "@/components/blocks/latest-news"
+import { BlockNewsletter } from "@/components/blocks/newsletter"
 import { BlockFAQ } from "@/components/blocks/faq"
+import { BlockAppointmentForm } from "@/components/blocks/appointment-form"
 import { BlockFinalCTA } from "@/components/blocks/final-cta"
 import { BlockFooter } from "@/components/blocks/footer"
 import { BlockLeadForm } from "@/components/blocks/lead-form"
+import { StudioTracker } from "@/components/studio/studio-tracker"
+import type { AppointmentFormData, BlockType, Studio } from "@/lib/types"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const BLOCK_COMPONENTS: Record<string, React.ComponentType<{ data: any; waNumber?: string }>> = {
+type BlockComponent = React.ComponentType<{ data: any; waNumber?: string; slug?: string }>
+
+const BLOCK_COMPONENTS: Partial<Record<BlockType, BlockComponent>> = {
   Header: BlockHeader,
+  HeaderOverlay: BlockHeaderOverlay,
   Hero: BlockHero,
+  HeroSlider: BlockHeroSlider,
   Goals: BlockGoals,
+  Gallery: BlockGallery,
   Overview: BlockOverview,
   Features: BlockFeatures,
+  ServicesCards: BlockServicesCards,
   HowItWorks: BlockHowItWorks,
   CreatorBio: BlockCreatorBio,
+  ArtistsGrid: BlockArtistsGrid,
+  StatsCounter: BlockStatsCounter,
   Testimonials: BlockTestimonials,
+  LatestNews: BlockLatestNews,
+  Newsletter: BlockNewsletter,
   FAQ: BlockFAQ,
   FinalCTA: BlockFinalCTA,
   Footer: BlockFooter,
 }
 
-export default async function StudioRendererPage({ params }: { params: Promise<{ slug: string }> }) {
+/** Map BlockType ke anchor id supaya nav HeaderOverlay (#home, #about, dst)
+ *  bisa scroll-to-section di single-page preset. Block yang tidak ada di map
+ *  ini tidak dibungkus div anchor (mis. HeaderOverlay, Footer). */
+const BLOCK_ANCHOR_IDS: Partial<Record<BlockType, string>> = {
+  HeroSlider: "home",
+  Hero: "home",
+  Goals: "about",
+  Overview: "about",
+  Gallery: "gallery",
+  ArtistsGrid: "artists",
+  ServicesCards: "services",
+  Features: "services",
+  LatestNews: "news",
+  AppointmentForm: "contact",
+  FinalCTA: "contact",
+}
+
+export default async function StudioRendererPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}) {
   const { slug } = await params
 
-  const studio = getStudioBySlug(slug)
+  const studio = await getPublishedStudioBySlug(slug)
 
   if (!studio) {
     notFound()
   }
 
   const visibleBlocks = getVisibleBlocks(studio)
+  const hasAppointmentBlock = visibleBlocks.some((b) => b.type === "AppointmentForm")
 
   return (
-    <main className="min-h-screen bg-background selection:bg-primary selection:text-primary-foreground">
-      {visibleBlocks.map((block, index) => {
+    <main className="studio-template relative min-h-screen bg-black font-body text-white">
+      <StudioTracker slug={slug} />
+      {visibleBlocks.map((block) => {
+        const anchorId = BLOCK_ANCHOR_IDS[block.type]
+        const wrapperProps = anchorId ? { id: anchorId } : {}
+
+        if (block.type === "AppointmentForm") {
+          return (
+            <div key={block.id} {...wrapperProps}>
+              <BlockAppointmentForm
+                data={block.data as AppointmentFormData}
+                studioSlug={slug}
+                studioName={studio.name}
+              />
+            </div>
+          )
+        }
+
         const Component = BLOCK_COMPONENTS[block.type]
         if (!Component) return null
 
+        const usesSlug =
+          block.type === "Hero" ||
+          block.type === "HeroSlider" ||
+          block.type === "FinalCTA"
+
         return (
-          <div key={block.id}>
-            <Component data={block.data} waNumber={studio.waNumber} />
+          <div key={block.id} {...wrapperProps}>
+            <Component
+              data={block.data}
+              waNumber={studio.waNumber}
+              {...(usesSlug ? { slug } : {})}
+            />
             {block.type === "Header" && (
-              <div className="border-y border-white/5 bg-zinc-950/70 py-3">
-                <div className="container mx-auto flex items-center justify-center gap-6 px-4 text-sm font-medium text-white/70">
+              <div className="border-b border-white/10 bg-black">
+                <div className="mx-auto flex max-w-6xl items-center justify-center gap-6 px-4 py-2.5 text-[10px] uppercase tracking-[0.32em] text-white/50 md:px-6">
                   <span className="inline-flex items-center gap-1.5">
-                    <Eye className="h-4 w-4 text-primary" />
+                    <Eye className="size-3" />
                     {studio.viewCount.toLocaleString("id-ID")} views
                   </span>
+                  <span className="text-white/20">•</span>
                   <span className="inline-flex items-center gap-1.5">
-                    <MousePointerClick className="h-4 w-4 text-primary" />
+                    <MousePointerClick className="size-3" />
                     {studio.clickCount.toLocaleString("id-ID")} clicks
                   </span>
                 </div>
               </div>
             )}
-            {block.type === "FAQ" && (
-              <BlockLeadForm studioName={studio.name} />
+            {block.type === "FAQ" && !hasAppointmentBlock && (
+              <BlockLeadForm studioSlug={slug} studioName={studio.name} />
             )}
           </div>
         )

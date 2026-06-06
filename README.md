@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ruang Tato
 
-## Getting Started
+Platform SaaS landing page untuk studio tato di Indonesia. Section-based template builder (ala Webflow tattoo-128), PostgreSQL `page_config` JSONB, Better Auth, Midtrans (stub), Coolify deploy.
 
-First, run the development server:
+## Quick start (local)
+
+### 1. Environment
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Edit `.env.local`:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- `DATABASE_URL` — PostgreSQL connection string
+- `BETTER_AUTH_SECRET` — min 32 random chars (`openssl rand -base64 32`)
+- `BETTER_AUTH_URL` / `NEXT_PUBLIC_APP_URL` — `http://localhost:3000`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 2. Database
 
-## Learn More
+```bash
+docker compose up -d postgres
+npm run db:push
+npm run auth:migrate
+```
 
-To learn more about Next.js, take a look at the following resources:
+### 3. Run app
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm install
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Open [http://localhost:3000](http://localhost:3000).
 
-## Deploy on Vercel
+### 4. Demo seed (optional)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+node scripts/seed-studios.mjs 20
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Creates published demo studios at `/app/studio/demo-studio-1`, etc.
+
+## Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Development server |
+| `npm run build` | Production build (standalone) |
+| `npm run start` | Start production server |
+| `npm run db:push` | Push Drizzle schema to PostgreSQL |
+| `npm run auth:migrate` | Better Auth tables migration |
+| `node scripts/seed-studios.mjs N` | Seed N demo studios |
+
+## Docker / Coolify
+
+```bash
+docker compose up -d          # PostgreSQL only
+docker build -t ruangtato .   # App image (standalone)
+```
+
+Health check: `GET /api/health`
+
+### Coolify env vars
+
+- `DATABASE_URL`
+- `BETTER_AUTH_SECRET`
+- `BETTER_AUTH_URL` (production URL)
+- `NEXT_PUBLIC_APP_URL`
+- `MIDTRANS_SERVER_KEY` / `MIDTRANS_CLIENT_KEY` (optional)
+- `S3_*` for Cloudflare R2 (optional, phase 2)
+
+## Architecture
+
+- **Builder** — `/app/builder` — drag section order, edit content, save to `studios.page_config`
+- **Public pages** — `/app/studio/[slug]` — SSR from published `page_config`
+- **Auth** — Better Auth email/password at `/api/auth/*`
+- **Billing** — `/app/billing` + Midtrans webhook stub at `/api/billing/webhook`
+- **Leads** — `POST /api/studios/[slug]/leads`
+- **Analytics** — `POST /api/studios/[slug]/track/view` and `/track/click`
+
+## Subscription gate
+
+`/app/builder` requires an active subscription. New studios get a 1-month trial on registration. Expired subs redirect to `/app/billing`.

@@ -1,25 +1,79 @@
-import { BuilderUI } from "@/components/builder/builder-ui"
+import type { ReactNode } from "react"
+import Link from "next/link"
+import { redirect } from "next/navigation"
+import { ArrowLeft } from "lucide-react"
 
-export default function BuilderPage() {
+import { BuilderUI } from "@/components/builder/builder-ui"
+import { Button } from "@/components/ui/button"
+import { getServerSession } from "@/lib/session"
+import { getStudioForUser, studioHasActiveSubscription } from "@/lib/studio-service"
+
+function BuilderHeader({
+  subtitle,
+  badge,
+}: {
+  subtitle: string
+  badge: ReactNode
+}) {
   return (
-    <div className="min-h-screen bg-background flex flex-col selection:bg-primary selection:text-primary-foreground">
-      <header className="h-16 border-b border-white/5 flex items-center px-6 justify-between bg-zinc-950 z-10 relative">
-        <div className="flex items-center gap-4">
-          <div className="font-sans font-bold text-xl tracking-tight flex items-center gap-2">
-            <span className="text-primary">{"///"}</span> Ruang Tato
-          </div>
-          <div className="h-4 w-px bg-white/10 mx-2" />
-          <div className="text-sm font-medium tracking-wide text-muted-foreground">
-            Landing Page Builder
-          </div>
+    <header className="relative z-10 flex h-14 shrink-0 items-center justify-between border-b border-white/5 bg-zinc-950 px-3 sm:h-16 sm:px-6">
+      <div className="flex min-w-0 items-center gap-2 sm:gap-4">
+        <Button
+          nativeButton={false}
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 shrink-0 text-muted-foreground hover:text-foreground"
+          render={<Link href="/app/dashboard" aria-label="Kembali ke dashboard" />}
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <div className="flex min-w-0 items-center gap-2 font-sans text-lg font-bold tracking-tight sm:gap-2 sm:text-xl">
+          <span className="shrink-0 text-primary">{"///"}</span>
+          <span className="truncate">Ruang Tato</span>
         </div>
-        <div className="text-xs font-mono bg-primary/10 px-3 py-1 rounded-full border border-primary/20 text-primary font-semibold">
-          Mode: OWNER
+        <div className="mx-1 hidden h-4 w-px bg-white/10 sm:mx-2 sm:block" />
+        <div className="hidden truncate text-sm font-medium tracking-wide text-muted-foreground sm:block">
+          {subtitle}
         </div>
-      </header>
-      
-      <main className="flex-1">
-        <BuilderUI />
+      </div>
+      <div className="ml-2 shrink-0">{badge}</div>
+    </header>
+  )
+}
+
+export default async function BuilderPage() {
+  if (!process.env.DATABASE_URL) {
+    redirect("/app/dashboard")
+  }
+
+  const session = await getServerSession()
+  if (!session) {
+    redirect("/login")
+  }
+
+  const studio = await getStudioForUser(session.user.id)
+  if (!studio) {
+    redirect("/register")
+  }
+
+  const hasSubscription = await studioHasActiveSubscription(studio.id)
+  if (!hasSubscription) {
+    redirect("/app/billing")
+  }
+
+  return (
+    <div className="flex h-screen flex-col bg-background selection:bg-primary selection:text-primary-foreground">
+      <BuilderHeader
+        subtitle="Landing Page Builder"
+        badge={
+          <div className="max-w-[10rem] truncate rounded-full border border-primary/20 bg-primary/10 px-2 py-1 font-mono text-[10px] font-semibold text-primary sm:max-w-none sm:px-3 sm:text-xs">
+            {studio.name}
+          </div>
+        }
+      />
+
+      <main className="min-h-0 flex-1">
+        <BuilderUI studioId={studio.id} initialStudio={studio} />
       </main>
     </div>
   )

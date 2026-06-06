@@ -1,23 +1,14 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { UserPlus } from "lucide-react"
-import { H2 } from "@/components/ui/typography"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableHead,
-  TableRow,
-  TableCell,
-} from "@/components/ui/table"
 import {
   Dialog,
   DialogTrigger,
@@ -45,23 +36,97 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select"
-import { MOCK_TEAM } from "@/lib/mock-data"
+import { PageHeading } from "@/components/design"
+import type { Studio } from "@/lib/types"
 
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("id-ID", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  })
+type MeUser = {
+  name: string
+  email: string
 }
 
-const ROLE_CONFIG: Record<string, { label: string; variant: "default" | "secondary" | "outline" }> = {
-  owner: { label: "Owner", variant: "default" },
-  admin: { label: "Admin", variant: "secondary" },
-  member: { label: "Member", variant: "outline" },
-}
+function ProfilStudioTab({
+  studio,
+  onStudioUpdated,
+}: {
+  studio: Studio | null
+  onStudioUpdated: (studio: Studio) => void
+}) {
+  const [name, setName] = useState("")
+  const [slug, setSlug] = useState("")
+  const [city, setCity] = useState("")
+  const [waNumber, setWaNumber] = useState("")
+  const [description, setDescription] = useState("")
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState(false)
 
-function ProfilStudioTab() {
+  useEffect(() => {
+    if (!studio) return
+    setName(studio.name)
+    setSlug(studio.slug)
+    setCity(studio.city)
+    setWaNumber(studio.waNumber)
+    setDescription(studio.description)
+  }, [studio])
+
+  async function handleSave(e: React.FormEvent) {
+    e.preventDefault()
+    setSaving(true)
+    setError(null)
+    setSuccess(false)
+
+    const res = await fetch("/api/studios/me", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ name, slug, city, waNumber, description }),
+    })
+
+    setSaving(false)
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}))
+      setError(
+        typeof data.error === "string"
+          ? data.error
+          : "Gagal menyimpan perubahan. Coba lagi.",
+      )
+      return
+    }
+
+    const data = await res.json()
+    if (data?.studio) {
+      onStudioUpdated(data.studio)
+      window.dispatchEvent(
+        new CustomEvent("studio-profile-updated", {
+          detail: {
+            name: data.studio.name,
+            slug: data.studio.slug,
+            isPublished: data.studio.isPublished,
+          },
+        }),
+      )
+    }
+
+    setSuccess(true)
+  }
+
+  if (!studio) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Profil Studio</CardTitle>
+          <CardDescription>
+            Informasi dasar studio yang ditampilkan di halaman landing
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">Memuat profil studio…</p>
+        </CardContent>
+      </Card>
+    )
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -71,51 +136,71 @@ function ProfilStudioTab() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-5 max-w-xl">
+        <form onSubmit={handleSave} className="grid gap-5 max-w-xl">
           <div className="grid gap-2">
             <Label htmlFor="studio-name">Nama Studio</Label>
             <Input
               id="studio-name"
-              defaultValue="Ink & Iron Studio"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
             />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="slug">Slug URL</Label>
             <div className="flex items-center gap-0">
-              <span className="flex h-11 items-center rounded-l-2xl border border-r-0 border-input bg-white/3 px-3 text-sm text-muted-foreground">
+              <span className="flex h-9 items-center rounded-l-md border border-r-0 border-input bg-muted/40 px-3 text-sm text-muted-foreground">
                 ruangtato.com/app/studio/
               </span>
               <Input
                 id="slug"
-                defaultValue="ink-and-iron"
+                value={slug}
+                onChange={(e) => setSlug(e.target.value)}
                 className="rounded-l-none"
               />
             </div>
           </div>
           <div className="grid gap-2">
             <Label htmlFor="city">Kota</Label>
-            <Input id="city" defaultValue="Jakarta" />
+            <Input
+              id="city"
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+            />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="whatsapp">Nomor WhatsApp</Label>
             <Input
               id="whatsapp"
-              defaultValue="6281234567890"
+              value={waNumber}
+              onChange={(e) => setWaNumber(e.target.value)}
+              placeholder="6281234567890"
             />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="description">Deskripsi</Label>
             <Textarea
               id="description"
-              defaultValue="Studio premium dengan fokus blackwork tajam dan realism detail untuk sleeve maupun custom piece."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
               rows={3}
             />
           </div>
+          {error ? (
+            <p className="text-sm text-destructive">{error}</p>
+          ) : null}
+          {success ? (
+            <p className="text-sm text-emerald-600 dark:text-emerald-400">
+              Profil studio berhasil disimpan.
+            </p>
+          ) : null}
           <Separator />
           <div className="flex justify-end">
-            <Button>Simpan Perubahan</Button>
+            <Button type="submit" disabled={saving}>
+              {saving ? "Menyimpan…" : "Simpan Perubahan"}
+            </Button>
           </div>
-        </div>
+        </form>
       </CardContent>
     </Card>
   )
@@ -175,59 +260,32 @@ function TimTab() {
           </Dialog>
         </div>
 
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Nama</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Bergabung</TableHead>
-              <TableHead>Aksi</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {MOCK_TEAM.map((member) => {
-              const role = ROLE_CONFIG[member.role]
-              return (
-                <TableRow key={member.id}>
-                  <TableCell className="font-medium">
-                    {member.name}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {member.email}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={role.variant}>{role.label}</Badge>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {formatDate(member.joinedAt)}
-                  </TableCell>
-                  <TableCell>
-                    {member.role === "owner" ? (
-                      <span className="text-xs text-muted-foreground">—</span>
-                    ) : (
-                      <Select defaultValue={member.role}>
-                        <SelectTrigger size="sm" className="w-28">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="admin">Admin</SelectItem>
-                          <SelectItem value="member">Member</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    )}
-                  </TableCell>
-                </TableRow>
-              )
-            })}
-          </TableBody>
-        </Table>
+        <p className="rounded-md border border-border bg-muted/40 p-4 text-sm text-muted-foreground">
+          Manajemen tim multi-user segera hadir. Saat ini hanya owner utama
+          yang memiliki akses ke studio.
+        </p>
       </CardContent>
     </Card>
   )
 }
 
-function AkunTab() {
+function AkunTab({ user }: { user: MeUser | null }) {
+  if (!user) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Pengaturan Akun</CardTitle>
+          <CardDescription>
+            Ubah email dan kata sandi akun Anda
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">Memuat data akun…</p>
+        </CardContent>
+      </Card>
+    )
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -243,7 +301,8 @@ function AkunTab() {
             <Input
               id="email"
               type="email"
-              defaultValue="bima@inkandiron.id"
+              defaultValue={user.email}
+              readOnly
             />
           </div>
           <Separator />
@@ -308,9 +367,30 @@ function BahayaTab() {
 }
 
 export default function SettingsPage() {
+  const [studio, setStudio] = useState<Studio | null>(null)
+  const [user, setUser] = useState<MeUser | null>(null)
+
+  useEffect(() => {
+    fetch("/api/studios/me")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data?.user) {
+          setUser({
+            name: data.user.name,
+            email: data.user.email,
+          })
+        }
+        if (data?.studio) setStudio(data.studio)
+      })
+      .catch(() => {})
+  }, [])
+
   return (
-    <div className="p-4 md:p-6 space-y-6 max-w-5xl">
-      <H2>Pengaturan</H2>
+    <div className="mx-auto max-w-5xl space-y-6 p-4 md:p-6 lg:p-8">
+      <PageHeading
+        title="Pengaturan"
+        description="Kelola profil studio, tim, dan akun Anda."
+      />
 
       <Tabs defaultValue={0}>
         <TabsList variant="line">
@@ -321,13 +401,16 @@ export default function SettingsPage() {
         </TabsList>
 
         <TabsContent value={0}>
-          <ProfilStudioTab />
+          <ProfilStudioTab
+            studio={studio}
+            onStudioUpdated={setStudio}
+          />
         </TabsContent>
         <TabsContent value={1}>
           <TimTab />
         </TabsContent>
         <TabsContent value={2}>
-          <AkunTab />
+          <AkunTab user={user} />
         </TabsContent>
         <TabsContent value={3}>
           <BahayaTab />

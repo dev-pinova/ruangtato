@@ -1,25 +1,40 @@
-import { H2, H3, P } from "@/components/ui/typography"
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function BlockHowItWorks({ data }: { data: any }) {
   const steps = data?.steps || [
     { title: "Konsultasi", desc: "Diskusikan ide, ukuran, penempatan, dan estimasi harga via WhatsApp." },
-    { title: "DP & Jadwal", desc: "Amankan jadwal Anda dengan membayar Down Payment (DP)." },
-    { title: "Desain", desc: "Kami akan menyiapkan desain kustom dan menunjukkannya sebelum hari H." },
-    { title: "Sesi Tato", desc: "Datang ke studio, bersantai, dan biarkan kami mengerjakan keajaiban." }
+    { title: "DP & Jadwal", desc: "Amankan jadwal Anda dengan membayar Down Payment." },
+    { title: "Desain", desc: "Kami menyiapkan desain kustom dan menunjukkannya sebelum hari H." },
+    { title: "Sesi Tato", desc: "Datang ke studio, bersantai, dan biarkan kami mengerjakan keajaiban." },
   ]
 
   return (
-    <section id="how-it-works" className="py-24 bg-zinc-950 border-y border-white/5">
-      <div className="container mx-auto px-4 max-w-5xl">
-        <H2 className="mb-16 tracking-tight text-center">Cara Kerja</H2>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <section id="how-it-works" className="border-b border-border bg-background">
+      <div className="mx-auto max-w-6xl px-4 py-20 md:px-6 md:py-28">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
+            Cara kerja
+          </h2>
+          <p className="mt-4 text-base leading-relaxed text-muted-foreground">
+            Empat langkah sederhana dari ide hingga tato selesai.
+          </p>
+        </div>
+
+        <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           {steps.map((step: any, i: number) => (
-            <div key={i} className="relative bg-white/5 border border-white/10 p-8 rounded-3xl hover:-translate-y-2 transition-transform duration-300">
-              <div className="text-5xl font-sans tracking-tighter text-primary/30 font-bold mb-6">0{i+1}</div>
-              <H3 className="text-lg mb-3 tracking-tight">{step.title}</H3>
-              <P className="text-muted-foreground text-sm">{step.desc}</P>
+            <div key={i} className="relative">
+              <div className="flex items-center gap-3">
+                <span className="inline-flex size-7 items-center justify-center rounded-md border border-border bg-card text-xs font-semibold text-foreground">
+                  {i + 1}
+                </span>
+                <div className="h-px flex-1 bg-border" />
+              </div>
+              <h3 className="mt-4 text-base font-semibold tracking-tight text-foreground">
+                {step.title}
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                {step.desc}
+              </p>
             </div>
           ))}
         </div>

@@ -1,27 +1,65 @@
-import { H2, P } from "@/components/ui/typography"
+import { Quote } from "lucide-react"
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function BlockTestimonials({ data }: { data: any }) {
-  const reviews = data?.reviews || [
-    { text: "Hasilnya jauh di luar ekspektasi! Studio sangat bersih dan nyaman.", name: "Andi R.", type: "First Tattoo" },
-    { text: "Detail linework yang luar biasa rapi. Prosesnya juga cepat dan tidak terlalu sakit.", name: "Siska M.", type: "Sleeve Project" },
-    { text: "Sangat profesional. Dari proses konsultasi desain hingga eksekusi benar-benar mantap.", name: "Reza F.", type: "Cover up" }
-  ]
+import type { TestimonialsData } from "@/lib/types"
+
+const DEFAULT_REVIEWS = [
+  {
+    text: "Pengalaman tattoo terbaik yang pernah saya punya. Artist sangat profesional dan studionya nyaman.",
+    name: "Luis Rent",
+    type: "Cover-up",
+  },
+  {
+    text: "Studio bersih, suasana tenang, dan hasil akhirnya melebihi ekspektasi saya.",
+    name: "Christa Falcon",
+    type: "First Tattoo",
+  },
+  {
+    text: "Konsultasi mendalam, desainnya benar-benar personal — saya akan kembali untuk piece berikutnya.",
+    name: "Rich Damon",
+    type: "Sleeve",
+  },
+]
+
+export function BlockTestimonials({ data }: { data: TestimonialsData }) {
+  const reviews = data?.reviews?.length ? data.reviews : DEFAULT_REVIEWS
 
   return (
-    <section id="testimonials" className="py-24 bg-zinc-950">
-      <div className="container mx-auto px-4">
-        <H2 className="text-center mb-16 tracking-tight">Komentar Klien</H2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-          {reviews.map((review: any, i: number) => (
-            <div key={i} className="p-8 border border-white/10 bg-white/5 rounded-3xl flex flex-col justify-between hover:border-primary/50 transition-colors">
-              <P className="text-lg italic font-sans mb-8 text-muted-foreground">&quot;{review.text}&quot;</P>
-              <div>
-                <p className="font-semibold text-foreground">{review.name}</p>
-                <p className="text-xs text-primary font-medium tracking-wide mt-1">{review.type}</p>
-              </div>
-            </div>
+    <section
+      id="testimonials"
+      className="border-b border-white/10 bg-black text-white"
+    >
+      <div className="mx-auto max-w-7xl px-6 py-24 md:px-10 md:py-32">
+        <div className="text-center">
+          <p className="font-display text-[11px] uppercase tracking-[0.4em] text-white/60">
+            — {data?.eyebrow || "Testimonial"}
+          </p>
+          <h2 className="mt-5 font-display text-4xl font-light uppercase tracking-[0.16em] md:text-6xl">
+            {data?.headline || "What Clients Say"}
+          </h2>
+        </div>
+
+        <div className="mt-16 grid gap-px border border-white/10 bg-white/10 md:grid-cols-3">
+          {reviews.map((review, i) => (
+            <figure
+              key={i}
+              className="relative flex flex-col bg-black p-10 md:p-12"
+            >
+              <Quote
+                className="absolute -top-2 left-8 size-16 text-white/10 md:left-10 md:size-20"
+                fill="currentColor"
+              />
+              <blockquote className="relative flex-1 font-display text-base italic leading-relaxed text-white/90 md:text-lg">
+                &ldquo;{review.text}&rdquo;
+              </blockquote>
+              <figcaption className="mt-10 border-t border-white/10 pt-6">
+                <p className="font-display text-sm uppercase tracking-[0.3em] text-white">
+                  {review.name}
+                </p>
+                <p className="mt-1 text-[10px] uppercase tracking-[0.32em] text-white/50">
+                  {review.type}
+                </p>
+              </figcaption>
+            </figure>
           ))}
         </div>
       </div>

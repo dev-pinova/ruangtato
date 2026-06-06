@@ -1,19 +1,46 @@
 export type BlockType =
   | "Header"
+  | "HeaderOverlay"
   | "Hero"
+  | "HeroSlider"
   | "Goals"
+  | "Gallery"
   | "Overview"
   | "Features"
+  | "ServicesCards"
   | "HowItWorks"
   | "CreatorBio"
+  | "ArtistsGrid"
+  | "StatsCounter"
   | "Testimonials"
+  | "LatestNews"
+  | "Newsletter"
   | "FAQ"
+  | "AppointmentForm"
   | "FinalCTA"
   | "Footer"
 
 export interface HeaderData {
   title?: string
   ctaText?: string
+}
+
+export interface HeaderOverlayLink {
+  label?: string
+  href?: string
+}
+
+export interface HeaderOverlayData {
+  /** Teks logo center (default: nama studio) */
+  logoText?: string
+  /** Tagline kecil di bawah logo (opsional) */
+  tagline?: string
+  /** Link kiri (default 3 item) */
+  leftLinks?: HeaderOverlayLink[]
+  /** Link kanan (default 3 item) */
+  rightLinks?: HeaderOverlayLink[]
+  /** Tampilkan logo center di antara nav kiri-kanan */
+  showCenterLogo?: boolean
 }
 
 export interface HeroData {
@@ -25,10 +52,94 @@ export interface HeroData {
   image?: string
 }
 
+export interface HeroSlide {
+  headline?: string
+  subheadline?: string
+  ctaText?: string
+  image?: string
+}
+
+export interface HeroSliderData {
+  slides?: HeroSlide[]
+}
+
+export interface ArtistItem {
+  name?: string
+  role?: string
+  image?: string
+}
+
+export interface ArtistsGridData {
+  headline?: string
+  subheadline?: string
+  artists?: ArtistItem[]
+}
+
+export interface StatItem {
+  value?: string
+  label?: string
+}
+
+export interface StatsCounterData {
+  headline?: string
+  stats?: StatItem[]
+}
+
+export interface ServiceCard {
+  title?: string
+  desc?: string
+  image?: string
+  /** Label CTA per kartu (default: "Read More") */
+  ctaText?: string
+  ctaHref?: string
+}
+
+export interface ServicesCardsData {
+  eyebrow?: string
+  headline?: string
+  cards?: ServiceCard[]
+}
+
+export interface AppointmentFormData {
+  headline?: string
+  subheadline?: string
+  ctaText?: string
+  /** Teks label checkbox usia (default: "Are you 18 years old?"). */
+  ageLabel?: string
+  /** Wajibkan centang konfirmasi usia ≥18 sebelum submit (default: true). */
+  requireAge?: boolean
+  /** Tampilkan Google Maps di samping form (default: false). */
+  showMap?: boolean
+  /** URL embed dari Google Maps (Share → Embed a map). */
+  mapEmbedUrl?: string
+  /** Label alamat opsional di bawah peta. */
+  mapAddress?: string
+  /** Tinggi peta dalam px (default: 420). */
+  mapHeight?: number
+}
+
 export interface GoalsData {
+  /** Teks kecil di atas headline (mis. "ABOUT US"). */
+  eyebrow?: string
   headline?: string
   description?: string
   features?: { title: string; desc: string }[]
+  /** URL gambar latar / preview untuk style "About + video play button". */
+  image?: string
+  /** URL video opsional. Jika kosong, tombol play hanya dekoratif. */
+  videoUrl?: string
+}
+
+export interface GalleryImage {
+  src?: string
+  alt?: string
+}
+
+export interface GalleryData {
+  eyebrow?: string
+  headline?: string
+  subheadline?: string
+  images?: GalleryImage[]
 }
 
 export interface OverviewData {
@@ -56,7 +167,33 @@ export interface CreatorBioData {
 }
 
 export interface TestimonialsData {
+  eyebrow?: string
+  headline?: string
   reviews?: { text: string; name: string; type: string }[]
+}
+
+export interface NewsArticle {
+  title?: string
+  category?: string
+  date?: string
+  image?: string
+  href?: string
+}
+
+export interface LatestNewsData {
+  eyebrow?: string
+  headline?: string
+  ctaText?: string
+  ctaHref?: string
+  articles?: NewsArticle[]
+}
+
+export interface NewsletterData {
+  eyebrow?: string
+  headline?: string
+  description?: string
+  placeholder?: string
+  ctaText?: string
 }
 
 export interface FAQData {
@@ -75,18 +212,37 @@ export interface FooterData {
   instagram?: string
   whatsapp?: string
   email?: string
+  /** Aktifkan form subscribe newsletter inline di footer (default: false). */
+  showNewsletter?: boolean
+  /** Teks kecil di atas form newsletter (default: "Newsletter"). */
+  newsletterEyebrow?: string
+  /** Headline di atas form newsletter (default: "Subscribe to our newsletter"). */
+  newsletterHeadline?: string
+  /** Placeholder input email (default: "Enter your email"). */
+  newsletterPlaceholder?: string
+  /** Label tombol subscribe (default: "Subscribe"). */
+  newsletterCta?: string
 }
 
 export type BlockData =
   | HeaderData
+  | HeaderOverlayData
   | HeroData
+  | HeroSliderData
   | GoalsData
+  | GalleryData
   | OverviewData
   | FeaturesData
+  | ServicesCardsData
   | HowItWorksData
   | CreatorBioData
+  | ArtistsGridData
+  | StatsCounterData
   | TestimonialsData
+  | LatestNewsData
+  | NewsletterData
   | FAQData
+  | AppointmentFormData
   | FinalCTAData
   | FooterData
 

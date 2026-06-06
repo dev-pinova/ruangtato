@@ -1,37 +1,54 @@
-import { H2, P } from "@/components/ui/typography"
-import { Button } from "@/components/ui/button"
+"use client"
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function BlockFinalCTA({ data, waNumber }: { data: any; waNumber?: string }) {
-  const ctaText = data?.ctaText || "Booking Sekarang via WA"
+import { ArrowRight } from "lucide-react"
+
+import { trackStudioClick } from "@/components/studio/studio-tracker"
+import type { FinalCTAData } from "@/lib/types"
+
+export function BlockFinalCTA({
+  data,
+  waNumber,
+  slug,
+}: {
+  data: FinalCTAData
+  waNumber?: string
+  slug?: string
+}) {
+  const ctaText = data?.ctaText || "Booking via WhatsApp"
   const waUrl = waNumber
     ? `https://wa.me/${waNumber}?text=Halo,%20saya%20tertarik%20untuk%20konsultasi%20tattoo`
     : undefined
 
   return (
-    <section className="py-32 bg-zinc-950 border-y border-white/5 text-center relative overflow-hidden">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/20 blur-[120px] rounded-full pointer-events-none"></div>
-      <div className="container mx-auto px-4 max-w-3xl relative z-10">
-        <H2 className="text-5xl md:text-6xl lg:text-7xl mb-6 tracking-tighter text-foreground">
-          {data?.headline || "Siap Mengukir Cerita?"}
-        </H2>
-        <P className="text-xl mb-12 text-muted-foreground font-light">
-          {data?.subheadline || "Jadwal konsultasi kami cepat penuh. Booking slot Anda sekarang sebelum kehabisan."}
-        </P>
-        {waUrl ? (
-          <a
-            href={waUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center rounded-full px-12 py-4 text-lg font-semibold bg-primary hover:bg-primary/90 text-white transition-colors w-full sm:w-auto"
-          >
-            {ctaText}
-          </a>
-        ) : (
-          <Button size="lg" className="rounded-full px-12 py-8 text-lg font-semibold w-full sm:w-auto bg-primary hover:bg-primary/90 text-white">
-            {ctaText}
-          </Button>
-        )}
+    <section className="border-y border-border bg-background">
+      <div className="mx-auto max-w-3xl px-4 py-20 text-center md:px-6 md:py-28">
+        <h2 className="text-3xl font-semibold tracking-tight text-foreground md:text-5xl">
+          {data?.headline || "Siap mengukir cerita Anda?"}
+        </h2>
+        <p className="mt-4 text-base leading-relaxed text-muted-foreground md:text-lg">
+          {data?.subheadline ||
+            "Jadwal konsultasi kami cepat penuh. Booking slot Anda sekarang sebelum kehabisan."}
+        </p>
+
+        <div className="mt-8 flex justify-center">
+          {waUrl ? (
+            <a
+              href={waUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => slug && trackStudioClick(slug)}
+              className="inline-flex h-11 items-center justify-center gap-1.5 rounded-md bg-primary px-6 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            >
+              {ctaText}
+              <ArrowRight className="size-4" />
+            </a>
+          ) : (
+            <button className="inline-flex h-11 items-center justify-center gap-1.5 rounded-md bg-primary px-6 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
+              {ctaText}
+              <ArrowRight className="size-4" />
+            </button>
+          )}
+        </div>
       </div>
     </section>
   )

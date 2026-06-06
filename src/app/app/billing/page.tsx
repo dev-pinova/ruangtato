@@ -1,8 +1,9 @@
 "use client"
 
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react"
+import { useSearchParams } from "next/navigation"
 import { Check } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { H2 } from "@/components/ui/typography"
 import {
   Card,
   CardHeader,
@@ -21,11 +22,15 @@ import {
   TableRow,
   TableCell,
 } from "@/components/ui/table"
+import { PageHeading, SectionHeading } from "@/components/design"
+import { SubscribeButton } from "@/components/billing/subscribe-button"
 import {
-  MOCK_SUBSCRIPTION,
-  MOCK_PLANS,
-  MOCK_INVOICES,
-} from "@/lib/mock-data"
+  SUBSCRIPTION_PLANS,
+  getPlanByType,
+  getSubscriptionPlanLabel,
+  planTypeToMonths,
+} from "@/lib/billing-plans"
+import { PLAN_CATALOG } from "@/lib/midtrans"
 
 function formatIDR(amount: number) {
   return `Rp ${amount.toLocaleString("id-ID")}`
@@ -45,8 +50,7 @@ const SUBSCRIPTION_STATUS: Record<
 > = {
   active: {
     label: "Aktif",
-    className:
-      "border-emerald-500/30 bg-emerald-500/10 text-emerald-400",
+    className: "border-emerald-500/30 bg-emerald-500/10 text-emerald-400",
   },
   expired: {
     label: "Kedaluwarsa",
@@ -54,8 +58,7 @@ const SUBSCRIPTION_STATUS: Record<
   },
   pending: {
     label: "Menunggu",
-    className:
-      "border-yellow-500/30 bg-yellow-500/10 text-yellow-400",
+    className: "border-yellow-500/30 bg-yellow-500/10 text-yellow-400",
   },
   cancelled: {
     label: "Dibatalkan",
@@ -72,16 +75,112 @@ const INVOICE_STATUS: Record<
   failed: { label: "Gagal", variant: "destructive" },
 }
 
+type SubInfo = {
+  planType: string
+  status: string
+  expiresAt: string | null
+  midtransOrderId: string | null
+  createdAt: string
+}
+
 export default function BillingPage() {
-  const activePlanMonths = parseInt(MOCK_SUBSCRIPTION.planType)
-  const activePlan = MOCK_PLANS.find((p) => p.months === activePlanMonths)
-  const subStatus = SUBSCRIPTION_STATUS[MOCK_SUBSCRIPTION.status]
+  return (
+    <Suspense fallback={<BillingPageFallback />}>
+      <BillingPageContent />
+    </Suspense>
+  )
+}
+
+function BillingPageFallback() {
+  return (
+    <div className="mx-auto max-w-7xl space-y-8 p-4 md:p-6 lg:p-8">
+      <PageHeading
+        title="Billing"
+        description="Kelola langganan, plan, dan riwayat pembayaran Anda."
+      />
+      <p className="text-sm text-muted-foreground">Memuat...</p>
+    </div>
+  )
+}
+
+function BillingPageContent() {
+  const searchParams = useSearchParams()
+  const [subscription, setSubscription] = useState<SubInfo | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [orderMessage, setOrderMessage] = useState<string | null>(null)
+
+  const refetchSubscription = useCallback(async () => {
+    const res = await fetch("/api/studios/me")
+    setLoading(false)
+    if (!res.ok) return
+    const data = await res.json().catch(() => null)
+    setSubscription(data?.subscription ?? null)
+  }, [])
+
+  useEffect(() => {
+    refetchSubscription()
+  }, [refetchSubscription])
+
+  useEffect(() => {
+    if (searchParams.get("payment") === "finish") {
+      setOrderMessage("Pembayaran selesai. Memperbarui status langganan...")
+      refetchSubscription()
+    }
+  }, [searchParams, refetchSubscription])
+
+  const activePlanMonths = subscription
+    ? planTypeToMonths(subscription.planType)
+    : null
+  const planLabel = subscription
+    ? getSubscriptionPlanLabel(subscription.planType)
+    : null
+  const subStatus = subscription
+    ? SUBSCRIPTION_STATUS[subscription.status]
+    : SUBSCRIPTION_STATUS.pending
+
+  const invoices = useMemo(() => {
+    if (!subscription?.midtransOrderId) return []
+
+    const label = getSubscriptionPlanLabel(subscription.planType)
+    const plan = getPlanByType(subscription.planType)
+    const amount =
+      PLAN_CATALOG[subscription.planType]?.amount ?? plan?.price ?? 0
+    const status =
+      subscription.status === "active" ? "paid" : subscription.status
+
+    return [
+      {
+        id: subscription.midtransOrderId,
+        planType: `${label.name} (${label.duration})`,
+        amount,
+        status,
+        createdAt: subscription.createdAt,
+      },
+    ]
+  }, [subscription])
+
+  const hasActiveSubscription =
+    subscription?.status === "active" &&
+    (!subscription.expiresAt || new Date(subscription.expiresAt) > new Date())
+
+  const isTrialSubscription =
+    hasActiveSubscription && subscription?.planType === "trial"
+
+  function getSubscribeButtonLabel(planMonths: number): string {
+    if (isTrialSubscription) return "Upgrade"
+    if (hasActiveSubscription && activePlanMonths !== planMonths) {
+      return "Ganti Plan"
+    }
+    return "Pilih Plan"
+  }
 
   return (
-    <div className="p-4 md:p-6 space-y-8 max-w-7xl">
-      <H2>Billing</H2>
+    <div className="mx-auto max-w-7xl space-y-8 p-4 md:p-6 lg:p-8">
+      <PageHeading
+        title="Billing"
+        description="Kelola langganan, plan, dan riwayat pembayaran Anda."
+      />
 
-      {/* Current plan */}
       <Card>
         <CardHeader>
           <CardTitle>Plan Saat Ini</CardTitle>
@@ -90,46 +189,68 @@ export default function BillingPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-            <div className="flex-1 space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="text-lg font-bold">
-                  {activePlan?.name ?? "—"} ({activePlan?.duration})
-                </span>
-                <Badge variant="outline" className={subStatus?.className}>
-                  {subStatus?.label}
-                </Badge>
+          {loading ? (
+            <p className="text-sm text-muted-foreground">Memuat langganan...</p>
+          ) : (
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+              <div className="flex-1 space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-base font-semibold tracking-tight">
+                    {planLabel
+                      ? `${planLabel.name} (${planLabel.duration})`
+                      : "Belum berlangganan"}
+                  </span>
+                  <Badge variant="outline" className={subStatus?.className}>
+                    {subscription ? subStatus?.label : "Belum aktif"}
+                  </Badge>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Berlaku hingga{" "}
+                  <span className="font-medium text-foreground">
+                    {subscription?.expiresAt
+                      ? formatDate(subscription.expiresAt)
+                      : "—"}
+                  </span>
+                </p>
               </div>
-              <p className="text-sm text-muted-foreground">
-                Berlaku hingga{" "}
-                <span className="text-foreground font-medium">
-                  {formatDate(MOCK_SUBSCRIPTION.expiresAt)}
-                </span>
-              </p>
+              {hasActiveSubscription ? (
+                <Button
+                  nativeButton={false}
+                  variant="outline"
+                  render={<a href="/app/builder" />}
+                >
+                  Buka Builder
+                </Button>
+              ) : null}
             </div>
-            <Button variant="outline">Kelola Langganan</Button>
-          </div>
+          )}
         </CardContent>
       </Card>
 
-      {/* Plan selection */}
+      {orderMessage && (
+        <p className="rounded-md border border-border bg-muted/40 p-3 text-sm text-muted-foreground">
+          {orderMessage}
+        </p>
+      )}
+
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold tracking-tight">Pilih Plan</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {MOCK_PLANS.map((plan) => {
-            const isActive = plan.months === activePlanMonths
+        <SectionHeading title="Pilih Plan" />
+        <div className="grid grid-cols-1 gap-6 pt-2 sm:grid-cols-2 2xl:grid-cols-4">
+          {SUBSCRIPTION_PLANS.map((plan) => {
+            const isActive =
+              hasActiveSubscription && activePlanMonths === plan.months
             return (
               <Card
                 key={plan.id}
                 className={cn(
-                  "relative",
+                  "relative flex h-full min-w-0 flex-col overflow-visible",
                   plan.popular && "ring-2 ring-primary",
-                  isActive && "ring-2 ring-emerald-500/50"
+                  isActive && "ring-2 ring-emerald-500/50",
                 )}
               >
                 {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <Badge className="bg-primary text-primary-foreground">
+                  <div className="absolute -top-3 left-1/2 z-10 -translate-x-1/2">
+                    <Badge className="whitespace-nowrap bg-primary text-primary-foreground">
                       Paling Populer
                     </Badge>
                   </div>
@@ -138,9 +259,9 @@ export default function BillingPage() {
                   <CardTitle>{plan.name}</CardTitle>
                   <CardDescription>{plan.duration}</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="flex flex-1 flex-col space-y-4">
                   <div>
-                    <span className="text-2xl font-bold tracking-tight">
+                    <span className="text-2xl font-semibold tracking-tight">
                       {formatIDR(plan.price)}
                     </span>
                     <span className="text-sm text-muted-foreground">
@@ -151,35 +272,36 @@ export default function BillingPage() {
                   <p className="text-xs text-muted-foreground">
                     {formatIDR(plan.pricePerMonth)} / bulan
                   </p>
-                  <ul className="space-y-2">
+                  <ul className="flex-1 space-y-2">
                     {plan.features.map((feature) => (
                       <li
                         key={feature}
                         className="flex items-start gap-2 text-sm"
                       >
-                        <Check className="size-4 text-primary shrink-0 mt-0.5" />
-                        <span className="text-muted-foreground">
+                        <Check className="mt-0.5 size-4 shrink-0 text-primary" />
+                        <span className="min-w-0 break-words text-muted-foreground">
                           {feature}
                         </span>
                       </li>
                     ))}
                   </ul>
                 </CardContent>
-                <CardFooter>
+                <CardFooter className="mt-auto w-full">
                   {isActive ? (
                     <Badge
                       variant="outline"
-                      className="w-full justify-center border-emerald-500/30 bg-emerald-500/10 text-emerald-400 py-1.5"
+                      className="w-full justify-center border-emerald-500/30 bg-emerald-500/10 py-1.5 text-emerald-400"
                     >
                       Plan Aktif
                     </Badge>
                   ) : (
-                    <Button
-                      variant={plan.popular ? "default" : "outline"}
-                      className="w-full"
-                    >
-                      Pilih Plan
-                    </Button>
+                    <SubscribeButton
+                      months={plan.months}
+                      popular={plan.popular}
+                      label={getSubscribeButtonLabel(plan.months)}
+                      onMessage={setOrderMessage}
+                      onPaymentComplete={refetchSubscription}
+                    />
                   )}
                 </CardFooter>
               </Card>
@@ -188,7 +310,6 @@ export default function BillingPage() {
         </div>
       </div>
 
-      {/* Invoice history */}
       <Card>
         <CardHeader>
           <CardTitle>Riwayat Invoice</CardTitle>
@@ -197,48 +318,55 @@ export default function BillingPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Invoice ID</TableHead>
-                <TableHead>Plan</TableHead>
-                <TableHead>Jumlah</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Tanggal</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {MOCK_INVOICES.map((invoice) => {
-                const status = INVOICE_STATUS[invoice.status]
-                return (
-                  <TableRow key={invoice.id}>
-                    <TableCell className="font-mono text-xs">
-                      {invoice.id.toUpperCase()}
-                    </TableCell>
-                    <TableCell>{invoice.planType}</TableCell>
-                    <TableCell className="font-medium">
-                      {formatIDR(invoice.amount)}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={status.variant}
-                        className={
-                          invoice.status === "paid"
-                            ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
-                            : undefined
-                        }
-                      >
-                        {status.label}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {formatDate(invoice.createdAt)}
-                    </TableCell>
-                  </TableRow>
-                )
-              })}
-            </TableBody>
-          </Table>
+          {invoices.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              Belum ada riwayat pembayaran.
+            </p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Invoice ID</TableHead>
+                  <TableHead>Plan</TableHead>
+                  <TableHead>Jumlah</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Tanggal</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {invoices.map((invoice) => {
+                  const status =
+                    INVOICE_STATUS[invoice.status] ?? INVOICE_STATUS.pending
+                  return (
+                    <TableRow key={invoice.id}>
+                      <TableCell className="font-mono text-xs">
+                        {invoice.id.toUpperCase()}
+                      </TableCell>
+                      <TableCell>{invoice.planType}</TableCell>
+                      <TableCell className="font-medium">
+                        {formatIDR(invoice.amount)}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={status.variant}
+                          className={
+                            invoice.status === "paid"
+                              ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+                              : undefined
+                          }
+                        >
+                          {status.label}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {formatDate(invoice.createdAt)}
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
     </div>

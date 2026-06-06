@@ -1,7 +1,20 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
-  /* config options here */
-};
+  output: "standalone",
+  serverExternalPackages: [
+    "pg",
+    "better-auth",
+    "kysely",
+    "@better-auth/kysely-adapter",
+    "@better-auth/core",
+    "midtrans-client",
+  ],
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "images.unsplash.com" },
+    ],
+  },
+}
 
-export default nextConfig;
+export default nextConfig
