@@ -10,6 +10,9 @@ if (!process.env.BETTER_AUTH_SECRET) {
   console.warn("BETTER_AUTH_SECRET is not set. Auth will not work until configured.")
 }
 
+const authBaseURL =
+  process.env.BETTER_AUTH_URL ?? process.env.NEXT_PUBLIC_APP_URL
+
 export const auth = betterAuth({
   database: db
     ? drizzleAdapter(db, {
@@ -18,7 +21,14 @@ export const auth = betterAuth({
       })
     : undefined,
   secret: process.env.BETTER_AUTH_SECRET,
-  baseURL: process.env.BETTER_AUTH_URL,
+  baseURL: authBaseURL,
+  trustedOrigins: [
+    authBaseURL,
+    process.env.NEXT_PUBLIC_APP_URL,
+    "http://localhost:3000",
+    "https://studiotato.vercel.app",
+    "https://*.vercel.app",
+  ].filter((value): value is string => Boolean(value)),
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 8,
