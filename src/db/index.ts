@@ -12,15 +12,26 @@ function isLocalDatabase(url: string) {
   return /localhost|127\.0\.0\.1/.test(url)
 }
 
+function usesSupabasePooler(url: string) {
+  return url.includes("pooler.supabase.com") || url.includes(":6543")
+}
+
 function buildPoolConfig(url: string) {
   const normalized = new URL(url)
   normalized.searchParams.delete("sslmode")
   normalized.searchParams.delete("ssl")
 
+  const remote = !isLocalDatabase(url)
+  const pooler = usesSupabasePooler(url)
+
   return {
     connectionString: normalized.toString(),
-    connectionTimeoutMillis: 5_000,
-    ssl: isLocalDatabase(url) ? undefined : { rejectUnauthorized: false },
+    connectionTimeoutMillis: 10_000,
+    max: remote ? 3 : 10,
+    idleTimeoutMillis: remote ? 10_000 : 30_000,
+    // Transaction pooler (port 6543) does not support prepared statements.
+    ...(pooler ? { prepare: false } : {}),
+    ssl: remote ? { rejectUnauthorized: false } : undefined,
   }
 }
 
