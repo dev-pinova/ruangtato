@@ -12,7 +12,8 @@
     "db:studio": "node --env-file=.env ./node_modules/drizzle-kit/bin.cjs studio",
     "db:seed": "npx tsx scripts/seed.ts",
     "auth:migrate": "node -e \"console.log('Drizzle adapter: auth tables are included in npm run db:push. No separate migrate step needed.')\"",
-    "seed": "node scripts/seed-studios.mjs"
+    "seed": "node scripts/seed-studios.mjs",
+    "admin:seed": "node --env-file=.env --import tsx scripts/seed-platform-admin.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",

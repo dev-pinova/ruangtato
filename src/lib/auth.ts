@@ -20,6 +20,23 @@ export const auth = betterAuth({
         schema: authSchema,
       })
     : undefined,
+  user: {
+    additionalFields: {
+      platformRole: {
+        type: "string",
+        required: false,
+        fieldName: "platform_role",
+        input: false,
+      },
+      status: {
+        type: "string",
+        required: false,
+        defaultValue: "active",
+        fieldName: "status",
+        input: false,
+      },
+    },
+  },
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: authBaseURL,
   trustedOrigins: [
