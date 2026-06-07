@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/table"
 import { PageHeading, SectionHeading } from "@/components/design"
 import { SubscribeButton } from "@/components/billing/subscribe-button"
+import { loadMidtransSnap } from "@/lib/midtrans-snap"
 import {
   SUBSCRIPTION_PLANS,
   getPlanByType,
@@ -108,6 +109,8 @@ function BillingPageContent() {
   const [subscription, setSubscription] = useState<SubInfo | null>(null)
   const [loading, setLoading] = useState(true)
   const [orderMessage, setOrderMessage] = useState<string | null>(null)
+  const [snapReady, setSnapReady] = useState(false)
+  const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY ?? ""
 
   const refetchSubscription = useCallback(async () => {
     const res = await fetch("/api/studios/me")
@@ -120,6 +123,30 @@ function BillingPageContent() {
   useEffect(() => {
     refetchSubscription()
   }, [refetchSubscription])
+
+  useEffect(() => {
+    if (!clientKey) return
+
+    let cancelled = false
+
+    loadMidtransSnap()
+      .then(() => {
+        if (!cancelled) setSnapReady(true)
+      })
+      .catch((err: unknown) => {
+        if (cancelled) return
+        setSnapReady(false)
+        setOrderMessage(
+          err instanceof Error
+            ? err.message
+            : "Gagal memuat gateway pembayaran. Muat ulang halaman.",
+        )
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [clientKey])
 
   useEffect(() => {
     if (searchParams.get("payment") === "finish") {
@@ -299,6 +326,7 @@ function BillingPageContent() {
                       months={plan.months}
                       popular={plan.popular}
                       label={getSubscribeButtonLabel(plan.months)}
+                      snapReady={snapReady}
                       onMessage={setOrderMessage}
                       onPaymentComplete={refetchSubscription}
                     />
