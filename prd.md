@@ -127,3 +127,41 @@ Sistem menggunakan Next.js App Router untuk manajemen routing yang efisien. Selu
 *   **Infrastructure:** **Server VPS + Coolify**. Self-hosted environment untuk efisiensi biaya dan kontrol skalabilitas penuh.
 *   **Payment:** **Midtrans**. Integrasi sistem pembayaran otomatis untuk aktivasi membership dan penanganan webhook status transaksi.
 *   **Asset Management:** Penyimpanan gambar portofolio dan mockup ditangani secara manual melalui formulir unggah di dalam Builder, disimpan langsung di penyimpanan lokal VPS atau CDN pihak ketiga yang terintegrasi via URL statis.
+
+## 9. Admin Panel (Super Admin)
+
+Dashboard internal PT RUANG TATTO INDONESIA untuk memantau tenant, transaksi Midtrans, suspend/reactivate studio, analytics platform, dan audit log. Hanya user dengan `platform_role` internal yang boleh mengakses `/admin/*`.
+
+### 9.1 Role & Access
+
+| Role | Akses |
+|------|-------|
+| `super_admin` | Semua modul + settings (assign staff, trusted badge) + suspend/reactivate |
+| `admin` | Tenants, payments, analytics, audit (read) |
+| `support` | Tenants, payments (read) |
+| `finance` | Payments, analytics |
+
+Tenant biasa tanpa `platform_role` diarahkan ke `/unauthorized`.
+
+### 9.2 Modul
+
+- **Tenants** — daftar studio dengan filter, search, detail drawer, suspend/reactivate (super_admin).
+- **Payments** — log transaksi Midtrans (`order_id`, `transaction_id`, `raw_payload`).
+- **Analytics** — KPI platform dan grafik pertumbuhan bulanan.
+- **Settings** — assign/revoke staff internal, toggle `is_trusted` studio.
+- **Audit** — semua aksi admin (suspend, staff, trusted) dicatat di `audit_logs`.
+
+### 9.3 Data Model (tambahan)
+
+- `user.platform_role`, `user.status`
+- `studios.status` (`active` / `suspended`)
+- `payments`, `audit_logs`, `suspension_logs`
+
+### 9.4 Operasional
+
+```bash
+PLATFORM_ADMIN_EMAIL=admin@ruangtato.com npm run admin:seed
+npm run admin:backfill-payments   # histori invoice → payments
+```
+
+Webhook Midtrans adalah sumber kebenaran status pembayaran; redirect sukses bukan bukti final.

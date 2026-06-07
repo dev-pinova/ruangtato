@@ -51,6 +51,8 @@ Creates published demo studios at `/app/studio/demo-studio-1`, etc.
 | `npm run db:push` | Push Drizzle schema to PostgreSQL |
 | `npm run auth:migrate` | Better Auth tables migration |
 | `node scripts/seed-studios.mjs N` | Seed N demo studios |
+| `npm run admin:seed` | Assign `super_admin` ke `PLATFORM_ADMIN_EMAIL` |
+| `npm run admin:backfill-payments` | Backfill histori invoice ke tabel `payments` |
 
 ## Docker / Coolify
 
@@ -78,6 +80,22 @@ Health check: `GET /api/health`
 - **Billing** — `/app/billing` + Midtrans webhook stub at `/api/billing/webhook`
 - **Leads** — `POST /api/studios/[slug]/leads`
 - **Analytics** — `POST /api/studios/[slug]/track/view` and `/track/click`
+- **Admin panel** — `/admin` — platform staff only (`platform_role` on `user`)
+
+### Platform admin roles
+
+| Role | Permissions |
+|------|-------------|
+| `super_admin` | Full access including settings and suspend/reactivate |
+| `admin` | Tenants, payments, analytics, audit read |
+| `support` | Tenants, payments read |
+| `finance` | Payments, analytics |
+
+Seed super admin after creating the account:
+
+```bash
+PLATFORM_ADMIN_EMAIL=admin@ruangtato.com npm run admin:seed
+```
 
 ## Subscription gate
 

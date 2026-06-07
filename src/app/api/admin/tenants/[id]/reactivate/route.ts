@@ -5,6 +5,7 @@ import {
   isPlatformApiUser,
   requirePlatformApiPermission,
 } from "@/lib/admin-auth"
+import { checkRateLimit } from "@/lib/admin-rate-limit"
 
 function parseReason(body: unknown): string | null {
   if (!body || typeof body !== "object") return null
@@ -25,6 +26,14 @@ export async function POST(
     ["super_admin"],
   )
   if (!isPlatformApiUser(authResult)) return authResult
+
+  const rate = checkRateLimit(`reactivate:${authResult.id}`, 10, 60_000)
+  if (!rate.allowed) {
+    return NextResponse.json(
+      { error: `Terlalu banyak permintaan. Coba lagi dalam ${rate.retryAfterSec} detik.` },
+      { status: 429 },
+    )
+  }
 
   const { id } = await params
   const body = await request.json().catch(() => null)
