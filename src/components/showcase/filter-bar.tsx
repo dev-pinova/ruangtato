@@ -34,51 +34,62 @@ export function FilterBar({
 }) {
   return (
     <div className="border-b border-border bg-background">
-      <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-4 md:flex-row md:items-center md:justify-between md:px-6">
-        <p className="text-sm text-muted-foreground">
-          <span className="font-medium text-foreground">{resultCount}</span> studio ditemukan
-        </p>
+      <div className="mx-auto max-w-6xl px-4 py-5 md:px-6">
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div className="space-y-1.5">
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">
+              Jelajahi Studio Tattoo
+            </h2>
+            <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+              Temukan studio terpercaya di seluruh Indonesia. Filter berdasarkan kota,
+              urutkan berdasarkan popularitas, atau tampilkan studio verified saja.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              <span className="font-medium text-foreground">{resultCount}</span> studio ditemukan
+            </p>
+          </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <Select value={selectedCity || "all"} onValueChange={(v: string | null) => onCityChange(v === "all" || !v ? "" : v)}>
-            <SelectTrigger className="h-8 min-w-[140px]">
-              <MapPin className="size-3.5 text-muted-foreground" />
-              <SelectValue placeholder="Semua kota" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Semua Kota</SelectItem>
-              {cities.map((city) => (
-                <SelectItem key={city} value={city}>
-                  {city}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="flex flex-wrap items-center gap-2">
+            <Select value={selectedCity || "all"} onValueChange={(v: string | null) => onCityChange(v === "all" || !v ? "" : v)}>
+              <SelectTrigger className="h-8 min-w-[140px]">
+                <MapPin className="size-3.5 text-muted-foreground" />
+                <SelectValue placeholder="Semua kota" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Semua Kota</SelectItem>
+                {cities.map((city) => (
+                  <SelectItem key={city} value={city}>
+                    {city}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-          <Select value={sortBy} onValueChange={(v: string | null) => { if (v) onSortChange(v as SortBy) }}>
-            <SelectTrigger className="h-8 min-w-[140px]">
-              <ArrowUpDown className="size-3.5 text-muted-foreground" />
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="views">Paling dilihat</SelectItem>
-              <SelectItem value="clicks">Paling diklik</SelectItem>
-              <SelectItem value="name">Nama (A-Z)</SelectItem>
-            </SelectContent>
-          </Select>
+            <Select value={sortBy} onValueChange={(v: string | null) => { if (v) onSortChange(v as SortBy) }}>
+              <SelectTrigger className="h-8 min-w-[140px]">
+                <ArrowUpDown className="size-3.5 text-muted-foreground" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="views">Paling dilihat</SelectItem>
+                <SelectItem value="clicks">Paling diklik</SelectItem>
+                <SelectItem value="name">Nama (A-Z)</SelectItem>
+              </SelectContent>
+            </Select>
 
-          <button
-            onClick={onTrustedToggle}
-            className={cn(
-              "inline-flex h-8 items-center gap-1.5 rounded-md border px-2.5 text-xs font-medium transition-colors",
-              trustedOnly
-                ? "border-primary/40 bg-primary/10 text-primary"
-                : "border-border bg-background text-muted-foreground hover:text-foreground"
-            )}
-          >
-            <BadgeCheck className="size-3.5" />
-            Trusted
-          </button>
+            <button
+              onClick={onTrustedToggle}
+              className={cn(
+                "inline-flex h-8 items-center gap-1.5 rounded-md border px-2.5 text-xs font-medium transition-colors",
+                trustedOnly
+                  ? "border-primary/40 bg-primary/10 text-primary"
+                  : "border-border bg-background text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <BadgeCheck className="size-3.5" />
+              Trusted
+            </button>
+          </div>
         </div>
       </div>
     </div>

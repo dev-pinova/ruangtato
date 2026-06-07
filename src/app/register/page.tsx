@@ -9,12 +9,15 @@ import { PageHeading } from "@/components/design"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+
 export default function RegisterPage() {
   const router = useRouter()
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const [waNumber, setWaNumber] = useState("")
+  const [city, setCity] = useState("")
   const [studioName, setStudioName] = useState("")
+  const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -27,7 +30,7 @@ export default function RegisterPage() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
-      body: JSON.stringify({ name, email, password, studioName }),
+      body: JSON.stringify({ name, email, waNumber, city, studioName, password }),
     })
 
     setLoading(false)
@@ -48,7 +51,7 @@ export default function RegisterPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
-      <div className="w-full max-w-sm">
+      <div className="w-full max-w-md">
         <div className="mb-8 flex justify-center">
           <PlatformLogo variant="auth" />
         </div>
@@ -85,15 +88,24 @@ export default function RegisterPage() {
               />
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="reg-password">Password</Label>
+              <Label htmlFor="reg-whatsapp">Nomor WhatsApp</Label>
               <Input
-                id="reg-password"
-                type="password"
-                placeholder="Minimal 8 karakter"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                id="reg-whatsapp"
+                type="tel"
+                placeholder="6281234567890"
+                value={waNumber}
+                onChange={(e) => setWaNumber(e.target.value)}
                 required
-                minLength={8}
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="reg-city">Kota</Label>
+              <Input
+                id="reg-city"
+                placeholder="Jakarta"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                required
               />
             </div>
             <div className="flex flex-col gap-2">
@@ -104,6 +116,18 @@ export default function RegisterPage() {
                 value={studioName}
                 onChange={(e) => setStudioName(e.target.value)}
                 required
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="reg-password">Password</Label>
+              <Input
+                id="reg-password"
+                type="password"
+                placeholder="Minimal 8 karakter"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={8}
               />
             </div>
             {error && (

@@ -10,6 +10,14 @@ import type { Studio } from "@/lib/types"
 
 type SortBy = "views" | "clicks" | "name"
 
+const BASE_POPULAR_TAGS = ["Fine Line", "Blackwork", "Japanese", "Realism", "Jakarta", "Bali"]
+
+function buildPopularTags(studios: Studio[]) {
+  const fromStudios = studios.flatMap((studio) => studio.tags)
+  const merged = [...BASE_POPULAR_TAGS, ...fromStudios]
+  return [...new Set(merged.map((tag) => tag.trim()).filter(Boolean))].slice(0, 15)
+}
+
 export function ShowcasePage({
   studios,
   cities,
@@ -21,6 +29,16 @@ export function ShowcasePage({
   const [sortBy, setSortBy] = useState<SortBy>("views")
   const [trustedOnly, setTrustedOnly] = useState(false)
   const [selectedCity, setSelectedCity] = useState("")
+
+  const featuredStudios = useMemo(
+    () =>
+      [...studios]
+        .sort((a, b) => b.viewCount - a.viewCount)
+        .slice(0, 12),
+    [studios],
+  )
+
+  const popularTags = useMemo(() => buildPopularTags(studios), [studios])
 
   const resultCount = useMemo(() => {
     const query = searchQuery.toLowerCase()
@@ -47,7 +65,8 @@ export function ShowcasePage({
       <ShowcaseHero
         searchQuery={searchQuery}
         onSearch={setSearchQuery}
-        featuredStudios={studios.slice(0, 5)}
+        featuredStudios={featuredStudios}
+        popularTags={popularTags}
       />
       <FilterBar
         cities={cities}

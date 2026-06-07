@@ -158,6 +158,8 @@ export async function createStudioForUser(input: {
   userId: string
   studioName: string
   ownerName: string
+  city: string
+  waNumber: string
 }) {
   if (!db) throw new Error("Database not configured")
 
@@ -171,8 +173,8 @@ export async function createStudioForUser(input: {
     .values({
       slug,
       name: input.studioName,
-      city: "Jakarta",
-      waNumber: "",
+      city: input.city.trim(),
+      waNumber: input.waNumber.trim(),
       description: `Landing page resmi ${input.studioName}`,
       image: DEFAULT_STUDIO_COVER,
       artist: input.ownerName,

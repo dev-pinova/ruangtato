@@ -62,10 +62,16 @@ export async function POST(request: Request) {
   const email = typeof body.email === "string" ? body.email.trim() : ""
   const password = typeof body.password === "string" ? body.password : ""
   const studioName = typeof body.studioName === "string" ? body.studioName.trim() : ""
+  const city = typeof body.city === "string" ? body.city.trim() : ""
+  const waNumber =
+    typeof body.waNumber === "string" ? body.waNumber.replace(/[^\d]/g, "") : ""
 
-  if (!name || !email || !password || !studioName) {
+  if (!name || !email || !password || !studioName || !city || !waNumber) {
     return NextResponse.json(
-      { error: "Nama, email, password, dan nama studio wajib diisi." },
+      {
+        error:
+          "Nama, email, password, nomor WhatsApp, kota, dan nama studio wajib diisi.",
+      },
       { status: 400 },
     )
   }
@@ -80,6 +86,8 @@ export async function POST(request: Request) {
       userId: signUpResult.user.id,
       studioName,
       ownerName: name,
+      city,
+      waNumber,
     })
 
     return NextResponse.json({ studio }, { status: 201 })

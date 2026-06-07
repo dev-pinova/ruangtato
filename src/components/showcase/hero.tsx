@@ -6,20 +6,45 @@ import { ChevronRight, Search } from "lucide-react"
 import { PremiumSocialBadge } from "@/components/showcase/premium-social-badge"
 import { VerifiedCheck } from "@/components/showcase/verified-check"
 import { Input } from "@/components/ui/input"
+import { cn } from "@/lib/utils"
 import type { Studio } from "@/lib/types"
 
 const POPULAR_TAGS = ["Fine Line", "Blackwork", "Japanese", "Realism", "Jakarta", "Bali"]
 
 const HERO_BACKGROUND_IMAGE = "/ruang-tato/chatgpt-bg.png"
 
+function HorizontalChipRow({
+  children,
+  className,
+}: {
+  children: React.ReactNode
+  className?: string
+}) {
+  return (
+    <div
+      className={cn(
+        "relative -mx-4 px-4 md:mx-0 md:px-0",
+        "[mask-image:linear-gradient(to_right,transparent,black_12px,black_calc(100%-12px),transparent)] md:[mask-image:linear-gradient(to_right,transparent,black_24px,black_calc(100%-24px),transparent)]",
+        className,
+      )}
+    >
+      <div className="flex gap-2 overflow-x-auto pb-1 snap-x snap-mandatory scrollbar-hide">
+        {children}
+      </div>
+    </div>
+  )
+}
+
 export function ShowcaseHero({
   searchQuery,
   onSearch,
   featuredStudios = [],
+  popularTags = POPULAR_TAGS,
 }: {
   searchQuery: string
   onSearch: (query: string) => void
   featuredStudios?: Studio[]
+  popularTags?: string[]
 }) {
   return (
     <section
@@ -60,46 +85,46 @@ export function ShowcaseHero({
         </div>
 
         {featuredStudios.length > 0 && (
-          <div className="mt-6">
+          <div className="mt-6 text-left md:text-center">
             <p className="mb-3 text-xs text-white/60">Studio populer:</p>
-            <div className="flex flex-wrap items-center justify-center gap-2">
+            <HorizontalChipRow>
               {featuredStudios.map((studio) => (
                 <Link
                   key={studio.id}
                   href={`/app/studio/${studio.slug}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-2.5 py-1.5 text-xs text-white/90 backdrop-blur-sm transition-colors hover:border-white/35 hover:bg-white/15 hover:text-white"
+                  className="inline-flex min-w-[140px] shrink-0 snap-start items-center gap-2 rounded-full border border-white/20 bg-white/10 px-2.5 py-1.5 text-xs text-white/90 backdrop-blur-sm transition-colors hover:border-white/35 hover:bg-white/15 hover:text-white"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={studio.image}
                     alt=""
-                    className="size-5 rounded-full object-cover"
+                    className="size-5 shrink-0 rounded-full object-cover"
                   />
                   <span className="max-w-[120px] truncate">{studio.name}</span>
-                  {studio.isVerified && <VerifiedCheck className="size-3.5" />}
-                  <ChevronRight className="size-3 text-white/50" />
+                  {studio.isVerified && <VerifiedCheck className="size-3.5 shrink-0" />}
+                  <ChevronRight className="size-3 shrink-0 text-white/50" />
                 </Link>
               ))}
-            </div>
+            </HorizontalChipRow>
           </div>
         )}
 
-        <div className="mt-5">
+        <div className="mt-5 text-left md:text-center">
           <p className="mb-3 text-xs text-white/60">Gaya populer:</p>
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            {POPULAR_TAGS.map((tag) => (
+          <HorizontalChipRow>
+            {popularTags.map((tag) => (
               <button
                 key={tag}
                 type="button"
                 onClick={() => onSearch(tag)}
-                className="rounded-full border border-white/25 px-2.5 py-1 text-xs text-white/80 transition-colors hover:border-white/40 hover:text-white"
+                className="shrink-0 snap-start rounded-full border border-white/25 px-3 py-1 text-xs text-white/80 transition-colors hover:border-white/40 hover:text-white"
               >
                 {tag}
               </button>
             ))}
-          </div>
+          </HorizontalChipRow>
         </div>
       </div>
 

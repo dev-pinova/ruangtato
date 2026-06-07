@@ -59,6 +59,7 @@ import { BlockFAQ } from "@/components/blocks/faq"
 import { BlockAppointmentForm } from "@/components/blocks/appointment-form"
 import { BlockFinalCTA } from "@/components/blocks/final-cta"
 import { BlockFooter } from "@/components/blocks/footer"
+import { FloatingWhatsAppButton } from "@/components/studio/floating-whatsapp"
 
 import { DEFAULT_BLOCK_DATA } from "@/lib/default-page-config"
 import type { AppointmentFormData, Block, BlockType, Studio } from "@/lib/types"
@@ -1384,7 +1385,7 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
             <div
               style={previewStyle}
               className={cn(
-                "builder-preview studio-template bg-black font-body text-white",
+                "builder-preview studio-template relative bg-black font-body text-white",
                 previewDevice === "desktop" ? "w-full" : "shrink-0"
               )}
             >
@@ -1416,12 +1417,27 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
                       (() => {
                         const Component = BLOCK_COMPONENTS[b.type]
                         if (!Component) return null
-                        return <Component data={b.data} />
+                        const usesWaNumber =
+                          b.type === "Hero" ||
+                          b.type === "HeroSlider" ||
+                          b.type === "FinalCTA"
+                        return (
+                          <Component
+                            data={b.data}
+                            {...(usesWaNumber
+                              ? { waNumber: initialStudio.waNumber }
+                              : {})}
+                          />
+                        )
                       })()
                     )}
                   </div>
                 )
               })}
+              <FloatingWhatsAppButton
+                waNumber={initialStudio.waNumber}
+                position="absolute"
+              />
             </div>
           </div>
         </div>

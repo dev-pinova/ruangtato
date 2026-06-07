@@ -28,6 +28,7 @@ import { BlockFinalCTA } from "@/components/blocks/final-cta"
 import { BlockFooter } from "@/components/blocks/footer"
 import { BlockLeadForm } from "@/components/blocks/lead-form"
 import { StudioTracker } from "@/components/studio/studio-tracker"
+import { FloatingWhatsAppButton } from "@/components/studio/floating-whatsapp"
 import type { AppointmentFormData, BlockType, Studio } from "@/lib/types"
 
 export const dynamic = "force-dynamic"
@@ -186,6 +187,7 @@ export default async function StudioRendererPage({ params }: PageProps) {
           </div>
         )
       })}
+      <FloatingWhatsAppButton waNumber={studio.waNumber} />
     </main>
   )
 }

@@ -30,10 +30,16 @@ export async function POST(request: Request) {
   }
 
   try {
+    const city = typeof body.city === "string" ? body.city.trim() : "Jakarta"
+    const waNumber =
+      typeof body.waNumber === "string" ? body.waNumber.replace(/[^\d]/g, "") : ""
+
     const studio = await createStudioForUser({
       userId: session.user.id,
       studioName,
       ownerName: session.user.name,
+      city,
+      waNumber,
     })
     return NextResponse.json({ studio }, { status: 201 })
   } catch (error) {
