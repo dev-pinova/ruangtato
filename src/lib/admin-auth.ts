@@ -15,6 +15,7 @@ export type PlatformPermission =
   | "suspensions:write"
   | "audit:read"
   | "settings:read"
+  | "settings:write"
 
 const ROLE_PERMISSIONS: Record<PlatformRole, PlatformPermission[] | ["*"]> = {
   super_admin: ["*"],
