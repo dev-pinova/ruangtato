@@ -57,6 +57,7 @@ function ProfilStudioTab({
   const [slug, setSlug] = useState("")
   const [city, setCity] = useState("")
   const [waNumber, setWaNumber] = useState("")
+  const [coverImage, setCoverImage] = useState("")
   const [description, setDescription] = useState("")
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -68,6 +69,7 @@ function ProfilStudioTab({
     setSlug(studio.slug)
     setCity(studio.city)
     setWaNumber(studio.waNumber)
+    setCoverImage(studio.image)
     setDescription(studio.description)
   }, [studio])
 
@@ -81,7 +83,7 @@ function ProfilStudioTab({
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
-      body: JSON.stringify({ name, slug, city, waNumber, description }),
+      body: JSON.stringify({ name, slug, city, waNumber, description, image: coverImage }),
     })
 
     setSaving(false)
@@ -178,6 +180,28 @@ function ProfilStudioTab({
               onChange={(e) => setWaNumber(e.target.value)}
               placeholder="6281234567890"
             />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="cover-image">Foto Cover Studio</Label>
+            <Input
+              id="cover-image"
+              value={coverImage}
+              onChange={(e) => setCoverImage(e.target.value)}
+              placeholder="https://..."
+            />
+            <p className="text-xs text-muted-foreground">
+              Digunakan di direktori studio. Kosongkan untuk otomatis dari gambar Hero di builder.
+            </p>
+            {coverImage ? (
+              <div className="overflow-hidden rounded-md border border-border bg-muted/30">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={coverImage}
+                  alt="Preview cover studio"
+                  className="aspect-video w-full max-w-sm object-cover"
+                />
+              </div>
+            ) : null}
           </div>
           <div className="grid gap-2">
             <Label htmlFor="description">Deskripsi</Label>

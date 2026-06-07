@@ -14,7 +14,7 @@ import {
   createSlugFromName,
 } from "@/lib/default-page-config"
 import { DEFAULT_STUDIO_COVER } from "@/lib/placeholder-images"
-import { getStudioArtistImage } from "@/lib/studio-utils"
+import { getStudioArtistImage, resolveStudioCoverImage } from "@/lib/studio-utils"
 import type { Block, Studio } from "@/lib/types"
 
 export function isActivePaidSubscription(sub: {
@@ -40,7 +40,7 @@ function mapStudioRow(
     city: row.city ?? "",
     waNumber: row.waNumber ?? "",
     description: row.description ?? "",
-    image: row.image ?? "",
+    image: resolveStudioCoverImage(row.image, blocks),
     viewCount: row.viewCount,
     clickCount: row.clickCount,
     isTrusted: row.isTrusted,
@@ -211,6 +211,7 @@ export async function updateStudioProfile(
     city: string
     waNumber: string
     description: string
+    image: string
   },
 ): Promise<Studio | null> {
   if (!db) throw new Error("Database not configured")
@@ -218,6 +219,7 @@ export async function updateStudioProfile(
   const name = input.name.trim()
   const rawSlug = createSlugFromName(input.slug) || createSlugFromName(name) || "studio"
   const slug = await ensureUniqueSlug(rawSlug, studioId)
+  const image = input.image.trim() || DEFAULT_STUDIO_COVER
 
   const [updated] = await db
     .update(studios)
@@ -227,6 +229,7 @@ export async function updateStudioProfile(
       city: input.city.trim(),
       waNumber: input.waNumber.trim(),
       description: input.description.trim(),
+      image,
       updatedAt: new Date(),
     })
     .where(eq(studios.id, studioId))
@@ -239,8 +242,17 @@ export async function updateStudioProfile(
 export async function saveStudioPageConfig(studioId: string, blocks: Block[], slug?: string) {
   if (!db) throw new Error("Database not configured")
 
+  const [existing] = await db
+    .select()
+    .from(studios)
+    .where(eq(studios.id, studioId))
+    .limit(1)
+
+  if (!existing) return null
+
   const updates: Partial<typeof studios.$inferInsert> = {
     pageConfig: blocks,
+    image: resolveStudioCoverImage(existing.image, blocks),
     updatedAt: new Date(),
   }
 
@@ -261,9 +273,23 @@ export async function saveStudioPageConfig(studioId: string, blocks: Block[], sl
 export async function publishStudio(studioId: string) {
   if (!db) throw new Error("Database not configured")
 
+  const [existing] = await db
+    .select()
+    .from(studios)
+    .where(eq(studios.id, studioId))
+    .limit(1)
+
+  if (!existing) return null
+
+  const blocks = existing.pageConfig ?? []
+
   const [updated] = await db
     .update(studios)
-    .set({ isPublished: true, updatedAt: new Date() })
+    .set({
+      isPublished: true,
+      image: resolveStudioCoverImage(existing.image, blocks),
+      updatedAt: new Date(),
+    })
     .where(eq(studios.id, studioId))
     .returning()
 

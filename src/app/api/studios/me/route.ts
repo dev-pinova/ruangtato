@@ -62,6 +62,7 @@ export async function PATCH(request: Request) {
   const waNumber = typeof body.waNumber === "string" ? body.waNumber.trim() : ""
   const description =
     typeof body.description === "string" ? body.description.trim() : ""
+  const image = typeof body.image === "string" ? body.image.trim() : ""
 
   if (!name) {
     return NextResponse.json({ error: "Nama studio wajib diisi" }, { status: 400 })
@@ -74,6 +75,7 @@ export async function PATCH(request: Request) {
       city,
       waNumber,
       description,
+      image,
     })
 
     if (!updated) {
