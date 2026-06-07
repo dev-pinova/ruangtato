@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 
 import { auth } from "@/lib/auth"
 import {
+  getStudioSuspendedFlagForUser,
   publishStudio,
   studioHasActiveSubscription,
   userCanAccessStudio,
@@ -15,6 +16,10 @@ export async function POST(
   const session = await auth.api.getSession({ headers: request.headers })
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
+  if (await getStudioSuspendedFlagForUser(session.user.id)) {
+    return NextResponse.json({ error: "Account suspended", suspended: true }, { status: 403 })
   }
 
   const allowed = await userCanAccessStudio(session.user.id, id)

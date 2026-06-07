@@ -7,7 +7,8 @@ import {
   isMidtransConfigured,
   PLAN_CATALOG,
 } from "@/lib/midtrans"
-import { getStudioForUser } from "@/lib/studio-service"
+import { recordPendingPayment } from "@/lib/payment-service"
+import { getStudioForUser, getStudioSuspendedFlagForUser } from "@/lib/studio-service"
 
 export async function POST(request: Request) {
   const session = await auth.api.getSession({ headers: request.headers })
@@ -20,6 +21,10 @@ export async function POST(request: Request) {
       { error: "Midtrans belum dikonfigurasi. Set MIDTRANS_SERVER_KEY dan MIDTRANS_CLIENT_KEY." },
       { status: 503 }
     )
+  }
+
+  if (await getStudioSuspendedFlagForUser(session.user.id)) {
+    return NextResponse.json({ error: "Account suspended", suspended: true }, { status: 403 })
   }
 
   const studio = await getStudioForUser(session.user.id)
@@ -64,6 +69,17 @@ export async function POST(request: Request) {
         { error: "Gagal membuat Snap token dari Midtrans." },
         { status: 502 }
       )
+    }
+
+    try {
+      await recordPendingPayment({
+        studioId: studio.id,
+        orderId,
+        planType,
+        amount: plan.amount,
+      })
+    } catch (error) {
+      console.error("Failed to record pending payment:", error)
     }
 
     return NextResponse.json({

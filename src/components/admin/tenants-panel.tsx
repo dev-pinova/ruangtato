@@ -7,6 +7,7 @@ import { PageHeading } from "@/components/design"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import {
   Select,
   SelectContent,
@@ -399,6 +400,15 @@ export function TenantsPanel() {
                   Lihat halaman publik
                 </Button>
               ) : null}
+
+              <TenantStatusActions
+                studioId={detail.id}
+                status={detail.status}
+                onUpdated={() => {
+                  void loadTenants()
+                  void openDetail(detail.id)
+                }}
+              />
             </div>
           ) : null}
         </SheetContent>
@@ -459,6 +469,82 @@ function DetailRow({ label, value }: { label: string; value: string }) {
     <div className="flex items-start justify-between gap-4">
       <span className="text-muted-foreground">{label}</span>
       <span className="text-right font-medium">{value}</span>
+    </div>
+  )
+}
+
+function TenantStatusActions({
+  studioId,
+  status,
+  onUpdated,
+}: {
+  studioId: string
+  status: string
+  onUpdated: () => void
+}) {
+  const [reason, setReason] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  async function submit(action: "suspend" | "reactivate") {
+    setError(null)
+    if (reason.trim().length < 10) {
+      setError("Alasan minimal 10 karakter.")
+      return
+    }
+    setLoading(true)
+    try {
+      const endpoint =
+        action === "suspend"
+          ? `/api/admin/tenants/${studioId}/suspend`
+          : `/api/admin/tenants/${studioId}/reactivate`
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reason: reason.trim() }),
+      })
+      if (!response.ok) {
+        const json = await response.json().catch(() => null)
+        setError(json?.error ?? "Gagal memperbarui status.")
+        return
+      }
+      setReason("")
+      onUpdated()
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="space-y-3 rounded-md border border-border p-3">
+      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        Aksi admin
+      </p>
+      <Textarea
+        value={reason}
+        onChange={(e) => setReason(e.target.value)}
+        placeholder="Alasan suspend/reactivate (min. 10 karakter)"
+        rows={3}
+      />
+      {error ? <p className="text-sm text-destructive">{error}</p> : null}
+      {status === "suspended" ? (
+        <Button
+          size="sm"
+          disabled={loading}
+          onClick={() => void submit("reactivate")}
+        >
+          Reactivate tenant
+        </Button>
+      ) : (
+        <Button
+          size="sm"
+          variant="destructive"
+          disabled={loading}
+          onClick={() => void submit("suspend")}
+        >
+          Suspend tenant
+        </Button>
+      )}
     </div>
   )
 }

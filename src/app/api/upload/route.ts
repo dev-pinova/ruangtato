@@ -2,11 +2,16 @@ import { NextResponse } from "next/server"
 
 import { auth } from "@/lib/auth"
 import { isR2Configured, uploadToR2 } from "@/lib/r2"
+import { getStudioSuspendedFlagForUser } from "@/lib/studio-service"
 
 export async function POST(request: Request) {
   const session = await auth.api.getSession({ headers: request.headers })
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
+  if (await getStudioSuspendedFlagForUser(session.user.id)) {
+    return NextResponse.json({ error: "Account suspended", suspended: true }, { status: 403 })
   }
 
   if (!isR2Configured()) {

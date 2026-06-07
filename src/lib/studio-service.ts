@@ -1,6 +1,7 @@
 import { and, desc, eq, inArray, sql } from "drizzle-orm"
 
 import { db, isDatabaseConfigured } from "@/db"
+import { user } from "@/db/auth-schema"
 import {
   leads,
   invoices,
@@ -63,13 +64,39 @@ export async function getStudioBySlugFromDb(slug: string): Promise<Studio | null
 }
 
 export async function getPublishedStudioBySlug(slug: string): Promise<Studio | null> {
-  const studio = await getStudioBySlugFromDb(slug)
-  if (!studio?.isPublished) return null
-  return studio
+  if (!isDatabaseConfigured() || !db) return null
+
+  const [row] = await db.select().from(studios).where(eq(studios.slug, slug)).limit(1)
+  if (!row?.isPublished || row.status === "suspended") return null
+
+  return mapStudioRow(row, row.pageConfig ?? [])
+}
+
+export async function getSuspendedStudioBySlug(
+  slug: string,
+): Promise<{ name: string; slug: string } | null> {
+  if (!isDatabaseConfigured() || !db) return null
+
+  const [row] = await db
+    .select({ name: studios.name, slug: studios.slug, status: studios.status, isPublished: studios.isPublished })
+    .from(studios)
+    .where(eq(studios.slug, slug))
+    .limit(1)
+
+  if (!row || row.status !== "suspended") return null
+  return { name: row.name, slug: row.slug }
 }
 
 export async function getStudioForUser(userId: string): Promise<Studio | null> {
   if (!isDatabaseConfigured() || !db) return null
+
+  const [account] = await db
+    .select({ status: user.status })
+    .from(user)
+    .where(eq(user.id, userId))
+    .limit(1)
+
+  if (account?.status === "suspended") return null
 
   const [membership] = await db
     .select({
@@ -83,7 +110,30 @@ export async function getStudioForUser(userId: string): Promise<Studio | null> {
   if (!membership) return null
 
   const row = membership.studio
+  if (row.status === "suspended") return null
+
   return mapStudioRow(row, row.pageConfig ?? [])
+}
+
+export async function getStudioSuspendedFlagForUser(userId: string): Promise<boolean> {
+  if (!isDatabaseConfigured() || !db) return false
+
+  const [account] = await db
+    .select({ status: user.status })
+    .from(user)
+    .where(eq(user.id, userId))
+    .limit(1)
+
+  if (account?.status === "suspended") return true
+
+  const [membership] = await db
+    .select({ status: studios.status })
+    .from(studioMemberships)
+    .innerJoin(studios, eq(studioMemberships.studioId, studios.id))
+    .where(eq(studioMemberships.userId, userId))
+    .limit(1)
+
+  return membership?.status === "suspended"
 }
 
 export async function userCanAccessStudio(userId: string, studioId: string): Promise<boolean> {
@@ -486,7 +536,7 @@ export async function listPublishedStudios(): Promise<Studio[]> {
   const rows = await db
     .select()
     .from(studios)
-    .where(eq(studios.isPublished, true))
+    .where(and(eq(studios.isPublished, true), eq(studios.status, "active")))
     .orderBy(desc(studios.viewCount))
 
   if (rows.length === 0) return []

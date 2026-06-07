@@ -5,6 +5,7 @@ import {
   getLeadsForStudio,
   getStudioDashboardStats,
   getStudioForUser,
+  getStudioSuspendedFlagForUser,
   getSubscriptionForStudio,
 } from "@/lib/studio-service"
 
@@ -12,6 +13,10 @@ export async function GET(request: Request) {
   const session = await auth.api.getSession({ headers: request.headers })
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
+  if (await getStudioSuspendedFlagForUser(session.user.id)) {
+    return NextResponse.json({ error: "Account suspended", suspended: true }, { status: 403 })
   }
 
   const studio = await getStudioForUser(session.user.id)

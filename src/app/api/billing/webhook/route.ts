@@ -10,6 +10,7 @@ import {
   verifyNotificationSignature,
   type MidtransNotificationPayload,
 } from "@/lib/midtrans"
+import { recordPaymentEvent } from "@/lib/payment-service"
 
 export async function POST(request: Request) {
   if (!isMidtransConfigured()) {
@@ -28,8 +29,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 })
   }
 
+  try {
+    await recordPaymentEvent(body)
+  } catch (error) {
+    console.error("Payment event recording failed:", error)
+    return NextResponse.json({ error: "Failed to record payment event" }, { status: 500 })
+  }
+
   if (!isSuccessfulPayment(body)) {
-    return NextResponse.json({ message: "Ignored" })
+    return NextResponse.json({ message: "Payment event recorded" })
   }
 
   try {
