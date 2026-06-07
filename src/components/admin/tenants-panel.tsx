@@ -83,7 +83,7 @@ function statusBadge(status: string) {
   )
 }
 
-export function TenantsPanel() {
+export function TenantsPanel({ canSuspend = false }: { canSuspend?: boolean }) {
   const [rows, setRows] = useState<AdminTenantRow[]>([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
@@ -400,6 +400,7 @@ export function TenantsPanel() {
 
               {detail.isPublished ? (
                 <Button
+                  nativeButton={false}
                   variant="outline"
                   size="sm"
                   render={
@@ -415,16 +416,23 @@ export function TenantsPanel() {
                 </Button>
               ) : null}
 
-              <TenantStatusActions
-                studioId={detail.id}
-                studioName={detail.name}
-                ownerEmail={detail.ownerEmail}
-                status={detail.status}
-                onUpdated={() => {
-                  void loadTenants()
-                  void openDetail(detail.id)
-                }}
-              />
+              {canSuspend ? (
+                <TenantStatusActions
+                  studioId={detail.id}
+                  studioName={detail.name}
+                  ownerEmail={detail.ownerEmail}
+                  status={detail.status}
+                  onUpdated={() => {
+                    void loadTenants()
+                    void openDetail(detail.id)
+                  }}
+                />
+              ) : (
+                <p className="rounded-md border border-border p-3 text-xs text-muted-foreground">
+                  Suspend/reactivate hanya tersedia untuk super_admin. Buka drawer
+                  ini setelah login sebagai super_admin.
+                </p>
+              )}
             </div>
           ) : null}
         </SheetContent>
