@@ -11,16 +11,11 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion"
 import { SUBSCRIPTION_PLANS } from "@/lib/billing-plans"
-import { createPageMetadata } from "@/lib/seo"
+import { staticPageMetadata } from "@/lib/seo"
 import { SUPPORT_EMAIL } from "@/lib/site"
 import { cn } from "@/lib/utils"
 
-export const metadata: Metadata = createPageMetadata({
-  title: "Harga & Paket Langganan",
-  description:
-    "Pilih paket langganan Ruang Tato untuk studio tattoo Anda. Landing page profesional mulai Rp 99.000/bulan dengan builder drag-and-drop.",
-  path: "/pricing",
-})
+export const metadata: Metadata = staticPageMetadata("/pricing")
 
 function formatIDR(amount: number) {
   return `Rp ${amount.toLocaleString("id-ID")}`

@@ -3,7 +3,7 @@ import Link from "next/link"
 
 import { LegalShell, LegalSection } from "@/components/marketing/legal-shell"
 import { SUBSCRIPTION_PLANS } from "@/lib/billing-plans"
-import { createPageMetadata } from "@/lib/seo"
+import { staticPageMetadata } from "@/lib/seo"
 import {
   BILLING_EMAIL,
   SITE_DOMAIN,
@@ -12,12 +12,7 @@ import {
   studioPublicPath,
 } from "@/lib/site"
 
-export const metadata: Metadata = createPageMetadata({
-  title: "Kebijakan Langganan",
-  description:
-    "Kebijakan langganan dan pembayaran Ruang Tato untuk studio tattoo yang menggunakan platform landing page berbayar.",
-  path: "/subscription",
-})
+export const metadata: Metadata = staticPageMetadata("/subscription")
 
 function formatIDR(amount: number) {
   return `Rp ${amount.toLocaleString("id-ID")}`

@@ -1,15 +1,10 @@
 import type { Metadata } from "next"
 
 import { LegalShell, LegalSection } from "@/components/marketing/legal-shell"
-import { createPageMetadata } from "@/lib/seo"
+import { staticPageMetadata } from "@/lib/seo"
 import { PRIVACY_EMAIL, SITE_DOMAIN, SITE_URL } from "@/lib/site"
 
-export const metadata: Metadata = createPageMetadata({
-  title: "Kebijakan Privasi",
-  description:
-    "Kebijakan privasi Ruang Tato menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi data pribadi Anda.",
-  path: "/privacy",
-})
+export const metadata: Metadata = staticPageMetadata("/privacy")
 
 export default function PrivacyPage() {
   return (

@@ -20,7 +20,8 @@ export const DEFAULT_KEYWORDS = [
   "Ruang Tato",
 ]
 
-export const DEFAULT_OG_IMAGE_PATH = "/ruang-tato/chatgpt-bg.png"
+export const DEFAULT_OG_IMAGE_PATH = "/opengraph-image"
+export const DEFAULT_OG_IMAGE_URL = `${SITE_URL}${DEFAULT_OG_IMAGE_PATH}`
 
 type PageMetadataInput = {
   title: string
@@ -112,6 +113,10 @@ export const rootMetadata: Metadata = {
   alternates: {
     canonical: SITE_URL,
   },
+  icons: {
+    icon: [{ url: "/icon.png", sizes: "32x32", type: "image/png" }],
+    apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
+  },
   openGraph: {
     type: "website",
     locale: "id_ID",
@@ -121,7 +126,7 @@ export const rootMetadata: Metadata = {
     description: DEFAULT_DESCRIPTION,
     images: [
       {
-        url: DEFAULT_OG_IMAGE_PATH,
+        url: DEFAULT_OG_IMAGE_URL,
         width: 1200,
         height: 630,
         alt: SITE_NAME,
@@ -132,7 +137,7 @@ export const rootMetadata: Metadata = {
     card: "summary_large_image",
     title: `${SITE_NAME} — Direktori Studio Tattoo Indonesia`,
     description: DEFAULT_DESCRIPTION,
-    images: [DEFAULT_OG_IMAGE_PATH],
+    images: [DEFAULT_OG_IMAGE_URL],
   },
   robots: {
     index: true,
@@ -235,6 +240,52 @@ export const PUBLIC_STATIC_PATHS = [
   "/subscription",
   "/cookies",
 ] as const
+
+export const STATIC_PAGE_SEO = {
+  "/": {
+    title: "Direktori Studio Tattoo Indonesia",
+    description:
+      "Temukan studio tattoo terpercaya di Indonesia. Jelajahi portofolio artist, filter berdasarkan kota dan gaya, lalu booking konsultasi lewat WhatsApp.",
+  },
+  "/pricing": {
+    title: "Harga & Paket Langganan",
+    description:
+      "Pilih paket langganan Ruang Tato untuk studio tattoo Anda. Landing page profesional mulai Rp 99.000/bulan dengan builder drag-and-drop.",
+  },
+  "/help": {
+    title: "Pusat Bantuan",
+    description:
+      "FAQ dan panduan menggunakan Ruang Tato: builder landing page, publikasi studio, billing, dan manajemen lead.",
+  },
+  "/privacy": {
+    title: "Kebijakan Privasi",
+    description:
+      "Kebijakan privasi Ruang Tato menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi data pribadi Anda.",
+  },
+  "/terms": {
+    title: "Syarat & Ketentuan",
+    description:
+      "Syarat dan ketentuan penggunaan platform Ruang Tato untuk studio tattoo di Indonesia.",
+  },
+  "/subscription": {
+    title: "Kebijakan Langganan",
+    description:
+      "Kebijakan langganan dan pembayaran Ruang Tato untuk studio tattoo yang menggunakan platform landing page berbayar.",
+  },
+  "/cookies": {
+    title: "Kebijakan Cookie",
+    description:
+      "Penjelasan tentang penggunaan cookie dan teknologi serupa di platform Ruang Tato.",
+  },
+} as const satisfies Record<
+  (typeof PUBLIC_STATIC_PATHS)[number],
+  { title: string; description: string }
+>
+
+export function staticPageMetadata(path: (typeof PUBLIC_STATIC_PATHS)[number]) {
+  const { title, description } = STATIC_PAGE_SEO[path]
+  return createPageMetadata({ title, description, path })
+}
 
 export const NOINDEX_PATHS = [
   "/login",

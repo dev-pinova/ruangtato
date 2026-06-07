@@ -1,15 +1,10 @@
 import type { Metadata } from "next"
 
 import { LegalShell, LegalSection } from "@/components/marketing/legal-shell"
-import { createPageMetadata } from "@/lib/seo"
+import { staticPageMetadata } from "@/lib/seo"
 import { LEGAL_EMAIL, SITE_DOMAIN, SITE_URL, SUPPORT_EMAIL } from "@/lib/site"
 
-export const metadata: Metadata = createPageMetadata({
-  title: "Syarat & Ketentuan",
-  description:
-    "Syarat dan ketentuan penggunaan platform Ruang Tato untuk studio tattoo di Indonesia.",
-  path: "/terms",
-})
+export const metadata: Metadata = staticPageMetadata("/terms")
 
 export default function TermsPage() {
   return (

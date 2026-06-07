@@ -10,15 +10,10 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion"
-import { createPageMetadata } from "@/lib/seo"
+import { staticPageMetadata } from "@/lib/seo"
 import { SITE_DOMAIN, SUPPORT_EMAIL, studioPublicPath } from "@/lib/site"
 
-export const metadata: Metadata = createPageMetadata({
-  title: "Pusat Bantuan",
-  description:
-    "FAQ dan panduan menggunakan Ruang Tato: builder landing page, publikasi studio, billing, dan manajemen lead.",
-  path: "/help",
-})
+export const metadata: Metadata = staticPageMetadata("/help")
 
 type Category = {
   id: string

@@ -5,7 +5,7 @@ import { ShowcasePage } from "@/components/showcase/showcase-page"
 import {
   buildOrganizationJsonLd,
   buildWebSiteJsonLd,
-  createPageMetadata,
+  staticPageMetadata,
 } from "@/lib/seo"
 import { buildShowcaseStudios } from "@/lib/showcase-demos"
 import { listPublishedStudios } from "@/lib/studio-service"
@@ -13,12 +13,7 @@ import { getCitiesFromStudios } from "@/lib/studio-utils"
 
 export const dynamic = "force-dynamic"
 
-export const metadata: Metadata = createPageMetadata({
-  title: "Direktori Studio Tattoo Indonesia",
-  description:
-    "Temukan studio tattoo terpercaya di Indonesia. Jelajahi portofolio artist, filter berdasarkan kota dan gaya, lalu booking konsultasi lewat WhatsApp.",
-  path: "/",
-})
+export const metadata: Metadata = staticPageMetadata("/")
 
 export default async function Home() {
   const published = await listPublishedStudios()

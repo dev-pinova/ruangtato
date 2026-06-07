@@ -1,15 +1,10 @@
 import type { Metadata } from "next"
 
 import { LegalShell, LegalSection } from "@/components/marketing/legal-shell"
-import { createPageMetadata } from "@/lib/seo"
+import { staticPageMetadata } from "@/lib/seo"
 import { PRIVACY_EMAIL, SITE_DOMAIN } from "@/lib/site"
 
-export const metadata: Metadata = createPageMetadata({
-  title: "Kebijakan Cookie",
-  description:
-    "Penjelasan tentang penggunaan cookie dan teknologi serupa di platform Ruang Tato.",
-  path: "/cookies",
-})
+export const metadata: Metadata = staticPageMetadata("/cookies")
 
 export default function CookiesPage() {
   return (
