@@ -3,6 +3,7 @@ import Link from "next/link"
 import { redirect } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
 
+import { PlatformLogo } from "@/components/brand/platform-logo"
 import { BuilderUI } from "@/components/builder/builder-ui"
 import { Button } from "@/components/ui/button"
 import { getServerSession } from "@/lib/session"
@@ -27,10 +28,7 @@ function BuilderHeader({
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <div className="flex min-w-0 items-center gap-2 font-sans text-lg font-bold tracking-tight sm:gap-2 sm:text-xl">
-          <span className="shrink-0 text-primary">{"///"}</span>
-          <span className="truncate">Ruang Tato</span>
-        </div>
+        <PlatformLogo href="/app/dashboard" variant="builder" />
         <div className="mx-1 hidden h-4 w-px bg-white/10 sm:mx-2 sm:block" />
         <div className="hidden truncate text-sm font-medium tracking-wide text-muted-foreground sm:block">
           {subtitle}

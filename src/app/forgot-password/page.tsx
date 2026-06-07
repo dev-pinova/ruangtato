@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 
+import { PlatformLogo } from "@/components/brand/platform-logo"
 import { PageHeading } from "@/components/design"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -41,16 +42,8 @@ export default function ForgotPasswordPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm">
-        <div className="mb-8 text-center">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 font-sans text-base font-semibold tracking-tight text-foreground"
-          >
-            <span className="relative inline-flex size-6 items-center justify-center rounded-md bg-primary">
-              <span className="size-2 rounded-sm bg-primary-foreground" />
-            </span>
-            Ruang Tato
-          </Link>
+        <div className="mb-8 flex justify-center">
+          <PlatformLogo variant="auth" />
         </div>
 
         <div className="rounded-xl border border-border bg-card p-6 md:p-8">

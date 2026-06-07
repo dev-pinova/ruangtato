@@ -1,5 +1,8 @@
 export const SITE_NAME = "Ruang Tato"
 
+/** Logo putih platform (PNG dengan background hitam). */
+export const PLATFORM_LOGO_PATH = "/ruang-tato/logo-putih.png"
+
 /** Domain utama platform */
 export const SITE_URL = "https://www.ruangtato.com"
 

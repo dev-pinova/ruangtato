@@ -1,6 +1,11 @@
 import type { Metadata } from "next"
 
-import { SITE_NAME, SITE_URL, studioPublicUrl } from "@/lib/site"
+import {
+  PLATFORM_LOGO_PATH,
+  SITE_NAME,
+  SITE_URL,
+  studioPublicUrl,
+} from "@/lib/site"
 
 export const DEFAULT_DESCRIPTION =
   "Temukan studio tattoo terpercaya di Indonesia. Ruang Tato menyediakan direktori studio dan landing page profesional untuk booking konsultasi via WhatsApp."
@@ -154,7 +159,7 @@ export function buildWebSiteJsonLd() {
       "@type": "Organization",
       name: SITE_NAME,
       url: SITE_URL,
-      logo: toAbsoluteUrl("/ruang-tato/logo-putih.png"),
+      logo: toAbsoluteUrl(PLATFORM_LOGO_PATH),
     },
     potentialAction: {
       "@type": "SearchAction",
@@ -173,7 +178,7 @@ export function buildOrganizationJsonLd() {
     "@type": "Organization",
     name: SITE_NAME,
     url: SITE_URL,
-    logo: toAbsoluteUrl("/ruang-tato/logo-putih.png"),
+    logo: toAbsoluteUrl(PLATFORM_LOGO_PATH),
     description: DEFAULT_DESCRIPTION,
     sameAs: [
       "https://www.instagram.com/ruangtato",

@@ -31,6 +31,7 @@ import {
   SheetContent,
   SheetTitle,
 } from "@/components/ui/sheet"
+import { PlatformLogo } from "@/components/brand/platform-logo"
 import { authClient } from "@/lib/auth-client"
 
 const NAV_ITEMS = [
@@ -39,21 +40,6 @@ const NAV_ITEMS = [
   { href: "/app/billing", label: "Billing", icon: CreditCard },
   { href: "/app/settings", label: "Pengaturan", icon: Settings },
 ]
-
-function Logo({ collapsed = false }: { collapsed?: boolean }) {
-  return (
-    <Link
-      href="/app/dashboard"
-      aria-label="Ruang Tato"
-      className="inline-flex items-center gap-2 font-sans text-sm font-semibold tracking-tight"
-    >
-      <span className="relative inline-flex size-6 shrink-0 items-center justify-center rounded-md bg-primary">
-        <span className="size-2 rounded-sm bg-primary-foreground" />
-      </span>
-      {!collapsed && <span>Ruang Tato</span>}
-    </Link>
-  )
-}
 
 const SIDEBAR_STORAGE_KEY = "sidebar-collapsed"
 const SIDEBAR_CHANGE_EVENT = "sidebar-collapsed-change"
@@ -244,7 +230,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             collapsed ? "justify-center px-2" : "px-5"
           )}
         >
-          <Logo collapsed={collapsed} />
+          <PlatformLogo href="/app/dashboard" variant="app" collapsed={collapsed} />
         </div>
 
         <div
@@ -349,7 +335,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <SheetContent side="left" showCloseButton={false} className="p-0">
                 <SheetTitle className="sr-only">Menu Navigasi</SheetTitle>
                 <div className="flex h-14 items-center border-b border-border px-5 shrink-0">
-                  <Logo />
+                  <PlatformLogo href="/app/dashboard" variant="app" />
                 </div>
                 <div className="py-4">
                   <p className="px-6 pb-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">

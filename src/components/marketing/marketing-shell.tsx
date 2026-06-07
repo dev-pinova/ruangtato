@@ -1,40 +1,10 @@
 import Link from "next/link"
 import { Heart } from "lucide-react"
 
+import { PlatformLogo } from "@/components/brand/platform-logo"
 import { Tagline } from "@/components/design"
 import { SITE_DOMAIN, SITE_URL } from "@/lib/site"
 import { cn } from "@/lib/utils"
-
-function Logo({
-  className,
-  variant = "header",
-}: {
-  className?: string
-  variant?: "header" | "footer"
-}) {
-  const image = (
-    /* eslint-disable-next-line @next/next/no-img-element */
-    <img
-      src="/ruang-tato/logo-putih.png"
-      alt="Ruang Tato"
-      className="h-11 w-auto max-w-[200px] object-contain object-left md:h-12 md:max-w-[220px]"
-    />
-  )
-
-  return (
-    <Link
-      href="/"
-      className={cn(
-        "inline-flex shrink-0 items-center",
-        variant === "footer" && "rounded-lg bg-black px-3 py-2",
-        className
-      )}
-      aria-label="Ruang Tato"
-    >
-      {image}
-    </Link>
-  )
-}
 
 const PRIMARY_NAV = [{ href: "/#browse", label: "Browse" }]
 
@@ -67,7 +37,7 @@ function MarketingHeader() {
     <header className="sticky top-0 z-50 border-b border-white/10 bg-black/50 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:px-6">
         <div className="flex items-center gap-8">
-          <Logo />
+          <PlatformLogo variant="header" />
           <nav className="hidden items-center gap-6 md:flex">
             {PRIMARY_NAV.map((item) => (
               <Link
@@ -105,7 +75,7 @@ function MarketingFooter() {
       <div className="mx-auto max-w-6xl px-4 py-12 md:px-6 md:py-16">
         <div className="grid gap-8 md:grid-cols-4">
           <div className="md:col-span-1">
-            <Logo variant="footer" />
+            <PlatformLogo variant="footer" />
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
               Platform landing page eksklusif untuk studio tattoo profesional di
               Indonesia.{" "}
