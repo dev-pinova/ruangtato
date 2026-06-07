@@ -24,7 +24,13 @@ export async function GET(request: Request) {
   return NextResponse.json({
     data: {
       suspended: suspended.map((studio) => ({
-        ...studio,
+        id: studio.id,
+        name: studio.name,
+        slug: studio.slug,
+        city: studio.city,
+        status: studio.status,
+        ownerEmail: studio.ownerEmail,
+        ownerName: studio.ownerName,
         updatedAt: studio.updatedAt.toISOString(),
       })),
       logs: logs.data,

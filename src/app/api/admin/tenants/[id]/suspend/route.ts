@@ -6,6 +6,10 @@ import {
   requirePlatformApiPermission,
 } from "@/lib/admin-auth"
 import { checkRateLimit } from "@/lib/admin-rate-limit"
+import {
+  isSuspensionReasonCategory,
+  type SuspensionReasonCategory,
+} from "@/lib/suspension-types"
 
 function parseReason(body: unknown): string | null {
   if (!body || typeof body !== "object") return null
@@ -14,6 +18,15 @@ function parseReason(body: unknown): string | null {
   const trimmed = reason.trim()
   if (trimmed.length < 10) return null
   return trimmed
+}
+
+function parseReasonCategory(body: unknown): SuspensionReasonCategory | null {
+  if (!body || typeof body !== "object") return null
+  const category = (body as { reasonCategory?: unknown }).reasonCategory
+  if (typeof category !== "string" || !isSuspensionReasonCategory(category)) {
+    return null
+  }
+  return category
 }
 
 export async function POST(
@@ -37,6 +50,14 @@ export async function POST(
 
   const { id } = await params
   const body = await request.json().catch(() => null)
+  const reasonCategory = parseReasonCategory(body)
+  if (!reasonCategory) {
+    return NextResponse.json(
+      { error: "Kategori alasan wajib dipilih." },
+      { status: 400 },
+    )
+  }
+
   const reason = parseReason(body)
   if (!reason) {
     return NextResponse.json(
@@ -50,6 +71,7 @@ export async function POST(
       studioId: id,
       actorUserId: authResult.id,
       reason,
+      reasonCategory,
     })
     return NextResponse.json({ data: result })
   } catch (error) {

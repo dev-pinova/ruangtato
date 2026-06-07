@@ -1,9 +1,13 @@
 import { betterAuth } from "better-auth"
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
 import { nextCookies } from "better-auth/next-js"
+import { APIError } from "better-auth/api"
+import { eq } from "drizzle-orm"
 
 import { db } from "@/db"
 import * as authSchema from "@/db/auth-schema"
+
+const { user } = authSchema
 import { sendEmail } from "@/lib/email"
 
 if (!process.env.BETTER_AUTH_SECRET) {
@@ -67,6 +71,35 @@ export const auth = betterAuth({
       }
     },
   },
+  databaseHooks: db
+    ? {
+        session: {
+          create: {
+            before: async (sessionData) => {
+              const [account] = await db!
+                .select({
+                  status: user.status,
+                  platformRole: user.platformRole,
+                })
+                .from(user)
+                .where(eq(user.id, sessionData.userId))
+                .limit(1)
+
+              if (
+                account?.status === "suspended" &&
+                !account.platformRole
+              ) {
+                throw new APIError("FORBIDDEN", {
+                  message: "Akun dinonaktifkan. Hubungi Ruang Tato.",
+                })
+              }
+
+              return { data: sessionData }
+            },
+          },
+        },
+      }
+    : undefined,
   plugins: [nextCookies()],
 })
 

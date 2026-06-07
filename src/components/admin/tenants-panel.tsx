@@ -30,8 +30,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import type { AdminTenantDetail, AdminTenantRow } from "@/lib/admin-service"
 import { getSubscriptionPlanLabel } from "@/lib/billing-plans"
+import {
+  SUSPENSION_REASON_CATEGORIES,
+  type SuspensionReasonCategory,
+} from "@/lib/suspension-types"
 
 type TenantsResponse = {
   data: AdminTenantRow[]
@@ -403,6 +417,8 @@ export function TenantsPanel() {
 
               <TenantStatusActions
                 studioId={detail.id}
+                studioName={detail.name}
+                ownerEmail={detail.ownerEmail}
                 status={detail.status}
                 onUpdated={() => {
                   void loadTenants()
@@ -475,16 +491,23 @@ function DetailRow({ label, value }: { label: string; value: string }) {
 
 function TenantStatusActions({
   studioId,
+  studioName,
+  ownerEmail,
   status,
   onUpdated,
 }: {
   studioId: string
+  studioName: string
+  ownerEmail: string | null
   status: string
   onUpdated: () => void
 }) {
+  const [reasonCategory, setReasonCategory] =
+    useState<SuspensionReasonCategory>("policy_violation")
   const [reason, setReason] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [confirmOpen, setConfirmOpen] = useState(false)
 
   async function submit(action: "suspend" | "reactivate") {
     setError(null)
@@ -498,10 +521,14 @@ function TenantStatusActions({
         action === "suspend"
           ? `/api/admin/tenants/${studioId}/suspend`
           : `/api/admin/tenants/${studioId}/reactivate`
+      const body =
+        action === "suspend"
+          ? { reason: reason.trim(), reasonCategory }
+          : { reason: reason.trim() }
       const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ reason: reason.trim() }),
+        body: JSON.stringify(body),
       })
       if (!response.ok) {
         const json = await response.json().catch(() => null)
@@ -509,10 +536,20 @@ function TenantStatusActions({
         return
       }
       setReason("")
+      setConfirmOpen(false)
       onUpdated()
     } finally {
       setLoading(false)
     }
+  }
+
+  function openSuspendConfirm() {
+    setError(null)
+    if (reason.trim().length < 10) {
+      setError("Alasan minimal 10 karakter.")
+      return
+    }
+    setConfirmOpen(true)
   }
 
   return (
@@ -520,13 +557,40 @@ function TenantStatusActions({
       <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
         Aksi admin
       </p>
+
+      {status !== "suspended" ? (
+        <div className="space-y-2">
+          <label className="text-xs font-medium text-muted-foreground">
+            Kategori alasan
+          </label>
+          <Select
+            value={reasonCategory}
+            onValueChange={(value: string | null) => {
+              if (value) setReasonCategory(value as SuspensionReasonCategory)
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {SUSPENSION_REASON_CATEGORIES.map((item) => (
+                <SelectItem key={item.value} value={item.value}>
+                  {item.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      ) : null}
+
       <Textarea
         value={reason}
         onChange={(e) => setReason(e.target.value)}
-        placeholder="Alasan suspend/reactivate (min. 10 karakter)"
+        placeholder="Catatan suspend/reactivate (min. 10 karakter)"
         rows={3}
       />
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
+
       {status === "suspended" ? (
         <Button
           size="sm"
@@ -536,14 +600,48 @@ function TenantStatusActions({
           Reactivate tenant
         </Button>
       ) : (
-        <Button
-          size="sm"
-          variant="destructive"
-          disabled={loading}
-          onClick={() => void submit("suspend")}
-        >
-          Suspend tenant
-        </Button>
+        <>
+          <Button
+            size="sm"
+            variant="destructive"
+            disabled={loading}
+            onClick={openSuspendConfirm}
+          >
+            Suspend tenant
+          </Button>
+
+          <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Nonaktifkan tenant?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Studio <strong>{studioName}</strong>
+                  {ownerEmail ? (
+                    <>
+                      {" "}
+                      dan akun owner <strong>{ownerEmail}</strong>
+                    </>
+                  ) : null}{" "}
+                  akan dinonaktifkan. Halaman publik dan login dashboard akan
+                  diblokir. Subscription tetap tersimpan sebagai histori.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel disabled={loading}>Batal</AlertDialogCancel>
+                <AlertDialogAction
+                  variant="destructive"
+                  disabled={loading}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    void submit("suspend")
+                  }}
+                >
+                  Ya, suspend
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </>
       )}
     </div>
   )

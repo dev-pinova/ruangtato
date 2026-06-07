@@ -130,6 +130,7 @@ export const suspensionLogs = pgTable("suspension_logs", {
     .references(() => studios.id, { onDelete: "cascade" }),
   statusBefore: text("status_before").notNull(),
   statusAfter: text("status_after").notNull(),
+  reasonCategory: text("reason_category"),
   reason: text("reason").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 })
