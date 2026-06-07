@@ -67,6 +67,8 @@ export function ShowcaseHero({
                 <Link
                   key={studio.id}
                   href={`/app/studio/${studio.slug}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-2.5 py-1.5 text-xs text-white/90 backdrop-blur-sm transition-colors hover:border-white/35 hover:bg-white/15 hover:text-white"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
