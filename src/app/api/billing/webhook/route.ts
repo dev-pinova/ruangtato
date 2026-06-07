@@ -1,14 +1,15 @@
 import { NextResponse } from "next/server"
 
 import {
-  getPlanAmount,
+  activateFromWebhookNotification,
+  BillingActivationError,
+} from "@/lib/billing-activation"
+import {
   isMidtransConfigured,
   isSuccessfulPayment,
-  PLAN_CATALOG,
   verifyNotificationSignature,
   type MidtransNotificationPayload,
 } from "@/lib/midtrans"
-import { activateSubscription } from "@/lib/studio-service"
 
 export async function POST(request: Request) {
   if (!isMidtransConfigured()) {
@@ -31,46 +32,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Ignored" })
   }
 
-  const orderId = body.order_id
-  const customData = body.custom_field1
-
-  if (!orderId || !customData) {
-    return NextResponse.json({ error: "Missing order metadata" }, { status: 400 })
-  }
-
-  let metadata: { studioId?: string; planType?: string }
   try {
-    metadata = JSON.parse(customData)
-  } catch {
-    return NextResponse.json({ error: "Invalid custom_field1" }, { status: 400 })
-  }
-
-  const { studioId, planType } = metadata
-  if (!studioId || !planType) {
-    return NextResponse.json({ error: "studioId and planType required" }, { status: 400 })
-  }
-
-  const expectedAmount = getPlanAmount(planType)
-  if (expectedAmount === null) {
-    return NextResponse.json({ error: "Invalid planType" }, { status: 400 })
-  }
-
-  const grossAmount = Number(body.gross_amount)
-  if (!Number.isFinite(grossAmount) || grossAmount !== expectedAmount) {
-    return NextResponse.json({ error: "Amount mismatch" }, { status: 400 })
-  }
-
-  const months = PLAN_CATALOG[planType]?.months ?? 1
-
-  try {
-    await activateSubscription({
-      studioId,
-      planType,
-      midtransOrderId: orderId,
-      months,
-    })
+    await activateFromWebhookNotification(body)
     return NextResponse.json({ message: "Subscription activated" })
   } catch (error) {
+    if (error instanceof BillingActivationError) {
+      return NextResponse.json({ error: error.message }, { status: error.status })
+    }
+
     console.error("Webhook activation failed:", error)
     return NextResponse.json({ error: "Activation failed" }, { status: 500 })
   }

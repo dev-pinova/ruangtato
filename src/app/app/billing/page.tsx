@@ -149,9 +149,62 @@ function BillingPageContent() {
   }, [clientKey])
 
   useEffect(() => {
-    if (searchParams.get("payment") === "finish") {
+    if (searchParams.get("payment") !== "finish") return
+
+    let cancelled = false
+
+    void (async () => {
       setOrderMessage("Pembayaran selesai. Memperbarui status langganan...")
-      refetchSubscription()
+
+      const pendingRaw = sessionStorage.getItem("rt_pending_order")
+
+      try {
+        if (pendingRaw) {
+          const pending = JSON.parse(pendingRaw) as {
+            orderId?: string
+            planType?: string
+          }
+
+          if (pending.orderId && pending.planType) {
+            const res = await fetch("/api/billing/confirm", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                orderId: pending.orderId,
+                planType: pending.planType,
+              }),
+            })
+
+            if (cancelled) return
+
+            if (res.ok) {
+              sessionStorage.removeItem("rt_pending_order")
+              setOrderMessage("Langganan berhasil diaktifkan.")
+            } else {
+              const data = await res.json().catch(() => ({}))
+              setOrderMessage(
+                typeof data.error === "string"
+                  ? data.error
+                  : "Gagal memverifikasi pembayaran. Muat ulang halaman.",
+              )
+            }
+          }
+        }
+      } catch {
+        if (!cancelled) {
+          setOrderMessage(
+            "Gagal memverifikasi pembayaran. Muat ulang halaman.",
+          )
+        }
+      } finally {
+        if (!cancelled) {
+          await refetchSubscription()
+        }
+      }
+    })()
+
+    return () => {
+      cancelled = true
     }
   }, [searchParams, refetchSubscription])
 

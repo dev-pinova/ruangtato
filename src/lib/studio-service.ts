@@ -356,10 +356,23 @@ export async function activateSubscription(input: {
 
   const existing = await getSubscriptionForStudio(input.studioId)
 
-  const base =
-    existing?.expiresAt && existing.expiresAt > new Date()
-      ? new Date(existing.expiresAt)
-      : new Date()
+  if (
+    existing &&
+    existing.midtransOrderId === input.midtransOrderId &&
+    existing.planType === input.planType &&
+    existing.status === "active" &&
+    existing.planType !== "trial"
+  ) {
+    return existing
+  }
+
+  const upgradingFromTrial = existing?.planType === "trial"
+  const hasActivePaidTime =
+    !upgradingFromTrial &&
+    existing?.expiresAt &&
+    existing.expiresAt > new Date()
+
+  const base = hasActivePaidTime ? new Date(existing.expiresAt!) : new Date()
   const expiresAt = new Date(base)
   expiresAt.setMonth(expiresAt.getMonth() + input.months)
 

@@ -14,6 +14,38 @@ const PLAN_TYPE_MAP: Record<number, string> = {
 }
 
 const CREATE_ORDER_TIMEOUT_MS = 30_000
+const PENDING_ORDER_STORAGE_KEY = "rt_pending_order"
+
+type CreateOrderResponse = {
+  snapToken?: string
+  orderId?: string
+  planType?: string
+  error?: string
+}
+
+async function confirmPayment(orderId: string, planType: string) {
+  const res = await fetch("/api/billing/confirm", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ orderId, planType }),
+  })
+
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) {
+    throw new Error(
+      typeof data.error === "string"
+        ? data.error
+        : "Gagal mengaktifkan langganan setelah pembayaran.",
+    )
+  }
+}
+
+function storePendingOrder(orderId: string, planType: string) {
+  sessionStorage.setItem(
+    PENDING_ORDER_STORAGE_KEY,
+    JSON.stringify({ orderId, planType }),
+  )
+}
 
 type SnapResult = {
   order_id?: string
@@ -115,7 +147,7 @@ export function SubscribeButton({
       }
 
       const res = orderResult.value
-      const data = await res.json().catch(() => ({}))
+      const data = (await res.json().catch(() => ({}))) as CreateOrderResponse
 
       if (!res.ok) {
         setLoading(false)
@@ -123,7 +155,7 @@ export function SubscribeButton({
         return
       }
 
-      if (!data.snapToken) {
+      if (!data.snapToken || !data.orderId || !data.planType) {
         setLoading(false)
         onMessage?.("Snap token tidak tersedia.")
         return
@@ -135,9 +167,22 @@ export function SubscribeButton({
         return
       }
 
+      storePendingOrder(data.orderId, data.planType)
+
       window.snap.pay(data.snapToken, {
-        onSuccess: () => {
+        onSuccess: async () => {
           onMessage?.("Pembayaran berhasil. Mengaktifkan langganan...")
+          try {
+            await confirmPayment(data.orderId!, data.planType!)
+            sessionStorage.removeItem(PENDING_ORDER_STORAGE_KEY)
+            onMessage?.("Langganan berhasil diaktifkan.")
+          } catch (error) {
+            onMessage?.(
+              error instanceof Error
+                ? error.message
+                : "Gagal memverifikasi pembayaran. Muat ulang halaman.",
+            )
+          }
           onPaymentComplete?.()
           setLoading(false)
         },

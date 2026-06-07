@@ -38,7 +38,7 @@ export function isMidtransProduction(): boolean {
   return process.env.MIDTRANS_IS_PRODUCTION === "true"
 }
 
-export function getSnapClient() {
+function getMidtransCredentials() {
   const serverKey = process.env.MIDTRANS_SERVER_KEY
   const clientKey = process.env.MIDTRANS_CLIENT_KEY
 
@@ -46,11 +46,74 @@ export function getSnapClient() {
     throw new Error("Midtrans credentials are not configured")
   }
 
+  return { serverKey, clientKey }
+}
+
+export function getSnapClient() {
+  const { serverKey, clientKey } = getMidtransCredentials()
+
   return new midtransClient.Snap({
     isProduction: isMidtransProduction(),
     serverKey,
     clientKey,
   })
+}
+
+export function getCoreApiClient() {
+  const { serverKey, clientKey } = getMidtransCredentials()
+
+  return new midtransClient.CoreApi({
+    isProduction: isMidtransProduction(),
+    serverKey,
+    clientKey,
+  })
+}
+
+export type MidtransTransactionStatus = MidtransNotificationPayload & {
+  custom_field1?: string
+}
+
+export async function fetchTransactionStatus(
+  orderId: string,
+): Promise<MidtransTransactionStatus> {
+  const core = getCoreApiClient()
+  const response = await core.transaction.status(orderId)
+  return response as MidtransTransactionStatus
+}
+
+export type PaymentOrderMetadata = {
+  studioId: string
+  planType: string
+}
+
+export function parsePaymentMetadata(
+  customField1: string | undefined,
+): PaymentOrderMetadata | null {
+  if (!customField1) return null
+
+  try {
+    const parsed = JSON.parse(customField1) as {
+      studioId?: string
+      planType?: string
+    }
+    if (!parsed.studioId || !parsed.planType) return null
+    return { studioId: parsed.studioId, planType: parsed.planType }
+  } catch {
+    return null
+  }
+}
+
+export function amountsMatchPlan(
+  planType: string,
+  grossAmount: string | number | undefined,
+): boolean {
+  const expectedAmount = getPlanAmount(planType)
+  if (expectedAmount === null) return false
+
+  const amount = Number(grossAmount)
+  if (!Number.isFinite(amount)) return false
+
+  return Math.round(amount) === expectedAmount
 }
 
 export function verifyNotificationSignature(

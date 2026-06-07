@@ -1,0 +1,63 @@
+import { NextResponse } from "next/server"
+
+import {
+  BillingActivationError,
+  confirmOrderPayment,
+} from "@/lib/billing-activation"
+import { isMidtransConfigured } from "@/lib/midtrans"
+import { auth } from "@/lib/auth"
+import { getStudioForUser } from "@/lib/studio-service"
+
+export async function POST(request: Request) {
+  const session = await auth.api.getSession({ headers: request.headers })
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
+  if (!isMidtransConfigured()) {
+    return NextResponse.json(
+      { error: "Midtrans not configured" },
+      { status: 503 },
+    )
+  }
+
+  const studio = await getStudioForUser(session.user.id)
+  if (!studio) {
+    return NextResponse.json({ error: "Studio not found" }, { status: 404 })
+  }
+
+  const body = await request.json().catch(() => null)
+  if (!body || typeof body !== "object") {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 })
+  }
+
+  const orderId = typeof body.orderId === "string" ? body.orderId.trim() : ""
+  const planType = typeof body.planType === "string" ? body.planType.trim() : ""
+
+  if (!orderId || !planType) {
+    return NextResponse.json(
+      { error: "orderId and planType are required" },
+      { status: 400 },
+    )
+  }
+
+  try {
+    const result = await confirmOrderPayment({
+      orderId,
+      planType,
+      studioId: studio.id,
+    })
+
+    return NextResponse.json({
+      message: "Subscription activated",
+      subscription: result,
+    })
+  } catch (error) {
+    if (error instanceof BillingActivationError) {
+      return NextResponse.json({ error: error.message }, { status: error.status })
+    }
+
+    console.error("Payment confirmation failed:", error)
+    return NextResponse.json({ error: "Activation failed" }, { status: 500 })
+  }
+}
