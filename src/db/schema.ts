@@ -59,6 +59,19 @@ export const subscriptions = pgTable("subscriptions", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 })
 
+export const invoices = pgTable("invoices", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  studioId: uuid("studio_id")
+    .notNull()
+    .references(() => studios.id, { onDelete: "cascade" }),
+  midtransOrderId: text("midtrans_order_id").notNull().unique(),
+  planType: text("plan_type").notNull(),
+  amount: integer("amount").notNull(),
+  status: text("status").notNull().default("pending"),
+  paidAt: timestamp("paid_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+})
+
 export const leads = pgTable("leads", {
   id: uuid("id").primaryKey().defaultRandom(),
   studioId: uuid("studio_id")

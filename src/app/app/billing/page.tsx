@@ -27,11 +27,9 @@ import { SubscribeButton } from "@/components/billing/subscribe-button"
 import { loadMidtransSnap } from "@/lib/midtrans-snap"
 import {
   SUBSCRIPTION_PLANS,
-  getPlanByType,
   getSubscriptionPlanLabel,
   planTypeToMonths,
 } from "@/lib/billing-plans"
-import { PLAN_CATALOG } from "@/lib/midtrans"
 
 function formatIDR(amount: number) {
   return `Rp ${amount.toLocaleString("id-ID")}`
@@ -84,6 +82,16 @@ type SubInfo = {
   createdAt: string
 }
 
+type InvoiceRow = {
+  id: string
+  midtransOrderId: string
+  planType: string
+  amount: number
+  status: string
+  paidAt: string | null
+  createdAt: string
+}
+
 export default function BillingPage() {
   return (
     <Suspense fallback={<BillingPageFallback />}>
@@ -107,7 +115,9 @@ function BillingPageFallback() {
 function BillingPageContent() {
   const searchParams = useSearchParams()
   const [subscription, setSubscription] = useState<SubInfo | null>(null)
+  const [invoiceRows, setInvoiceRows] = useState<InvoiceRow[]>([])
   const [loading, setLoading] = useState(true)
+  const [invoicesLoading, setInvoicesLoading] = useState(true)
   const [orderMessage, setOrderMessage] = useState<string | null>(null)
   const [snapReady, setSnapReady] = useState(false)
   const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY ?? ""
@@ -120,9 +130,24 @@ function BillingPageContent() {
     setSubscription(data?.subscription ?? null)
   }, [])
 
+  const refetchInvoices = useCallback(async () => {
+    const res = await fetch("/api/billing/invoices")
+    setInvoicesLoading(false)
+    if (!res.ok) {
+      setInvoiceRows([])
+      return
+    }
+    const data = await res.json().catch(() => null)
+    setInvoiceRows(Array.isArray(data?.invoices) ? data.invoices : [])
+  }, [])
+
+  const refetchBilling = useCallback(async () => {
+    await Promise.all([refetchSubscription(), refetchInvoices()])
+  }, [refetchSubscription, refetchInvoices])
+
   useEffect(() => {
-    refetchSubscription()
-  }, [refetchSubscription])
+    void refetchBilling()
+  }, [refetchBilling])
 
   useEffect(() => {
     if (!clientKey) return
@@ -198,7 +223,7 @@ function BillingPageContent() {
         }
       } finally {
         if (!cancelled) {
-          await refetchSubscription()
+          await refetchBilling()
         }
       }
     })()
@@ -206,7 +231,7 @@ function BillingPageContent() {
     return () => {
       cancelled = true
     }
-  }, [searchParams, refetchSubscription])
+  }, [searchParams, refetchBilling])
 
   const activePlanMonths = subscription
     ? planTypeToMonths(subscription.planType)
@@ -218,26 +243,22 @@ function BillingPageContent() {
     ? SUBSCRIPTION_STATUS[subscription.status]
     : SUBSCRIPTION_STATUS.pending
 
-  const invoices = useMemo(() => {
-    if (!subscription?.midtransOrderId) return []
-
-    const label = getSubscriptionPlanLabel(subscription.planType)
-    const plan = getPlanByType(subscription.planType)
-    const amount =
-      PLAN_CATALOG[subscription.planType]?.amount ?? plan?.price ?? 0
-    const status =
-      subscription.status === "active" ? "paid" : subscription.status
-
-    return [
-      {
-        id: subscription.midtransOrderId,
-        planType: `${label.name} (${label.duration})`,
-        amount,
-        status,
-        createdAt: subscription.createdAt,
-      },
-    ]
-  }, [subscription])
+  const invoices = useMemo(
+    () =>
+      invoiceRows.map((invoice) => {
+        const label = getSubscriptionPlanLabel(invoice.planType)
+        return {
+          id: invoice.midtransOrderId,
+          planType: label
+            ? `${label.name} (${label.duration})`
+            : invoice.planType,
+          amount: invoice.amount,
+          status: invoice.status,
+          createdAt: invoice.paidAt ?? invoice.createdAt,
+        }
+      }),
+    [invoiceRows],
+  )
 
   const hasActiveSubscription =
     subscription?.status === "active" &&
@@ -381,7 +402,7 @@ function BillingPageContent() {
                       label={getSubscribeButtonLabel(plan.months)}
                       snapReady={snapReady}
                       onMessage={setOrderMessage}
-                      onPaymentComplete={refetchSubscription}
+                      onPaymentComplete={refetchBilling}
                     />
                   )}
                 </CardFooter>
@@ -399,7 +420,9 @@ function BillingPageContent() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {invoices.length === 0 ? (
+          {invoicesLoading ? (
+            <p className="text-sm text-muted-foreground">Memuat riwayat...</p>
+          ) : invoices.length === 0 ? (
             <p className="text-sm text-muted-foreground">
               Belum ada riwayat pembayaran.
             </p>

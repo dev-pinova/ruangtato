@@ -7,7 +7,7 @@ import {
   type MidtransNotificationPayload,
   type MidtransTransactionStatus,
 } from "@/lib/midtrans"
-import { activateSubscription } from "@/lib/studio-service"
+import { activateSubscription, recordInvoice } from "@/lib/studio-service"
 
 export class BillingActivationError extends Error {
   constructor(
@@ -56,6 +56,20 @@ export async function activatePaidOrder(input: {
   if (!months) {
     throw new BillingActivationError("Invalid plan", 400)
   }
+
+  const amount = PLAN_CATALOG[planType]?.amount
+  if (!amount) {
+    throw new BillingActivationError("Invalid plan amount", 400)
+  }
+
+  await recordInvoice({
+    studioId,
+    midtransOrderId: orderId,
+    planType,
+    amount,
+    status: "paid",
+    paidAt: new Date(),
+  })
 
   await activateSubscription({
     studioId,

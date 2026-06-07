@@ -3,6 +3,7 @@ import { and, desc, eq, inArray, sql } from "drizzle-orm"
 import { db, isDatabaseConfigured } from "@/db"
 import {
   leads,
+  invoices,
   roles,
   studioMemberships,
   studios,
@@ -402,6 +403,53 @@ export async function activateSubscription(input: {
     .returning()
 
   return created ?? null
+}
+
+export async function recordInvoice(input: {
+  studioId: string
+  midtransOrderId: string
+  planType: string
+  amount: number
+  status: "paid" | "pending" | "failed"
+  paidAt?: Date | null
+}) {
+  if (!db) throw new Error("Database not configured")
+
+  const paidAt =
+    input.status === "paid" ? (input.paidAt ?? new Date()) : input.paidAt ?? null
+
+  const [row] = await db
+    .insert(invoices)
+    .values({
+      studioId: input.studioId,
+      midtransOrderId: input.midtransOrderId,
+      planType: input.planType,
+      amount: input.amount,
+      status: input.status,
+      paidAt,
+    })
+    .onConflictDoUpdate({
+      target: invoices.midtransOrderId,
+      set: {
+        planType: input.planType,
+        amount: input.amount,
+        status: input.status,
+        paidAt,
+      },
+    })
+    .returning()
+
+  return row ?? null
+}
+
+export async function listInvoicesForStudio(studioId: string) {
+  if (!isDatabaseConfigured() || !db) return []
+
+  return db
+    .select()
+    .from(invoices)
+    .where(eq(invoices.studioId, studioId))
+    .orderBy(desc(invoices.paidAt), desc(invoices.createdAt))
 }
 
 export async function listPublishedStudios(): Promise<Studio[]> {
