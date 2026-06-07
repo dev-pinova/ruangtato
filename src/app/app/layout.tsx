@@ -133,8 +133,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     }
 
     fetch("/api/studios/me")
-      .then((r) => (r.ok ? r.json() : null))
+      .then(async (r) => {
+        if (r.status === 403) {
+          const json = await r.json().catch(() => null)
+          if (json?.suspended) {
+            router.push("/app/account-suspended")
+            return null
+          }
+        }
+        return r.ok ? r.json() : null
+      })
       .then((data) => {
+        if (!data) return
         if (data?.user) {
           setUser({
             name: data.user.name,

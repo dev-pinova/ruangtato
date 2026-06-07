@@ -6,7 +6,7 @@ import {
 } from "@/lib/billing-activation"
 import { isMidtransConfigured } from "@/lib/midtrans"
 import { auth } from "@/lib/auth"
-import { getStudioForUser } from "@/lib/studio-service"
+import { getStudioForUser, getStudioSuspendedFlagForUser } from "@/lib/studio-service"
 
 export async function POST(request: Request) {
   const session = await auth.api.getSession({ headers: request.headers })
@@ -19,6 +19,10 @@ export async function POST(request: Request) {
       { error: "Midtrans not configured" },
       { status: 503 },
     )
+  }
+
+  if (await getStudioSuspendedFlagForUser(session.user.id)) {
+    return NextResponse.json({ error: "Account suspended", suspended: true }, { status: 403 })
   }
 
   const studio = await getStudioForUser(session.user.id)

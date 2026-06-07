@@ -4,7 +4,10 @@ import { Eye, MousePointerClick } from "lucide-react"
 
 import { JsonLd } from "@/components/seo/json-ld"
 import { buildStudioJsonLd, createPageMetadata } from "@/lib/seo"
-import { getPublishedStudioBySlug } from "@/lib/studio-service"
+import {
+  getPublishedStudioBySlug,
+  getSuspendedStudioBySlug,
+} from "@/lib/studio-service"
 import { getVisibleBlocks } from "@/lib/studio-utils"
 import { BlockHeader } from "@/components/blocks/header"
 import { BlockHeaderOverlay } from "@/components/blocks/header-overlay"
@@ -112,6 +115,21 @@ const BLOCK_ANCHOR_IDS: Partial<Record<BlockType, string>> = {
 
 export default async function StudioRendererPage({ params }: PageProps) {
   const { slug } = await params
+
+  const suspended = await getSuspendedStudioBySlug(slug)
+  if (suspended) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-black px-4 text-white">
+        <div className="max-w-md text-center">
+          <h1 className="text-2xl font-semibold">{suspended.name}</h1>
+          <p className="mt-3 text-sm text-white/70">
+            Halaman studio ini sedang tidak aktif. Hubungi Ruang Tato jika Anda pemilik
+            studio.
+          </p>
+        </div>
+      </main>
+    )
+  }
 
   const studio = await getPublishedStudioBySlug(slug)
 
