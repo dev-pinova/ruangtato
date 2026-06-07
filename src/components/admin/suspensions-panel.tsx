@@ -2,9 +2,14 @@
 
 import Link from "next/link"
 import { useCallback, useEffect, useState } from "react"
+import { ShieldBan } from "lucide-react"
 
-import { PageHeading } from "@/components/design"
-import { Badge } from "@/components/ui/badge"
+import {
+  AdminDataTable,
+  AdminFeedbackBanner,
+  AdminPageHeader,
+  AdminStatusBadge,
+} from "@/components/admin/ui"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import {
@@ -17,14 +22,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import { getSuspensionReasonCategoryLabel } from "@/lib/suspension-types"
 
 type SuspendedStudio = {
@@ -63,6 +60,7 @@ export function SuspensionsPanel() {
   const [suspended, setSuspended] = useState<SuspendedStudio[]>([])
   const [logs, setLogs] = useState<SuspensionLog[]>([])
   const [loading, setLoading] = useState(true)
+  const [feedback, setFeedback] = useState<string | null>(null)
   const [reactivateTarget, setReactivateTarget] = useState<SuspendedStudio | null>(
     null,
   )
@@ -114,6 +112,7 @@ export function SuspensionsPanel() {
       }
       setReactivateTarget(null)
       setReactivateReason("")
+      setFeedback(`${reactivateTarget.name} berhasil di-reactivate.`)
       await loadData()
     } finally {
       setReactivateBusy(false)
@@ -122,129 +121,167 @@ export function SuspensionsPanel() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-8">
-      <PageHeading
+      <AdminPageHeader
         title="Suspensions"
         description="Studio yang dinonaktifkan dan riwayat suspend/reactivate."
       />
 
+      {feedback ? (
+        <AdminFeedbackBanner
+          message={feedback}
+          variant="success"
+          onDismiss={() => setFeedback(null)}
+        />
+      ) : null}
+
       <section className="space-y-3">
         <h2 className="text-sm font-medium">Studio suspended</h2>
-        <div className="rounded-lg border border-border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Studio</TableHead>
-                <TableHead>Owner</TableHead>
-                <TableHead>Kota</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Diperbarui</TableHead>
-                <TableHead className="text-right">Aksi</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center text-muted-foreground">
-                    Memuat...
-                  </TableCell>
-                </TableRow>
-              ) : suspended.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={6} className="space-y-2 py-8 text-center">
-                    <p className="text-muted-foreground">
-                      Belum ada studio yang di-suspend.
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Gunakan{" "}
-                      <Link href="/admin/tenants" className="text-primary underline">
-                        Tenants
-                      </Link>{" "}
-                      → buka detail studio → Suspend tenant.
-                    </p>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                suspended.map((studio) => (
-                  <TableRow key={studio.id}>
-                    <TableCell>
-                      <div className="font-medium">{studio.name}</div>
-                      <div className="text-xs text-muted-foreground">{studio.slug}</div>
-                    </TableCell>
-                    <TableCell>
-                      <div>{studio.ownerName ?? "—"}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {studio.ownerEmail ?? "—"}
-                      </div>
-                    </TableCell>
-                    <TableCell>{studio.city ?? "—"}</TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="outline"
-                        className="border-red-500/30 bg-red-500/10 text-red-400"
-                      >
-                        {studio.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{formatDate(studio.updatedAt)}</TableCell>
-                    <TableCell className="text-right">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => {
-                          setReactivateTarget(studio)
-                          setReactivateReason("")
-                          setReactivateError(null)
-                        }}
-                      >
-                        Reactivate
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
+        <AdminDataTable
+          columns={[
+            {
+              key: "studio",
+              header: "Studio",
+              cell: (row) => (
+                <div>
+                  <div className="font-medium">{row.name}</div>
+                  <div className="text-xs text-muted-foreground">{row.slug}</div>
+                </div>
+              ),
+            },
+            {
+              key: "owner",
+              header: "Owner",
+              cell: (row) => (
+                <div>
+                  <div>{row.ownerName ?? "—"}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {row.ownerEmail ?? "—"}
+                  </div>
+                </div>
+              ),
+            },
+            { key: "city", header: "Kota", cell: (row) => row.city ?? "—" },
+            {
+              key: "status",
+              header: "Status",
+              cell: (row) => <AdminStatusBadge status={row.status} />,
+            },
+            {
+              key: "updated",
+              header: "Diperbarui",
+              cell: (row) => formatDate(row.updatedAt),
+            },
+            {
+              key: "action",
+              header: "Aksi",
+              className: "text-right",
+              cell: (row) => (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="min-h-11 sm:min-h-0"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setReactivateTarget(row)
+                    setReactivateReason("")
+                    setReactivateError(null)
+                  }}
+                >
+                  Reactivate
+                </Button>
+              ),
+            },
+          ]}
+          rows={suspended}
+          rowKey={(row) => row.id}
+          loading={loading}
+          emptyIcon={ShieldBan}
+          emptyTitle="Belum ada studio yang di-suspend"
+          emptyDescription="Gunakan Tenants → detail studio → Suspend tenant."
+          mobileCard={(row) => (
+            <div className="space-y-3">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="font-medium">{row.name}</p>
+                  <p className="text-xs text-muted-foreground">{row.slug}</p>
+                </div>
+                <AdminStatusBadge status={row.status} />
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {row.ownerName ?? "—"} · {formatDate(row.updatedAt)}
+              </p>
+              <Button
+                size="sm"
+                variant="outline"
+                className="min-h-11 w-full"
+                onClick={() => {
+                  setReactivateTarget(row)
+                  setReactivateReason("")
+                  setReactivateError(null)
+                }}
+              >
+                Reactivate
+              </Button>
+            </div>
+          )}
+        />
+        {!loading && suspended.length === 0 ? (
+          <p className="text-center text-sm text-muted-foreground">
+            Gunakan{" "}
+            <Link href="/admin/tenants" className="text-primary underline">
+              Tenants
+            </Link>{" "}
+            → buka detail studio → Suspend tenant.
+          </p>
+        ) : null}
       </section>
 
       <section className="space-y-3">
         <h2 className="text-sm font-medium">Riwayat</h2>
-        <div className="rounded-lg border border-border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Studio</TableHead>
-                <TableHead>Perubahan</TableHead>
-                <TableHead>Kategori</TableHead>
-                <TableHead>Alasan</TableHead>
-                <TableHead>Waktu</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {logs.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center text-muted-foreground">
-                    Belum ada riwayat.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                logs.map((log) => (
-                  <TableRow key={log.id}>
-                    <TableCell>{log.studioName}</TableCell>
-                    <TableCell>
-                      {log.statusBefore} → {log.statusAfter}
-                    </TableCell>
-                    <TableCell>
-                      {getSuspensionReasonCategoryLabel(log.reasonCategory)}
-                    </TableCell>
-                    <TableCell className="max-w-xs truncate">{log.reason}</TableCell>
-                    <TableCell>{formatDate(log.createdAt)}</TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
+        <AdminDataTable
+          columns={[
+            { key: "studio", header: "Studio", cell: (row) => row.studioName },
+            {
+              key: "change",
+              header: "Perubahan",
+              cell: (row) => `${row.statusBefore} → ${row.statusAfter}`,
+            },
+            {
+              key: "category",
+              header: "Kategori",
+              cell: (row) => getSuspensionReasonCategoryLabel(row.reasonCategory),
+            },
+            {
+              key: "reason",
+              header: "Alasan",
+              cell: (row) => (
+                <span className="max-w-xs truncate">{row.reason}</span>
+              ),
+            },
+            {
+              key: "time",
+              header: "Waktu",
+              cell: (row) => formatDate(row.createdAt),
+            },
+          ]}
+          rows={logs}
+          rowKey={(row) => row.id}
+          loading={loading}
+          emptyIcon={ShieldBan}
+          emptyTitle="Belum ada riwayat"
+          mobileCard={(row) => (
+            <div className="space-y-2 text-sm">
+              <p className="font-medium">{row.studioName}</p>
+              <p className="text-muted-foreground">
+                {row.statusBefore} → {row.statusAfter}
+              </p>
+              <p className="text-xs text-muted-foreground">{row.reason}</p>
+              <p className="text-xs text-muted-foreground">
+                {formatDate(row.createdAt)}
+              </p>
+            </div>
+          )}
+        />
       </section>
 
       <AlertDialog

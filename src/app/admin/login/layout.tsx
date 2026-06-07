@@ -9,6 +9,8 @@ export const metadata: Metadata = createPageMetadata({
   noIndex: true,
 })
 
+import "@/app/admin/admin-ops.css"
+
 export default function AdminLoginLayout({ children }: { children: React.ReactNode }) {
-  return children
+  return <div className="dark admin-ops min-h-dvh">{children}</div>
 }

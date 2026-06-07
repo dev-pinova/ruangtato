@@ -3,7 +3,12 @@
 import { useCallback, useEffect, useState } from "react"
 import { Search, ShieldCheck, UserCog } from "lucide-react"
 
-import { PageHeading } from "@/components/design"
+import {
+  AdminDataTable,
+  AdminFeedbackBanner,
+  AdminPageHeader,
+  AdminSectionCard,
+} from "@/components/admin/ui"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -16,14 +21,6 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import type { AdminStaffRow } from "@/lib/admin-staff-service"
 import type { PlatformRole } from "@/lib/admin-auth"
 
@@ -173,30 +170,37 @@ export function SettingsPanel() {
   }
 
   return (
-    <div className="space-y-8">
-      <PageHeading
+    <div className="mx-auto max-w-7xl space-y-6">
+      <AdminPageHeader
         title="Settings"
         description="Kelola staff internal dan verifikasi trusted badge studio."
       />
 
       {message ? (
-        <p className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-sm text-emerald-300">
-          {message}
-        </p>
+        <AdminFeedbackBanner
+          message={message}
+          variant="success"
+          onDismiss={() => setMessage(null)}
+        />
       ) : null}
       {error ? (
-        <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm text-red-300">
-          {error}
-        </p>
+        <AdminFeedbackBanner
+          message={error}
+          variant="error"
+          onDismiss={() => setError(null)}
+        />
       ) : null}
 
-      <section className="space-y-4 rounded-xl border border-white/10 bg-white/[0.02] p-6">
+      <AdminSectionCard className="space-y-4">
         <div className="flex items-center gap-2">
-          <UserCog className="size-5 text-violet-400" />
-          <h2 className="text-lg font-semibold text-white">Staff internal</h2>
+          <UserCog className="size-5 text-primary" />
+          <h2 className="text-lg font-semibold">Staff internal</h2>
         </div>
 
-        <form onSubmit={handleAssign} className="grid gap-4 md:grid-cols-[1fr_auto_auto]">
+        <form
+          onSubmit={handleAssign}
+          className="grid gap-4 md:grid-cols-[1fr_auto_auto]"
+        >
           <div className="space-y-2">
             <Label htmlFor="assign-email">Email user</Label>
             <Input
@@ -206,6 +210,7 @@ export function SettingsPanel() {
               value={assignEmail}
               onChange={(e) => setAssignEmail(e.target.value)}
               required
+              className="min-h-11 md:min-h-9"
             />
           </div>
           <div className="space-y-2">
@@ -214,7 +219,7 @@ export function SettingsPanel() {
               value={assignRole}
               onValueChange={(v) => setAssignRole(v as PlatformRole)}
             >
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full min-h-11 md:w-[180px] md:min-h-9">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -227,68 +232,82 @@ export function SettingsPanel() {
             </Select>
           </div>
           <div className="flex items-end">
-            <Button type="submit" disabled={assignBusy}>
+            <Button
+              type="submit"
+              disabled={assignBusy}
+              className="min-h-11 w-full md:min-h-0 md:w-auto"
+            >
               Assign role
             </Button>
           </div>
         </form>
 
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Nama</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Aksi</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading ? (
-              <TableRow>
-                <TableCell colSpan={5} className="text-muted-foreground">
-                  Memuat…
-                </TableCell>
-              </TableRow>
-            ) : staff.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} className="text-muted-foreground">
-                  Belum ada staff internal.
-                </TableCell>
-              </TableRow>
-            ) : (
-              staff.map((row) => (
-                <TableRow key={row.id}>
-                  <TableCell>{row.name}</TableCell>
-                  <TableCell>{row.email}</TableCell>
-                  <TableCell>{roleBadge(row.platformRole)}</TableCell>
-                  <TableCell>{row.status}</TableCell>
-                  <TableCell className="text-right">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => void handleRevoke(row.email)}
-                    >
-                      Revoke
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </section>
+        <AdminDataTable
+          columns={[
+            { key: "name", header: "Nama", cell: (row) => row.name },
+            { key: "email", header: "Email", cell: (row) => row.email },
+            {
+              key: "role",
+              header: "Role",
+              cell: (row) => roleBadge(row.platformRole),
+            },
+            { key: "status", header: "Status", cell: (row) => row.status },
+            {
+              key: "action",
+              header: "Aksi",
+              className: "text-right",
+              cell: (row) => (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="min-h-11 sm:min-h-0"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    void handleRevoke(row.email)
+                  }}
+                >
+                  Revoke
+                </Button>
+              ),
+            },
+          ]}
+          rows={staff}
+          rowKey={(row) => row.id}
+          loading={loading}
+          emptyIcon={UserCog}
+          emptyTitle="Belum ada staff internal"
+          mobileCard={(row) => (
+            <div className="space-y-3">
+              <div>
+                <p className="font-medium">{row.name}</p>
+                <p className="text-sm text-muted-foreground">{row.email}</p>
+              </div>
+              <div className="flex items-center justify-between">
+                {roleBadge(row.platformRole)}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="min-h-11"
+                  onClick={() => void handleRevoke(row.email)}
+                >
+                  Revoke
+                </Button>
+              </div>
+            </div>
+          )}
+        />
+      </AdminSectionCard>
 
-      <section className="space-y-4 rounded-xl border border-white/10 bg-white/[0.02] p-6">
+      <AdminSectionCard className="space-y-4">
         <div className="flex items-center gap-2">
-          <ShieldCheck className="size-5 text-emerald-400" />
-          <h2 className="text-lg font-semibold text-white">Trusted badge studio</h2>
+          <ShieldCheck className="size-5 text-primary" />
+          <h2 className="text-lg font-semibold">Trusted badge studio</h2>
         </div>
         <p className="text-sm text-muted-foreground">
           Cari studio lalu toggle trusted badge untuk verifikasi di showcase.
         </p>
 
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row">
           <Input
             placeholder="Nama atau slug studio"
             value={studioQuery}
@@ -299,12 +318,14 @@ export function SettingsPanel() {
                 void searchStudios()
               }
             }}
+            className="min-h-11 sm:min-h-9"
           />
           <Button
             type="button"
             variant="outline"
             onClick={() => void searchStudios()}
             disabled={studioBusy}
+            className="min-h-11 sm:min-h-0"
           >
             <Search className="size-4" />
             Cari
@@ -312,34 +333,52 @@ export function SettingsPanel() {
         </div>
 
         {studioResults.length > 0 ? (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Studio</TableHead>
-                <TableHead>Slug</TableHead>
-                <TableHead>Trusted</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {studioResults.map((studio) => (
-                <TableRow key={studio.id}>
-                  <TableCell>{studio.name}</TableCell>
-                  <TableCell className="font-mono text-sm">{studio.slug}</TableCell>
-                  <TableCell>
-                    <Switch
-                      checked={studio.isTrusted}
-                      disabled={studioBusy}
-                      onCheckedChange={(checked) =>
-                        void toggleTrusted(studio, checked)
-                      }
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <AdminDataTable
+            columns={[
+              { key: "name", header: "Studio", cell: (row) => row.name },
+              {
+                key: "slug",
+                header: "Slug",
+                cell: (row) => (
+                  <span className="font-mono text-sm">{row.slug}</span>
+                ),
+              },
+              {
+                key: "trusted",
+                header: "Trusted",
+                cell: (row) => (
+                  <Switch
+                    checked={row.isTrusted}
+                    disabled={studioBusy}
+                    onCheckedChange={(checked) =>
+                      void toggleTrusted(row, checked)
+                    }
+                  />
+                ),
+              },
+            ]}
+            rows={studioResults}
+            rowKey={(row) => row.id}
+            emptyIcon={ShieldCheck}
+            emptyTitle="Tidak ada hasil"
+            mobileCard={(row) => (
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="font-medium">{row.name}</p>
+                  <p className="font-mono text-xs text-muted-foreground">
+                    {row.slug}
+                  </p>
+                </div>
+                <Switch
+                  checked={row.isTrusted}
+                  disabled={studioBusy}
+                  onCheckedChange={(checked) => void toggleTrusted(row, checked)}
+                />
+              </div>
+            )}
+          />
         ) : null}
-      </section>
+      </AdminSectionCard>
     </div>
   )
 }

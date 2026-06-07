@@ -10,9 +10,14 @@ import {
   XAxis,
   YAxis,
 } from "recharts"
+import { Building2, CreditCard, ImageIcon, Users } from "lucide-react"
 
-import { MetricCard, PageHeading } from "@/components/design"
-import { Users, CreditCard, Building2, ImageIcon } from "lucide-react"
+import {
+  AdminKpiCard,
+  AdminKpiSkeletonGrid,
+  AdminPageHeader,
+  AdminSectionCard,
+} from "@/components/admin/ui"
 
 type AnalyticsData = {
   kpis: {
@@ -46,20 +51,26 @@ function ChartCard({
   data: { month: string; value: number }[]
 }) {
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
+    <AdminSectionCard>
       <h3 className="mb-4 text-sm font-medium">{title}</h3>
-      <div className="h-56 w-full">
+      <div className="min-h-48 w-full md:min-h-56">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data}>
             <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
             <XAxis dataKey="month" tick={{ fontSize: 11 }} />
             <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
             <Tooltip />
-            <Line type="monotone" dataKey="value" stroke="currentColor" strokeWidth={2} dot={false} />
+            <Line
+              type="monotone"
+              dataKey="value"
+              stroke="oklch(0.72 0.17 145)"
+              strokeWidth={2}
+              dot={false}
+            />
           </LineChart>
         </ResponsiveContainer>
       </div>
-    </div>
+    </AdminSectionCard>
   )
 }
 
@@ -75,59 +86,69 @@ export function AnalyticsPanel({ compact = false }: { compact?: boolean }) {
   }, [])
 
   if (loading || !data) {
-    return <p className="text-sm text-muted-foreground">Memuat analytics...</p>
+    return compact ? (
+      <AdminKpiSkeletonGrid count={4} />
+    ) : (
+      <div className="mx-auto max-w-7xl space-y-6">
+        <AdminPageHeader
+          title="Analytics"
+          description="Ringkasan kesehatan platform Ruang Tato."
+        />
+        <AdminKpiSkeletonGrid count={8} />
+      </div>
+    )
   }
 
   const { kpis, charts } = data
 
   return (
-    <div className="space-y-8">
+    <div className={compact ? "space-y-8" : "mx-auto max-w-7xl space-y-6"}>
       {!compact ? (
-        <PageHeading
+        <AdminPageHeader
           title="Analytics"
           description="Ringkasan kesehatan platform Ruang Tato."
         />
       ) : null}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <MetricCard label="Total user" value={String(kpis.totalUsers)} icon={Users} />
-        <MetricCard label="User aktif" value={String(kpis.activeUsers)} icon={Users} />
-        <MetricCard
+        <AdminKpiCard label="Total user" value={String(kpis.totalUsers)} icon={Users} />
+        <AdminKpiCard label="User aktif" value={String(kpis.activeUsers)} icon={Users} />
+        <AdminKpiCard
           label="User baru bulan ini"
           value={String(kpis.newUsersThisMonth)}
           icon={Users}
         />
-        <MetricCard
+        <AdminKpiCard
           label="Subscriber aktif"
           value={String(kpis.activeSubscribers)}
           icon={Users}
         />
-        <MetricCard
+        <AdminKpiCard
           label="Total transaksi"
           value={String(kpis.totalTransactions)}
           icon={CreditCard}
         />
-        <MetricCard
+        <AdminKpiCard
           label="Total revenue"
           value={formatIDR(kpis.totalRevenue)}
           icon={CreditCard}
         />
-        <MetricCard
+        <AdminKpiCard
           label="Revenue bulan ini"
           value={formatIDR(kpis.revenueThisMonth)}
           icon={CreditCard}
         />
-        <MetricCard
+        <AdminKpiCard
           label="Website aktif"
           value={String(kpis.activeWebsites)}
           icon={Building2}
         />
-        <MetricCard
+        <AdminKpiCard
           label="Website nonaktif"
           value={String(kpis.inactiveWebsites)}
           icon={Building2}
         />
-        <MetricCard
+        <AdminKpiCard
           label="Aset portfolio"
           value={String(kpis.portfolioAssets)}
           icon={ImageIcon}

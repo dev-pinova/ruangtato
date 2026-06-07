@@ -3,9 +3,9 @@
 import { Suspense, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
+import { Loader2 } from "lucide-react"
 
 import { PlatformLogo } from "@/components/brand/platform-logo"
-import { PageHeading } from "@/components/design"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -51,20 +51,24 @@ function AdminLoginForm() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="w-full max-w-sm">
+    <div className="relative flex min-h-dvh items-center justify-center overflow-hidden px-4">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,oklch(0.72_0.17_145/0.12),transparent_55%)]"
+      />
+
+      <div className="relative w-full max-w-sm">
         <div className="mb-8 flex justify-center">
           <PlatformLogo variant="auth" />
         </div>
 
-        <div className="rounded-xl border border-border bg-card p-6 md:p-8">
-          <PageHeading
-            size="sm"
-            align="center"
-            title="Admin Panel"
-            description="Login khusus staff internal Ruang Tato"
-            className="mb-6"
-          />
+        <div className="rounded-xl border border-border/80 bg-card/80 p-6 shadow-lg shadow-black/20 backdrop-blur md:p-8">
+          <div className="mb-6 space-y-1 text-center">
+            <h1 className="text-xl font-semibold tracking-tight">Admin Panel</h1>
+            <p className="text-sm text-muted-foreground">
+              Login khusus staff internal Ruang Tato
+            </p>
+          </div>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
@@ -76,6 +80,8 @@ function AdminLoginForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                className="min-h-11"
+                autoComplete="email"
               />
             </div>
             <div className="flex flex-col gap-2">
@@ -87,18 +93,45 @@ function AdminLoginForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                className="min-h-11"
+                autoComplete="current-password"
               />
             </div>
-            {error && <p className="text-sm text-destructive">{error}</p>}
-            <Button type="submit" className="mt-2 w-full" disabled={loading}>
-              {loading ? "Memproses..." : "Masuk Admin"}
+            {error ? (
+              <p role="alert" aria-live="polite" className="text-sm text-destructive">
+                {error}
+              </p>
+            ) : null}
+            <Button
+              type="submit"
+              className="mt-2 min-h-11 w-full"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" />
+                  Memproses...
+                </>
+              ) : (
+                "Masuk Admin"
+              )}
             </Button>
           </form>
         </div>
 
         <p className="mt-6 text-center text-sm text-muted-foreground">
           Bukan staff internal?{" "}
-          <Link href="/login" className="font-medium text-foreground hover:underline">
+          <Link
+            href="/"
+            className="font-medium text-primary transition-colors hover:underline"
+          >
+            Kembali ke situs
+          </Link>
+          {" · "}
+          <Link
+            href="/login"
+            className="font-medium text-foreground transition-colors hover:underline"
+          >
             Login studio
           </Link>
         </p>
@@ -109,7 +142,13 @@ function AdminLoginForm() {
 
 export default function AdminLoginPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-background" />}>
+    <Suspense
+      fallback={
+        <div className="flex min-h-dvh items-center justify-center">
+          <Loader2 className="size-6 animate-spin text-muted-foreground" />
+        </div>
+      }
+    >
       <AdminLoginForm />
     </Suspense>
   )

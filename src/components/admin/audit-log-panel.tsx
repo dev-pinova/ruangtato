@@ -1,16 +1,12 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { ScrollText } from "lucide-react"
 
-import { PageHeading } from "@/components/design"
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+  AdminDataTable,
+  AdminPageHeader,
+} from "@/components/admin/ui"
 
 type AuditRow = {
   id: string
@@ -45,51 +41,65 @@ export function AuditLogPanel() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-6">
-      <PageHeading
+      <AdminPageHeader
         title="Audit Log"
         description="Riwayat aksi sensitif yang dilakukan admin."
       />
 
-      <div className="rounded-lg border border-border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Waktu</TableHead>
-              <TableHead>Aksi</TableHead>
-              <TableHead>Target</TableHead>
-              <TableHead>Alasan</TableHead>
-              <TableHead>Actor</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading ? (
-              <TableRow>
-                <TableCell colSpan={5} className="text-center text-muted-foreground">
-                  Memuat...
-                </TableCell>
-              </TableRow>
-            ) : rows.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} className="text-center text-muted-foreground">
-                  Belum ada entri audit log.
-                </TableCell>
-              </TableRow>
-            ) : (
-              rows.map((row) => (
-                <TableRow key={row.id}>
-                  <TableCell>{formatDate(row.createdAt)}</TableCell>
-                  <TableCell className="font-mono text-xs">{row.action}</TableCell>
-                  <TableCell>
-                    {row.targetType}:{row.targetId.slice(0, 8)}
-                  </TableCell>
-                  <TableCell className="max-w-xs truncate">{row.reason ?? "—"}</TableCell>
-                  <TableCell className="font-mono text-xs">{row.actorUserId.slice(0, 8)}</TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
+      <AdminDataTable
+        columns={[
+          {
+            key: "time",
+            header: "Waktu",
+            cell: (row) => formatDate(row.createdAt),
+          },
+          {
+            key: "action",
+            header: "Aksi",
+            cell: (row) => (
+              <span className="font-mono text-xs">{row.action}</span>
+            ),
+          },
+          {
+            key: "target",
+            header: "Target",
+            cell: (row) => `${row.targetType}:${row.targetId.slice(0, 8)}`,
+          },
+          {
+            key: "reason",
+            header: "Alasan",
+            cell: (row) => (
+              <span className="max-w-xs truncate">{row.reason ?? "—"}</span>
+            ),
+          },
+          {
+            key: "actor",
+            header: "Actor",
+            cell: (row) => (
+              <span className="font-mono text-xs">{row.actorUserId.slice(0, 8)}</span>
+            ),
+          },
+        ]}
+        rows={rows}
+        rowKey={(row) => row.id}
+        loading={loading}
+        emptyIcon={ScrollText}
+        emptyTitle="Belum ada entri audit log"
+        mobileCard={(row) => (
+          <div className="space-y-2 text-sm">
+            <p className="font-mono text-xs">{row.action}</p>
+            <p className="text-muted-foreground">
+              {row.targetType}:{row.targetId.slice(0, 8)}
+            </p>
+            {row.reason ? (
+              <p className="text-xs text-muted-foreground">{row.reason}</p>
+            ) : null}
+            <p className="text-xs text-muted-foreground">
+              {formatDate(row.createdAt)}
+            </p>
+          </div>
+        )}
+      />
     </div>
   )
 }

@@ -1,12 +1,19 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { ExternalLink, Search } from "lucide-react"
+import { Building2, ExternalLink, RefreshCw } from "lucide-react"
 
-import { PageHeading } from "@/components/design"
-import { Badge } from "@/components/ui/badge"
+import {
+  AdminDataTable,
+  AdminFeedbackBanner,
+  AdminFilterBar,
+  AdminFilterField,
+  AdminPageHeader,
+  AdminPagination,
+  AdminSectionCard,
+  AdminStatusBadge,
+} from "@/components/admin/ui"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import {
   Select,
@@ -22,14 +29,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -68,21 +67,6 @@ function formatIDR(amount: number) {
   return `Rp ${amount.toLocaleString("id-ID")}`
 }
 
-function statusBadge(status: string) {
-  const styles: Record<string, string> = {
-    active: "border-emerald-500/30 bg-emerald-500/10 text-emerald-400",
-    suspended: "border-red-500/30 bg-red-500/10 text-red-400",
-    expired: "border-red-500/30 bg-red-500/10 text-red-400",
-    pending: "border-yellow-500/30 bg-yellow-500/10 text-yellow-400",
-  }
-
-  return (
-    <Badge variant="outline" className={styles[status] ?? ""}>
-      {status}
-    </Badge>
-  )
-}
-
 export function TenantsPanel({ canSuspend = false }: { canSuspend?: boolean }) {
   const [rows, setRows] = useState<AdminTenantRow[]>([])
   const [total, setTotal] = useState(0)
@@ -92,6 +76,10 @@ export function TenantsPanel({ canSuspend = false }: { canSuspend?: boolean }) {
   const [detail, setDetail] = useState<AdminTenantDetail | null>(null)
   const [detailOpen, setDetailOpen] = useState(false)
   const [detailLoading, setDetailLoading] = useState(false)
+  const [feedback, setFeedback] = useState<{
+    message: string
+    variant: "success" | "error"
+  } | null>(null)
 
   const [q, setQ] = useState("")
   const [studioStatus, setStudioStatus] = useState("")
@@ -148,205 +136,261 @@ export function TenantsPanel({ canSuspend = false }: { canSuspend?: boolean }) {
     }
   }
 
-  function handleSearchSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setPage(1)
-    void loadTenants()
-  }
+  const filterFields = (
+    <>
+      <AdminFilterField label="Status studio">
+        <Select
+          value={studioStatus || "all"}
+          onValueChange={(v: string | null) => {
+            setStudioStatus(v === "all" ? "" : (v ?? ""))
+            setPage(1)
+          }}
+        >
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Semua</SelectItem>
+            <SelectItem value="active">Active</SelectItem>
+            <SelectItem value="suspended">Suspended</SelectItem>
+          </SelectContent>
+        </Select>
+      </AdminFilterField>
+
+      <AdminFilterField label="Subscription">
+        <Select
+          value={subscriptionStatus || "all"}
+          onValueChange={(v: string | null) => {
+            setSubscriptionStatus(v === "all" ? "" : (v ?? ""))
+            setPage(1)
+          }}
+        >
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Semua</SelectItem>
+            <SelectItem value="active">Active</SelectItem>
+            <SelectItem value="expired">Expired</SelectItem>
+            <SelectItem value="pending">Pending</SelectItem>
+          </SelectContent>
+        </Select>
+      </AdminFilterField>
+
+      <AdminFilterField label="Paket">
+        <Select
+          value={planType || "all"}
+          onValueChange={(v: string | null) => {
+            setPlanType(v === "all" ? "" : (v ?? ""))
+            setPage(1)
+          }}
+        >
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Semua</SelectItem>
+            <SelectItem value="trial">Trial</SelectItem>
+            <SelectItem value="1month">1 Bulan</SelectItem>
+            <SelectItem value="3months">3 Bulan</SelectItem>
+            <SelectItem value="6months">6 Bulan</SelectItem>
+            <SelectItem value="12months">12 Bulan</SelectItem>
+          </SelectContent>
+        </Select>
+      </AdminFilterField>
+
+      <AdminFilterField label="Kota">
+        <Select
+          value={city || "all"}
+          onValueChange={(v: string | null) => {
+            setCity(v === "all" ? "" : (v ?? ""))
+            setPage(1)
+          }}
+        >
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Semua kota</SelectItem>
+            {cities.map((item) => (
+              <SelectItem key={item} value={item}>
+                {item}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </AdminFilterField>
+
+      <AdminFilterField label="Urutkan">
+        <Select
+          value={sort}
+          onValueChange={(v: string | null) => {
+            if (v) {
+              setSort(v)
+              setPage(1)
+            }
+          }}
+        >
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="newest">Terbaru</SelectItem>
+            <SelectItem value="oldest">Terlama</SelectItem>
+            <SelectItem value="expiry_asc">Expiry terdekat</SelectItem>
+            <SelectItem value="expiry_desc">Expiry terjauh</SelectItem>
+            <SelectItem value="status">Status</SelectItem>
+          </SelectContent>
+        </Select>
+      </AdminFilterField>
+    </>
+  )
 
   return (
     <div className="mx-auto max-w-7xl space-y-6">
-      <PageHeading
+      <AdminPageHeader
         title="Tenants"
         description="Monitoring seluruh studio terdaftar di platform."
+        actions={
+          <Button
+            variant="outline"
+            size="sm"
+            className="min-h-11 sm:min-h-0"
+            disabled={loading}
+            onClick={() => void loadTenants()}
+          >
+            <RefreshCw className="size-4" />
+            Refresh
+          </Button>
+        }
       />
 
-      <form
-        onSubmit={handleSearchSubmit}
-        className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 md:flex-row md:flex-wrap md:items-end"
-      >
-        <div className="flex min-w-[220px] flex-1 flex-col gap-1.5">
-          <label className="text-xs font-medium text-muted-foreground">Cari</label>
-          <div className="relative">
-            <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Studio, owner, email, WA..."
-              className="pl-8"
-            />
+      {feedback ? (
+        <AdminFeedbackBanner
+          message={feedback.message}
+          variant={feedback.variant}
+          onDismiss={() => setFeedback(null)}
+        />
+      ) : null}
+
+      <AdminFilterBar
+        searchValue={q}
+        onSearchChange={setQ}
+        searchPlaceholder="Studio, owner, email, WA..."
+        onSubmit={() => {
+          setPage(1)
+          void loadTenants()
+        }}
+        filters={filterFields}
+      />
+
+      <AdminDataTable
+        columns={[
+          {
+            key: "studio",
+            header: "Studio",
+            cell: (row) => (
+              <div>
+                <div className="font-medium">{row.name}</div>
+                <div className="text-xs text-muted-foreground">
+                  {row.slug}
+                  {row.city ? ` · ${row.city}` : ""}
+                </div>
+              </div>
+            ),
+          },
+          {
+            key: "owner",
+            header: "Owner",
+            cell: (row) => (
+              <div>
+                <div>{row.ownerName ?? "—"}</div>
+                <div className="text-xs text-muted-foreground">
+                  {row.ownerEmail ?? "—"}
+                </div>
+              </div>
+            ),
+          },
+          { key: "wa", header: "WA", cell: (row) => row.waNumber ?? "—" },
+          {
+            key: "plan",
+            header: "Paket",
+            cell: (row) => (
+              <div>
+                {row.planLabel ?? row.planType ?? "—"}
+                {row.subscriptionStatus ? (
+                  <div className="mt-1">
+                    <AdminStatusBadge status={row.subscriptionStatus} />
+                  </div>
+                ) : null}
+              </div>
+            ),
+          },
+          {
+            key: "status",
+            header: "Status",
+            cell: (row) => <AdminStatusBadge status={row.status} />,
+          },
+          {
+            key: "created",
+            header: "Registrasi",
+            cell: (row) => formatDate(row.createdAt),
+          },
+          {
+            key: "expiry",
+            header: "Expiry",
+            cell: (row) => formatDate(row.expiresAt),
+          },
+        ]}
+        rows={rows}
+        rowKey={(row) => row.id}
+        loading={loading}
+        onRowClick={(row) => void openDetail(row.id)}
+        emptyIcon={Building2}
+        emptyTitle="Tidak ada tenant ditemukan"
+        emptyDescription="Coba ubah filter atau kata kunci pencarian."
+        mobileCard={(row) => (
+          <div className="space-y-3">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="font-medium">{row.name}</p>
+                <p className="text-xs text-muted-foreground">{row.slug}</p>
+              </div>
+              <AdminStatusBadge status={row.status} />
+            </div>
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              <div>
+                <p className="text-xs text-muted-foreground">Owner</p>
+                <p>{row.ownerName ?? "—"}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Paket</p>
+                <p>{row.planLabel ?? row.planType ?? "—"}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Expiry</p>
+                <p>{formatDate(row.expiresAt)}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">WA</p>
+                <p>{row.waNumber ?? "—"}</p>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
+      />
 
-        <FilterSelect
-          label="Status studio"
-          value={studioStatus || "all"}
-          onChange={(v) => {
-            setStudioStatus(v === "all" ? "" : v)
-            setPage(1)
-          }}
-          options={[
-            { value: "all", label: "Semua" },
-            { value: "active", label: "Active" },
-            { value: "suspended", label: "Suspended" },
-          ]}
-        />
-
-        <FilterSelect
-          label="Subscription"
-          value={subscriptionStatus || "all"}
-          onChange={(v) => {
-            setSubscriptionStatus(v === "all" ? "" : v)
-            setPage(1)
-          }}
-          options={[
-            { value: "all", label: "Semua" },
-            { value: "active", label: "Active" },
-            { value: "expired", label: "Expired" },
-            { value: "pending", label: "Pending" },
-          ]}
-        />
-
-        <FilterSelect
-          label="Paket"
-          value={planType || "all"}
-          onChange={(v) => {
-            setPlanType(v === "all" ? "" : v)
-            setPage(1)
-          }}
-          options={[
-            { value: "all", label: "Semua" },
-            { value: "trial", label: "Trial" },
-            { value: "1month", label: "1 Bulan" },
-            { value: "3months", label: "3 Bulan" },
-            { value: "6months", label: "6 Bulan" },
-            { value: "12months", label: "12 Bulan" },
-          ]}
-        />
-
-        <FilterSelect
-          label="Kota"
-          value={city || "all"}
-          onChange={(v) => {
-            setCity(v === "all" ? "" : v)
-            setPage(1)
-          }}
-          options={[
-            { value: "all", label: "Semua kota" },
-            ...cities.map((item) => ({ value: item, label: item })),
-          ]}
-        />
-
-        <FilterSelect
-          label="Urutkan"
-          value={sort}
-          onChange={(v) => {
-            setSort(v)
-            setPage(1)
-          }}
-          options={[
-            { value: "newest", label: "Terbaru" },
-            { value: "oldest", label: "Terlama" },
-            { value: "expiry_asc", label: "Expiry terdekat" },
-            { value: "expiry_desc", label: "Expiry terjauh" },
-            { value: "status", label: "Status" },
-          ]}
-        />
-
-        <Button type="submit" variant="secondary">
-          Terapkan
-        </Button>
-      </form>
-
-      <div className="rounded-lg border border-border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Studio</TableHead>
-              <TableHead>Owner</TableHead>
-              <TableHead>WA</TableHead>
-              <TableHead>Paket</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Registrasi</TableHead>
-              <TableHead>Expiry</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading ? (
-              <TableRow>
-                <TableCell colSpan={7} className="text-center text-muted-foreground">
-                  Memuat...
-                </TableCell>
-              </TableRow>
-            ) : rows.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={7} className="text-center text-muted-foreground">
-                  Tidak ada tenant ditemukan.
-                </TableCell>
-              </TableRow>
-            ) : (
-              rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  className="cursor-pointer"
-                  onClick={() => void openDetail(row.id)}
-                >
-                  <TableCell>
-                    <div className="font-medium">{row.name}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {row.slug}
-                      {row.city ? ` · ${row.city}` : ""}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div>{row.ownerName ?? "—"}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {row.ownerEmail ?? "—"}
-                    </div>
-                  </TableCell>
-                  <TableCell>{row.waNumber ?? "—"}</TableCell>
-                  <TableCell>
-                    {row.planLabel ?? row.planType ?? "—"}
-                    {row.subscriptionStatus ? (
-                      <div className="mt-1">{statusBadge(row.subscriptionStatus)}</div>
-                    ) : null}
-                  </TableCell>
-                  <TableCell>{statusBadge(row.status)}</TableCell>
-                  <TableCell>{formatDate(row.createdAt)}</TableCell>
-                  <TableCell>{formatDate(row.expiresAt)}</TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
-
-      <div className="flex items-center justify-between text-sm text-muted-foreground">
-        <span>
-          {total} tenant · halaman {page} dari {totalPages}
-        </span>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={page <= 1 || loading}
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-          >
-            Sebelumnya
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={page >= totalPages || loading}
-            onClick={() => setPage((p) => p + 1)}
-          >
-            Berikutnya
-          </Button>
-        </div>
-      </div>
+      <AdminPagination
+        page={page}
+        totalPages={totalPages}
+        total={total}
+        totalLabel="tenant"
+        loading={loading}
+        onPageChange={setPage}
+      />
 
       <Sheet open={detailOpen} onOpenChange={setDetailOpen}>
-        <SheetContent side="right" className="w-full sm:max-w-lg">
+        <SheetContent side="right" className="flex w-full flex-col sm:max-w-lg">
           <SheetHeader>
             <SheetTitle>{detail?.name ?? "Detail Tenant"}</SheetTitle>
             <SheetDescription>
@@ -354,119 +398,106 @@ export function TenantsPanel({ canSuspend = false }: { canSuspend?: boolean }) {
             </SheetDescription>
           </SheetHeader>
 
-          {detailLoading ? (
-            <p className="mt-6 text-sm text-muted-foreground">Memuat detail...</p>
-          ) : detail ? (
-            <div className="mt-6 space-y-6 text-sm">
-              <DetailSection title="Profil">
-                <DetailRow label="Owner" value={detail.ownerName ?? "—"} />
-                <DetailRow label="Email" value={detail.ownerEmail ?? "—"} />
-                <DetailRow label="WhatsApp" value={detail.waNumber ?? "—"} />
-                <DetailRow label="Kota" value={detail.city ?? "—"} />
-                <DetailRow label="Status studio" value={detail.status} />
-                <DetailRow
-                  label="Publikasi"
-                  value={detail.isPublished ? "Published" : "Draft"}
-                />
-              </DetailSection>
-
-              <DetailSection title="Langganan">
-                <DetailRow
-                  label="Paket"
-                  value={
-                    detail.planType
-                      ? getSubscriptionPlanLabel(detail.planType).name
-                      : "—"
-                  }
-                />
-                <DetailRow label="Status" value={detail.subscriptionStatus ?? "—"} />
-                <DetailRow label="Registrasi" value={formatDate(detail.createdAt)} />
-                <DetailRow label="Berakhir" value={formatDate(detail.expiresAt)} />
-              </DetailSection>
-
-              <DetailSection title="Metrik">
-                <DetailRow label="Views" value={String(detail.viewCount)} />
-                <DetailRow label="Clicks" value={String(detail.clickCount)} />
-              </DetailSection>
-
-              {detail.lastPayment ? (
-                <DetailSection title="Pembayaran terakhir">
-                  <DetailRow label="Order ID" value={detail.lastPayment.orderId} />
-                  <DetailRow label="Nominal" value={formatIDR(detail.lastPayment.amount)} />
-                  <DetailRow label="Status" value={detail.lastPayment.status} />
-                  <DetailRow label="Tanggal" value={formatDate(detail.lastPayment.paidAt ?? detail.lastPayment.createdAt)} />
+          <div className="flex-1 overflow-y-auto">
+            {detailLoading ? (
+              <p className="mt-6 text-sm text-muted-foreground">Memuat detail...</p>
+            ) : detail ? (
+              <div className="mt-6 space-y-6 text-sm">
+                <DetailSection title="Profil">
+                  <DetailRow label="Owner" value={detail.ownerName ?? "—"} />
+                  <DetailRow label="Email" value={detail.ownerEmail ?? "—"} />
+                  <DetailRow label="WhatsApp" value={detail.waNumber ?? "—"} />
+                  <DetailRow label="Kota" value={detail.city ?? "—"} />
+                  <DetailRow label="Status studio" value={detail.status} />
+                  <DetailRow
+                    label="Publikasi"
+                    value={detail.isPublished ? "Published" : "Draft"}
+                  />
                 </DetailSection>
-              ) : null}
 
-              {detail.isPublished ? (
-                <Button
-                  nativeButton={false}
-                  variant="outline"
-                  size="sm"
-                  render={
-                    <a
-                      href={`/app/studio/${detail.slug}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                <DetailSection title="Langganan">
+                  <DetailRow
+                    label="Paket"
+                    value={
+                      detail.planType
+                        ? getSubscriptionPlanLabel(detail.planType).name
+                        : "—"
+                    }
+                  />
+                  <DetailRow label="Status" value={detail.subscriptionStatus ?? "—"} />
+                  <DetailRow label="Registrasi" value={formatDate(detail.createdAt)} />
+                  <DetailRow label="Berakhir" value={formatDate(detail.expiresAt)} />
+                </DetailSection>
+
+                <DetailSection title="Metrik">
+                  <DetailRow label="Views" value={String(detail.viewCount)} />
+                  <DetailRow label="Clicks" value={String(detail.clickCount)} />
+                </DetailSection>
+
+                {detail.lastPayment ? (
+                  <DetailSection title="Pembayaran terakhir">
+                    <DetailRow label="Order ID" value={detail.lastPayment.orderId} />
+                    <DetailRow
+                      label="Nominal"
+                      value={formatIDR(detail.lastPayment.amount)}
                     />
-                  }
-                >
-                  <ExternalLink className="size-4" />
-                  Lihat halaman publik
-                </Button>
-              ) : null}
+                    <DetailRow label="Status" value={detail.lastPayment.status} />
+                    <DetailRow
+                      label="Tanggal"
+                      value={formatDate(
+                        detail.lastPayment.paidAt ?? detail.lastPayment.createdAt,
+                      )}
+                    />
+                  </DetailSection>
+                ) : null}
 
+                {detail.isPublished ? (
+                  <Button
+                    nativeButton={false}
+                    variant="outline"
+                    size="sm"
+                    render={
+                      <a
+                        href={`/app/studio/${detail.slug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      />
+                    }
+                  >
+                    <ExternalLink className="size-4" />
+                    Lihat halaman publik
+                  </Button>
+                ) : null}
+              </div>
+            ) : null}
+          </div>
+
+          {detail && !detailLoading ? (
+            <div className="sticky bottom-0 -mx-6 border-t border-border bg-background px-6 py-4">
               {canSuspend ? (
                 <TenantStatusActions
                   studioId={detail.id}
                   studioName={detail.name}
                   ownerEmail={detail.ownerEmail}
                   status={detail.status}
-                  onUpdated={() => {
+                  onUpdated={(message) => {
+                    setFeedback({ message, variant: "success" })
                     void loadTenants()
                     void openDetail(detail.id)
                   }}
+                  onError={(message) => {
+                    setFeedback({ message, variant: "error" })
+                  }}
                 />
               ) : (
-                <p className="rounded-md border border-border p-3 text-xs text-muted-foreground">
-                  Suspend/reactivate hanya tersedia untuk super_admin. Buka drawer
-                  ini setelah login sebagai super_admin.
+                <p className="text-xs text-muted-foreground">
+                  Suspend/reactivate hanya tersedia untuk super_admin.
                 </p>
               )}
             </div>
           ) : null}
         </SheetContent>
       </Sheet>
-    </div>
-  )
-}
-
-function FilterSelect({
-  label,
-  value,
-  onChange,
-  options,
-}: {
-  label: string
-  value: string
-  onChange: (value: string) => void
-  options: { value: string; label: string }[]
-}) {
-  return (
-    <div className="flex min-w-[140px] flex-col gap-1.5">
-      <label className="text-xs font-medium text-muted-foreground">{label}</label>
-      <Select value={value} onValueChange={(v: string | null) => onChange(v ?? "all")}>
-        <SelectTrigger>
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {options.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
-              {option.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
     </div>
   )
 }
@@ -479,12 +510,12 @@ function DetailSection({
   children: React.ReactNode
 }) {
   return (
-    <div className="space-y-2">
+    <AdminSectionCard className="space-y-2 p-3">
       <h3 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
         {title}
       </h3>
-      <div className="space-y-1.5 rounded-md border border-border p-3">{children}</div>
-    </div>
+      <div className="space-y-1.5">{children}</div>
+    </AdminSectionCard>
   )
 }
 
@@ -503,12 +534,14 @@ function TenantStatusActions({
   ownerEmail,
   status,
   onUpdated,
+  onError,
 }: {
   studioId: string
   studioName: string
   ownerEmail: string | null
   status: string
-  onUpdated: () => void
+  onUpdated: (message: string) => void
+  onError: (message: string) => void
 }) {
   const [reasonCategory, setReasonCategory] =
     useState<SuspensionReasonCategory>("policy_violation")
@@ -540,12 +573,18 @@ function TenantStatusActions({
       })
       if (!response.ok) {
         const json = await response.json().catch(() => null)
-        setError(json?.error ?? "Gagal memperbarui status.")
+        const msg = json?.error ?? "Gagal memperbarui status."
+        setError(msg)
+        onError(msg)
         return
       }
       setReason("")
       setConfirmOpen(false)
-      onUpdated()
+      onUpdated(
+        action === "suspend"
+          ? `Tenant ${studioName} berhasil di-suspend.`
+          : `Tenant ${studioName} berhasil di-reactivate.`,
+      )
     } finally {
       setLoading(false)
     }
@@ -561,7 +600,7 @@ function TenantStatusActions({
   }
 
   return (
-    <div className="space-y-3 rounded-md border border-border p-3">
+    <div className="space-y-3">
       <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
         Aksi admin
       </p>
@@ -602,6 +641,7 @@ function TenantStatusActions({
       {status === "suspended" ? (
         <Button
           size="sm"
+          className="min-h-11 w-full sm:min-h-0"
           disabled={loading}
           onClick={() => void submit("reactivate")}
         >
@@ -612,6 +652,7 @@ function TenantStatusActions({
           <Button
             size="sm"
             variant="destructive"
+            className="min-h-11 w-full sm:min-h-0"
             disabled={loading}
             onClick={openSuspendConfirm}
           >
