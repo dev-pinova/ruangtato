@@ -71,9 +71,14 @@ export async function POST(request: Request) {
       const paidAt = new Date();
       let updatedPayment = false;
 
+      const updateData: any = { transactionStatus: 'settlement', paidAt };
+      if (studioIdFromCustom) {
+        updateData.studioId = studioIdFromCustom;
+      }
+
       if (body.order_id) {
         const result = await db.update(payments)
-          .set({ transactionStatus: 'settlement', paidAt })
+          .set(updateData)
           .where(eq(payments.orderId, body.order_id))
           .returning();
         
@@ -92,7 +97,7 @@ export async function POST(request: Request) {
 
         if (latestPayment) {
           await db.update(payments)
-            .set({ transactionStatus: 'settlement', paidAt })
+            .set(updateData)
             .where(eq(payments.id, latestPayment.id));
           console.log(`[WEBHOOK: FAIL-SAFE] Successfully updated latest payment using fallback for Studio ID: ${studioIdFromCustom}`);
         } else {

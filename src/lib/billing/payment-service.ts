@@ -311,6 +311,7 @@ export async function backfillPaymentsFromInvoices() {
         rawPayload: {
           planType: invoice.planType,
           source: "backfill-invoices",
+          studioId: invoice.studioId,
         },
         paidAt: invoice.paidAt,
         createdAt: invoice.createdAt,
