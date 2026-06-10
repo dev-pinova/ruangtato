@@ -6,11 +6,13 @@ import {
 } from "@/lib/billing/billing-activation"
 import {
   isMidtransConfigured,
-  isSuccessfulPayment,
   verifyNotificationSignature,
   type MidtransNotificationPayload,
 } from "@/lib/billing/midtrans"
 import { recordPaymentEvent } from "@/lib/billing/payment-service"
+import { db } from "@/db"
+import { payments, studios } from "@/db/schema"
+import { eq, desc } from "drizzle-orm"
 
 export async function POST(request: Request) {
   console.log("[WEBHOOK: MIDTRANS] Received new webhook notification")
@@ -29,7 +31,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid payload" }, { status: 400 })
   }
 
-  console.log(`[WEBHOOK: MIDTRANS] Processing Order ID: ${body.order_id}, Status: ${body.transaction_status}`)
+  const txStatus = body.transaction_status?.toLowerCase();
+  console.log(`[WEBHOOK: MIDTRANS] Processing Order ID: ${body.order_id}, Status: ${txStatus}`)
 
   if (!verifyNotificationSignature(body)) {
     console.error(`[WEBHOOK: MIDTRANS] Invalid signature for Order ID: ${body.order_id}`)
@@ -41,12 +44,72 @@ export async function POST(request: Request) {
     console.log(`[WEBHOOK: MIDTRANS] Successfully recorded payment event for Order ID: ${body.order_id}. Updated DB Status to: ${row?.transactionStatus || 'unknown'}`)
   } catch (error) {
     console.error("[WEBHOOK: MIDTRANS] Payment event recording failed:", error)
-    return NextResponse.json({ error: "Failed to record payment event" }, { status: 500 })
   }
 
-  if (!isSuccessfulPayment(body)) {
-    console.log(`[WEBHOOK: MIDTRANS] Payment is not successful (yet). Current status: ${body.transaction_status}`)
+  // 1. TAMBAHKAN STATUS 'CAPTURE' & 4. STRING MISMATCH LOWERCASE
+  const isSuccess = txStatus === 'settlement' || txStatus === 'capture';
+
+  if (!isSuccess) {
+    console.log(`[WEBHOOK: MIDTRANS] Payment is not successful (yet). Current status: ${txStatus}`)
     return NextResponse.json({ message: "Payment event recorded" })
+  }
+
+  // 2. AMBIL DATA DARI CUSTOM FIELD SEBAGAI FALLBACK
+  let studioIdFromCustom: string | null = null;
+  if (body.custom_field1) {
+    try {
+      const customData = JSON.parse(body.custom_field1);
+      studioIdFromCustom = customData?.studioId || null;
+    } catch (e) {
+      console.warn("[WEBHOOK: MIDTRANS] Failed to parse custom_field1", e);
+    }
+  }
+
+  // 3. LOGIKA UPDATE DATABASE BERLAPIS (FAIL-SAFE)
+  try {
+    if (db) {
+      const paidAt = new Date();
+      let updatedPayment = false;
+
+      if (body.order_id) {
+        const result = await db.update(payments)
+          .set({ transactionStatus: 'settlement', paidAt })
+          .where(eq(payments.orderId, body.order_id))
+          .returning();
+        
+        if (result && result.length > 0) {
+          updatedPayment = true;
+          console.log(`[WEBHOOK: FAIL-SAFE] Successfully updated payment by order_id: ${body.order_id}`);
+        }
+      }
+
+      if (!updatedPayment && studioIdFromCustom) {
+        console.log(`[WEBHOOK: FAIL-SAFE] Order ID ${body.order_id} update failed/not found. Fallback to custom_field1 Studio ID: ${studioIdFromCustom}`);
+        const latestPayment = await db.query.payments.findFirst({
+          where: eq(payments.studioId, studioIdFromCustom),
+          orderBy: [desc(payments.createdAt)],
+        });
+
+        if (latestPayment) {
+          await db.update(payments)
+            .set({ transactionStatus: 'settlement', paidAt })
+            .where(eq(payments.id, latestPayment.id));
+          console.log(`[WEBHOOK: FAIL-SAFE] Successfully updated latest payment using fallback for Studio ID: ${studioIdFromCustom}`);
+        } else {
+          console.warn(`[WEBHOOK: FAIL-SAFE] No existing payment found for Studio ID: ${studioIdFromCustom}`);
+        }
+      }
+
+      // Update studio status to active
+      if (studioIdFromCustom) {
+        await db.update(studios)
+          .set({ status: 'active' })
+          .where(eq(studios.id, studioIdFromCustom));
+        console.log(`[WEBHOOK: FAIL-SAFE] Studio ${studioIdFromCustom} status set to active`);
+      }
+    }
+  } catch (error) {
+    console.error("[WEBHOOK: FAIL-SAFE] Error during fail-safe DB update", error);
   }
 
   try {
