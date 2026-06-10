@@ -3,7 +3,7 @@ import { and, count, eq, gte, sql, sum } from "drizzle-orm"
 import { db, isDatabaseConfigured } from "@/db"
 import { user } from "@/db/auth-schema"
 import { payments, studios, subscriptions } from "@/db/schema"
-import { isActivePaidSubscription } from "@/lib/studio-service"
+import { isActivePaidSubscription } from "@/lib/studio/studio-service"
 
 function monthKey(date: Date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`

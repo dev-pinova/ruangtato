@@ -1,18 +1,20 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { CreditCard, RefreshCw } from "lucide-react"
+import { AlertCircle, CheckCircle2, Clock, CreditCard } from "lucide-react"
 
 import {
   AdminDataTable,
   AdminFilterBar,
   AdminFilterField,
-  AdminPageHeader,
+  AdminMetricStrip,
+  AdminPageHeaderV2,
+  AdminPageToolbar,
   AdminPagination,
-  AdminSectionCard,
+  AdminPanel,
+  AdminPanelInset,
   AdminStatusBadge,
 } from "@/components/admin/ui"
-import { Button } from "@/components/ui/button"
 import {
   Select,
   SelectContent,
@@ -27,7 +29,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet"
-import type { AdminPaymentRow } from "@/lib/payment-service"
+import type { AdminPaymentRow } from "@/lib/billing/payment-service"
 
 type PaymentDetail = AdminPaymentRow & {
   fraudStatus: string | null
@@ -62,6 +64,15 @@ export function PaymentsPanel() {
   const [detailLoading, setDetailLoading] = useState(false)
 
   const totalPages = useMemo(() => Math.max(1, Math.ceil(total / 20)), [total])
+
+  const statusCounts = useMemo(() => {
+    const pending = rows.filter((r) => r.transactionStatus === "pending").length
+    const failed = rows.filter(
+      (r) => r.transactionStatus === "failed" || r.transactionStatus === "expired",
+    ).length
+    const success = rows.filter((r) => r.transactionStatus === "success").length
+    return { pending, failed, success, all: total }
+  }, [rows, total])
 
   const loadPayments = useCallback(async () => {
     setLoading(true)
@@ -98,29 +109,13 @@ export function PaymentsPanel() {
     }
   }
 
+  function applyStatusFilter(next: string) {
+    setStatus(next)
+    setPage(1)
+  }
+
   const filterFields = (
     <>
-      <AdminFilterField label="Status">
-        <Select
-          value={status || "all"}
-          onValueChange={(v: string | null) => {
-            setStatus(v === "all" ? "" : (v ?? ""))
-            setPage(1)
-          }}
-        >
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Semua</SelectItem>
-            <SelectItem value="pending">Pending</SelectItem>
-            <SelectItem value="success">Success</SelectItem>
-            <SelectItem value="failed">Failed</SelectItem>
-            <SelectItem value="expired">Expired</SelectItem>
-          </SelectContent>
-        </Select>
-      </AdminFilterField>
-
       <AdminFilterField label="Urutkan">
         <Select
           value={sort}
@@ -147,102 +142,145 @@ export function PaymentsPanel() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-6">
-      <AdminPageHeader
+      <AdminPageHeaderV2
         title="Payments"
         description="Monitoring transaksi Midtrans di seluruh platform."
-        actions={
-          <Button
-            variant="outline"
-            size="sm"
-            className="min-h-11 sm:min-h-0"
-            disabled={loading}
-            onClick={() => void loadPayments()}
-          >
-            <RefreshCw className="size-4" />
-            Refresh
-          </Button>
-        }
       />
 
-      <AdminFilterBar
-        searchValue={q}
-        onSearchChange={setQ}
-        searchPlaceholder="Order ID, studio..."
-        onSubmit={() => {
-          setPage(1)
-          void loadPayments()
-        }}
-        filters={filterFields}
-      />
-
-      <AdminDataTable
-        columns={[
+      <AdminMetricStrip
+        items={[
           {
-            key: "order",
-            header: "Order ID",
-            cell: (row) => (
-              <span className="font-mono text-xs">{row.orderId}</span>
-            ),
+            id: "all",
+            label: "Semua transaksi",
+            count: statusCounts.all,
+            icon: CreditCard,
+            tone: "neutral",
+            active: !status,
+            onClick: () => applyStatusFilter(""),
           },
           {
-            key: "studio",
-            header: "Studio",
-            cell: (row) => (
-              <div>
-                <div>{row.studioName}</div>
-                <div className="text-xs text-muted-foreground">{row.studioSlug}</div>
-              </div>
-            ),
+            id: "pending",
+            label: "Pending",
+            count: statusCounts.pending,
+            icon: Clock,
+            tone: "warning",
+            active: status === "pending",
+            onClick: () => applyStatusFilter("pending"),
           },
           {
-            key: "plan",
-            header: "Paket",
-            cell: (row) => row.planLabel ?? row.planType ?? "—",
+            id: "failed",
+            label: "Failed / Expired",
+            count: statusCounts.failed,
+            icon: AlertCircle,
+            tone: "error",
+            active: status === "failed",
+            onClick: () => applyStatusFilter("failed"),
           },
           {
-            key: "amount",
-            header: "Nominal",
-            cell: (row) => formatIDR(row.amount),
-          },
-          {
-            key: "status",
-            header: "Status",
-            cell: (row) => (
-              <AdminStatusBadge status={row.transactionStatus} />
-            ),
-          },
-          {
-            key: "date",
-            header: "Tanggal",
-            cell: (row) => formatDate(row.paidAt ?? row.createdAt),
+            id: "success",
+            label: "Success",
+            count: statusCounts.success,
+            icon: CheckCircle2,
+            tone: "success",
+            active: status === "success",
+            onClick: () => applyStatusFilter("success"),
           },
         ]}
-        rows={rows}
-        rowKey={(row) => row.id}
-        loading={loading}
-        onRowClick={(row) => void openDetail(row.id)}
-        emptyIcon={CreditCard}
-        emptyTitle="Belum ada transaksi"
-        emptyDescription="Jalankan admin:backfill-payments untuk histori invoice."
-        mobileCard={(row) => (
-          <div className="space-y-3">
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <p className="truncate font-mono text-xs">{row.orderId}</p>
-                <p className="font-medium">{row.studioName}</p>
-              </div>
-              <AdminStatusBadge status={row.transactionStatus} />
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{row.planLabel ?? row.planType ?? "—"}</span>
-              <span className="font-medium">{formatIDR(row.amount)}</span>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {formatDate(row.paidAt ?? row.createdAt)}
-            </p>
-          </div>
-        )}
       />
+
+      <AdminPanel>
+        <AdminPageToolbar
+          search={
+            <AdminFilterBar
+              searchValue={q}
+              onSearchChange={setQ}
+              searchPlaceholder="Order ID, studio..."
+              onSubmit={() => {
+                setPage(1)
+                void loadPayments()
+              }}
+            />
+          }
+          filters={filterFields}
+          onRefresh={() => void loadPayments()}
+          refreshLoading={loading}
+        />
+
+        <AdminDataTable
+          className="border-0 md:rounded-none md:border-0"
+          columns={[
+            {
+              key: "order",
+              header: "Order ID",
+              cell: (row) => (
+                <span className="font-mono text-xs">{row.orderId}</span>
+              ),
+            },
+            {
+              key: "studio",
+              header: "Studio",
+              cell: (row) => (
+                <div className="min-w-0">
+                  <div>{row.studioName}</div>
+                  <div className="text-xs text-muted-foreground">{row.studioSlug}</div>
+                </div>
+              ),
+            },
+            {
+              key: "plan",
+              header: "Paket",
+              cell: (row) => row.planLabel ?? row.planType ?? "—",
+            },
+            {
+              key: "amount",
+              header: "Nominal",
+              numeric: true,
+              cell: (row) => formatIDR(row.amount),
+            },
+            {
+              key: "status",
+              header: "Status",
+              cell: (row) => (
+                <AdminStatusBadge status={row.transactionStatus} />
+              ),
+            },
+            {
+              key: "date",
+              header: "Tanggal",
+              cell: (row) => formatDate(row.paidAt ?? row.createdAt),
+            },
+          ]}
+          rows={rows}
+          rowKey={(row) => row.id}
+          loading={loading}
+          onRowClick={(row) => void openDetail(row.id)}
+          emptyIcon={CreditCard}
+          emptyTitle="Belum ada transaksi"
+          emptyDescription="Jalankan admin:backfill-payments untuk histori invoice."
+          mobileCard={(row) => (
+            <div className="space-y-3">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="truncate font-mono text-xs">{row.orderId}</p>
+                  <p className="font-medium">{row.studioName}</p>
+                </div>
+                <AdminStatusBadge status={row.transactionStatus} />
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">
+                  {row.planLabel ?? row.planType ?? "—"}
+                </span>
+                <span className="font-medium tabular-nums">
+                  {formatIDR(row.amount)}
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {formatDate(row.paidAt ?? row.createdAt)}
+              </p>
+            </div>
+          )}
+        />
+      </AdminPanel>
 
       <AdminPagination
         page={page}
@@ -254,7 +292,10 @@ export function PaymentsPanel() {
       />
 
       <Sheet open={detailOpen} onOpenChange={setDetailOpen}>
-        <SheetContent side="right" className="w-full sm:max-w-lg">
+        <SheetContent
+          side="right"
+          className="w-full overscroll-contain sm:max-w-lg"
+        >
           <SheetHeader>
             <SheetTitle>Detail Transaksi</SheetTitle>
             <SheetDescription>{detail?.orderId ?? ""}</SheetDescription>
@@ -262,9 +303,13 @@ export function PaymentsPanel() {
           {detailLoading ? (
             <p className="mt-6 text-sm text-muted-foreground">Memuat...</p>
           ) : detail ? (
-            <AdminSectionCard className="mt-6 space-y-4 text-sm">
+            <AdminPanelInset className="mt-6 space-y-4 rounded-lg border border-border bg-muted/30 text-sm">
               <DetailRow label="Studio" value={detail.studioName} />
-              <DetailRow label="Nominal" value={formatIDR(detail.amount)} />
+              <DetailRow
+                label="Nominal"
+                value={formatIDR(detail.amount)}
+                numeric
+              />
               <DetailRow label="Status" value={detail.transactionStatus} />
               <DetailRow label="Metode" value={detail.paymentMethod ?? "—"} />
               <DetailRow label="Transaction ID" value={detail.transactionId ?? "—"} />
@@ -277,7 +322,7 @@ export function PaymentsPanel() {
                   {JSON.stringify(detail.rawPayload, null, 2)}
                 </pre>
               </div>
-            </AdminSectionCard>
+            </AdminPanelInset>
           ) : null}
         </SheetContent>
       </Sheet>
@@ -285,11 +330,23 @@ export function PaymentsPanel() {
   )
 }
 
-function DetailRow({ label, value }: { label: string; value: string }) {
+function DetailRow({
+  label,
+  value,
+  numeric,
+}: {
+  label: string
+  value: string
+  numeric?: boolean
+}) {
   return (
     <div className="flex items-start justify-between gap-4">
       <span className="text-muted-foreground">{label}</span>
-      <span className="text-right font-medium">{value}</span>
+      <span
+        className={`min-w-0 text-right font-medium ${numeric ? "tabular-nums" : ""}`}
+      >
+        {value}
+      </span>
     </div>
   )
 }

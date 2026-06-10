@@ -8,7 +8,7 @@ import { PageHeading } from "@/components/design"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { authClient } from "@/lib/auth-client"
+import { authClient } from "@/lib/auth/auth-client"
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("")

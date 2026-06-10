@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { BorderBeam } from "@/components/ui/border-beam"
 
 type MetricCardProps = {
   label: string
@@ -16,6 +17,7 @@ type MetricCardProps = {
   trend?: number
   trendLabel?: string
   className?: string
+  isFeatured?: boolean
 }
 
 export function MetricCard({
@@ -25,11 +27,21 @@ export function MetricCard({
   trend,
   trendLabel = "vs bulan lalu",
   className,
+  isFeatured = false,
 }: MetricCardProps) {
   const isPositive = trend !== undefined && trend >= 0
 
   return (
-    <Card className={className}>
+    <Card className={cn("relative overflow-hidden bg-card border border-border", className)}>
+      {isFeatured && (
+        <BorderBeam
+          size={180}
+          duration={6}
+          delay={0}
+          colorFrom="var(--brand-scarlet)"
+          colorTo="oklch(100% 0 0 / 10%)"
+        />
+      )}
       <CardHeader>
         <CardDescription className="flex items-center gap-2">
           {Icon && <Icon className="size-3.5" />}

@@ -2,12 +2,14 @@
 
 import Link from "next/link"
 import { useCallback, useEffect, useState } from "react"
-import { ShieldBan } from "lucide-react"
+import { History, ShieldBan } from "lucide-react"
+import { toast } from "sonner"
 
 import {
   AdminDataTable,
-  AdminFeedbackBanner,
-  AdminPageHeader,
+  AdminMetricStrip,
+  AdminPageHeaderV2,
+  AdminPanel,
   AdminStatusBadge,
 } from "@/components/admin/ui"
 import { Button } from "@/components/ui/button"
@@ -22,7 +24,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { getSuspensionReasonCategoryLabel } from "@/lib/suspension-types"
+import { getSuspensionReasonCategoryLabel } from "@/lib/admin/suspension-types"
 
 type SuspendedStudio = {
   id: string
@@ -60,7 +62,6 @@ export function SuspensionsPanel() {
   const [suspended, setSuspended] = useState<SuspendedStudio[]>([])
   const [logs, setLogs] = useState<SuspensionLog[]>([])
   const [loading, setLoading] = useState(true)
-  const [feedback, setFeedback] = useState<string | null>(null)
   const [reactivateTarget, setReactivateTarget] = useState<SuspendedStudio | null>(
     null,
   )
@@ -112,7 +113,7 @@ export function SuspensionsPanel() {
       }
       setReactivateTarget(null)
       setReactivateReason("")
-      setFeedback(`${reactivateTarget.name} berhasil di-reactivate.`)
+      toast.success(`${reactivateTarget.name} berhasil di-reactivate.`)
       await loadData()
     } finally {
       setReactivateBusy(false)
@@ -121,67 +122,114 @@ export function SuspensionsPanel() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-8">
-      <AdminPageHeader
+      <AdminPageHeaderV2
         title="Suspensions"
         description="Studio yang dinonaktifkan dan riwayat suspend/reactivate."
       />
 
-      {feedback ? (
-        <AdminFeedbackBanner
-          message={feedback}
-          variant="success"
-          onDismiss={() => setFeedback(null)}
-        />
-      ) : null}
+      <AdminMetricStrip
+        items={[
+          {
+            id: "suspended",
+            label: "Studio suspended",
+            count: suspended.length,
+            icon: ShieldBan,
+            tone: suspended.length > 0 ? "error" : "success",
+          },
+          {
+            id: "history",
+            label: "Riwayat log",
+            count: logs.length,
+            icon: History,
+            tone: "info",
+          },
+        ]}
+      />
 
       <section className="space-y-3">
         <h2 className="text-sm font-medium">Studio suspended</h2>
-        <AdminDataTable
-          columns={[
-            {
-              key: "studio",
-              header: "Studio",
-              cell: (row) => (
-                <div>
-                  <div className="font-medium">{row.name}</div>
-                  <div className="text-xs text-muted-foreground">{row.slug}</div>
-                </div>
-              ),
-            },
-            {
-              key: "owner",
-              header: "Owner",
-              cell: (row) => (
-                <div>
-                  <div>{row.ownerName ?? "—"}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {row.ownerEmail ?? "—"}
+        <AdminPanel>
+          <AdminDataTable
+            className="border-0 md:rounded-none md:border-0"
+            columns={[
+              {
+                key: "studio",
+                header: "Studio",
+                cell: (row) => (
+                  <div className="min-w-0">
+                    <div className="font-medium">{row.name}</div>
+                    <div className="text-xs text-muted-foreground">{row.slug}</div>
                   </div>
+                ),
+              },
+              {
+                key: "owner",
+                header: "Owner",
+                cell: (row) => (
+                  <div className="min-w-0">
+                    <div>{row.ownerName ?? "—"}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {row.ownerEmail ?? "—"}
+                    </div>
+                  </div>
+                ),
+              },
+              { key: "city", header: "Kota", cell: (row) => row.city ?? "—" },
+              {
+                key: "status",
+                header: "Status",
+                cell: (row) => <AdminStatusBadge status={row.status} />,
+              },
+              {
+                key: "updated",
+                header: "Diperbarui",
+                cell: (row) => formatDate(row.updatedAt),
+              },
+              {
+                key: "action",
+                header: "Aksi",
+                className: "text-right",
+                cell: (row) => (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="min-h-11 sm:min-h-0"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setReactivateTarget(row)
+                      setReactivateReason("")
+                      setReactivateError(null)
+                    }}
+                  >
+                    Reactivate
+                  </Button>
+                ),
+              },
+            ]}
+            rows={suspended}
+            rowKey={(row) => row.id}
+            loading={loading}
+            emptyIcon={ShieldBan}
+            emptyTitle="Belum ada studio yang di-suspend"
+            emptyDescription="Semua tenant aktif — tidak ada yang perlu ditinjau."
+            emptyCelebratory
+            mobileCard={(row) => (
+              <div className="space-y-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="font-medium">{row.name}</p>
+                    <p className="text-xs text-muted-foreground">{row.slug}</p>
+                  </div>
+                  <AdminStatusBadge status={row.status} />
                 </div>
-              ),
-            },
-            { key: "city", header: "Kota", cell: (row) => row.city ?? "—" },
-            {
-              key: "status",
-              header: "Status",
-              cell: (row) => <AdminStatusBadge status={row.status} />,
-            },
-            {
-              key: "updated",
-              header: "Diperbarui",
-              cell: (row) => formatDate(row.updatedAt),
-            },
-            {
-              key: "action",
-              header: "Aksi",
-              className: "text-right",
-              cell: (row) => (
+                <p className="text-sm text-muted-foreground">
+                  {row.ownerName ?? "—"} · {formatDate(row.updatedAt)}
+                </p>
                 <Button
                   size="sm"
                   variant="outline"
-                  className="min-h-11 sm:min-h-0"
-                  onClick={(e) => {
-                    e.stopPropagation()
+                  className="min-h-11 w-full"
+                  onClick={() => {
                     setReactivateTarget(row)
                     setReactivateReason("")
                     setReactivateError(null)
@@ -189,42 +237,10 @@ export function SuspensionsPanel() {
                 >
                   Reactivate
                 </Button>
-              ),
-            },
-          ]}
-          rows={suspended}
-          rowKey={(row) => row.id}
-          loading={loading}
-          emptyIcon={ShieldBan}
-          emptyTitle="Belum ada studio yang di-suspend"
-          emptyDescription="Gunakan Tenants → detail studio → Suspend tenant."
-          mobileCard={(row) => (
-            <div className="space-y-3">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="font-medium">{row.name}</p>
-                  <p className="text-xs text-muted-foreground">{row.slug}</p>
-                </div>
-                <AdminStatusBadge status={row.status} />
               </div>
-              <p className="text-sm text-muted-foreground">
-                {row.ownerName ?? "—"} · {formatDate(row.updatedAt)}
-              </p>
-              <Button
-                size="sm"
-                variant="outline"
-                className="min-h-11 w-full"
-                onClick={() => {
-                  setReactivateTarget(row)
-                  setReactivateReason("")
-                  setReactivateError(null)
-                }}
-              >
-                Reactivate
-              </Button>
-            </div>
-          )}
-        />
+            )}
+          />
+        </AdminPanel>
         {!loading && suspended.length === 0 ? (
           <p className="text-center text-sm text-muted-foreground">
             Gunakan{" "}
@@ -238,50 +254,53 @@ export function SuspensionsPanel() {
 
       <section className="space-y-3">
         <h2 className="text-sm font-medium">Riwayat</h2>
-        <AdminDataTable
-          columns={[
-            { key: "studio", header: "Studio", cell: (row) => row.studioName },
-            {
-              key: "change",
-              header: "Perubahan",
-              cell: (row) => `${row.statusBefore} → ${row.statusAfter}`,
-            },
-            {
-              key: "category",
-              header: "Kategori",
-              cell: (row) => getSuspensionReasonCategoryLabel(row.reasonCategory),
-            },
-            {
-              key: "reason",
-              header: "Alasan",
-              cell: (row) => (
-                <span className="max-w-xs truncate">{row.reason}</span>
-              ),
-            },
-            {
-              key: "time",
-              header: "Waktu",
-              cell: (row) => formatDate(row.createdAt),
-            },
-          ]}
-          rows={logs}
-          rowKey={(row) => row.id}
-          loading={loading}
-          emptyIcon={ShieldBan}
-          emptyTitle="Belum ada riwayat"
-          mobileCard={(row) => (
-            <div className="space-y-2 text-sm">
-              <p className="font-medium">{row.studioName}</p>
-              <p className="text-muted-foreground">
-                {row.statusBefore} → {row.statusAfter}
-              </p>
-              <p className="text-xs text-muted-foreground">{row.reason}</p>
-              <p className="text-xs text-muted-foreground">
-                {formatDate(row.createdAt)}
-              </p>
-            </div>
-          )}
-        />
+        <AdminPanel>
+          <AdminDataTable
+            className="border-0 md:rounded-none md:border-0"
+            columns={[
+              { key: "studio", header: "Studio", cell: (row) => row.studioName },
+              {
+                key: "change",
+                header: "Perubahan",
+                cell: (row) => `${row.statusBefore} → ${row.statusAfter}`,
+              },
+              {
+                key: "category",
+                header: "Kategori",
+                cell: (row) => getSuspensionReasonCategoryLabel(row.reasonCategory),
+              },
+              {
+                key: "reason",
+                header: "Alasan",
+                cell: (row) => (
+                  <span className="max-w-xs truncate">{row.reason}</span>
+                ),
+              },
+              {
+                key: "time",
+                header: "Waktu",
+                cell: (row) => formatDate(row.createdAt),
+              },
+            ]}
+            rows={logs}
+            rowKey={(row) => row.id}
+            loading={loading}
+            emptyIcon={History}
+            emptyTitle="Belum ada riwayat"
+            mobileCard={(row) => (
+              <div className="space-y-2 text-sm">
+                <p className="font-medium">{row.studioName}</p>
+                <p className="text-muted-foreground">
+                  {row.statusBefore} → {row.statusAfter}
+                </p>
+                <p className="text-xs text-muted-foreground">{row.reason}</p>
+                <p className="text-xs text-muted-foreground">
+                  {formatDate(row.createdAt)}
+                </p>
+              </div>
+            )}
+          />
+        </AdminPanel>
       </section>
 
       <AlertDialog

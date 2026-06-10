@@ -3,10 +3,10 @@ import { NextResponse } from "next/server"
 import {
   BillingActivationError,
   confirmOrderPayment,
-} from "@/lib/billing-activation"
-import { isMidtransConfigured } from "@/lib/midtrans"
-import { auth } from "@/lib/auth"
-import { getStudioForUser, getStudioSuspendedFlagForUser } from "@/lib/studio-service"
+} from "@/lib/billing/billing-activation"
+import { isMidtransConfigured } from "@/lib/billing/midtrans"
+import { auth } from "@/lib/auth/auth"
+import { getStudioForUser, getStudioSuspendedFlagForUser } from "@/lib/studio/studio-service"
 
 export async function POST(request: Request) {
   const session = await auth.api.getSession({ headers: request.headers })

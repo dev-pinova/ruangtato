@@ -3,7 +3,7 @@ import { redirect } from "next/navigation"
 
 import { db, isDatabaseConfigured } from "@/db"
 import { user } from "@/db/auth-schema"
-import { getServerSession } from "@/lib/session"
+import { getServerSession } from "@/lib/auth/session"
 
 export type PlatformRole = "super_admin" | "admin" | "support" | "finance"
 
@@ -103,7 +103,7 @@ export async function requirePlatformApiPermission(
   permission: PlatformPermission,
   allowedRoles?: PlatformRole[],
 ): Promise<PlatformUser | Response> {
-  const { auth } = await import("@/lib/auth")
+  const { auth } = await import("@/lib/auth/auth")
   const session = await auth.api.getSession({ headers: request.headers })
 
   if (!session?.user?.id) {

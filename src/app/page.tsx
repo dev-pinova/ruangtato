@@ -7,11 +7,11 @@ import {
   buildWebSiteJsonLd,
   staticPageMetadata,
 } from "@/lib/seo"
-import { buildShowcaseStudios } from "@/lib/showcase-demos"
-import { listPublishedStudios } from "@/lib/studio-service"
-import { getCitiesFromStudios } from "@/lib/studio-utils"
+import { buildShowcaseStudios } from "@/lib/studio/showcase-demos"
+import { listPublishedStudios } from "@/lib/studio/studio-service"
+import { getCitiesFromStudios } from "@/lib/studio/studio-utils"
 
-export const dynamic = "force-dynamic"
+export const revalidate = 300
 
 export const metadata: Metadata = staticPageMetadata("/")
 

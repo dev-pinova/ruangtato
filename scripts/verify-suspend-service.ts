@@ -7,8 +7,8 @@ import {
   getPrimaryOwnerForStudio,
   listSuspendedStudios,
   listSuspensionLogs,
-} from "../src/lib/admin-suspend-service"
-import { isSuspensionReasonCategory } from "../src/lib/suspension-types"
+} from "../src/lib/admin/admin-suspend-service"
+import { isSuspensionReasonCategory } from "../src/lib/admin/suspension-types"
 
 async function main() {
   if (!isDatabaseConfigured() || !db) {

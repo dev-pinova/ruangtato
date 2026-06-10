@@ -3,6 +3,7 @@
 import { useEffect, useState, useSyncExternalStore } from "react"
 import { usePathname, useRouter } from "next/navigation"
 import Link from "next/link"
+import { motion } from "framer-motion"
 import {
   Paintbrush,
   BarChart3,
@@ -32,12 +33,12 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet"
 import { PlatformLogo } from "@/components/brand/platform-logo"
-import { authClient } from "@/lib/auth-client"
+import { authClient } from "@/lib/auth/auth-client"
 
 const NAV_ITEMS = [
-  { href: "/app/builder", label: "Builder", icon: Paintbrush },
+  { href: "/app/builder", label: "Builder Halaman", icon: Paintbrush },
   { href: "/app/dashboard", label: "Dashboard", icon: BarChart3 },
-  { href: "/app/billing", label: "Billing", icon: CreditCard },
+  { href: "/app/billing", label: "Langganan", icon: CreditCard },
   { href: "/app/settings", label: "Pengaturan", icon: Settings },
 ]
 
@@ -104,6 +105,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<MeUser | null>(null)
   const [studio, setStudio] = useState<StudioSummary | null>(null)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const collapsed = useSyncExternalStore(
     subscribeCollapsed,
     getCollapsedSnapshot,
@@ -156,6 +158,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         }
       })
       .catch(() => {})
+      .finally(() => {
+        setIsLoading(false)
+      })
 
     window.addEventListener("studio-profile-updated", onStudioProfileUpdated)
     return () => {
@@ -194,30 +199,38 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             pathname === item.href || pathname.startsWith(item.href + "/")
           const Icon = item.icon
           return (
-            <Link
+            <motion.div
               key={item.href}
-              href={item.href}
-              onClick={opts.onNavigate}
-              title={isCollapsed ? item.label : undefined}
-              aria-label={isCollapsed ? item.label : undefined}
-              className={cn(
-                "group/nav-item flex items-center rounded-md text-sm transition-colors",
-                isCollapsed
-                  ? "h-9 justify-center"
-                  : "gap-2.5 px-2.5 py-1.5",
-                isActive
-                  ? "bg-muted text-foreground"
-                  : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
-              )}
+              whileHover={{ x: 2 }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
             >
-              <Icon
+              <Link
+                href={item.href}
+                onClick={opts.onNavigate}
+                title={isCollapsed ? item.label : undefined}
+                aria-label={isCollapsed ? item.label : undefined}
                 className={cn(
-                  "size-4 shrink-0",
-                  isActive ? "text-foreground" : "text-muted-foreground"
+                  "group/nav-item relative flex items-center rounded-md text-sm transition-colors",
+                  isCollapsed
+                    ? "h-9 justify-center"
+                    : "gap-2.5 pl-4 pr-2.5 py-1.5",
+                  isActive
+                    ? "bg-muted/30 text-white font-medium"
+                    : "text-muted-foreground hover:bg-muted/20 hover:text-foreground"
                 )}
-              />
-              {!isCollapsed && <span>{item.label}</span>}
-            </Link>
+              >
+                {isActive && !isCollapsed && (
+                  <span className="absolute left-0.5 top-2.5 bottom-2.5 w-0.5 rounded bg-[var(--brand-scarlet)]" />
+                )}
+                <Icon
+                  className={cn(
+                    "size-4 shrink-0",
+                    isActive ? "text-white" : "text-muted-foreground group-hover/nav-item:text-foreground"
+                  )}
+                />
+                {!isCollapsed && <span>{item.label}</span>}
+              </Link>
+            </motion.div>
           )
         })}
       </nav>
@@ -230,13 +243,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <aside
         data-collapsed={collapsed ? "true" : "false"}
         className={cn(
-          "hidden shrink-0 flex-col border-r border-border bg-background transition-all duration-200 md:flex",
+          "hidden shrink-0 flex-col border-r border-zinc-900/60 bg-zinc-950/70 backdrop-blur-md transition-all duration-200 md:flex",
           collapsed ? "w-16" : "w-60"
         )}
       >
         <div
           className={cn(
-            "flex h-14 items-center border-b border-border shrink-0",
+            "flex h-14 items-center border-b border-zinc-900/60 shrink-0",
             collapsed ? "justify-center px-2" : "px-5"
           )}
         >
@@ -245,7 +258,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
         <div
           className={cn(
-            "flex shrink-0 border-b border-border py-2",
+            "flex shrink-0 border-b border-zinc-900/60 py-2",
             collapsed ? "justify-center px-2" : "justify-end px-3"
           )}
         >
@@ -285,48 +298,70 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             )}
           >
             {studio ? (
-              <a
-                href={`/app/studio/${studio.slug}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                title={collapsed ? "Lihat Studio" : undefined}
-                aria-label={collapsed ? "Lihat Studio" : undefined}
-                className={cn(
-                  "flex items-center rounded-md text-sm text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground",
-                  collapsed
-                    ? "h-9 justify-center"
-                    : "gap-2.5 px-2.5 py-1.5"
-                )}
+              <motion.div
+                whileHover={{ x: 2 }}
+                transition={{ type: "spring", stiffness: 400, damping: 25 }}
               >
-                <ExternalLink className="size-4 shrink-0" />
-                {!collapsed && <span>Lihat Studio</span>}
-              </a>
+                <a
+                  href={`/app/studio/${studio.slug}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={collapsed ? "Lihat Studio" : undefined}
+                  aria-label={collapsed ? "Lihat Studio" : undefined}
+                  className={cn(
+                    "flex items-center rounded-md text-sm text-muted-foreground transition-colors hover:bg-muted/20 hover:text-foreground",
+                    collapsed
+                      ? "h-9 justify-center"
+                      : "gap-2.5 px-2.5 py-1.5"
+                  )}
+                >
+                  <ExternalLink className="size-4 shrink-0" />
+                  {!collapsed && <span>Lihat Studio</span>}
+                </a>
+              </motion.div>
             ) : null}
           </nav>
         </div>
 
         <div className="border-t border-border p-3 shrink-0">
-          <div
-            className={cn(
-              "flex items-center rounded-md",
-              collapsed ? "justify-center" : "gap-3 px-2.5 py-1.5"
-            )}
-            title={collapsed ? userTitle : undefined}
-          >
-            <Avatar size="sm">
-              <AvatarFallback>{initials}</AvatarFallback>
-            </Avatar>
-            {!collapsed && (
-              <div className="flex-1 min-w-0">
-                <p className="truncate text-sm font-medium">{userName}</p>
-                {userEmail ? (
-                  <p className="truncate text-xs text-muted-foreground">
-                    {userEmail}
-                  </p>
-                ) : null}
-              </div>
-            )}
-          </div>
+          {isLoading ? (
+            <div
+              className={cn(
+                "flex items-center",
+                collapsed ? "justify-center" : "gap-3 px-2.5 py-1.5 animate-pulse"
+              )}
+            >
+              <div className="size-8 rounded-full bg-muted shrink-0" />
+              {!collapsed && (
+                <div className="flex-1 space-y-1.5">
+                  <div className="h-3 w-16 rounded bg-muted" />
+                  <div className="h-2.5 w-24 rounded bg-muted" />
+                </div>
+              )}
+            </div>
+          ) : (
+            <div
+              className={cn(
+                "flex items-center rounded-md",
+                collapsed ? "justify-center" : "gap-3 px-2.5 py-1.5"
+              )}
+              title={collapsed ? userTitle : undefined}
+            >
+              <Avatar size="sm">
+                <AvatarFallback>{initials}</AvatarFallback>
+              </Avatar>
+              {!collapsed && (
+                <div className="flex-1 min-w-0">
+                  <p className="truncate text-sm font-medium">{userName}</p>
+                  {userEmail ? (
+                    <p className="truncate text-xs text-muted-foreground">
+                      {userEmail}
+                    </p>
+                  ) : null}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </aside>
 
@@ -359,15 +394,21 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </Sheet>
 
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium">
-                {studio?.name ?? "Studio Anda"}
-              </span>
-              {studio?.isPublished ? (
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-muted/50 px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
-                  <span className="size-1.5 rounded-full bg-emerald-400" />
-                  Live
-                </span>
-              ) : null}
+              {isLoading ? (
+                <div className="h-4 w-24 rounded bg-muted animate-pulse" />
+              ) : (
+                <>
+                  <span className="text-sm font-medium">
+                    {studio?.name ?? "Studio Anda"}
+                  </span>
+                  {studio?.isPublished ? (
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-muted/50 px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                      <span className="size-1.5 rounded-full bg-emerald-400" />
+                      Live
+                    </span>
+                  ) : null}
+                </>
+              )}
             </div>
           </div>
 

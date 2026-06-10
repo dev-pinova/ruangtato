@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server"
 
-import { auth } from "@/lib/auth"
+import { auth } from "@/lib/auth/auth"
 import { isR2Configured, uploadToR2 } from "@/lib/r2"
-import { getStudioSuspendedFlagForUser } from "@/lib/studio-service"
+import { getStudioSuspendedFlagForUser } from "@/lib/studio/studio-service"
+import { validateUploadedFile } from "@/lib/upload"
 
 export async function POST(request: Request) {
   const session = await auth.api.getSession({ headers: request.headers })
@@ -29,6 +30,15 @@ export async function POST(request: Request) {
 
   if (!(file instanceof File)) {
     return NextResponse.json({ error: "file is required" }, { status: 400 })
+  }
+
+  // Validate file size, MIME type, and extension
+  const validationErrors = validateUploadedFile(file)
+  if (validationErrors.length > 0) {
+    return NextResponse.json(
+      { error: "Validation failed", details: validationErrors },
+      { status: 400 },
+    )
   }
 
   try {

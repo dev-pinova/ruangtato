@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 
-import { createStudioLead } from "@/lib/studio-service"
+import { createStudioLead } from "@/lib/studio/studio-service"
 
 export async function POST(
   request: Request,

@@ -4,7 +4,7 @@ import { Compass, HelpCircle, Home, LogIn } from "lucide-react"
 
 import { SectionHeading } from "@/components/design"
 import { MarketingShell } from "@/components/marketing/marketing-shell"
-import { buttonVariants } from "@/components/ui/button"
+import { Button } from "@/components/ui/button"
 import { createPageMetadata } from "@/lib/seo"
 import { SITE_NAME } from "@/lib/site"
 import { cn } from "@/lib/utils"
@@ -96,17 +96,16 @@ export default function NotFound() {
             {NAV_LINKS.map((link) => {
               const Icon = link.icon
               return (
-                <Link
+                <Button
                   key={link.href}
-                  href={link.href}
+                  variant={link.variant}
+                  size="lg"
+                  nativeButton={false}
                   className={cn(
-                    buttonVariants({
-                      variant: link.variant,
-                      size: "lg",
-                    }),
                     "h-auto flex-col items-start gap-1 px-4 py-3 text-left",
                     link.primary && "sm:col-span-2"
                   )}
+                  render={<Link href={link.href} />}
                 >
                   <span className="inline-flex items-center gap-2 text-sm font-medium">
                     <Icon className="size-4" aria-hidden />
@@ -115,7 +114,7 @@ export default function NotFound() {
                   <span className="text-xs font-normal opacity-80">
                     {link.description}
                   </span>
-                </Link>
+                </Button>
               )
             })}
           </nav>

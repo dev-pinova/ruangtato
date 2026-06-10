@@ -6,8 +6,8 @@ import { ArrowLeft } from "lucide-react"
 import { PlatformLogo } from "@/components/brand/platform-logo"
 import { BuilderUI } from "@/components/builder/builder-ui"
 import { Button } from "@/components/ui/button"
-import { getServerSession } from "@/lib/session"
-import { getStudioForUser, studioHasActiveSubscription } from "@/lib/studio-service"
+import { getServerSession } from "@/lib/auth/session"
+import { getStudioForUser, studioHasActiveSubscription } from "@/lib/studio/studio-service"
 
 function BuilderHeader({
   subtitle,
@@ -60,7 +60,7 @@ export default async function BuilderPage() {
   }
 
   return (
-    <div className="flex h-screen flex-col bg-background selection:bg-primary selection:text-primary-foreground">
+    <div className="flex h-dvh flex-col overflow-hidden bg-background selection:bg-primary selection:text-primary-foreground">
       <BuilderHeader
         subtitle="Landing Page Builder"
         badge={
@@ -70,7 +70,7 @@ export default async function BuilderPage() {
         }
       />
 
-      <main className="min-h-0 flex-1">
+      <main className="flex min-h-0 flex-1 flex-col overflow-hidden">
         <BuilderUI studioId={studio.id} initialStudio={studio} />
       </main>
     </div>

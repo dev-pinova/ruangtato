@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server"
 
-import { auth } from "@/lib/auth"
+import { auth } from "@/lib/auth/auth"
 import {
   getMidtransClientKey,
   getSnapClient,
   isMidtransConfigured,
   PLAN_CATALOG,
-} from "@/lib/midtrans"
-import { recordPendingPayment } from "@/lib/payment-service"
-import { getStudioForUser, getStudioSuspendedFlagForUser } from "@/lib/studio-service"
+} from "@/lib/billing/midtrans"
+import { recordPendingPayment } from "@/lib/billing/payment-service"
+import { getStudioForUser, getStudioSuspendedFlagForUser } from "@/lib/studio/studio-service"
 
 export async function POST(request: Request) {
   const session = await auth.api.getSession({ headers: request.headers })

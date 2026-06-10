@@ -11,8 +11,9 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
-import { AdminEmptyState } from "./admin-empty-state"
+import { AdminEmptyStateV2 } from "./admin-empty-state-v2"
 import { AdminTableSkeleton } from "./admin-loading-skeleton"
+import { AdminPanel } from "./admin-panel"
 
 export type AdminTableColumn<T> = {
   key: string
@@ -20,6 +21,7 @@ export type AdminTableColumn<T> = {
   cell: (row: T) => React.ReactNode
   className?: string
   hideOnMobile?: boolean
+  numeric?: boolean
 }
 
 type AdminDataTableProps<T> = {
@@ -31,6 +33,7 @@ type AdminDataTableProps<T> = {
   emptyIcon: LucideIcon
   emptyTitle: string
   emptyDescription?: string
+  emptyCelebratory?: boolean
   mobileCard?: (row: T) => React.ReactNode
   className?: string
 }
@@ -44,24 +47,30 @@ export function AdminDataTable<T>({
   emptyIcon,
   emptyTitle,
   emptyDescription,
+  emptyCelebratory,
   mobileCard,
   className,
 }: AdminDataTableProps<T>) {
   const desktopColumns = columns.filter((c) => !c.hideOnMobile)
 
   if (loading) {
-    return <AdminTableSkeleton />
+    return (
+      <AdminPanel className={className}>
+        <AdminTableSkeleton />
+      </AdminPanel>
+    )
   }
 
   if (rows.length === 0) {
     return (
-      <div className="rounded-xl border border-border">
-        <AdminEmptyState
+      <AdminPanel className={className}>
+        <AdminEmptyStateV2
           icon={emptyIcon}
           title={emptyTitle}
           description={emptyDescription}
+          celebratory={emptyCelebratory}
         />
-      </div>
+      </AdminPanel>
     )
   }
 
@@ -86,7 +95,7 @@ export function AdminDataTable<T>({
                 : undefined
             }
             className={cn(
-              "rounded-xl border border-border bg-card/50 p-4",
+              "rounded-xl border border-border bg-card p-4",
               onRowClick &&
                 "cursor-pointer transition-colors hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
             )}
@@ -98,7 +107,14 @@ export function AdminDataTable<T>({
                 {desktopColumns.map((col) => (
                   <div key={col.key} className="flex justify-between gap-3 text-sm">
                     <span className="text-muted-foreground">{col.header}</span>
-                    <span className="text-right font-medium">{col.cell(row)}</span>
+                    <span
+                      className={cn(
+                        "min-w-0 text-right font-medium",
+                        col.numeric && "tabular-nums",
+                      )}
+                    >
+                      {col.cell(row)}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -108,12 +124,18 @@ export function AdminDataTable<T>({
       </div>
 
       {/* Desktop table */}
-      <div className={cn("hidden rounded-xl border border-border md:block", className)}>
+      <AdminPanel className={cn("hidden md:block", className)}>
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="hover:bg-transparent">
               {columns.map((col) => (
-                <TableHead key={col.key} className={col.className}>
+                <TableHead
+                  key={col.key}
+                  className={cn(
+                    "text-xs font-medium uppercase tracking-wide text-muted-foreground",
+                    col.className,
+                  )}
+                >
                   {col.header}
                 </TableHead>
               ))}
@@ -127,7 +149,14 @@ export function AdminDataTable<T>({
                 onClick={onRowClick ? () => onRowClick(row) : undefined}
               >
                 {columns.map((col) => (
-                  <TableCell key={col.key} className={col.className}>
+                  <TableCell
+                    key={col.key}
+                    className={cn(
+                      "min-w-0",
+                      col.numeric && "tabular-nums",
+                      col.className,
+                    )}
+                  >
                     {col.cell(row)}
                   </TableCell>
                 ))}
@@ -135,7 +164,7 @@ export function AdminDataTable<T>({
             ))}
           </TableBody>
         </Table>
-      </div>
+      </AdminPanel>
     </>
   )
 }

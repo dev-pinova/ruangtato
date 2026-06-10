@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server"
 
-import { getPlatformAnalytics } from "@/lib/admin-analytics-service"
+import { getPlatformAnalytics } from "@/lib/admin/admin-analytics-service"
 import {
   isPlatformApiUser,
   requirePlatformApiPermission,
-} from "@/lib/admin-auth"
+} from "@/lib/admin/admin-auth"
 
 export async function GET(request: Request) {
   const authResult = await requirePlatformApiPermission(request, "analytics:read")

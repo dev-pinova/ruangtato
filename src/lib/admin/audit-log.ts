@@ -1,4 +1,4 @@
-import { db } from "@/db"
+import { getDb } from "@/db"
 import { auditLogs } from "@/db/schema"
 
 export async function writeAuditLog(input: {
@@ -9,9 +9,9 @@ export async function writeAuditLog(input: {
   reason?: string | null
   metadata?: Record<string, unknown>
 }) {
-  if (!db) throw new Error("Database not configured")
+  const d = getDb()
 
-  await db.insert(auditLogs).values({
+  await d.insert(auditLogs).values({
     actorUserId: input.actorUserId,
     action: input.action,
     targetType: input.targetType,
@@ -20,3 +20,4 @@ export async function writeAuditLog(input: {
     metadata: input.metadata ?? null,
   })
 }
+

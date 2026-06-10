@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server"
 
-import { auth } from "@/lib/auth"
+import { auth } from "@/lib/auth/auth"
 import {
   getStudioSuspendedFlagForUser,
   publishStudio,
   studioHasActiveSubscription,
   userCanAccessStudio,
-} from "@/lib/studio-service"
+} from "@/lib/studio/studio-service"
 
 export async function POST(
   request: Request,

@@ -3,8 +3,8 @@ import { NextResponse } from "next/server"
 import {
   isPlatformApiUser,
   requirePlatformApiPermission,
-} from "@/lib/admin-auth"
-import { listPayments, type PaymentListSort } from "@/lib/payment-service"
+} from "@/lib/admin/admin-auth"
+import { listPayments, type PaymentListSort } from "@/lib/billing/payment-service"
 
 const SORT_VALUES: PaymentListSort[] = [
   "newest",

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Cormorant_Garamond, Inter } from "next/font/google";
+import { Geist, Geist_Mono, Cormorant_Garamond, Inter, Syne } from "next/font/google";
 import "./globals.css";
 import { rootMetadata } from "@/lib/seo";
 
@@ -28,12 +28,19 @@ const inter = Inter({
   display: "swap",
 });
 
+// Display Syne font for modern headings/showcase.
+const syne = Syne({
+  variable: "--font-syne",
+  subsets: ["latin"],
+  display: "swap",
+});
+
 export const metadata: Metadata = rootMetadata;
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#000000",
+  themeColor: "#121212",
 };
 
 export default function RootLayout({
@@ -44,7 +51,7 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={`dark ${geistSans.variable} ${geistMono.variable} ${cormorant.variable} ${inter.variable} h-full antialiased`}
+      className={`dark ${geistSans.variable} ${geistMono.variable} ${cormorant.variable} ${inter.variable} ${syne.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">{children}</body>
     </html>

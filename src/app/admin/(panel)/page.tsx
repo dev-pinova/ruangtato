@@ -1,5 +1,5 @@
 import { AdminOverviewPanel } from "@/components/admin/admin-overview-panel"
-import { requirePlatformSession } from "@/lib/admin-auth"
+import { requirePlatformSession } from "@/lib/admin/admin-auth"
 
 export default async function AdminOverviewPage() {
   const platformUser = await requirePlatformSession()

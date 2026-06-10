@@ -1,10 +1,10 @@
 import { and, desc, eq } from "drizzle-orm"
 
-import { db, isDatabaseConfigured } from "@/db"
+import { db, isDatabaseConfigured, getDb } from "@/db"
 import { session, user } from "@/db/auth-schema"
 import { studioMemberships, studios, suspensionLogs } from "@/db/schema"
-import { writeAuditLog } from "@/lib/audit-log"
-import type { SuspensionReasonCategory } from "@/lib/suspension-types"
+import { writeAuditLog } from "@/lib/admin/audit-log"
+import type { SuspensionReasonCategory } from "@/lib/admin/suspension-types"
 
 export async function getPrimaryOwnerForStudio(studioId: string) {
   if (!db) return null
@@ -41,7 +41,7 @@ export async function suspendStudio(input: {
   reason: string
   reasonCategory: SuspensionReasonCategory
 }) {
-  if (!db) throw new Error("Database not configured")
+  const db = getDb()
 
   const [studio] = await db
     .select()
@@ -109,7 +109,7 @@ export async function reactivateStudio(input: {
   actorUserId: string
   reason: string
 }) {
-  if (!db) throw new Error("Database not configured")
+  const db = getDb()
 
   const [studio] = await db
     .select()

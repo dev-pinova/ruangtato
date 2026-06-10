@@ -31,7 +31,9 @@ function buildPoolConfig(url: string) {
     idleTimeoutMillis: remote ? 10_000 : 30_000,
     // Transaction pooler (port 6543) does not support prepared statements.
     ...(pooler ? { prepare: false } : {}),
-    ssl: remote ? { rejectUnauthorized: false } : undefined,
+    ssl: remote
+      ? { rejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED !== "false" }
+      : undefined,
   }
 }
 
@@ -39,6 +41,23 @@ const pool = connectionString ? new Pool(buildPoolConfig(connectionString)) : nu
 
 export const db = pool ? drizzle(pool, { schema: fullSchema }) : null
 export { pool }
+
+export type AppDb = NonNullable<typeof db>
+
+/**
+ * Returns the database instance, throwing if the database is not configured.
+ *
+ * Use this in service functions instead of checking `if (!db) throw ...`
+ * everywhere — it narrows the type from `AppDb | null` to `AppDb`.
+ */
+export function getDb(): AppDb {
+  if (!db) {
+    throw new Error(
+      "Database not configured. Set DATABASE_URL in your .env file.",
+    )
+  }
+  return db
+}
 
 export function isDatabaseConfigured() {
   return Boolean(pool && db)

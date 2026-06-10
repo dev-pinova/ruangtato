@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next"
 
 import { PUBLIC_STATIC_PATHS } from "@/lib/seo"
-import { listPublishedStudios } from "@/lib/studio-service"
+import { listPublishedStudios } from "@/lib/studio/studio-service"
 import { SITE_URL, studioPublicUrl } from "@/lib/site"
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

@@ -1,4 +1,4 @@
-import { backfillPaymentsFromInvoices } from "../src/lib/payment-service"
+import { backfillPaymentsFromInvoices } from "../src/lib/billing/payment-service"
 
 async function main() {
   const result = await backfillPaymentsFromInvoices()

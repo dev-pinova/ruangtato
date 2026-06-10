@@ -9,7 +9,7 @@ import { PlatformLogo } from "@/components/brand/platform-logo"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { authClient } from "@/lib/auth-client"
+import { authClient } from "@/lib/auth/auth-client"
 
 function AdminLoginForm() {
   const router = useRouter()
@@ -54,7 +54,7 @@ function AdminLoginForm() {
     <div className="relative flex min-h-dvh items-center justify-center overflow-hidden px-4">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,oklch(0.72_0.17_145/0.12),transparent_55%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,oklch(1_0_0/0.04),transparent_55%)]"
       />
 
       <div className="relative w-full max-w-sm">
@@ -62,7 +62,7 @@ function AdminLoginForm() {
           <PlatformLogo variant="auth" />
         </div>
 
-        <div className="rounded-xl border border-border/80 bg-card/80 p-6 shadow-lg shadow-black/20 backdrop-blur md:p-8">
+        <div className="rounded-xl border border-border bg-card p-6 shadow-lg shadow-black/20 md:p-8">
           <div className="mb-6 space-y-1 text-center">
             <h1 className="text-xl font-semibold tracking-tight">Admin Panel</h1>
             <p className="text-sm text-muted-foreground">

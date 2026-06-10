@@ -3,8 +3,8 @@ import { NextResponse } from "next/server"
 import {
   isPlatformApiUser,
   requirePlatformApiPermission,
-} from "@/lib/admin-auth"
-import { setStudioTrusted } from "@/lib/admin-staff-service"
+} from "@/lib/admin/admin-auth"
+import { setStudioTrusted } from "@/lib/admin/admin-staff-service"
 
 export async function PATCH(
   request: Request,

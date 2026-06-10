@@ -1,28 +1,28 @@
 import Link from "next/link"
 
-import { PLATFORM_LOGO_PATH, SITE_NAME } from "@/lib/site"
+import { LogoMark } from "@/components/brand/logo-mark"
+import { LogoWordmark } from "@/components/brand/logo-wordmark"
+import type { LogoTone } from "@/lib/brand"
+import { SITE_NAME } from "@/lib/site"
 import { cn } from "@/lib/utils"
 
 type PlatformLogoProps = {
   href?: string
   className?: string
-  /** header: marketing nav gelap | footer: footer terang | auth: halaman login/register | app: sidebar dashboard | builder: header builder */
+  /** header: marketing nav | footer: footer | auth: login/register | app: sidebar | builder: header builder */
   variant?: "header" | "footer" | "auth" | "app" | "builder"
   collapsed?: boolean
 }
 
-const imageClassByVariant: Record<
+const toneByVariant: Record<
   NonNullable<PlatformLogoProps["variant"]>,
-  string
+  LogoTone
 > = {
-  header:
-    "h-11 w-auto max-w-[200px] object-contain object-left md:h-12 md:max-w-[220px]",
-  footer:
-    "h-11 w-auto max-w-[200px] object-contain object-left md:h-12 md:max-w-[220px]",
-  auth: "h-10 w-auto max-w-[180px] object-contain",
-  app: "h-8 w-auto max-w-[140px] object-contain object-left",
-  builder:
-    "h-8 w-auto max-w-[160px] object-contain object-left sm:h-9 sm:max-w-[180px]",
+  header: "dark",
+  footer: "dark",
+  auth: "dark",
+  app: "dark",
+  builder: "dark",
 }
 
 export function PlatformLogo({
@@ -31,35 +31,30 @@ export function PlatformLogo({
   variant = "header",
   collapsed = false,
 }: PlatformLogoProps) {
-  const needsDarkBackdrop = variant === "footer" || variant === "auth" || variant === "app"
-  const imageClass =
-    variant === "app" && collapsed
-      ? "h-7 w-7 object-contain"
-      : imageClassByVariant[variant]
+  const tone = toneByVariant[variant]
 
-  const image = (
-    /* eslint-disable-next-line @next/next/no-img-element */
-    <img
-      src={PLATFORM_LOGO_PATH}
-      alt={SITE_NAME}
-      className={imageClass}
-    />
-  )
-
-  const content = needsDarkBackdrop ? (
-    <span
-      className={cn(
-        "inline-flex items-center bg-black",
-        variant === "footer" && "rounded-lg px-3 py-2",
-        variant === "auth" && "rounded-lg px-4 py-2.5",
-        variant === "app" && "rounded-md px-2 py-1.5",
-      )}
-    >
-      {image}
-    </span>
-  ) : (
-    image
-  )
+  const content =
+    variant === "app" && collapsed ? (
+      <LogoMark tone={tone} className="size-7" ariaHidden={false} />
+    ) : variant === "app" || variant === "builder" ? (
+      <LogoWordmark
+        tone={tone}
+        markClassName="size-7"
+        textClassName="text-sm"
+      />
+    ) : variant === "auth" ? (
+      <LogoWordmark
+        tone={tone}
+        markClassName="size-10"
+        textClassName="text-lg"
+      />
+    ) : (
+      <LogoWordmark
+        tone={tone}
+        markClassName="size-9 md:size-10"
+        textClassName="text-base md:text-lg"
+      />
+    )
 
   return (
     <Link

@@ -1,13 +1,13 @@
 import { and, asc, count, desc, eq, gte, ilike, lte, or, sql } from "drizzle-orm"
 
-import { db, isDatabaseConfigured } from "@/db"
+import { db, getDb, isDatabaseConfigured } from "@/db"
 import { payments, studios, subscriptions } from "@/db/schema"
 import {
   isSuccessfulPayment,
   parsePaymentMetadata,
   type MidtransNotificationPayload,
-} from "@/lib/midtrans"
-import { getSubscriptionPlanLabel } from "@/lib/billing-plans"
+} from "@/lib/billing/midtrans"
+import { getSubscriptionPlanLabel } from "@/lib/billing/billing-plans"
 
 const STATUS_RANK: Record<string, number> = {
   pending: 1,
@@ -36,7 +36,7 @@ function shouldReplaceStatus(current: string | null | undefined, incoming: strin
 }
 
 export async function recordPaymentEvent(payload: MidtransNotificationPayload) {
-  if (!db) throw new Error("Database not configured")
+  const d = getDb()
 
   const orderId = payload.order_id
   if (!orderId) throw new Error("Missing order_id")
@@ -50,7 +50,7 @@ export async function recordPaymentEvent(payload: MidtransNotificationPayload) {
   const normalizedStatus = normalizeTransactionStatus(payload)
   const paidAt = normalizedStatus === "success" ? new Date() : null
 
-  const [existing] = await db
+  const [existing] = await d
     .select({ transactionStatus: payments.transactionStatus })
     .from(payments)
     .where(eq(payments.orderId, orderId))
@@ -60,7 +60,7 @@ export async function recordPaymentEvent(payload: MidtransNotificationPayload) {
     return existing
   }
 
-  const [sub] = await db
+  const [sub] = await d
     .select({ id: subscriptions.id })
     .from(subscriptions)
     .where(eq(subscriptions.studioId, metadata.studioId))
@@ -76,7 +76,7 @@ export async function recordPaymentEvent(payload: MidtransNotificationPayload) {
       ? ((payload as Record<string, unknown>).transaction_id as string)
       : null
 
-  const [row] = await db
+  const [row] = await d
     .insert(payments)
     .values({
       studioId: metadata.studioId,
@@ -113,15 +113,15 @@ export async function recordPendingPayment(input: {
   planType: string
   amount: number
 }) {
-  if (!db) throw new Error("Database not configured")
+  const d = getDb()
 
-  const [sub] = await db
+  const [sub] = await d
     .select({ id: subscriptions.id })
     .from(subscriptions)
     .where(eq(subscriptions.studioId, input.studioId))
     .limit(1)
 
-  await db
+  await d
     .insert(payments)
     .values({
       studioId: input.studioId,
@@ -293,15 +293,15 @@ export async function getPaymentById(paymentId: string) {
 }
 
 export async function backfillPaymentsFromInvoices() {
-  if (!db) throw new Error("Database not configured")
+  const d = getDb()
 
   const { invoices } = await import("@/db/schema")
-  const rows = await db.select().from(invoices)
+  const rows = await d.select().from(invoices)
 
   let inserted = 0
   for (const invoice of rows) {
     const status = invoice.status === "paid" ? "success" : invoice.status
-    await db
+    await d
       .insert(payments)
       .values({
         studioId: invoice.studioId,

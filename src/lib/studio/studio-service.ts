@@ -1,6 +1,6 @@
 import { and, desc, eq, inArray, sql } from "drizzle-orm"
 
-import { db, isDatabaseConfigured } from "@/db"
+import { db, getDb, isDatabaseConfigured } from "@/db"
 import { user } from "@/db/auth-schema"
 import {
   leads,
@@ -13,9 +13,9 @@ import {
 import {
   createDefaultPageConfig,
   createSlugFromName,
-} from "@/lib/default-page-config"
+} from "@/lib/studio/default-page-config"
 import { DEFAULT_STUDIO_COVER } from "@/lib/placeholder-images"
-import { getStudioArtistImage, resolveStudioCoverImage } from "@/lib/studio-utils"
+import { getStudioArtistImage, resolveStudioCoverImage } from "@/lib/studio/studio-utils"
 import type { Block, Studio } from "@/lib/types"
 
 export function isActivePaidSubscription(sub: {
@@ -167,13 +167,14 @@ export async function studioHasActiveSubscription(studioId: string): Promise<boo
   return sub.expiresAt.getTime() > Date.now()
 }
 
-async function ensureOwnerRole() {
-  if (!db) throw new Error("Database not configured")
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function ensureOwnerRole(tx?: any) {
+  const d = tx ?? getDb()
 
-  const [existing] = await db.select().from(roles).where(eq(roles.name, "owner")).limit(1)
+  const [existing] = await d.select().from(roles).where(eq(roles.name, "owner")).limit(1)
   if (existing) return existing
 
-  const [created] = await db
+  const [created] = await d
     .insert(roles)
     .values({ name: "owner" })
     .returning()
@@ -184,14 +185,16 @@ async function ensureOwnerRole() {
 async function ensureUniqueSlug(
   baseSlug: string,
   excludeStudioId?: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  tx?: any,
 ): Promise<string> {
-  if (!db) throw new Error("Database not configured")
+  const d = tx ?? getDb()
 
   let slug = baseSlug || "studio"
   let suffix = 1
 
   while (true) {
-    const [existing] = await db
+    const [existing] = await d
       .select({ id: studios.id })
       .from(studios)
       .where(eq(studios.slug, slug))
@@ -211,46 +214,51 @@ export async function createStudioForUser(input: {
   city: string
   waNumber: string
 }) {
-  if (!db) throw new Error("Database not configured")
+  const d = getDb()
 
-  const ownerRole = await ensureOwnerRole()
-  const baseSlug = createSlugFromName(input.studioName) || "studio"
-  const slug = await ensureUniqueSlug(baseSlug)
-  const pageConfig = createDefaultPageConfig(input.studioName)
+  // Wrap all three inserts in a transaction so that a failure in any step
+  // rolls back the entire operation (prevents orphaned studios without
+  // an owner membership or trial subscription).
+  return d.transaction(async (tx) => {
+    const ownerRole = await ensureOwnerRole(tx)
+    const baseSlug = createSlugFromName(input.studioName) || "studio"
+    const slug = await ensureUniqueSlug(baseSlug, undefined, tx)
+    const pageConfig = createDefaultPageConfig(input.studioName)
 
-  const [studio] = await db
-    .insert(studios)
-    .values({
-      slug,
-      name: input.studioName,
-      city: input.city.trim(),
-      waNumber: input.waNumber.trim(),
-      description: `Landing page resmi ${input.studioName}`,
-      image: DEFAULT_STUDIO_COVER,
-      artist: input.ownerName,
-      tags: ["Custom", "Studio"],
-      pageConfig,
+    const [studio] = await tx
+      .insert(studios)
+      .values({
+        slug,
+        name: input.studioName,
+        city: input.city.trim(),
+        waNumber: input.waNumber.trim(),
+        description: `Landing page resmi ${input.studioName}`,
+        image: DEFAULT_STUDIO_COVER,
+        artist: input.ownerName,
+        tags: ["Custom", "Studio"],
+        pageConfig,
+      })
+      .returning()
+
+    await tx.insert(studioMemberships).values({
+      userId: input.userId,
+      studioId: studio.id,
+      roleId: ownerRole.id,
+      isPrimaryOwner: true,
     })
-    .returning()
 
-  await db.insert(studioMemberships).values({
-    userId: input.userId,
-    studioId: studio.id,
-    roleId: ownerRole.id,
-    isPrimaryOwner: true,
+    const expiresAt = new Date()
+    expiresAt.setDate(expiresAt.getDate() + 14)
+
+    await tx.insert(subscriptions).values({
+      studioId: studio.id,
+      planType: "trial",
+      status: "active",
+      expiresAt,
+    })
+
+    return mapStudioRow(studio, pageConfig)
   })
-
-  const expiresAt = new Date()
-  expiresAt.setDate(expiresAt.getDate() + 14)
-
-  await db.insert(subscriptions).values({
-    studioId: studio.id,
-    planType: "trial",
-    status: "active",
-    expiresAt,
-  })
-
-  return mapStudioRow(studio, pageConfig)
 }
 
 export async function updateStudioProfile(
@@ -264,14 +272,14 @@ export async function updateStudioProfile(
     image: string
   },
 ): Promise<Studio | null> {
-  if (!db) throw new Error("Database not configured")
+  const d = getDb()
 
   const name = input.name.trim()
   const rawSlug = createSlugFromName(input.slug) || createSlugFromName(name) || "studio"
   const slug = await ensureUniqueSlug(rawSlug, studioId)
   const image = input.image.trim() || DEFAULT_STUDIO_COVER
 
-  const [updated] = await db
+  const [updated] = await d
     .update(studios)
     .set({
       name,
@@ -290,9 +298,9 @@ export async function updateStudioProfile(
 }
 
 export async function saveStudioPageConfig(studioId: string, blocks: Block[], slug?: string) {
-  if (!db) throw new Error("Database not configured")
+  const d = getDb()
 
-  const [existing] = await db
+  const [existing] = await d
     .select()
     .from(studios)
     .where(eq(studios.id, studioId))
@@ -310,7 +318,7 @@ export async function saveStudioPageConfig(studioId: string, blocks: Block[], sl
     updates.slug = slug
   }
 
-  const [updated] = await db
+  const [updated] = await d
     .update(studios)
     .set(updates)
     .where(eq(studios.id, studioId))
@@ -321,9 +329,9 @@ export async function saveStudioPageConfig(studioId: string, blocks: Block[], sl
 }
 
 export async function publishStudio(studioId: string) {
-  if (!db) throw new Error("Database not configured")
+  const d = getDb()
 
-  const [existing] = await db
+  const [existing] = await d
     .select()
     .from(studios)
     .where(eq(studios.id, studioId))
@@ -333,7 +341,7 @@ export async function publishStudio(studioId: string) {
 
   const blocks = existing.pageConfig ?? []
 
-  const [updated] = await db
+  const [updated] = await d
     .update(studios)
     .set({
       isPublished: true,
@@ -395,12 +403,12 @@ export async function createStudioLead(input: {
   email?: string
   message: string
 }) {
-  if (!db) throw new Error("Database not configured")
+  const d = getDb()
 
   const studioId = await getStudioIdBySlug(input.slug)
   if (!studioId) return null
 
-  const [lead] = await db
+  const [lead] = await d
     .insert(leads)
     .values({
       studioId,
@@ -431,7 +439,7 @@ export async function activateSubscription(input: {
   midtransOrderId: string
   months: number
 }) {
-  if (!db) throw new Error("Database not configured")
+  const d = getDb()
 
   const existing = await getSubscriptionForStudio(input.studioId)
 
@@ -456,7 +464,7 @@ export async function activateSubscription(input: {
   expiresAt.setMonth(expiresAt.getMonth() + input.months)
 
   if (existing) {
-    const [updated] = await db
+    const [updated] = await d
       .update(subscriptions)
       .set({
         planType: input.planType,
@@ -469,7 +477,7 @@ export async function activateSubscription(input: {
     return updated ?? null
   }
 
-  const [created] = await db
+  const [created] = await d
     .insert(subscriptions)
     .values({
       studioId: input.studioId,
@@ -491,12 +499,12 @@ export async function recordInvoice(input: {
   status: "paid" | "pending" | "failed"
   paidAt?: Date | null
 }) {
-  if (!db) throw new Error("Database not configured")
+  const d = getDb()
 
   const paidAt =
     input.status === "paid" ? (input.paidAt ?? new Date()) : input.paidAt ?? null
 
-  const [row] = await db
+  const [row] = await d
     .insert(invoices)
     .values({
       studioId: input.studioId,

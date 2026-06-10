@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server"
 
-import { auth } from "@/lib/auth"
+import { auth } from "@/lib/auth/auth"
 import {
   getStudioForUser,
   getStudioSuspendedFlagForUser,
   saveStudioPageConfig,
   studioHasActiveSubscription,
   userCanAccessStudio,
-} from "@/lib/studio-service"
+} from "@/lib/studio/studio-service"
 import type { Block } from "@/lib/types"
 
 export async function GET(

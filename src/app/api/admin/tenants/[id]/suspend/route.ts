@@ -1,15 +1,15 @@
 import { NextResponse } from "next/server"
 
-import { suspendStudio } from "@/lib/admin-suspend-service"
+import { suspendStudio } from "@/lib/admin/admin-suspend-service"
 import {
   isPlatformApiUser,
   requirePlatformApiPermission,
-} from "@/lib/admin-auth"
-import { checkRateLimit } from "@/lib/admin-rate-limit"
+} from "@/lib/admin/admin-auth"
+import { checkRateLimit } from "@/lib/admin/admin-rate-limit"
 import {
   isSuspensionReasonCategory,
   type SuspensionReasonCategory,
-} from "@/lib/suspension-types"
+} from "@/lib/admin/suspension-types"
 
 function parseReason(body: unknown): string | null {
   if (!body || typeof body !== "object") return null

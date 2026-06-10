@@ -1,18 +1,80 @@
 /* Scoped Dark Operations theme — only applies under .admin-ops */
 .admin-ops {
-  --primary: oklch(0.72 0.17 145);
-  --primary-foreground: oklch(0.12 0.03 145);
-  --chart-1: oklch(0.72 0.17 145);
+  color-scheme: dark;
+
+  /* Neutral primary — not green */
+  --primary: oklch(0.92 0 0);
+  --primary-foreground: oklch(0.12 0 0);
+  --ring: oklch(0.92 0 0 / 40%);
+
+  /* Semantic status (badges / metric strip only) */
+  --admin-success: oklch(0.72 0.17 145);
+  --admin-warning: oklch(0.75 0.15 75);
+  --admin-error: oklch(0.65 0.2 25);
+  --admin-info: oklch(0.7 0.1 250);
+
+  /* Surface ladder */
+  --sidebar: oklch(0.06 0 0);
+  --background: oklch(0.09 0 0);
+  --card: oklch(0.12 0 0);
+  --muted: oklch(0.14 0 0);
+  --border: oklch(1 0 0 / 6%);
+
+  /* Charts — neutral accent */
+  --chart-1: oklch(0.72 0.1 250);
   --chart-2: oklch(0.62 0.1 200);
-  --chart-3: oklch(0.55 0.08 250);
-  --ring: oklch(0.72 0.17 145);
-  --sidebar-primary: oklch(0.72 0.17 145);
-  --sidebar-primary-foreground: oklch(0.12 0.03 145);
-  --sidebar-ring: oklch(0.72 0.17 145);
+  --chart-3: oklch(0.55 0.08 280);
+
+  --sidebar-primary: oklch(0.92 0 0);
+  --sidebar-primary-foreground: oklch(0.12 0 0);
+  --sidebar-ring: oklch(0.92 0 0 / 40%);
+}
+
+/* Panel wrapper for data tables */
+.admin-ops .admin-panel {
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  background: var(--card);
+  overflow: hidden;
+}
+
+/* Inset toolbar within a panel */
+.admin-ops .admin-inset {
+  border-bottom: 1px solid var(--border);
+  background: var(--muted);
+}
+
+/* Semantic status utilities */
+.admin-ops .admin-status-success {
+  color: var(--admin-success);
+  border-color: color-mix(in oklch, var(--admin-success) 30%, transparent);
+  background: color-mix(in oklch, var(--admin-success) 10%, transparent);
+}
+
+.admin-ops .admin-status-warning {
+  color: var(--admin-warning);
+  border-color: color-mix(in oklch, var(--admin-warning) 30%, transparent);
+  background: color-mix(in oklch, var(--admin-warning) 10%, transparent);
+}
+
+.admin-ops .admin-status-error {
+  color: var(--admin-error);
+  border-color: color-mix(in oklch, var(--admin-error) 30%, transparent);
+  background: color-mix(in oklch, var(--admin-error) 10%, transparent);
+}
+
+.admin-ops .admin-status-info {
+  color: var(--admin-info);
+  border-color: color-mix(in oklch, var(--admin-info) 30%, transparent);
+  background: color-mix(in oklch, var(--admin-info) 10%, transparent);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .admin-ops [data-admin-sidebar] {
+    transition: none !important;
+  }
+
+  .admin-ops .motion-safe\:transition-all {
     transition: none !important;
   }
 }

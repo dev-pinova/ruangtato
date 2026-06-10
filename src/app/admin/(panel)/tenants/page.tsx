@@ -1,5 +1,5 @@
 import { TenantsPanel } from "@/components/admin/tenants-panel"
-import { requirePlatformSession } from "@/lib/admin-auth"
+import { requirePlatformSession } from "@/lib/admin/admin-auth"
 
 export default async function AdminTenantsPage() {
   const platformUser = await requirePlatformSession([

@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 
 import { LegalShell, LegalSection } from "@/components/marketing/legal-shell"
-import { SUBSCRIPTION_PLANS } from "@/lib/billing-plans"
+import { SUBSCRIPTION_PLANS } from "@/lib/billing/billing-plans"
 import { staticPageMetadata } from "@/lib/seo"
 import {
   BILLING_EMAIL,

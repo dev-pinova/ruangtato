@@ -83,12 +83,14 @@ export function BlockLatestNews({ data }: { data: LatestNewsData }) {
                 className="group flex w-72 shrink-0 flex-col bg-black md:w-auto"
               >
                 <div className="relative aspect-[3/4] overflow-hidden">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={article.image}
-                    alt={article.title}
-                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
+                  {article.image && (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={article.image}
+                      alt={article.title}
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
                   {article.category && (
                     <span className="absolute left-5 top-5 border border-white/40 bg-black/30 px-3 py-1 font-display text-[9px] uppercase tracking-[0.32em] text-white backdrop-blur-sm">

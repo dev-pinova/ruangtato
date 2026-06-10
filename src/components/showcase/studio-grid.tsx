@@ -4,12 +4,15 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { ArrowRight, BadgeCheck } from "lucide-react"
 
+import { BlurFade } from "@/components/ui/blur-fade"
 import { LaurelWreath } from "@/components/showcase/laurel-wreath"
 import { VerifiedCheck } from "@/components/showcase/verified-check"
 import { Button } from "@/components/ui/button"
-import { SHOWCASE_GRID_SIZE } from "@/lib/showcase-demos"
+import { BorderBeam } from "@/components/ui/border-beam"
+import { SHOWCASE_GRID_SIZE } from "@/lib/studio/showcase-demos"
 import { SITE_NAME } from "@/lib/site"
 import type { Studio } from "@/lib/types"
+
 
 const GRID_PREVIEW_LIMIT = SHOWCASE_GRID_SIZE // 3 kolom × 2 baris
 
@@ -79,15 +82,31 @@ export function StudioGrid({
     )
   }
 
+  // Bento layout mapping indices to ensure perfectly aligned grid rows
+  const largeIndices = [0, 3, 7, 10, 14, 17, 21, 24, 28, 31, 35, 38]
+
   return (
     <section
       id="browse"
       className="mx-auto max-w-6xl scroll-mt-16 px-4 py-10 md:px-6 md:py-14"
     >
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3">
-        {visibleStudios.map((studio) => (
-          <StudioCard key={studio.id} studio={studio} />
-        ))}
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-12">
+        {visibleStudios.map((studio, index) => {
+          const isLarge = largeIndices.includes(index)
+          return (
+            <BlurFade
+              key={studio.id}
+              inView
+              delay={index * 0.07}
+              duration={0.45}
+              blur="8px"
+              direction="up"
+              className={isLarge ? "sm:col-span-2 md:col-span-8" : "sm:col-span-1 md:col-span-4"}
+            >
+              <StudioCard studio={studio} isLarge={isLarge} />
+            </BlurFade>
+          )
+        })}
       </div>
 
       {hasMore && !showAll && (
@@ -107,7 +126,7 @@ export function StudioGrid({
   )
 }
 
-function StudioCard({ studio }: { studio: Studio }) {
+function StudioCard({ studio, isLarge }: { studio: Studio; isLarge?: boolean }) {
   const avatarSrc = studio.artistImage || studio.image
   const displayTags = [
     ...studio.tags.slice(0, 3),
@@ -119,15 +138,31 @@ function StudioCard({ studio }: { studio: Studio }) {
       href={`/app/studio/${studio.slug}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-shadow duration-300 hover:shadow-md"
+      className={`group relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-border bg-card transition-shadow duration-300 hover:shadow-md ${
+        isLarge ? "md:flex-row md:min-h-[350px]" : ""
+      }`}
     >
-      <div className="relative aspect-square overflow-hidden bg-muted">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={studio.image}
-          alt={studio.name}
-          className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+      {isLarge && (
+        <BorderBeam
+          size={350}
+          duration={8}
+          delay={0}
+          colorFrom="var(--brand-scarlet)"
+          colorTo="oklch(100% 0 0 / 10%)"
         />
+      )}
+
+      <div className={`relative overflow-hidden bg-muted ${
+        isLarge ? "w-full md:w-1/2 aspect-square md:aspect-auto" : "w-full aspect-square"
+      }`}>
+        {studio.image && (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={studio.image}
+            alt={studio.name}
+            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+          />
+        )}
 
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent transition-opacity duration-300 group-hover:from-black/90" />
 
@@ -157,35 +192,41 @@ function StudioCard({ studio }: { studio: Studio }) {
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col gap-3 p-4">
-        <div className="flex items-center gap-2.5">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={avatarSrc}
-            alt={studio.artist}
-            className="size-9 shrink-0 rounded-full object-cover ring-1 ring-border"
-          />
-          <p className="min-w-0 text-sm text-foreground">
-            By{" "}
-            <span className="font-medium underline decoration-foreground/30 underline-offset-2">
-              {studio.artist}
-            </span>
-            {studio.isVerified && (
-              <VerifiedCheck className="ml-1 inline size-3.5 align-[-2px]" />
+      <div className={`flex flex-col justify-between p-6 ${
+        isLarge ? "w-full md:w-1/2" : "w-full flex-1"
+      }`}>
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-2.5">
+            {avatarSrc && (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img
+                src={avatarSrc}
+                alt={studio.artist}
+                className="size-9 shrink-0 rounded-full object-cover ring-1 ring-border"
+              />
             )}
+            <p className="min-w-0 text-sm text-foreground">
+              By{" "}
+              <span className="font-medium underline decoration-foreground/30 underline-offset-2">
+                {studio.artist}
+              </span>
+              {studio.isVerified && (
+                <VerifiedCheck className="ml-1 inline size-3.5 align-[-2px]" />
+              )}
+            </p>
+          </div>
+
+          <p className="line-clamp-4 text-sm leading-relaxed text-muted-foreground">
+            {studio.description}
           </p>
         </div>
 
-        <p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">
-          {studio.description}
-        </p>
-
         {displayTags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
+          <div className="mt-4 flex flex-wrap gap-1.5">
             {displayTags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-full border border-border px-2.5 py-0.5 text-xs text-muted-foreground"
+                className="rounded-full border border-border px-2.5 py-0.5 text-xs text-muted-foreground bg-muted/40"
               >
                 {tag}
               </span>

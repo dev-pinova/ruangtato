@@ -19,7 +19,7 @@ import {
   studios,
   subscriptions,
 } from "@/db/schema"
-import { getSubscriptionPlanLabel } from "@/lib/billing-plans"
+import { getSubscriptionPlanLabel } from "@/lib/billing/billing-plans"
 
 export type TenantListSort =
   | "newest"

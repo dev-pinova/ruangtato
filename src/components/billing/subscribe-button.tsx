@@ -4,7 +4,8 @@ import { useCallback, useState } from "react"
 import { Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { loadMidtransSnap } from "@/lib/midtrans-snap"
+import { ShimmerButton } from "@/components/ui/shimmer-button"
+import { loadMidtransSnap } from "@/lib/billing/midtrans-snap"
 
 const PLAN_TYPE_MAP: Record<number, string> = {
   1: "1month",
@@ -216,15 +217,33 @@ export function SubscribeButton({
         ? "Menyiapkan pembayaran..."
         : label
 
+  if (popular) {
+    return (
+      <ShimmerButton
+        className="w-full text-sm font-semibold h-10 px-4 py-2"
+        borderRadius="var(--radius)"
+        background="var(--brand-scarlet)"
+        shimmerColor="oklch(100% 0 0)"
+        onClick={handleSubscribe}
+        disabled={loading || !clientKey || isPreparing}
+      >
+        {(loading || isPreparing) && (
+          <Loader2 className="animate-spin size-4 shrink-0" aria-hidden="true" />
+        )}
+        {buttonLabel}
+      </ShimmerButton>
+    )
+  }
+
   return (
     <Button
-      variant={popular ? "default" : "outline"}
+      variant="outline"
       className="w-full"
       onClick={handleSubscribe}
       disabled={loading || !clientKey || isPreparing}
     >
       {(loading || isPreparing) && (
-        <Loader2 className="animate-spin" aria-hidden="true" />
+        <Loader2 className="animate-spin size-4 shrink-0" aria-hidden="true" />
       )}
       {buttonLabel}
     </Button>

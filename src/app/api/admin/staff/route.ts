@@ -1,16 +1,16 @@
 import { NextResponse } from "next/server"
 
-import type { PlatformRole } from "@/lib/admin-auth"
+import type { PlatformRole } from "@/lib/admin/admin-auth"
 import {
   isPlatformApiUser,
   isPlatformRole,
   requirePlatformApiPermission,
-} from "@/lib/admin-auth"
+} from "@/lib/admin/admin-auth"
 import {
   assignPlatformRole,
   listPlatformStaff,
   revokePlatformRole,
-} from "@/lib/admin-staff-service"
+} from "@/lib/admin/admin-staff-service"
 
 export async function GET(request: Request) {
   const authResult = await requirePlatformApiPermission(

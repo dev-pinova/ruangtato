@@ -2,8 +2,8 @@ import { APIError } from "better-auth/api"
 import { NextResponse } from "next/server"
 
 import { checkDatabaseConnection, isDatabaseConfigured } from "@/db"
-import { auth } from "@/lib/auth"
-import { createStudioForUser } from "@/lib/studio-service"
+import { auth } from "@/lib/auth/auth"
+import { createStudioForUser } from "@/lib/studio/studio-service"
 
 function getErrorMessage(error: unknown): string {
   if (error instanceof APIError) {

@@ -10,7 +10,10 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion"
-import { SUBSCRIPTION_PLANS } from "@/lib/billing-plans"
+import { Button } from "@/components/ui/button"
+import { ShimmerButton } from "@/components/ui/shimmer-button"
+import { Particles } from "@/components/ui/particles"
+import { SUBSCRIPTION_PLANS } from "@/lib/billing/billing-plans"
 import { staticPageMetadata } from "@/lib/seo"
 import { SUPPORT_EMAIL } from "@/lib/site"
 import { cn } from "@/lib/utils"
@@ -47,8 +50,9 @@ const PRICING_FAQ = [
 export default function PricingPage() {
   return (
     <MarketingShell>
-      <section className="border-b border-border bg-background">
-        <div className="mx-auto max-w-3xl px-4 py-20 text-center md:px-6 md:py-28">
+      <section className="relative border-b border-border bg-background overflow-hidden">
+        <Particles className="absolute inset-0 z-0" quantity={40} ease={80} color="var(--brand-scarlet)" />
+        <div className="relative z-10 mx-auto max-w-3xl px-4 py-20 text-center md:px-6 md:py-28">
           <SectionHeading
             as="h1"
             size="lg"
@@ -60,8 +64,9 @@ export default function PricingPage() {
         </div>
       </section>
 
-      <section className="border-b border-border bg-background">
-        <div className="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-20">
+      <section className="relative border-b border-border bg-background overflow-hidden">
+        <Particles className="absolute inset-0 z-0" quantity={80} ease={80} color="#ffffff" />
+        <div className="relative z-10 mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-20">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {SUBSCRIPTION_PLANS.map((plan) => (
               <div
@@ -107,18 +112,25 @@ export default function PricingPage() {
                   ))}
                 </ul>
 
-                <Link
-                  href="/register"
-                  className={cn(
-                    "mt-6 inline-flex h-9 items-center justify-center gap-1.5 rounded-md px-4 text-sm font-medium transition-colors",
-                    plan.popular
-                      ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                      : "border border-border bg-background text-foreground hover:bg-muted/60"
-                  )}
-                >
-                  Pilih {plan.name}
-                  <ArrowRight className="size-3.5" />
-                </Link>
+                {plan.popular ? (
+                  <ShimmerButton className="mt-6 w-full font-medium" shimmerColor="var(--brand-scarlet)">
+                    <Link href="/register" className="flex items-center justify-center gap-2 w-full">
+                      Pilih {plan.name}
+                      <ArrowRight className="size-3.5" />
+                    </Link>
+                  </ShimmerButton>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    nativeButton={false}
+                    className="mt-6 w-full"
+                    render={<Link href="/register" />}
+                  >
+                    Pilih {plan.name}
+                    <ArrowRight className="size-3.5" />
+                  </Button>
+                )}
               </div>
             ))}
           </div>

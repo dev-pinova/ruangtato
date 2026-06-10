@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server"
 
 import { isDatabaseConfigured } from "@/db"
-import { auth } from "@/lib/auth"
-import { createStudioForUser, getStudioForUser } from "@/lib/studio-service"
+import { auth } from "@/lib/auth/auth"
+import { createStudioForUser, getStudioForUser } from "@/lib/studio/studio-service"
 
 export async function POST(request: Request) {
   if (!isDatabaseConfigured()) {

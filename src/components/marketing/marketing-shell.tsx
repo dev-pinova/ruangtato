@@ -3,6 +3,7 @@ import { Heart } from "lucide-react"
 
 import { PlatformLogo } from "@/components/brand/platform-logo"
 import { Tagline } from "@/components/design"
+import { Button } from "@/components/ui/button"
 import { SITE_DOMAIN, SITE_URL } from "@/lib/site"
 import { cn } from "@/lib/utils"
 
@@ -51,18 +52,22 @@ function MarketingHeader() {
           </nav>
         </div>
         <div className="flex items-center gap-2">
-          <Link
-            href="/login"
-            className="hidden text-sm text-white/70 transition-colors hover:text-white md:inline-flex"
+          <Button
+            variant="ghost"
+            size="sm"
+            nativeButton={false}
+            className="hidden text-white/70 hover:bg-transparent hover:text-white md:inline-flex"
+            render={<Link href="/login" />}
           >
             Masuk
-          </Link>
-          <Link
-            href="/register"
-            className="inline-flex h-8 items-center rounded-md bg-white/55 px-3 text-xs font-medium text-white/90 transition-all duration-200 hover:bg-white hover:text-black hover:shadow-[0_0_16px_rgba(255,255,255,0.35)]"
+          </Button>
+          <Button
+            size="sm"
+            nativeButton={false}
+            render={<Link href="/register" />}
           >
             Daftar Studio
-          </Link>
+          </Button>
         </div>
       </div>
     </header>

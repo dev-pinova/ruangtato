@@ -17,6 +17,42 @@ if (!process.env.BETTER_AUTH_SECRET) {
 const authBaseURL =
   process.env.BETTER_AUTH_URL ?? process.env.NEXT_PUBLIC_APP_URL
 
+const LOCAL_DEV_HOSTS = ["localhost", "127.0.0.1"] as const
+const LOCAL_DEV_PORT_MIN = 3000
+const LOCAL_DEV_PORT_MAX = 3010
+
+function buildLocalDevOrigins(): string[] {
+  const origins: string[] = []
+  for (const host of LOCAL_DEV_HOSTS) {
+    origins.push(`http://${host}:*`)
+    for (let port = LOCAL_DEV_PORT_MIN; port <= LOCAL_DEV_PORT_MAX; port++) {
+      origins.push(`http://${host}:${port}`)
+    }
+  }
+  return origins
+}
+
+function buildTrustedOrigins(): string[] {
+  const origins = [
+    authBaseURL,
+    process.env.NEXT_PUBLIC_APP_URL,
+    "https://studiotato.vercel.app",
+    "https://*.vercel.app",
+    ...(process.env.NODE_ENV !== "production" ? buildLocalDevOrigins() : []),
+  ]
+
+  return [...new Set(origins.filter((value): value is string => Boolean(value)))]
+}
+
+function isLocalDevOrigin(origin: string): boolean {
+  try {
+    const { hostname } = new URL(origin)
+    return LOCAL_DEV_HOSTS.includes(hostname as (typeof LOCAL_DEV_HOSTS)[number])
+  } catch {
+    return false
+  }
+}
+
 export const auth = betterAuth({
   database: db
     ? drizzleAdapter(db, {
@@ -43,13 +79,17 @@ export const auth = betterAuth({
   },
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: authBaseURL,
-  trustedOrigins: [
-    authBaseURL,
-    process.env.NEXT_PUBLIC_APP_URL,
-    "http://localhost:3000",
-    "https://studiotato.vercel.app",
-    "https://*.vercel.app",
-  ].filter((value): value is string => Boolean(value)),
+  trustedOrigins:
+    process.env.NODE_ENV === "production"
+      ? buildTrustedOrigins()
+      : async (request) => {
+          const origins = buildTrustedOrigins()
+          const origin = request?.headers.get("origin")
+          if (origin && isLocalDevOrigin(origin) && !origins.includes(origin)) {
+            origins.push(origin)
+          }
+          return origins
+        },
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 8,

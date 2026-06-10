@@ -48,13 +48,15 @@ export function BlockHeroSlider({
     <section className="relative isolate flex min-h-screen flex-col justify-center overflow-hidden bg-black text-white">
       {/* Background image + dark overlay */}
       <div className="absolute inset-0 -z-10">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={slide.image}
-          alt=""
-          className="h-full w-full object-cover"
-          key={active}
-        />
+        {slide.image && (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={slide.image}
+            alt=""
+            className="h-full w-full object-cover"
+            key={active}
+          />
+        )}
         <div className="absolute inset-0 bg-black/55" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />
       </div>

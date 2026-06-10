@@ -1,5 +1,5 @@
 import { AnalyticsPanel } from "@/components/admin/analytics-panel"
-import { requirePlatformSession } from "@/lib/admin-auth"
+import { requirePlatformSession } from "@/lib/admin/admin-auth"
 
 export default async function AdminAnalyticsPage() {
   await requirePlatformSession(["super_admin", "admin", "finance"])

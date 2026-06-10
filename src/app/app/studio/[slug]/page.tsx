@@ -7,8 +7,9 @@ import { buildStudioJsonLd, createPageMetadata } from "@/lib/seo"
 import {
   getPublishedStudioBySlug,
   getSuspendedStudioBySlug,
-} from "@/lib/studio-service"
-import { getVisibleBlocks } from "@/lib/studio-utils"
+  listPublishedStudios,
+} from "@/lib/studio/studio-service"
+import { getVisibleBlocks } from "@/lib/studio/studio-utils"
 import { BlockHeader } from "@/components/blocks/header"
 import { BlockHeaderOverlay } from "@/components/blocks/header-overlay"
 import { BlockHero } from "@/components/blocks/hero"
@@ -34,7 +35,14 @@ import { StudioTracker } from "@/components/studio/studio-tracker"
 import { FloatingWhatsAppButton } from "@/components/studio/floating-whatsapp"
 import type { AppointmentFormData, BlockType, Studio } from "@/lib/types"
 
-export const dynamic = "force-dynamic"
+export const revalidate = 300
+
+export async function generateStaticParams() {
+  const published = await listPublishedStudios()
+  return published.map((studio) => ({
+    slug: studio.slug,
+  }))
+}
 
 type PageProps = { params: Promise<{ slug: string }> }
 

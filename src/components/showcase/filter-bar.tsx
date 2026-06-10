@@ -2,6 +2,8 @@
 
 import { ArrowUpDown, BadgeCheck, MapPin } from "lucide-react"
 
+import { NumberTicker } from "@/components/ui/number-ticker"
+import { Button } from "@/components/ui/button"
 import {
   Select,
   SelectTrigger,
@@ -38,14 +40,17 @@ export function FilterBar({
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div className="space-y-1.5">
             <h2 className="text-lg font-semibold tracking-tight text-foreground">
-              Jelajahi Studio Tattoo
+              Katalog Studio Tattoo
             </h2>
             <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              Temukan studio terpercaya di seluruh Indonesia. Filter berdasarkan kota,
-              urutkan berdasarkan popularitas, atau tampilkan studio verified saja.
+              Sistem kurasi studio profesional di Indonesia. Gunakan filter wilayah dan verifikasi status untuk memastikan pilihan Anda memenuhi standar industri.
             </p>
             <p className="text-sm text-muted-foreground">
-              <span className="font-medium text-foreground">{resultCount}</span> studio ditemukan
+              <NumberTicker
+                value={resultCount}
+                className="font-medium text-foreground"
+              />{" "}
+              studio terdaftar
             </p>
           </div>
 
@@ -77,18 +82,18 @@ export function FilterBar({
               </SelectContent>
             </Select>
 
-            <button
+            <Button
+              variant="outline"
+              size="sm"
               onClick={onTrustedToggle}
               className={cn(
-                "inline-flex h-8 items-center gap-1.5 rounded-md border px-2.5 text-xs font-medium transition-colors",
-                trustedOnly
-                  ? "border-primary/40 bg-primary/10 text-primary"
-                  : "border-border bg-background text-muted-foreground hover:text-foreground"
+                trustedOnly &&
+                  "border-primary/40 bg-primary/10 text-primary hover:bg-primary/10 hover:text-primary"
               )}
             >
               <BadgeCheck className="size-3.5" />
               Trusted
-            </button>
+            </Button>
           </div>
         </div>
       </div>

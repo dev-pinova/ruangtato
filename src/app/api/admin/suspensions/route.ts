@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server"
 
-import { listSuspendedStudios, listSuspensionLogs } from "@/lib/admin-suspend-service"
+import { listSuspendedStudios, listSuspensionLogs } from "@/lib/admin/admin-suspend-service"
 import {
   isPlatformApiUser,
   requirePlatformApiPermission,
-} from "@/lib/admin-auth"
+} from "@/lib/admin/admin-auth"
 
 export async function GET(request: Request) {
   const authResult = await requirePlatformApiPermission(

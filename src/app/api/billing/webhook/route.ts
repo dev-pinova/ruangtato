@@ -3,14 +3,14 @@ import { NextResponse } from "next/server"
 import {
   activateFromWebhookNotification,
   BillingActivationError,
-} from "@/lib/billing-activation"
+} from "@/lib/billing/billing-activation"
 import {
   isMidtransConfigured,
   isSuccessfulPayment,
   verifyNotificationSignature,
   type MidtransNotificationPayload,
-} from "@/lib/midtrans"
-import { recordPaymentEvent } from "@/lib/payment-service"
+} from "@/lib/billing/midtrans"
+import { recordPaymentEvent } from "@/lib/billing/payment-service"
 
 export async function POST(request: Request) {
   if (!isMidtransConfigured()) {

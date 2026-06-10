@@ -1,3 +1,12 @@
+import {
+  AlertCircle,
+  CheckCircle2,
+  CircleDashed,
+  Clock,
+  XCircle,
+  type LucideIcon,
+} from "lucide-react"
+
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 
@@ -12,14 +21,24 @@ export type AdminStatusVariant =
   | "default"
 
 const STYLES: Record<AdminStatusVariant, string> = {
-  active: "border-emerald-500/30 bg-emerald-500/10 text-emerald-400",
-  success: "border-emerald-500/30 bg-emerald-500/10 text-emerald-400",
-  suspended: "border-red-500/30 bg-red-500/10 text-red-400",
-  failed: "border-red-500/30 bg-red-500/10 text-red-400",
-  expired: "border-red-500/30 bg-red-500/10 text-red-400",
-  pending: "border-yellow-500/30 bg-yellow-500/10 text-yellow-400",
-  draft: "border-zinc-500/30 bg-zinc-500/10 text-zinc-400",
+  active: "admin-status-success",
+  success: "admin-status-success",
+  suspended: "admin-status-error",
+  failed: "admin-status-error",
+  expired: "admin-status-error",
+  pending: "admin-status-warning",
+  draft: "admin-status-info",
   default: "",
+}
+
+const ICONS: Partial<Record<AdminStatusVariant, LucideIcon>> = {
+  active: CheckCircle2,
+  success: CheckCircle2,
+  suspended: XCircle,
+  failed: XCircle,
+  expired: XCircle,
+  pending: Clock,
+  draft: CircleDashed,
 }
 
 export function AdminStatusBadge({
@@ -32,12 +51,18 @@ export function AdminStatusBadge({
   className?: string
 }) {
   const variant = (status in STYLES ? status : "default") as AdminStatusVariant
+  const Icon = ICONS[variant]
 
   return (
     <Badge
       variant="outline"
-      className={cn(STYLES[variant], className)}
+      className={cn(
+        "gap-1 font-normal",
+        STYLES[variant],
+        className,
+      )}
     >
+      {Icon ? <Icon className="size-3 shrink-0" aria-hidden /> : null}
       {label ?? status}
     </Badge>
   )

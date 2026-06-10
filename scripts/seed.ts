@@ -7,7 +7,7 @@ import { drizzle } from "drizzle-orm/node-postgres"
 import { eq } from "drizzle-orm"
 
 import { roles, studios, subscriptions } from "../src/db/schema"
-import { createDefaultPageConfig } from "../src/lib/default-page-config"
+import { createDefaultPageConfig } from "../src/lib/studio/default-page-config"
 import { PLACEHOLDER_IMAGES } from "../src/lib/placeholder-images"
 
 const connectionString =

@@ -1,5 +1,6 @@
-import { requirePlatformSession } from "@/lib/admin-auth"
+import { requirePlatformSession } from "@/lib/admin/admin-auth"
 import { AdminShell } from "@/components/admin/admin-shell"
+import { AdminToaster } from "@/components/admin/admin-toaster"
 import "@/app/admin/admin-ops.css"
 
 export const dynamic = "force-dynamic"
@@ -13,6 +14,7 @@ export default async function AdminPanelLayout({
 
   return (
     <div className="dark admin-ops min-h-dvh">
+      <AdminToaster position="top-right" richColors closeButton />
       <AdminShell
         user={{
           name: platformUser.name,

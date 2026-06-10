@@ -9,7 +9,7 @@ import { PageHeading } from "@/components/design"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { authClient } from "@/lib/auth-client"
+import { authClient } from "@/lib/auth/auth-client"
 
 export default function ResetPasswordPage() {
   return (
@@ -38,12 +38,13 @@ function ResetPasswordContent() {
           Tautan reset password sudah tidak berlaku atau pernah digunakan.
           Silakan minta tautan baru.
         </p>
-        <Link
-          href="/forgot-password"
-          className="mt-2 inline-flex w-full items-center justify-center rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background hover:bg-foreground/90"
+        <Button
+          nativeButton={false}
+          className="mt-2 w-full"
+          render={<Link href="/forgot-password" />}
         >
           Minta tautan baru
-        </Link>
+        </Button>
       </ResetShell>
     )
   }

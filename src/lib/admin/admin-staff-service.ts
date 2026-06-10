@@ -1,11 +1,11 @@
 import { desc, eq, ilike, isNotNull, or } from "drizzle-orm"
 
-import { db, isDatabaseConfigured } from "@/db"
+import { db, isDatabaseConfigured, getDb } from "@/db"
 import { user } from "@/db/auth-schema"
 import { studios } from "@/db/schema"
-import type { PlatformRole } from "@/lib/admin-auth"
-import { isPlatformRole } from "@/lib/admin-auth"
-import { writeAuditLog } from "@/lib/audit-log"
+import type { PlatformRole } from "@/lib/admin/admin-auth"
+import { isPlatformRole } from "@/lib/admin/admin-auth"
+import { writeAuditLog } from "@/lib/admin/audit-log"
 
 export type AdminStaffRow = {
   id: string
@@ -49,9 +49,7 @@ export async function assignPlatformRole(input: {
   platformRole: PlatformRole
   actorUserId: string
 }): Promise<AdminStaffRow> {
-  if (!isDatabaseConfigured() || !db) {
-    throw new Error("Database not configured")
-  }
+  const db = getDb()
 
   const email = input.email.trim().toLowerCase()
   const [existing] = await db
@@ -108,9 +106,7 @@ export async function revokePlatformRole(input: {
   email: string
   actorUserId: string
 }): Promise<void> {
-  if (!isDatabaseConfigured() || !db) {
-    throw new Error("Database not configured")
-  }
+  const db = getDb()
 
   const email = input.email.trim().toLowerCase()
   const [existing] = await db
@@ -155,9 +151,7 @@ export async function setStudioTrusted(input: {
   isTrusted: boolean
   actorUserId: string
 }): Promise<{ id: string; slug: string; name: string; isTrusted: boolean }> {
-  if (!isDatabaseConfigured() || !db) {
-    throw new Error("Database not configured")
-  }
+  const db = getDb()
 
   const [studio] = await db
     .select({

@@ -3,8 +3,8 @@ import { NextResponse } from "next/server"
 import {
   isPlatformApiUser,
   requirePlatformApiPermission,
-} from "@/lib/admin-auth"
-import { listTenantCities, listTenants, type TenantListSort } from "@/lib/admin-service"
+} from "@/lib/admin/admin-auth"
+import { listTenantCities, listTenants, type TenantListSort } from "@/lib/admin/admin-service"
 
 const SORT_VALUES: TenantListSort[] = [
   "newest",

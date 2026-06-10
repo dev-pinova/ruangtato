@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server"
 
-import { auth } from "@/lib/auth"
+import { auth } from "@/lib/auth/auth"
 import {
   getStudioForUser,
   getStudioSuspendedFlagForUser,
   getSubscriptionForStudio,
   updateStudioProfile,
-} from "@/lib/studio-service"
+} from "@/lib/studio/studio-service"
 
 export async function GET(request: Request) {
   const session = await auth.api.getSession({ headers: request.headers })

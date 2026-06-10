@@ -6,8 +6,8 @@ import {
   PLAN_CATALOG,
   type MidtransNotificationPayload,
   type MidtransTransactionStatus,
-} from "@/lib/midtrans"
-import { activateSubscription, recordInvoice } from "@/lib/studio-service"
+} from "@/lib/billing/midtrans"
+import { activateSubscription, recordInvoice } from "@/lib/studio/studio-service"
 
 export class BillingActivationError extends Error {
   constructor(

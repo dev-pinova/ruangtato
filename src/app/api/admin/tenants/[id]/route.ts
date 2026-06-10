@@ -3,8 +3,8 @@ import { NextResponse } from "next/server"
 import {
   isPlatformApiUser,
   requirePlatformApiPermission,
-} from "@/lib/admin-auth"
-import { getTenantById } from "@/lib/admin-service"
+} from "@/lib/admin/admin-auth"
+import { getTenantById } from "@/lib/admin/admin-service"
 
 export async function GET(
   request: Request,

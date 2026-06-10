@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 
-import { incrementStudioClickCount } from "@/lib/studio-service"
+import { incrementStudioClickCount } from "@/lib/studio/studio-service"
 
 export async function POST(
   _request: Request,

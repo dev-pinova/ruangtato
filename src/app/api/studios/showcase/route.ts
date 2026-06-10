@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 
-import { buildShowcaseStudios } from "@/lib/showcase-demos"
-import { listPublishedStudios } from "@/lib/studio-service"
+import { buildShowcaseStudios } from "@/lib/studio/showcase-demos"
+import { listPublishedStudios } from "@/lib/studio/studio-service"
 
 export async function GET() {
   const studios = buildShowcaseStudios(await listPublishedStudios())

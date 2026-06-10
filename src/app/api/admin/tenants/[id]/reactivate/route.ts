@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server"
 
-import { reactivateStudio } from "@/lib/admin-suspend-service"
+import { reactivateStudio } from "@/lib/admin/admin-suspend-service"
 import {
   isPlatformApiUser,
   requirePlatformApiPermission,
-} from "@/lib/admin-auth"
-import { checkRateLimit } from "@/lib/admin-rate-limit"
+} from "@/lib/admin/admin-auth"
+import { checkRateLimit } from "@/lib/admin/admin-rate-limit"
 
 function parseReason(body: unknown): string | null {
   if (!body || typeof body !== "object") return null

@@ -6,7 +6,7 @@ import { auditLogs } from "@/db/schema"
 import {
   isPlatformApiUser,
   requirePlatformApiPermission,
-} from "@/lib/admin-auth"
+} from "@/lib/admin/admin-auth"
 
 export async function GET(request: Request) {
   const authResult = await requirePlatformApiPermission(request, "audit:read")

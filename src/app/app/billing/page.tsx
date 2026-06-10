@@ -24,12 +24,12 @@ import {
 } from "@/components/ui/table"
 import { PageHeading, SectionHeading } from "@/components/design"
 import { SubscribeButton } from "@/components/billing/subscribe-button"
-import { loadMidtransSnap } from "@/lib/midtrans-snap"
+import { loadMidtransSnap } from "@/lib/billing/midtrans-snap"
 import {
   SUBSCRIPTION_PLANS,
   getSubscriptionPlanLabel,
   planTypeToMonths,
-} from "@/lib/billing-plans"
+} from "@/lib/billing/billing-plans"
 
 function formatIDR(amount: number) {
   return `Rp ${amount.toLocaleString("id-ID")}`

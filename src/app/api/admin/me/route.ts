@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 
-import { getPlatformUserFromSession } from "@/lib/admin-auth"
+import { getPlatformUserFromSession } from "@/lib/admin/admin-auth"
 
 export async function GET() {
   const platformUser = await getPlatformUserFromSession()

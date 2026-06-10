@@ -122,15 +122,27 @@ export default function DashboardPage() {
         <p className="text-sm text-muted-foreground">Memuat data...</p>
       ) : null}
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {summaryCards.map((card) => (
-          <MetricCard
-            key={card.label}
-            label={card.label}
-            value={card.value}
-            icon={card.icon}
-          />
-        ))}
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-12">
+        {summaryCards.map((card, idx) => {
+          // Bento layout spans: 
+          // Views, Clicks, Leads: lg:col-span-4
+          // Conversion Rate: lg:col-span-12 (spans full width, highlighted as best performer)
+          const isFeatured = idx === 2
+          const colSpan = isFeatured 
+            ? "col-span-1 sm:col-span-2 lg:col-span-12" 
+            : "col-span-1 sm:col-span-1 lg:col-span-4"
+          
+          return (
+            <MetricCard
+              key={card.label}
+              label={card.label}
+              value={card.value}
+              icon={card.icon}
+              isFeatured={isFeatured}
+              className={colSpan}
+            />
+          )
+        })}
       </div>
 
       <Card>

@@ -1,13 +1,16 @@
 import {
   boolean,
+  check,
   index,
   integer,
   jsonb,
   pgTable,
   text,
   timestamp,
+  uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core"
+import { sql } from "drizzle-orm"
 import type { Block } from "@/lib/types"
 
 export const roles = pgTable("roles", {
@@ -37,36 +40,55 @@ export const studios = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => [index("studios_status_idx").on(table.status)],
+  (table) => [
+    index("studios_status_idx").on(table.status),
+    check("studios_status_check", sql`${table.status} IN ('active', 'suspended')`),
+  ],
 )
 
-export const studioMemberships = pgTable("studio_memberships", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  userId: text("user_id").notNull(),
-  studioId: uuid("studio_id")
-    .notNull()
-    .references(() => studios.id, { onDelete: "cascade" }),
-  roleId: uuid("role_id")
-    .notNull()
-    .references(() => roles.id),
-  isPrimaryOwner: boolean("is_primary_owner").notNull().default(false),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-})
+export const studioMemberships = pgTable(
+  "studio_memberships",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: text("user_id").notNull(),
+    studioId: uuid("studio_id")
+      .notNull()
+      .references(() => studios.id, { onDelete: "cascade" }),
+    roleId: uuid("role_id")
+      .notNull()
+      .references(() => roles.id),
+    isPrimaryOwner: boolean("is_primary_owner").notNull().default(false),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("studio_memberships_user_studio_idx").on(table.userId, table.studioId),
+  ],
+)
 
-export const subscriptions = pgTable("subscriptions", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  studioId: uuid("studio_id")
-    .notNull()
-    .references(() => studios.id, { onDelete: "cascade" }),
-  planType: text("plan_type").notNull(),
-  status: text("status").notNull().default("pending"),
-  startsAt: timestamp("starts_at", { withTimezone: true }),
-  expiresAt: timestamp("expires_at", { withTimezone: true }),
-  midtransOrderId: text("midtrans_order_id"),
-  midtransTransactionId: text("midtrans_transaction_id"),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-})
+export const subscriptions = pgTable(
+  "subscriptions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    studioId: uuid("studio_id")
+      .notNull()
+      .references(() => studios.id, { onDelete: "cascade" }),
+    planType: text("plan_type").notNull(),
+    status: text("status").notNull().default("pending"),
+    startsAt: timestamp("starts_at", { withTimezone: true }),
+    expiresAt: timestamp("expires_at", { withTimezone: true }),
+    midtransOrderId: text("midtrans_order_id"),
+    midtransTransactionId: text("midtrans_transaction_id"),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("subscriptions_studio_id_idx").on(table.studioId),
+    check(
+      "subscriptions_status_check",
+      sql`${table.status} IN ('active', 'expired', 'pending', 'cancelled')`,
+    ),
+  ],
+)
 
 export const invoices = pgTable("invoices", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -135,14 +157,20 @@ export const suspensionLogs = pgTable("suspension_logs", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 })
 
-export const leads = pgTable("leads", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  studioId: uuid("studio_id")
-    .notNull()
-    .references(() => studios.id, { onDelete: "cascade" }),
-  name: text("name").notNull(),
-  email: text("email"),
-  message: text("message"),
-  status: text("status").notNull().default("new"),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-})
+export const leads = pgTable(
+  "leads",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    studioId: uuid("studio_id")
+      .notNull()
+      .references(() => studios.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    email: text("email"),
+    message: text("message"),
+    status: text("status").notNull().default("new"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    check("leads_status_check", sql`${table.status} IN ('new', 'read', 'replied')`),
+  ],
+)
