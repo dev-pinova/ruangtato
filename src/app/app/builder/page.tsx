@@ -2,12 +2,15 @@ import type { ReactNode } from "react"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
+import { desc, eq } from "drizzle-orm"
 
 import { PlatformLogo } from "@/components/brand/platform-logo"
 import { BuilderUI } from "@/components/builder/builder-ui"
 import { Button } from "@/components/ui/button"
 import { getServerSession } from "@/lib/auth/session"
 import { getStudioForUser, studioHasActiveSubscription } from "@/lib/studio/studio-service"
+import { db } from "@/db"
+import { payments } from "@/db/schema"
 
 function BuilderHeader({
   subtitle,
@@ -40,7 +43,7 @@ function BuilderHeader({
 }
 
 export default async function BuilderPage() {
-  if (!process.env.DATABASE_URL) {
+  if (!process.env.DATABASE_URL || !db) {
     redirect("/app/dashboard")
   }
 
@@ -52,6 +55,28 @@ export default async function BuilderPage() {
   const studio = await getStudioForUser(session.user.id)
   if (!studio) {
     redirect("/register")
+  }
+
+  const latestPayments = await db
+    .select()
+    .from(payments)
+    .where(eq(payments.studioId, studio.id))
+    .orderBy(desc(payments.createdAt))
+    .limit(1)
+
+  const latestPayment = latestPayments[0]
+  const isPaid = latestPayment && (
+    latestPayment.transactionStatus === "settlement" ||
+    latestPayment.transactionStatus === "capture" ||
+    latestPayment.transactionStatus === "success" ||
+    (latestPayment.rawPayload && typeof latestPayment.rawPayload === "object" &&
+      ((latestPayment.rawPayload as Record<string, any>).transaction_status === "settlement" ||
+       (latestPayment.rawPayload as Record<string, any>).transaction_status === "capture")
+    )
+  )
+
+  if (!isPaid) {
+    redirect("/app/billing?warning=Selesaikan%20pembayaran%20sebesar%20Rp%20799.000%20terlebih%20dahulu%20untuk%20mengaktifkan%20fitur%20Builder.")
   }
 
   const hasSubscription = await studioHasActiveSubscription(studio.id)

@@ -7,14 +7,16 @@ const PUBLIC_ADMIN_PATHS = ["/admin/login"]
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+  const requestHeaders = new Headers(request.headers)
+  requestHeaders.set("x-pathname", pathname)
 
   if (pathname.startsWith("/admin")) {
     if (PUBLIC_ADMIN_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`))) {
-      return NextResponse.next()
+      return NextResponse.next({ request: { headers: requestHeaders } })
     }
 
     if (!process.env.DATABASE_URL) {
-      return NextResponse.next()
+      return NextResponse.next({ request: { headers: requestHeaders } })
     }
 
     const sessionCookie = getSessionCookie(request)
@@ -24,19 +26,19 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(loginUrl)
     }
 
-    return NextResponse.next()
+    return NextResponse.next({ request: { headers: requestHeaders } })
   }
 
   if (!pathname.startsWith("/app")) {
-    return NextResponse.next()
+    return NextResponse.next({ request: { headers: requestHeaders } })
   }
 
   if (PUBLIC_APP_PREFIXES.some((prefix) => pathname.startsWith(prefix))) {
-    return NextResponse.next()
+    return NextResponse.next({ request: { headers: requestHeaders } })
   }
 
   if (!process.env.DATABASE_URL) {
-    return NextResponse.next()
+    return NextResponse.next({ request: { headers: requestHeaders } })
   }
 
   const sessionCookie = getSessionCookie(request)
@@ -47,7 +49,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl)
   }
 
-  return NextResponse.next()
+  return NextResponse.next({ request: { headers: requestHeaders } })
 }
 
 export const config = {

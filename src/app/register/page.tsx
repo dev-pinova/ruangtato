@@ -45,7 +45,7 @@ export default function RegisterPage() {
       return
     }
 
-    router.push("/app/builder?welcome=1")
+    router.push("/checkout?welcome=1")
     router.refresh()
   }
 
