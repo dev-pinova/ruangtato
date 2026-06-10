@@ -14,6 +14,7 @@ import {
   Settings,
   Menu,
   ChevronRight,
+  ChevronLeft,
   Search,
   LogOut,
   Loader2,
@@ -196,10 +197,10 @@ export function AdminShell({
   const router = useRouter()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [commandOpen, setCommandOpen] = useState(false)
-  const [sidebarHovered, setSidebarHovered] = useState(false)
+  const [isCollapsed, setIsCollapsed] = useState(false)
   const [signingOut, setSigningOut] = useState(false)
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false)
-  const collapsed = !sidebarHovered
+  const collapsed = isCollapsed
 
   const visibleGroups = useMemo(
     () =>
@@ -288,7 +289,16 @@ export function AdminShell({
             isActive ? "text-white" : "text-muted-foreground group-hover:text-foreground",
           )}
         />
-        {!isCollapsed ? <span>{item.label}</span> : null}
+        <span
+          className={cn(
+            "transition-all duration-300 ease-in-out whitespace-nowrap",
+            isCollapsed
+              ? "opacity-0 w-0 overflow-hidden pointer-events-none"
+              : "opacity-100 w-auto"
+          )}
+        >
+          {item.label}
+        </span>
       </>
     )
 
@@ -345,11 +355,16 @@ export function AdminShell({
       <div className="space-y-4">
         {visibleGroups.map((group) => (
           <div key={group.label}>
-            {!isCollapsed && group.label !== "Home" ? (
-              <p className="px-3 pb-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+            {group.label !== "Home" && (
+              <p
+                className={cn(
+                  "px-3 pb-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground transition-all duration-300 ease-in-out whitespace-nowrap",
+                  isCollapsed ? "opacity-0 w-0 h-0 overflow-hidden pb-0 pointer-events-none" : "opacity-100"
+                )}
+              >
                 {group.label}
               </p>
-            ) : null}
+            )}
             <nav className={cn("flex flex-col gap-0.5", isCollapsed ? "px-2" : "px-3")}>
               {group.items.map((item) => renderNavLink(item, opts))}
             </nav>
@@ -368,20 +383,33 @@ export function AdminShell({
         Skip to content
       </a>
 
-      <div className="flex h-dvh bg-background">
+      <div className="relative flex h-dvh bg-background">
         <aside
           data-admin-sidebar
           data-collapsed={collapsed ? "true" : "false"}
-          onMouseEnter={() => setSidebarHovered(true)}
-          onMouseLeave={() => setSidebarHovered(false)}
           className={cn(
-            "hidden shrink-0 flex-col border-r border-zinc-900/60 bg-zinc-950/70 backdrop-blur-md transition-all duration-200 md:flex",
-            collapsed ? "w-16" : "w-60",
+            "absolute left-0 inset-y-0 z-20 hidden shrink-0 flex-col border-r border-zinc-800 bg-zinc-950 transition-all duration-300 ease-in-out md:flex",
+            collapsed ? "w-16" : "w-64",
           )}
         >
+          {/* Toggle Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="absolute -right-3 top-3 z-30 h-6 w-6 rounded-full border border-zinc-800 bg-zinc-950 p-0 text-zinc-400 hover:bg-zinc-900 hover:text-red-600 focus:outline-none transition-colors"
+            aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            {isCollapsed ? (
+              <ChevronRight className="h-3 w-3" />
+            ) : (
+              <ChevronLeft className="h-3 w-3" />
+            )}
+          </Button>
+
           <div
             className={cn(
-              "flex h-12 shrink-0 items-center border-b border-zinc-900/60",
+              "flex h-12 shrink-0 items-center border-b border-zinc-800/60 transition-all duration-300 ease-in-out",
               collapsed ? "justify-center px-2" : "px-5",
             )}
           >
@@ -390,52 +418,59 @@ export function AdminShell({
 
           <div className="flex-1 overflow-y-auto py-4">{renderNav({ collapsed })}</div>
 
-          <div className="shrink-0 border-t border-sidebar-border p-3">
+          <div className="shrink-0 border-t border-zinc-800 p-3">
             <div
               className={cn(
-                "flex flex-col rounded-md",
+                "flex flex-col rounded-md transition-all duration-300 ease-in-out",
                 collapsed ? "items-center" : "gap-2 px-2.5 py-1.5",
               )}
             >
               <div
                 className={cn(
-                  "flex items-center",
+                  "flex items-center transition-all duration-300 ease-in-out",
                   collapsed ? "justify-center" : "gap-3",
                 )}
               >
                 <Avatar size="sm">
                   <AvatarFallback>{initials}</AvatarFallback>
                 </Avatar>
-                {!collapsed ? (
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium">{user.name}</p>
-                    <p className="truncate text-xs text-muted-foreground">
-                      {user.email}
-                    </p>
-                  </div>
-                ) : null}
+                <div
+                  className={cn(
+                    "min-w-0 flex-1 transition-all duration-300 ease-in-out whitespace-nowrap",
+                    collapsed ? "opacity-0 w-0 overflow-hidden pointer-events-none" : "opacity-100 w-auto"
+                  )}
+                >
+                  <p className="truncate text-sm font-medium">{user.name}</p>
+                  <p className="truncate text-xs text-muted-foreground">
+                    {user.email}
+                  </p>
+                </div>
               </div>
               {!collapsed ? (
-                <AdminStatusBadge
-                  status="active"
-                  label={user.platformRole.replace("_", " ")}
-                />
-              ) : (
-                <Tooltip>
-                  <TooltipTrigger
-                    render={
-                      <span className="mt-1 flex size-6 items-center justify-center rounded-full bg-muted text-[10px] font-medium uppercase text-muted-foreground">
-                        {user.platformRole.slice(0, 2)}
-                      </span>
-                    }
+                <div className="transition-all duration-300 ease-in-out opacity-100">
+                  <AdminStatusBadge
+                    status="active"
+                    label={user.platformRole.replace("_", " ")}
                   />
-                  <TooltipContent side="right">
-                    {user.platformRole.replace("_", " ")}
-                  </TooltipContent>
-                </Tooltip>
+                </div>
+              ) : (
+                <div className="transition-all duration-300 ease-in-out opacity-100">
+                  <Tooltip>
+                    <TooltipTrigger
+                      render={
+                        <span className="mt-1 flex size-6 items-center justify-center rounded-full bg-zinc-900 border border-zinc-800 text-[10px] font-medium uppercase text-muted-foreground">
+                          {user.platformRole.slice(0, 2)}
+                        </span>
+                      }
+                    />
+                    <TooltipContent side="right">
+                      {user.platformRole.replace("_", " ")}
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
               )}
               {!collapsed ? (
-                <p className="text-[10px] text-muted-foreground">
+                <p className="text-[10px] text-muted-foreground transition-all duration-300 ease-in-out whitespace-nowrap opacity-100">
                   Tekan <kbd className="rounded border border-border px-1">Ctrl+K</kbd> untuk
                   cari
                 </p>
@@ -444,7 +479,12 @@ export function AdminShell({
           </div>
         </aside>
 
-        <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+        <div
+          className={cn(
+            "flex min-w-0 flex-1 flex-col overflow-hidden transition-all duration-300 ease-in-out",
+            collapsed ? "md:pl-16" : "md:pl-64",
+          )}
+        >
           <header className="flex h-12 shrink-0 items-center justify-between gap-3 border-b border-border bg-background px-4 md:px-6">
             <div className="flex min-w-0 items-center gap-3">
               <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>

@@ -13,8 +13,8 @@ import {
   Menu,
   LogOut,
   User,
-  PanelLeftClose,
-  PanelLeftOpen,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -228,7 +228,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     isActive ? "text-white" : "text-muted-foreground group-hover/nav-item:text-foreground"
                   )}
                 />
-                {!isCollapsed && <span>{item.label}</span>}
+                <span
+                  className={cn(
+                    "transition-all duration-300 ease-in-out whitespace-nowrap",
+                    isCollapsed
+                      ? "opacity-0 w-0 overflow-hidden pointer-events-none"
+                      : "opacity-100 w-auto"
+                  )}
+                >
+                  {item.label}
+                </span>
               </Link>
             </motion.div>
           )
@@ -238,59 +247,58 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="relative flex h-screen bg-background">
       {/* Desktop sidebar */}
       <aside
         data-collapsed={collapsed ? "true" : "false"}
         className={cn(
-          "hidden shrink-0 flex-col border-r border-zinc-900/60 bg-zinc-950/70 backdrop-blur-md transition-all duration-200 md:flex",
-          collapsed ? "w-16" : "w-60"
+          "absolute left-0 inset-y-0 z-20 hidden shrink-0 flex-col border-r border-zinc-800 bg-zinc-950 transition-all duration-300 ease-in-out md:flex",
+          collapsed ? "w-16" : "w-64"
         )}
       >
+        {/* Toggle Button */}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={toggleCollapsed}
+          className="absolute -right-3 top-3 z-30 h-6 w-6 rounded-full border border-zinc-800 bg-zinc-950 p-0 text-zinc-400 hover:bg-zinc-900 hover:text-red-600 focus:outline-none transition-colors"
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
+          {collapsed ? (
+            <ChevronRight className="h-3 w-3" />
+          ) : (
+            <ChevronLeft className="h-3 w-3" />
+          )}
+        </Button>
+
         <div
           className={cn(
-            "flex h-14 items-center border-b border-zinc-900/60 shrink-0",
+            "flex h-14 items-center border-b border-zinc-800/60 shrink-0 transition-all duration-300 ease-in-out",
             collapsed ? "justify-center px-2" : "px-5"
           )}
         >
           <PlatformLogo href="/app/dashboard" variant="app" collapsed={collapsed} />
         </div>
 
-        <div
-          className={cn(
-            "flex shrink-0 border-b border-zinc-900/60 py-2",
-            collapsed ? "justify-center px-2" : "justify-end px-3"
-          )}
-        >
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleCollapsed}
-            title={collapsed ? "Buka sidebar" : "Tutup sidebar"}
-            aria-label={collapsed ? "Buka sidebar" : "Tutup sidebar"}
-            aria-expanded={!collapsed}
-          >
-            {collapsed ? (
-              <PanelLeftOpen className="size-4" />
-            ) : (
-              <PanelLeftClose className="size-4" />
-            )}
-          </Button>
-        </div>
-
         <div className="flex-1 overflow-y-auto py-4">
-          {!collapsed && (
-            <p className="px-6 pb-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-              Studio
-            </p>
-          )}
+          <p
+            className={cn(
+              "px-6 pb-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground transition-all duration-300 ease-in-out whitespace-nowrap",
+              collapsed ? "opacity-0 w-0 h-0 overflow-hidden pb-0 pointer-events-none" : "opacity-100"
+            )}
+          >
+            Studio
+          </p>
           {renderNavLinks({ collapsed })}
 
-          {!collapsed && (
-            <p className="mt-6 px-6 pb-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-              Publik
-            </p>
-          )}
+          <p
+            className={cn(
+              "px-6 pb-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground transition-all duration-300 ease-in-out whitespace-nowrap",
+              collapsed ? "opacity-0 w-0 h-0 overflow-hidden pb-0 mt-0 pointer-events-none" : "opacity-100 mt-6"
+            )}
+          >
+            Publik
+          </p>
           <nav
             className={cn(
               "flex flex-col gap-0.5",
@@ -316,7 +324,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   )}
                 >
                   <ExternalLink className="size-4 shrink-0" />
-                  {!collapsed && <span>Lihat Studio</span>}
+                  <span
+                    className={cn(
+                      "transition-all duration-300 ease-in-out whitespace-nowrap",
+                      collapsed
+                        ? "opacity-0 w-0 overflow-hidden pointer-events-none"
+                        : "opacity-100 w-auto"
+                    )}
+                  >
+                    Lihat Studio
+                  </span>
                 </a>
               </motion.div>
             ) : null}
@@ -332,12 +349,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               )}
             >
               <div className="size-8 rounded-full bg-muted shrink-0" />
-              {!collapsed && (
-                <div className="flex-1 space-y-1.5">
-                  <div className="h-3 w-16 rounded bg-muted" />
-                  <div className="h-2.5 w-24 rounded bg-muted" />
-                </div>
-              )}
+              <div
+                className={cn(
+                  "flex-1 space-y-1.5 transition-all duration-300 ease-in-out whitespace-nowrap",
+                  collapsed ? "opacity-0 w-0 overflow-hidden pointer-events-none" : "opacity-100 w-auto"
+                )}
+              >
+                <div className="h-3 w-16 rounded bg-muted" />
+                <div className="h-2.5 w-24 rounded bg-muted" />
+              </div>
             </div>
           ) : (
             <div
@@ -350,22 +370,30 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <Avatar size="sm">
                 <AvatarFallback>{initials}</AvatarFallback>
               </Avatar>
-              {!collapsed && (
-                <div className="flex-1 min-w-0">
-                  <p className="truncate text-sm font-medium">{userName}</p>
-                  {userEmail ? (
-                    <p className="truncate text-xs text-muted-foreground">
-                      {userEmail}
-                    </p>
-                  ) : null}
-                </div>
-              )}
+              <div
+                className={cn(
+                  "flex-1 min-w-0 transition-all duration-300 ease-in-out whitespace-nowrap",
+                  collapsed ? "opacity-0 w-0 overflow-hidden pointer-events-none" : "opacity-100 w-auto"
+                )}
+              >
+                <p className="truncate text-sm font-medium">{userName}</p>
+                {userEmail ? (
+                  <p className="truncate text-xs text-muted-foreground">
+                    {userEmail}
+                  </p>
+                ) : null}
+              </div>
             </div>
           )}
         </div>
       </aside>
 
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div
+        className={cn(
+          "flex flex-1 flex-col overflow-hidden transition-all duration-300 ease-in-out",
+          collapsed ? "md:pl-16" : "md:pl-64"
+        )}
+      >
         {/* Top bar */}
         <header className="flex h-14 items-center justify-between border-b border-border bg-background px-4 md:px-6 gap-4 shrink-0">
           <div className="flex items-center gap-3">
