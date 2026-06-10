@@ -8,6 +8,9 @@ import { getServerSession } from "@/lib/auth/session"
 import { getStudioForUser } from "@/lib/studio/studio-service"
 import AppLayoutClient from "./app-layout-client"
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await getServerSession()
   if (!session) {
@@ -24,14 +27,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       redirect("/register")
     }
 
-    const latestPayments = await db
-      .select()
-      .from(payments)
-      .where(eq(payments.studioId, studio.id))
-      .orderBy(desc(payments.createdAt))
-      .limit(1)
-
-    const latestPayment = latestPayments[0]
+    const latestPayment = await db.query.payments.findFirst({
+      where: eq(payments.studioId, studio.id),
+      orderBy: [desc(payments.createdAt)],
+    })
     const isPaid = latestPayment && (
       latestPayment.transactionStatus === "settlement" ||
       latestPayment.transactionStatus === "capture" ||
