@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 
 import { isDatabaseConfigured } from "@/db"
 import { auth } from "@/lib/auth/auth"
-import { createStudioForUser, getStudioForUser } from "@/lib/studio/studio-service"
+import { createStudioForUser, getStudioForUser, getStudioSuspendedFlagForUser } from "@/lib/studio/studio-service"
 
 export async function POST(request: Request) {
   if (!isDatabaseConfigured()) {
@@ -15,6 +15,14 @@ export async function POST(request: Request) {
   const session = await auth.api.getSession({ headers: request.headers })
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
+  const isSuspended = await getStudioSuspendedFlagForUser(session.user.id)
+  if (isSuspended) {
+    return NextResponse.json(
+      { error: "Akun Anda telah ditangguhkan. Silakan hubungi admin." },
+      { status: 403 }
+    )
   }
 
   const existing = await getStudioForUser(session.user.id)

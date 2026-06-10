@@ -127,7 +127,7 @@ export const auth = betterAuth({
 
               if (
                 account?.status === "suspended" &&
-                !account.platformRole
+                account.platformRole !== "super_admin"
               ) {
                 throw new APIError("FORBIDDEN", {
                   message: "Akun dinonaktifkan. Hubungi Ruang Tato.",

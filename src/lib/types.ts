@@ -253,6 +253,39 @@ export interface Block {
   visible: boolean
 }
 
+export interface DbBlock {
+  block_id: string
+  type: string
+  order: number
+  content: any
+}
+
+export function mapBlocksToDbBlocks(blocks: Block[]): DbBlock[] {
+  return blocks.map((block, index) => ({
+    block_id: block.id,
+    type: block.type,
+    order: index + 1,
+    content: {
+      ...block.data,
+      visible: block.visible,
+    },
+  }))
+}
+
+export function mapDbBlocksToBlocks(dbBlocks: DbBlock[]): Block[] {
+  if (!Array.isArray(dbBlocks)) return []
+  const sorted = [...dbBlocks].sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+  return sorted.map((dbBlock) => {
+    const { visible, ...data } = dbBlock.content || {}
+    return {
+      id: dbBlock.block_id,
+      type: dbBlock.type as BlockType,
+      data: data as BlockData,
+      visible: visible !== false,
+    }
+  })
+}
+
 export interface Studio {
   id: string
   slug: string

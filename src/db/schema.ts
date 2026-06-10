@@ -11,7 +11,7 @@ import {
   uuid,
 } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
-import type { Block } from "@/lib/types"
+import type { DbBlock } from "@/lib/types"
 
 export const roles = pgTable("roles", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -36,7 +36,7 @@ export const studios = pgTable(
     isTrusted: boolean("is_trusted").notNull().default(false),
     isPublished: boolean("is_published").notNull().default(false),
     status: text("status").notNull().default("active"),
-    pageConfig: jsonb("page_config").$type<Block[]>().notNull().default([]),
+    pageConfig: jsonb("page_config").$type<DbBlock[]>().notNull().default([]),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },

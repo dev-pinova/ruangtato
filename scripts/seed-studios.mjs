@@ -84,9 +84,14 @@ async function main() {
           `Landing page demo ${name}`,
           "https://images.unsplash.com/photo-1598371839696-5c5bb00bdc28?q=80&w=800&auto=format&fit=crop",
           JSON.stringify(
-            DEFAULT_BLOCKS.map((b) => ({
-              ...b,
-              data: { ...b.data, title: b.type === "Header" || b.type === "Footer" ? name : b.data.title },
+            DEFAULT_BLOCKS.map((b, index) => ({
+              block_id: b.id,
+              type: b.type,
+              order: index + 1,
+              content: {
+                ...(b.type === "Header" || b.type === "Footer" ? { ...b.data, title: name } : b.data),
+                visible: b.visible,
+              },
             })),
           ),
         ],

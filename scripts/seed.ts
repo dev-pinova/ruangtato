@@ -9,6 +9,7 @@ import { eq } from "drizzle-orm"
 import { roles, studios, subscriptions } from "../src/db/schema"
 import { createDefaultPageConfig } from "../src/lib/studio/default-page-config"
 import { PLACEHOLDER_IMAGES } from "../src/lib/placeholder-images"
+import { mapBlocksToDbBlocks } from "../src/lib/types"
 
 const connectionString =
   process.env.DATABASE_URL ??
@@ -125,7 +126,7 @@ async function main() {
         artist: demo.artist,
         tags: [...demo.tags],
         isPublished: demo.isPublished,
-        pageConfig,
+        pageConfig: mapBlocksToDbBlocks(pageConfig),
       })
       .returning()
 

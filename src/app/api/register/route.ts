@@ -1,7 +1,10 @@
 import { APIError } from "better-auth/api"
 import { NextResponse } from "next/server"
+import { and, eq } from "drizzle-orm"
 
-import { checkDatabaseConnection, isDatabaseConfigured } from "@/db"
+import { checkDatabaseConnection, isDatabaseConfigured, getDb } from "@/db"
+import { user } from "@/db/auth-schema"
+import { studios, studioMemberships } from "@/db/schema"
 import { auth } from "@/lib/auth/auth"
 import { createStudioForUser } from "@/lib/studio/studio-service"
 
@@ -77,6 +80,49 @@ export async function POST(request: Request) {
   }
 
   try {
+    const db = getDb()
+
+    // Check if the email already exists in the database
+    const [existingUser] = await db
+      .select({ id: user.id, status: user.status })
+      .from(user)
+      .where(eq(user.email, email))
+      .limit(1)
+
+    if (existingUser) {
+      let isSuspended = existingUser.status === "suspended"
+
+      if (!isSuspended) {
+        const [membership] = await db
+          .select({ status: studios.status })
+          .from(studioMemberships)
+          .innerJoin(studios, eq(studioMemberships.studioId, studios.id))
+          .where(
+            and(
+              eq(studioMemberships.userId, existingUser.id),
+              eq(studios.status, "suspended")
+            )
+          )
+          .limit(1)
+
+        if (membership) {
+          isSuspended = true
+        }
+      }
+
+      if (isSuspended) {
+        return NextResponse.json(
+          { error: "Akun Anda telah ditangguhkan. Silakan hubungi admin." },
+          { status: 403 }
+        )
+      }
+
+      return NextResponse.json(
+        { error: "Email sudah terdaftar." },
+        { status: 400 }
+      )
+    }
+
     const signUpResult = await auth.api.signUpEmail({
       body: { name, email, password },
       headers: request.headers,

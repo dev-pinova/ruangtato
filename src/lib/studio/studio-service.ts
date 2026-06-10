@@ -16,7 +16,7 @@ import {
 } from "@/lib/studio/default-page-config"
 import { DEFAULT_STUDIO_COVER } from "@/lib/placeholder-images"
 import { getStudioArtistImage, resolveStudioCoverImage } from "@/lib/studio/studio-utils"
-import type { Block, Studio } from "@/lib/types"
+import { type Block, type Studio, mapDbBlocksToBlocks, mapBlocksToDbBlocks } from "@/lib/types"
 
 export function isActivePaidSubscription(sub: {
   planType: string
@@ -60,7 +60,7 @@ export async function getStudioBySlugFromDb(slug: string): Promise<Studio | null
   const [row] = await db.select().from(studios).where(eq(studios.slug, slug)).limit(1)
   if (!row) return null
 
-  return mapStudioRow(row, row.pageConfig ?? [])
+  return mapStudioRow(row, mapDbBlocksToBlocks(row.pageConfig ?? []))
 }
 
 export async function getPublishedStudioBySlug(slug: string): Promise<Studio | null> {
@@ -69,7 +69,7 @@ export async function getPublishedStudioBySlug(slug: string): Promise<Studio | n
   const [row] = await db.select().from(studios).where(eq(studios.slug, slug)).limit(1)
   if (!row?.isPublished || row.status === "suspended") return null
 
-  return mapStudioRow(row, row.pageConfig ?? [])
+  return mapStudioRow(row, mapDbBlocksToBlocks(row.pageConfig ?? []))
 }
 
 export async function getSuspendedStudioBySlug(
@@ -112,7 +112,7 @@ export async function getStudioForUser(userId: string): Promise<Studio | null> {
   const row = membership.studio
   if (row.status === "suspended") return null
 
-  return mapStudioRow(row, row.pageConfig ?? [])
+  return mapStudioRow(row, mapDbBlocksToBlocks(row.pageConfig ?? []))
 }
 
 export async function getStudioSuspendedFlagForUser(userId: string): Promise<boolean> {
@@ -236,7 +236,7 @@ export async function createStudioForUser(input: {
         image: DEFAULT_STUDIO_COVER,
         artist: input.ownerName,
         tags: ["Custom", "Studio"],
-        pageConfig,
+        pageConfig: mapBlocksToDbBlocks(pageConfig),
       })
       .returning()
 
@@ -294,7 +294,7 @@ export async function updateStudioProfile(
     .returning()
 
   if (!updated) return null
-  return mapStudioRow(updated, updated.pageConfig ?? [])
+  return mapStudioRow(updated, mapDbBlocksToBlocks(updated.pageConfig ?? []))
 }
 
 export async function saveStudioPageConfig(studioId: string, blocks: Block[], slug?: string) {
@@ -309,7 +309,7 @@ export async function saveStudioPageConfig(studioId: string, blocks: Block[], sl
   if (!existing) return null
 
   const updates: Partial<typeof studios.$inferInsert> = {
-    pageConfig: blocks,
+    pageConfig: mapBlocksToDbBlocks(blocks),
     image: resolveStudioCoverImage(existing.image, blocks),
     updatedAt: new Date(),
   }
@@ -325,7 +325,7 @@ export async function saveStudioPageConfig(studioId: string, blocks: Block[], sl
     .returning()
 
   if (!updated) return null
-  return mapStudioRow(updated, updated.pageConfig ?? [])
+  return mapStudioRow(updated, mapDbBlocksToBlocks(updated.pageConfig ?? []))
 }
 
 export async function publishStudio(studioId: string) {
@@ -339,7 +339,7 @@ export async function publishStudio(studioId: string) {
 
   if (!existing) return null
 
-  const blocks = existing.pageConfig ?? []
+  const blocks = mapDbBlocksToBlocks(existing.pageConfig ?? [])
 
   const [updated] = await d
     .update(studios)
@@ -352,7 +352,7 @@ export async function publishStudio(studioId: string) {
     .returning()
 
   if (!updated) return null
-  return mapStudioRow(updated, updated.pageConfig ?? [])
+  return mapStudioRow(updated, mapDbBlocksToBlocks(updated.pageConfig ?? []))
 }
 
 export async function getStudioIdBySlug(slug: string): Promise<string | null> {
@@ -568,7 +568,7 @@ export async function listPublishedStudios(): Promise<Studio[]> {
   }
 
   return rows.map((row) =>
-    mapStudioRow(row, row.pageConfig ?? [], verifiedByStudioId.get(row.id) ?? false),
+    mapStudioRow(row, mapDbBlocksToBlocks(row.pageConfig ?? []), verifiedByStudioId.get(row.id) ?? false),
   )
 }
 
