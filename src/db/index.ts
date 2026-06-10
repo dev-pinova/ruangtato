@@ -32,7 +32,7 @@ function buildPoolConfig(url: string) {
     // Transaction pooler (port 6543) does not support prepared statements.
     ...(pooler ? { prepare: false } : {}),
     ssl: remote
-      ? { rejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED !== "false" }
+      ? { rejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED === "true" }
       : undefined,
   }
 }
