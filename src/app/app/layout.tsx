@@ -27,17 +27,17 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       redirect("/register")
     }
 
-    const latestPayment = await db.query.payments.findFirst({
+    const studioPayments = await db.query.payments.findMany({
       where: eq(payments.studioId, studio.id),
-      orderBy: [desc(payments.createdAt)],
     })
-    const isPaid = latestPayment && (
-      latestPayment.transactionStatus === "settlement" ||
-      latestPayment.transactionStatus === "capture" ||
-      latestPayment.transactionStatus === "success" ||
-      (latestPayment.rawPayload && typeof latestPayment.rawPayload === "object" &&
-        ((latestPayment.rawPayload as Record<string, any>).transaction_status === "settlement" ||
-         (latestPayment.rawPayload as Record<string, any>).transaction_status === "capture")
+
+    const isPaid = studioPayments.some(p => 
+      p.transactionStatus === "settlement" ||
+      p.transactionStatus === "capture" ||
+      p.transactionStatus === "success" ||
+      (p.rawPayload && typeof p.rawPayload === "object" &&
+        ((p.rawPayload as Record<string, any>).transaction_status === "settlement" ||
+         (p.rawPayload as Record<string, any>).transaction_status === "capture")
       )
     )
 
