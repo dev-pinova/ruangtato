@@ -26,24 +26,6 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     if (!studio) {
       redirect("/register")
     }
-
-    const studioPayments = await db.query.payments.findMany({
-      where: eq(payments.studioId, studio.id),
-    })
-
-    const isPaid = studioPayments.some(p => 
-      p.transactionStatus === "settlement" ||
-      p.transactionStatus === "capture" ||
-      p.transactionStatus === "success" ||
-      (p.rawPayload && typeof p.rawPayload === "object" &&
-        ((p.rawPayload as Record<string, any>).transaction_status === "settlement" ||
-         (p.rawPayload as Record<string, any>).transaction_status === "capture")
-      )
-    )
-
-    if (!isPaid) {
-      redirect("/checkout?status=unpaid")
-    }
   }
 
   return <AppLayoutClient>{children}</AppLayoutClient>

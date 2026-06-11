@@ -1,8 +1,8 @@
 import type { ReactNode } from "react"
 import Link from "next/link"
 import { redirect } from "next/navigation"
-import { ArrowLeft } from "lucide-react"
-import { desc, eq } from "drizzle-orm"
+import { ArrowLeft, Lock, ShieldAlert } from "lucide-react"
+import { eq } from "drizzle-orm"
 
 import { PlatformLogo } from "@/components/brand/platform-logo"
 import { BuilderUI } from "@/components/builder/builder-ui"
@@ -57,32 +57,22 @@ export default async function BuilderPage() {
     redirect("/register")
   }
 
-  const latestPayments = await db
-    .select()
-    .from(payments)
-    .where(eq(payments.studioId, studio.id))
-    .orderBy(desc(payments.createdAt))
-    .limit(1)
+  const studioPayments = await db.query.payments.findMany({
+    where: eq(payments.studioId, studio.id),
+  })
 
-  const latestPayment = latestPayments[0]
-  const isPaid = latestPayment && (
-    latestPayment.transactionStatus === "settlement" ||
-    latestPayment.transactionStatus === "capture" ||
-    latestPayment.transactionStatus === "success" ||
-    (latestPayment.rawPayload && typeof latestPayment.rawPayload === "object" &&
-      ((latestPayment.rawPayload as Record<string, any>).transaction_status === "settlement" ||
-       (latestPayment.rawPayload as Record<string, any>).transaction_status === "capture")
+  const isPaid = studioPayments.some(p => 
+    p.transactionStatus === "settlement" ||
+    p.transactionStatus === "capture" ||
+    p.transactionStatus === "success" ||
+    (p.rawPayload && typeof p.rawPayload === "object" &&
+      ((p.rawPayload as Record<string, any>).transaction_status === "settlement" ||
+       (p.rawPayload as Record<string, any>).transaction_status === "capture")
     )
   )
 
-  if (!isPaid) {
-    redirect("/app/billing?warning=Selesaikan%20pembayaran%20sebesar%20Rp%20799.000%20terlebih%20dahulu%20untuk%20mengaktifkan%20fitur%20Builder.")
-  }
-
   const hasSubscription = await studioHasActiveSubscription(studio.id)
-  if (!hasSubscription) {
-    redirect("/app/billing")
-  }
+  const isAllowed = isPaid || hasSubscription
 
   return (
     <div className="flex h-dvh flex-col overflow-hidden bg-background selection:bg-primary selection:text-primary-foreground">
@@ -95,8 +85,35 @@ export default async function BuilderPage() {
         }
       />
 
-      <main className="flex min-h-0 flex-1 flex-col overflow-hidden">
-        <BuilderUI studioId={studio.id} initialStudio={studio} />
+      <main className="flex min-h-0 flex-1 flex-col overflow-hidden relative">
+        {!isAllowed ? (
+          <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-zinc-950/80 backdrop-blur-sm p-4">
+            <div className="max-w-md w-full rounded-xl border border-red-900/50 bg-red-950/20 p-6 text-center shadow-2xl backdrop-blur-md">
+              <ShieldAlert className="mx-auto h-12 w-12 text-red-500 mb-4" />
+              <h2 className="text-xl font-semibold text-red-400 mb-2">Akses Terbatas: Selesaikan Pembayaran</h2>
+              <p className="text-sm text-zinc-300 mb-6">
+                Fitur Builder Halaman eksklusif untuk pengguna paket Pro. Anda harus menyelesaikan pembayaran sebesar Rp 799.000 untuk menggunakan fitur ini.
+              </p>
+              <div className="flex justify-center gap-4">
+                <Button asChild className="bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-900/20">
+                  <Link href="/checkout">Selesaikan Pembayaran</Link>
+                </Button>
+                <Button asChild variant="outline" className="border-white/10 hover:bg-white/5">
+                  <Link href="/app/dashboard">Kembali</Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        {/* Builder UI rendered but obscured/disabled if not allowed (or fully rendered if allowed) */}
+        {isAllowed ? (
+          <BuilderUI studioId={studio.id} initialStudio={studio} />
+        ) : (
+          <div className="opacity-20 pointer-events-none select-none h-full">
+            <BuilderUI studioId={studio.id} initialStudio={studio} />
+          </div>
+        )}
       </main>
     </div>
   )
