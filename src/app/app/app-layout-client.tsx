@@ -14,6 +14,7 @@ import {
   User,
   ChevronLeft,
   ChevronRight,
+  CreditCard,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -37,6 +38,7 @@ import { authClient } from "@/lib/auth/auth-client"
 const NAV_ITEMS = [
   { href: "/app/builder", label: "Builder Halaman", icon: Paintbrush },
   { href: "/app/dashboard", label: "Dashboard", icon: BarChart3 },
+  { href: "/app/billing", label: "Billing", icon: CreditCard },
   { href: "/app/settings", label: "Pengaturan", icon: Settings },
 ]
 
