@@ -1,9 +1,6 @@
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
-import { desc, eq } from "drizzle-orm"
-
 import { db } from "@/db"
-import { payments } from "@/db/schema"
 import { getServerSession } from "@/lib/auth/session"
 import { getStudioForUser } from "@/lib/studio/studio-service"
 import AppLayoutClient from "./app-layout-client"

@@ -95,11 +95,18 @@ export default async function BuilderPage() {
                 Fitur Builder Halaman eksklusif untuk pengguna paket Pro. Anda harus menyelesaikan pembayaran sebesar Rp 799.000 untuk menggunakan fitur ini.
               </p>
               <div className="flex justify-center gap-4">
-                <Button asChild className="bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-900/20">
-                  <Link href="/checkout">Selesaikan Pembayaran</Link>
+                <Button
+                  render={<Link href="/checkout" />}
+                  className="bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-900/20"
+                >
+                  Selesaikan Pembayaran
                 </Button>
-                <Button asChild variant="outline" className="border-white/10 hover:bg-white/5">
-                  <Link href="/app/dashboard">Kembali</Link>
+                <Button
+                  render={<Link href="/app/dashboard" />}
+                  variant="outline"
+                  className="border-white/10 hover:bg-white/5"
+                >
+                  Kembali
                 </Button>
               </div>
             </div>
