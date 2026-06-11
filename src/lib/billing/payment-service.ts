@@ -17,6 +17,7 @@ const STATUS_RANK: Record<string, number> = {
   failure: 2,
   capture: 3,
   settlement: 4,
+  success: 4,
 }
 
 function normalizeTransactionStatus(payload: MidtransNotificationPayload): string {
