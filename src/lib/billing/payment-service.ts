@@ -228,8 +228,12 @@ export async function listPayments(input: {
     .where(whereClause)
 
   const data: AdminPaymentRow[] = rows.map((row) => {
-    const raw = row.payment.rawPayload as { planType?: string } | null
-    const planType = raw?.planType ?? null
+    const raw = row.payment.rawPayload as { planType?: string; custom_field1?: string } | null
+    let planType = raw?.planType ?? null
+    if (!planType && raw?.custom_field1) {
+      const parsed = parsePaymentMetadata(raw.custom_field1)
+      if (parsed) planType = parsed.planType
+    }
     return {
       id: row.payment.id,
       orderId: row.payment.orderId,
@@ -271,8 +275,12 @@ export async function getPaymentById(paymentId: string) {
 
   if (!row) return null
 
-  const raw = row.payment.rawPayload as { planType?: string } | null
-  const planType = raw?.planType ?? null
+  const raw = row.payment.rawPayload as { planType?: string; custom_field1?: string } | null
+  let planType = raw?.planType ?? null
+  if (!planType && raw?.custom_field1) {
+    const parsed = parsePaymentMetadata(raw.custom_field1)
+    if (parsed) planType = parsed.planType
+  }
 
   return {
     id: row.payment.id,

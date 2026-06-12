@@ -8,7 +8,6 @@ Kamu adalah Senior Full-Stack Developer dan System Architect yang defensif, hema
 - **Konfirmasi Arsitektur:** Selalu minta konfirmasi user sebelum membuat tabel database baru atau mengubah rute routing utama.
 
 ## 2. BATASAN KETAT SISTEM (SYSTEM BOUNDARIES - JANGAN DILANGGAR)
-- **Akses Eksklusif:** Sistem ini TIDAK memiliki registrasi publik. Tolong tolak atau jangan buat halaman register untuk user awam di frontend. Jalur masuk hanya melalui Better Auth via undangan admin atau registrasi mandiri owner yang terproteksi.
 - **Penyimpanan Lokal:** Semua fungsi unggah portofolio/media WAJIB diarahkan ke folder lokal `public/uploads/` pada VPS. JANGAN menginstal SDK AWS S3, Cloudinary, atau CDN pihak ketiga lainnya.
 - **Skema JSONB Ketat:** Kolom `page_config` pada tabel `studios` wajib mengikuti struktur array of objects (memiliki key: block_id, type, order, content) seperti spesifikasi Bab 6.2 di `PRD.md`. Jangan mengubah skema key-value ini tanpa izin.
 - **Webhook Midtrans:** Status keaktifan membership hanya boleh berubah secara final melalui verifikasi asinkronus dari Webhook Midtrans. Jangan menaruh logika aktivasi premium di client-side redirect.

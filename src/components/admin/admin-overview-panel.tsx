@@ -181,16 +181,18 @@ export function AdminOverviewPanel({
           <div className="relative overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950/40 backdrop-blur-md p-6 flex flex-col justify-between min-h-[180px] lg:col-span-2 lg:row-span-2 group hover:border-zinc-700/85 transition-all shadow-lg shadow-black/25">
             <div>
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Revenue Bulan Ini</span>
+                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Total Revenue</span>
                 <div className="flex size-8 items-center justify-center rounded-lg bg-[var(--brand-scarlet)]/10 text-[var(--brand-scarlet)]">
                   <CreditCard className="size-4" />
                 </div>
               </div>
               <div className="mt-4">
                 <h3 className="text-3xl font-extrabold tracking-tight text-white tabular-nums">
-                  {formatIDR(kpis?.revenueThisMonth ?? 0)}
+                  {formatIDR(kpis?.totalRevenue ?? 0)}
                 </h3>
-                <p className="text-xs text-muted-foreground mt-1.5">Pendapatan kotor yang diterima dari langganan aktif bulan berjalan.</p>
+                <p className="text-xs text-muted-foreground mt-1.5">
+                  Pendapatan bulan ini: <span className="font-semibold text-white">{formatIDR(kpis?.revenueThisMonth ?? 0)}</span>
+                </p>
               </div>
             </div>
             <div className="mt-4 flex items-center justify-between border-t border-zinc-900/60 pt-4 text-[10px] text-muted-foreground">

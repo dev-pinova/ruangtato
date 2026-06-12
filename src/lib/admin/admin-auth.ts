@@ -1,4 +1,5 @@
 import { eq } from "drizzle-orm"
+import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 
 import { db, isDatabaseConfigured } from "@/db"
@@ -86,7 +87,15 @@ export async function getPlatformUserFromSession(): Promise<PlatformUser | null>
 export async function requirePlatformSession(
   allowedRoles?: PlatformRole[],
 ): Promise<PlatformUser> {
-  const platformUser = await getPlatformUserFromSession()
+  const session = await getServerSession()
+  
+  if (!session?.user?.id) {
+    const headersList = await headers()
+    const pathname = headersList.get("x-pathname") ?? "/admin"
+    redirect(`/admin/login?next=${encodeURIComponent(pathname)}`)
+  }
+
+  const platformUser = await getPlatformUserById(session.user.id)
   if (!platformUser) {
     redirect("/unauthorized")
   }

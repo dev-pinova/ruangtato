@@ -1,14 +1,15 @@
 "use client"
 
-import { Suspense, useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
-import { Loader2 } from "lucide-react"
+import { Eye, EyeOff, Loader2 } from "lucide-react"
 
 import { PlatformLogo } from "@/components/brand/platform-logo"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Checkbox } from "@/components/ui/checkbox"
 import { authClient } from "@/lib/auth/auth-client"
 
 function AdminLoginForm() {
@@ -20,6 +21,35 @@ function AdminLoginForm() {
   const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [rememberMe, setRememberMe] = useState(false)
+  const [checkingSession, setCheckingSession] = useState(true)
+
+  useEffect(() => {
+    let active = true
+    fetch("/api/admin/me")
+      .then((res) => {
+        if (res.ok && active) {
+          router.push(nextPath.startsWith("/admin") ? nextPath : "/admin")
+        } else if (active) {
+          setCheckingSession(false)
+        }
+      })
+      .catch(() => {
+        if (active) setCheckingSession(false)
+      })
+    return () => {
+      active = false
+    }
+  }, [router, nextPath])
+
+  if (checkingSession) {
+    return (
+      <div className="flex min-h-dvh items-center justify-center">
+        <Loader2 className="size-6 animate-spin text-muted-foreground" />
+      </div>
+    )
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -29,6 +59,7 @@ function AdminLoginForm() {
     const { error: signInError } = await authClient.signIn.email({
       email,
       password,
+      rememberMe,
     })
 
     if (signInError) {
@@ -86,16 +117,36 @@ function AdminLoginForm() {
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="admin-password">Password</Label>
-              <Input
-                id="admin-password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="min-h-11"
-                autoComplete="current-password"
+              <div className="relative">
+                <Input
+                  id="admin-password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="min-h-11"
+                  autoComplete="current-password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus:outline-none"
+                  aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
+                >
+                  {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                </button>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="admin-remember"
+                checked={rememberMe}
+                onCheckedChange={(checked) => setRememberMe(checked as boolean)}
               />
+              <Label htmlFor="admin-remember" className="text-sm font-normal">
+                Ingat sesi saya
+              </Label>
             </div>
             {error ? (
               <p role="alert" aria-live="polite" className="text-sm text-destructive">

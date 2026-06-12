@@ -1,4 +1,4 @@
-import { and, count, desc, eq, gte, sql, sum } from "drizzle-orm"
+import { and, count, desc, eq, gte, inArray, sql, sum } from "drizzle-orm"
 
 import { db, isDatabaseConfigured } from "@/db"
 import { user } from "@/db/auth-schema"
@@ -65,7 +65,7 @@ export async function getPlatformAnalytics() {
       revenueThisMonth: sql<number>`coalesce(sum(${payments.amount}) filter (where ${payments.paidAt} >= ${monthStart}), 0)`,
     })
     .from(payments)
-    .where(eq(payments.transactionStatus, "success"))
+    .where(inArray(payments.transactionStatus, ["success", "settlement", "capture"]))
 
   const studioRows = await db
     .select({
@@ -107,7 +107,7 @@ export async function getPlatformAnalytics() {
     })
     .from(payments)
     .where(
-      and(eq(payments.transactionStatus, "success"), gte(payments.paidAt, earliest)),
+      and(inArray(payments.transactionStatus, ["success", "settlement", "capture"]), gte(payments.paidAt, earliest)),
     )
     .groupBy(sql`date_trunc('month', ${payments.paidAt})`)
     .orderBy(sql`date_trunc('month', ${payments.paidAt})`)
@@ -141,7 +141,7 @@ export async function getPlatformAnalytics() {
       count: count(),
     })
     .from(payments)
-    .where(eq(payments.transactionStatus, "success"))
+    .where(inArray(payments.transactionStatus, ["success", "settlement", "capture"]))
     .groupBy(payments.paymentMethod)
 
   const latestSubscriptions = await db
