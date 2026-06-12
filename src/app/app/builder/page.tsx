@@ -92,7 +92,7 @@ export default async function BuilderPage() {
               <ShieldAlert className="mx-auto h-12 w-12 text-red-500 mb-4" />
               <h2 className="text-xl font-semibold text-red-400 mb-2">Akses Terbatas: Selesaikan Pembayaran</h2>
               <p className="text-sm text-zinc-300 mb-6">
-                Fitur Builder Halaman eksklusif untuk pengguna paket Pro. Anda harus menyelesaikan pembayaran sebesar Rp 799.000 untuk menggunakan fitur ini.
+                Fitur Builder Halaman eksklusif untuk pengguna berlangganan. Silakan selesaikan pembayaran untuk menggunakan fitur ini.
               </p>
               <div className="flex justify-center gap-4">
                 <Button

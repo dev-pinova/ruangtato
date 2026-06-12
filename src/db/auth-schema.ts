@@ -14,7 +14,7 @@ export const user = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [index("user_platform_role_idx").on(table.platformRole)],
-)
+).enableRLS()
 
 export const session = pgTable("session", {
   id: text("id").primaryKey(),
@@ -27,7 +27,7 @@ export const session = pgTable("session", {
   userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
-})
+}).enableRLS()
 
 export const account = pgTable("account", {
   id: text("id").primaryKey(),
@@ -45,7 +45,7 @@ export const account = pgTable("account", {
   password: text("password"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
-})
+}).enableRLS()
 
 export const verification = pgTable("verification", {
   id: text("id").primaryKey(),
@@ -54,4 +54,4 @@ export const verification = pgTable("verification", {
   expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
-})
+}).enableRLS()

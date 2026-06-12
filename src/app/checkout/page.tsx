@@ -8,6 +8,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { SubscribeButton } from "@/components/billing/subscribe-button"
 import { loadMidtransSnap } from "@/lib/billing/midtrans-snap"
 import { PlatformLogo } from "@/components/brand/platform-logo"
+import { SUBSCRIPTION_PLANS } from "@/lib/billing/billing-plans"
 
 function CheckoutContent() {
   const searchParams = useSearchParams()
@@ -16,6 +17,10 @@ function CheckoutContent() {
 
   const [snapReady, setSnapReady] = useState(false)
   const [orderMessage, setOrderMessage] = useState<string | null>(null)
+  
+  // Default to the popular plan (6 months, Pro)
+  const [selectedMonths, setSelectedMonths] = useState<number>(6)
+  const selectedPlan = SUBSCRIPTION_PLANS.find(p => p.months === selectedMonths) || SUBSCRIPTION_PLANS[2]
 
   const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY ?? ""
 
@@ -62,7 +67,7 @@ function CheckoutContent() {
             <AlertCircle className="h-5 w-5 shrink-0 text-red-500" />
             <div className="space-y-1">
               <p className="font-semibold text-red-300">Akses Dibatasi</p>
-              <p>Selesaikan pembayaran sebesar Rp 799.000 terlebih dahulu untuk mengaktifkan fitur Builder.</p>
+              <p>Selesaikan pembayaran terlebih dahulu untuk mengaktifkan fitur Builder.</p>
             </div>
           </div>
         )}
@@ -93,33 +98,45 @@ function CheckoutContent() {
           </CardHeader>
 
           <CardContent className="pt-6 space-y-6">
-            {/* Price breakdown */}
-            <div className="rounded-lg bg-zinc-950/60 p-5 border border-white/5">
-              <div className="flex items-baseline justify-between">
-                <span className="text-sm font-medium text-zinc-400">Paket Pro (12 Bulan)</span>
-                <span className="text-2xl font-extrabold tracking-tight text-white">
-                  Rp 799.000
-                </span>
-              </div>
-              <div className="mt-2 border-t border-white/5 pt-2 flex items-center justify-between text-xs text-zinc-500">
-                <span>Total tagihan (Termasuk PPN)</span>
-                <span>Rp 799.000 / tahun</span>
-              </div>
+            {/* Plan selection */}
+            <div className="grid gap-3">
+              {SUBSCRIPTION_PLANS.map((plan) => (
+                <button
+                  key={plan.id}
+                  onClick={() => setSelectedMonths(plan.months)}
+                  className={`flex flex-col rounded-xl border p-4 text-left transition-all ${
+                    selectedMonths === plan.months
+                      ? "border-red-500 bg-red-500/10 ring-1 ring-red-500/50"
+                      : "border-white/10 bg-zinc-950/40 hover:bg-zinc-900/60"
+                  }`}
+                >
+                  <div className="flex w-full items-center justify-between">
+                    <span className={`font-semibold ${selectedMonths === plan.months ? "text-red-400" : "text-white"}`}>
+                      {plan.name}
+                    </span>
+                    <span className="font-bold text-white">
+                      Rp {plan.price.toLocaleString("id-ID")}
+                    </span>
+                  </div>
+                  <div className="mt-1 flex w-full items-center justify-between text-xs text-zinc-400">
+                    <span>{plan.duration}</span>
+                    {plan.popular && (
+                      <span className="rounded-full bg-red-500/20 px-2 py-0.5 text-[10px] font-medium text-red-400">
+                        Paling Populer
+                      </span>
+                    )}
+                  </div>
+                </button>
+              ))}
             </div>
 
             {/* Feature list */}
             <div className="space-y-3">
               <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wide">
-                Yang Anda Dapatkan:
+                Yang Anda Dapatkan ({selectedPlan.name}):
               </p>
               <ul className="space-y-2.5">
-                {[
-                  "Akses penuh Halaman Builder Drag-and-drop",
-                  "11 blok landing page studio tato premium",
-                  "Formulir lead konsultasi terintegrasi",
-                  "Metrik analitik kunjungan dan klik WhatsApp",
-                  "Tampil gratis di direktori showcase utama",
-                ].map((feature) => (
+                {selectedPlan.features.map((feature) => (
                   <li key={feature} className="flex items-start gap-2.5 text-sm text-zinc-300">
                     <CheckCircle2 className="h-4.5 w-4.5 mt-0.5 shrink-0 text-red-500" />
                     <span>{feature}</span>
@@ -138,9 +155,9 @@ function CheckoutContent() {
 
           <CardFooter className="border-t border-white/5 pt-6 flex flex-col gap-4">
             <SubscribeButton
-              months={12}
-              popular={true}
-              label="Bayar Sekarang"
+              months={selectedMonths}
+              popular={selectedPlan.popular ?? false}
+              label={`Bayar Rp ${selectedPlan.price.toLocaleString("id-ID")}`}
               snapReady={snapReady}
               onMessage={setOrderMessage}
               onPaymentComplete={() => {

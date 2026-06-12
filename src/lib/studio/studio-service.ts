@@ -247,15 +247,6 @@ export async function createStudioForUser(input: {
       isPrimaryOwner: true,
     })
 
-    const expiresAt = new Date()
-    expiresAt.setDate(expiresAt.getDate() + 14)
-
-    await tx.insert(subscriptions).values({
-      studioId: studio.id,
-      planType: "trial",
-      status: "active",
-      expiresAt,
-    })
 
     return mapStudioRow(studio, pageConfig)
   })

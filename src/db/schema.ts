@@ -17,7 +17,7 @@ export const roles = pgTable("roles", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull().unique(),
   permissions: jsonb("permissions").$type<Record<string, boolean>>().default({}),
-})
+}).enableRLS()
 
 export const studios = pgTable(
   "studios",
@@ -44,7 +44,7 @@ export const studios = pgTable(
     index("studios_status_idx").on(table.status),
     check("studios_status_check", sql`${table.status} IN ('active', 'suspended')`),
   ],
-)
+).enableRLS()
 
 export const studioMemberships = pgTable(
   "studio_memberships",
@@ -63,7 +63,7 @@ export const studioMemberships = pgTable(
   (table) => [
     uniqueIndex("studio_memberships_user_studio_idx").on(table.userId, table.studioId),
   ],
-)
+).enableRLS()
 
 export const subscriptions = pgTable(
   "subscriptions",
@@ -88,7 +88,7 @@ export const subscriptions = pgTable(
       sql`${table.status} IN ('active', 'expired', 'pending', 'cancelled')`,
     ),
   ],
-)
+).enableRLS()
 
 export const invoices = pgTable("invoices", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -101,7 +101,7 @@ export const invoices = pgTable("invoices", {
   status: text("status").notNull().default("pending"),
   paidAt: timestamp("paid_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-})
+}).enableRLS()
 
 export const payments = pgTable(
   "payments",
@@ -127,7 +127,7 @@ export const payments = pgTable(
     index("payments_transaction_status_idx").on(table.transactionStatus),
     index("payments_created_at_idx").on(table.createdAt),
   ],
-)
+).enableRLS()
 
 export const auditLogs = pgTable(
   "audit_logs",
@@ -142,7 +142,7 @@ export const auditLogs = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [index("audit_logs_created_at_idx").on(table.createdAt)],
-)
+).enableRLS()
 
 export const suspensionLogs = pgTable("suspension_logs", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -155,7 +155,7 @@ export const suspensionLogs = pgTable("suspension_logs", {
   reasonCategory: text("reason_category"),
   reason: text("reason").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-})
+}).enableRLS()
 
 export const leads = pgTable(
   "leads",
@@ -173,4 +173,4 @@ export const leads = pgTable(
   (table) => [
     check("leads_status_check", sql`${table.status} IN ('new', 'read', 'replied')`),
   ],
-)
+).enableRLS()

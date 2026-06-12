@@ -31,8 +31,22 @@ type AnalyticsKpis = {
 
 type AnalyticsPayload = {
   kpis: AnalyticsKpis
+  breakdowns: {
+    planTypes: { planType: string; count: number }[]
+    paymentMethods: { method: string; count: number }[]
+  }
+  latestSubscriptions: {
+    id: string
+    studioName: string
+    planType: string
+    status: string
+    createdAt: string | null
+    expiresAt: string | null
+  }[]
   charts: {
+    userGrowth: { month: string; value: number }[]
     transactionGrowth: { month: string; value: number }[]
+    subscriberGrowth: { month: string; value: number }[]
   }
 }
 
@@ -136,7 +150,12 @@ export function AdminOverviewPanel({
   }, [])
 
   const kpis = analytics?.kpis
-  const chartData = analytics?.charts?.transactionGrowth ?? []
+  const transactionChartData = analytics?.charts?.transactionGrowth ?? []
+  const userChartData = analytics?.charts?.userGrowth ?? []
+  const subscriberChartData = analytics?.charts?.subscriberGrowth ?? []
+  const planTypes = analytics?.breakdowns?.planTypes ?? []
+  const paymentMethods = analytics?.breakdowns?.paymentMethods ?? []
+  const latestSubs = analytics?.latestSubscriptions ?? []
 
   const visibleActions = QUICK_ACTIONS.filter(
     (action) => !action.roles || action.roles.includes(platformRole),
@@ -271,74 +290,178 @@ export function AdminOverviewPanel({
         })}
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-3">
         <AdminLineChart
           title="Revenue trend"
-          data={chartData}
+          data={transactionChartData}
           valueFormatter={(v) => formatIDR(v)}
           loading={loading}
         />
+        <AdminLineChart
+          title="User growth"
+          data={userChartData}
+          valueFormatter={(v) => v.toString()}
+          loading={loading}
+        />
+        <AdminLineChart
+          title="Subscriber growth"
+          data={subscriberChartData}
+          valueFormatter={(v) => v.toString()}
+          loading={loading}
+        />
+      </div>
 
-        <AdminPanel>
+      <div className="grid gap-4 lg:grid-cols-3">
+        <AdminPanel className="lg:col-span-1 flex flex-col gap-0">
           <div className="border-b border-border px-4 py-3">
             <div className="flex items-center gap-2">
               <Activity className="size-4 text-muted-foreground" aria-hidden />
-              <h2 className="text-sm font-medium">Recent activity</h2>
+              <h2 className="text-sm font-medium">Distribusi & Aktivitas</h2>
             </div>
           </div>
-          <div className="p-4">
-            {loading ? (
-              <div className="space-y-3">
-                {Array.from({ length: 4 }).map((_, i) => (
-                  <Skeleton key={i} className="h-10 w-full" />
-                ))}
-              </div>
-            ) : (
-              <ul className="space-y-3">
-                {recentAudit.length > 0
-                  ? recentAudit.map((row) => (
-                      <li
-                        key={row.id}
-                        className="flex items-start justify-between gap-3 border-b border-border/60 pb-3 text-sm last:border-0 last:pb-0"
-                      >
-                        <div className="min-w-0">
-                          <p className="font-mono text-xs">{row.action}</p>
-                          <p className="truncate text-muted-foreground">
-                            {row.targetType}:{row.targetId.slice(0, 8)}
-                          </p>
-                        </div>
-                        <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
-                          {formatDate(row.createdAt)}
-                        </span>
-                      </li>
-                    ))
-                  : recentSuspensions.map((log) => (
-                      <li
-                        key={log.id}
-                        className="flex items-start justify-between gap-3 border-b border-border/60 pb-3 text-sm last:border-0 last:pb-0"
-                      >
-                        <div className="min-w-0">
-                          <p className="font-medium">{log.studioName}</p>
-                          <p className="truncate text-muted-foreground">{log.reason}</p>
-                        </div>
-                        <span
-                          className={cn(
-                            "shrink-0 text-xs",
-                            log.statusAfter === "suspended"
-                              ? "text-[var(--admin-error)]"
-                              : "text-[var(--admin-success)]",
-                          )}
+          <div className="p-4 space-y-6">
+            <div>
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Jenis Paket</h3>
+              {loading ? (
+                <Skeleton className="h-10 w-full" />
+              ) : planTypes.length === 0 ? (
+                <p className="text-sm text-muted-foreground">Tidak ada data</p>
+              ) : (
+                <div className="space-y-2">
+                  {planTypes.map(p => (
+                    <div key={p.planType} className="flex items-center justify-between text-sm">
+                      <span className="capitalize">{p.planType}</span>
+                      <span className="font-medium tabular-nums">{p.count}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="border-t border-border pt-6">
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Metode Pembayaran</h3>
+              {loading ? (
+                <Skeleton className="h-10 w-full" />
+              ) : paymentMethods.length === 0 ? (
+                <p className="text-sm text-muted-foreground">Tidak ada data</p>
+              ) : (
+                <div className="space-y-2">
+                  {paymentMethods.map(p => (
+                    <div key={p.method} className="flex items-center justify-between text-sm">
+                      <span className="uppercase">{p.method.replace(/_/g, " ")}</span>
+                      <span className="font-medium tabular-nums">{p.count}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="border-t border-border pt-6">
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Recent Activity</h3>
+              {loading ? (
+                <div className="space-y-3">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <Skeleton key={i} className="h-8 w-full" />
+                  ))}
+                </div>
+              ) : (
+                <ul className="space-y-3">
+                  {recentAudit.length > 0
+                    ? recentAudit.map((row) => (
+                        <li
+                          key={row.id}
+                          className="flex items-start justify-between gap-3 border-b border-border/60 pb-3 text-sm last:border-0 last:pb-0"
                         >
-                          {log.statusAfter}
+                          <div className="min-w-0">
+                            <p className="font-mono text-xs">{row.action}</p>
+                            <p className="truncate text-muted-foreground text-[10px]">
+                              {row.targetType}:{row.targetId.slice(0, 8)}
+                            </p>
+                          </div>
+                          <span className="shrink-0 text-[10px] tabular-nums text-muted-foreground">
+                            {formatDate(row.createdAt)}
+                          </span>
+                        </li>
+                      ))
+                    : recentSuspensions.map((log) => (
+                        <li
+                          key={log.id}
+                          className="flex items-start justify-between gap-3 border-b border-border/60 pb-3 text-sm last:border-0 last:pb-0"
+                        >
+                          <div className="min-w-0">
+                            <p className="font-medium">{log.studioName}</p>
+                            <p className="truncate text-muted-foreground text-[10px]">{log.reason}</p>
+                          </div>
+                          <span
+                            className={cn(
+                              "shrink-0 text-[10px] uppercase font-semibold",
+                              log.statusAfter === "suspended"
+                                ? "text-[var(--admin-error)]"
+                                : "text-[var(--admin-success)]",
+                            )}
+                          >
+                            {log.statusAfter}
+                          </span>
+                        </li>
+                      ))}
+                  {recentAudit.length === 0 && recentSuspensions.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">
+                      Belum ada aktivitas terbaru.
+                    </p>
+                  ) : null}
+                </ul>
+              )}
+            </div>
+          </div>
+        </AdminPanel>
+
+        <AdminPanel className="lg:col-span-2">
+          <div className="border-b border-border px-4 py-3">
+            <h2 className="text-sm font-medium">Pendaftar Langganan Terbaru</h2>
+          </div>
+          <div className="p-4 overflow-x-auto">
+            {loading ? (
+              <div className="space-y-4">
+                <Skeleton className="h-8 w-full" />
+                <Skeleton className="h-8 w-full" />
+                <Skeleton className="h-8 w-full" />
+              </div>
+            ) : latestSubs.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Belum ada data pendaftar langganan.</p>
+            ) : (
+              <table className="w-full text-sm text-left">
+                <thead>
+                  <tr className="border-b border-border text-muted-foreground">
+                    <th className="pb-3 font-medium">Studio</th>
+                    <th className="pb-3 font-medium">Paket</th>
+                    <th className="pb-3 font-medium">Status</th>
+                    <th className="pb-3 font-medium">Tanggal Daftar</th>
+                    <th className="pb-3 font-medium">Masa Berlaku</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/60">
+                  {latestSubs.map(sub => (
+                    <tr key={sub.id} className="hover:bg-muted/10 transition-colors">
+                      <td className="py-3 font-medium text-white">{sub.studioName}</td>
+                      <td className="py-3 capitalize text-muted-foreground">{sub.planType}</td>
+                      <td className="py-3">
+                        <span className={cn(
+                          "px-2 py-0.5 rounded text-[10px] font-semibold tracking-wide uppercase",
+                          sub.status === "active" ? "bg-[var(--admin-success)]/10 text-[var(--admin-success)]" : "bg-muted text-muted-foreground"
+                        )}>
+                          {sub.status}
                         </span>
-                      </li>
-                    ))}
-                {recentAudit.length === 0 && recentSuspensions.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">
-                    Belum ada aktivitas terbaru.
-                  </p>
-                ) : null}
-              </ul>
+                      </td>
+                      <td className="py-3 text-muted-foreground tabular-nums text-xs">
+                        {sub.createdAt ? formatDate(sub.createdAt) : "—"}
+                      </td>
+                      <td className="py-3 text-muted-foreground tabular-nums text-xs">
+                        {sub.expiresAt ? formatDate(sub.expiresAt) : "—"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             )}
           </div>
         </AdminPanel>

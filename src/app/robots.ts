@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next"
 
 import { SITE_URL } from "@/lib/site"
+import { NOINDEX_PATHS } from "@/lib/seo"
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -8,17 +9,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: ["/", "/app/studio/"],
-        disallow: [
-          "/api/",
-          "/app/dashboard",
-          "/app/builder",
-          "/app/billing",
-          "/app/settings",
-          "/login",
-          "/register",
-          "/forgot-password",
-          "/reset-password",
-        ],
+        disallow: ["/api/", ...NOINDEX_PATHS],
       },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,

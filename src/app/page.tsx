@@ -7,7 +7,6 @@ import {
   buildWebSiteJsonLd,
   staticPageMetadata,
 } from "@/lib/seo"
-import { buildShowcaseStudios } from "@/lib/studio/showcase-demos"
 import { listPublishedStudios } from "@/lib/studio/studio-service"
 import { getCitiesFromStudios } from "@/lib/studio/studio-utils"
 
@@ -16,8 +15,7 @@ export const revalidate = 300
 export const metadata: Metadata = staticPageMetadata("/")
 
 export default async function Home() {
-  const published = await listPublishedStudios()
-  const studios = buildShowcaseStudios(published)
+  const studios = await listPublishedStudios()
   const cities = getCitiesFromStudios(studios)
 
   return (

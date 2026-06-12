@@ -1,4 +1,4 @@
-import { and, count, eq, gte, sql, sum } from "drizzle-orm"
+import { and, count, desc, eq, gte, sql, sum } from "drizzle-orm"
 
 import { db, isDatabaseConfigured } from "@/db"
 import { user } from "@/db/auth-schema"
@@ -43,6 +43,7 @@ export async function getPlatformAnalytics() {
       newUsersThisMonth: sql<number>`count(*) filter (where ${user.createdAt} >= ${monthStart})`,
     })
     .from(user)
+    .where(sql`${user.platformRole} is distinct from 'super_admin'`)
 
   const subRows = await db
     .select({
@@ -126,6 +127,37 @@ export async function getPlatformAnalytics() {
     .groupBy(sql`date_trunc('month', ${subscriptions.createdAt})`)
     .orderBy(sql`date_trunc('month', ${subscriptions.createdAt})`)
 
+  const planTypeRows = await db
+    .select({
+      planType: subscriptions.planType,
+      count: count(),
+    })
+    .from(subscriptions)
+    .groupBy(subscriptions.planType)
+
+  const paymentMethodRows = await db
+    .select({
+      method: payments.paymentMethod,
+      count: count(),
+    })
+    .from(payments)
+    .where(eq(payments.transactionStatus, "success"))
+    .groupBy(payments.paymentMethod)
+
+  const latestSubscriptions = await db
+    .select({
+      id: subscriptions.id,
+      studioName: studios.name,
+      planType: subscriptions.planType,
+      status: subscriptions.status,
+      createdAt: subscriptions.createdAt,
+      expiresAt: subscriptions.expiresAt,
+    })
+    .from(subscriptions)
+    .leftJoin(studios, eq(subscriptions.studioId, studios.id))
+    .orderBy(desc(subscriptions.createdAt))
+    .limit(10)
+
   return {
     kpis: {
       totalUsers: Number(userStats?.totalUsers ?? 0),
@@ -139,6 +171,18 @@ export async function getPlatformAnalytics() {
       inactiveWebsites,
       portfolioAssets,
     },
+    breakdowns: {
+      planTypes: planTypeRows.map(r => ({ planType: r.planType, count: Number(r.count) })),
+      paymentMethods: paymentMethodRows.map(r => ({ method: r.method, count: Number(r.count) })),
+    },
+    latestSubscriptions: latestSubscriptions.map(sub => ({
+      id: sub.id,
+      studioName: sub.studioName ?? "Unknown Studio",
+      planType: sub.planType,
+      status: sub.status,
+      createdAt: sub.createdAt?.toISOString() ?? null,
+      expiresAt: sub.expiresAt?.toISOString() ?? null,
+    })),
     charts: {
       userGrowth: buildMonthlySeries(
         userGrowthRows.map((row) => ({ month: row.month, value: Number(row.value) })),
@@ -172,6 +216,11 @@ function getEmptyAnalytics() {
       inactiveWebsites: 0,
       portfolioAssets: 0,
     },
+    breakdowns: {
+      planTypes: [],
+      paymentMethods: [],
+    },
+    latestSubscriptions: [],
     charts: {
       userGrowth: empty,
       transactionGrowth: empty,

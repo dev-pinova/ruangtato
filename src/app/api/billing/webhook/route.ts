@@ -1,18 +1,20 @@
 import { NextResponse } from "next/server"
-
-import {
-  activateFromWebhookNotification,
-  BillingActivationError,
-} from "@/lib/billing/billing-activation"
+import { getDb } from "@/db"
+import { payments, studios, subscriptions } from "@/db/schema"
+import { eq } from "drizzle-orm"
 import {
   isMidtransConfigured,
   verifyNotificationSignature,
   type MidtransNotificationPayload,
+  PLAN_CATALOG,
 } from "@/lib/billing/midtrans"
-import { recordPaymentEvent } from "@/lib/billing/payment-service"
-import { db } from "@/db"
-import { payments, studios } from "@/db/schema"
-import { eq, desc } from "drizzle-orm"
+
+// Type-safe interface for Midtrans Webhook Payload extending the library type
+interface MidtransWebhookPayload extends MidtransNotificationPayload {
+  custom_field_1?: string
+  payment_type?: string
+  transaction_id?: string
+}
 
 export async function POST(request: Request) {
   console.log("[WEBHOOK: MIDTRANS] Received new webhook notification")
@@ -25,110 +27,252 @@ export async function POST(request: Request) {
     )
   }
 
-  const body = (await request.json().catch(() => null)) as MidtransNotificationPayload | null
+  const body = (await request.json().catch(() => null)) as MidtransWebhookPayload | null
   if (!body) {
     console.error("[WEBHOOK: MIDTRANS] Invalid payload received")
     return NextResponse.json({ error: "Invalid payload" }, { status: 400 })
   }
 
-  const txStatus = body.transaction_status?.toLowerCase();
-  console.log(`[WEBHOOK: MIDTRANS] Processing Order ID: ${body.order_id}, Status: ${txStatus}`)
+  const transaction_status = body.transaction_status?.toLowerCase() || ""
+  const orderId = body.order_id
+  const transactionId = body.transaction_id
+  const paymentMethod = body.payment_type
+  const grossAmountStr = body.gross_amount
+
+  console.log(`[WEBHOOK: MIDTRANS] Processing Order ID: ${orderId}, Status: ${transaction_status}`)
 
   if (!verifyNotificationSignature(body)) {
-    console.error(`[WEBHOOK: MIDTRANS] Invalid signature for Order ID: ${body.order_id}`)
+    console.error(`[WEBHOOK: MIDTRANS] Invalid signature for Order ID: ${orderId}`)
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 })
   }
 
-  try {
-    const row = await recordPaymentEvent(body)
-    console.log(`[WEBHOOK: MIDTRANS] Successfully recorded payment event for Order ID: ${body.order_id}. Updated DB Status to: ${row?.transactionStatus || 'unknown'}`)
-  } catch (error) {
-    console.error("[WEBHOOK: MIDTRANS] Payment event recording failed:", error)
-  }
+  // 1. DETEKSI STATUS SUKSES (HANDLING CREDIT CARD & QRIS) & STATUS GAGAL
+  const isSuccess = transaction_status === 'settlement' || transaction_status === 'capture'
+  const isFailed = ['deny', 'expire', 'cancel'].includes(transaction_status)
 
-  // 1. TAMBAHKAN STATUS 'CAPTURE' & 4. STRING MISMATCH LOWERCASE
-  const isSuccess = txStatus === 'settlement' || txStatus === 'capture';
+  console.log(`[WEBHOOK: MIDTRANS] Detection - isSuccess: ${isSuccess}, isFailed: ${isFailed}`)
 
-  if (!isSuccess) {
-    console.log(`[WEBHOOK: MIDTRANS] Payment is not successful (yet). Current status: ${txStatus}`)
-    return NextResponse.json({ message: "Payment event recorded" })
-  }
+  // 2. PARSE METADATA (CUSTOM FIELD)
+  let studioIdFromCustom: string | null = null
+  let planTypeFromCustom: string | null = null
 
-  // 2. AMBIL DATA DARI CUSTOM FIELD SEBAGAI FALLBACK
-  let studioIdFromCustom: string | null = null;
-  if (body.custom_field1) {
+  const rawCustomField = body.custom_field_1 || body.custom_field1
+  if (rawCustomField) {
     try {
-      const customData = JSON.parse(body.custom_field1);
-      studioIdFromCustom = customData?.studioId || null;
+      const customData = JSON.parse(rawCustomField) as { studioId?: string; planType?: string }
+      studioIdFromCustom = customData?.studioId || null
+      planTypeFromCustom = customData?.planType || null
+      console.log(`[WEBHOOK: MIDTRANS] Parsed metadata - Studio ID: ${studioIdFromCustom}, Plan Type: ${planTypeFromCustom}`)
     } catch (e) {
-      console.warn("[WEBHOOK: MIDTRANS] Failed to parse custom_field1", e);
+      console.warn("[WEBHOOK: MIDTRANS] Failed to parse custom field JSON:", e)
     }
   }
 
-  // 3. LOGIKA UPDATE DATABASE BERLAPIS (FAIL-SAFE)
-  try {
-    if (db) {
-      const paidAt = new Date();
-      let updatedPayment = false;
+  const dbInstance = getDb()
+  const grossAmount = grossAmountStr ? Math.round(Number(grossAmountStr)) : 0
 
-      const updateData: any = { transactionStatus: 'settlement', paidAt };
-      if (studioIdFromCustom) {
-        updateData.studioId = studioIdFromCustom;
-      }
+  // 3. OPERASI UPDATE DATABASE (TRANSACTION / MULTI-WRITE)
+  if (isSuccess) {
+    if (!orderId) {
+      console.error("[WEBHOOK: MIDTRANS] Missing order_id in payload")
+      return NextResponse.json({ error: "Missing order_id" }, { status: 400 })
+    }
 
-      if (body.order_id) {
-        const result = await db.update(payments)
-          .set(updateData)
-          .where(eq(payments.orderId, body.order_id))
-          .returning();
-        
-        if (result && result.length > 0) {
-          updatedPayment = true;
-          console.log(`[WEBHOOK: FAIL-SAFE] Successfully updated payment by order_id: ${body.order_id}`);
+    try {
+      await dbInstance.transaction(async (tx) => {
+        console.log(`[WEBHOOK: MIDTRANS] Transaction started for Order ID: ${orderId}`)
+
+        // A. TABEL PAYMENTS:
+        // - Cari baris berdasarkan order_id.
+        // - Ubah transaction_status menjadi 'settlement'.
+        // - Isi paid_at = new Date().
+        // - Ambil studio_id dari baris pembayaran ini jika di custom_field_1 kosong.
+        const [existingPayment] = await tx
+          .select({ studioId: payments.studioId, subscriptionId: payments.subscriptionId })
+          .from(payments)
+          .where(eq(payments.orderId, orderId))
+          .limit(1)
+
+        const finalStudioId = studioIdFromCustom || existingPayment?.studioId
+        if (!finalStudioId) {
+          throw new Error(`Studio ID could not be resolved from metadata or existing payments for Order ID: ${orderId}`)
         }
-      }
 
-      if (!updatedPayment && studioIdFromCustom) {
-        console.log(`[WEBHOOK: FAIL-SAFE] Order ID ${body.order_id} update failed/not found. Fallback to custom_field1 Studio ID: ${studioIdFromCustom}`);
-        const latestPayment = await db.query.payments.findFirst({
-          where: eq(payments.studioId, studioIdFromCustom),
-          orderBy: [desc(payments.createdAt)],
-        });
-
-        if (latestPayment) {
-          await db.update(payments)
-            .set(updateData)
-            .where(eq(payments.id, latestPayment.id));
-          console.log(`[WEBHOOK: FAIL-SAFE] Successfully updated latest payment using fallback for Studio ID: ${studioIdFromCustom}`);
+        console.log(`[WEBHOOK: MIDTRANS] Updating payment for Order ID: ${orderId}. Studio ID: ${finalStudioId}`)
+        if (existingPayment) {
+          await tx
+            .update(payments)
+            .set({
+              transactionStatus: 'success',
+              paidAt: new Date(),
+              transactionId: transactionId || null,
+              paymentMethod: paymentMethod || null,
+              rawPayload: body as unknown as Record<string, unknown>,
+            })
+            .where(eq(payments.orderId, orderId))
         } else {
-          console.warn(`[WEBHOOK: FAIL-SAFE] No existing payment found for Studio ID: ${studioIdFromCustom}`);
+          await tx
+            .insert(payments)
+            .values({
+              studioId: finalStudioId,
+              orderId,
+              amount: grossAmount,
+              transactionId: transactionId || null,
+              paymentMethod: paymentMethod || null,
+              transactionStatus: 'success',
+              fraudStatus: body.fraud_status || null,
+              rawPayload: body as unknown as Record<string, unknown>,
+              paidAt: new Date(),
+            })
         }
-      }
 
-      // Update studio status to active
-      if (studioIdFromCustom) {
-        await db.update(studios)
+        // B. TABEL STUDIOS:
+        // - Cari studio berdasarkan id (studio_id).
+        // - Ubah status menjadi 'active'.
+        console.log(`[WEBHOOK: MIDTRANS] Setting studio status to 'active' for Studio ID: ${finalStudioId}`)
+        await tx
+          .update(studios)
           .set({ status: 'active' })
-          .where(eq(studios.id, studioIdFromCustom));
-        console.log(`[WEBHOOK: FAIL-SAFE] Studio ${studioIdFromCustom} status set to active`);
-      }
+          .where(eq(studios.id, finalStudioId))
+
+        // C. TABEL SUBSCRIPTIONS (LANGGANAN):
+        // - Jika pembayaran ini terhubung dengan paket langganan, buat atau perbarui data di tabel subscriptions.
+        // - Setel status menjadi 'active'.
+        // - Setel tanggal mulai (starts_at = new Date()).
+        // - Hitung tanggal berakhir (ends_at): Jika planType adalah '6months' atau nominal sekitar Rp 449.000, tambahkan 6 bulan dari sekarang. Jika '12months' atau Rp 799.000, tambahkan 12 bulan dari sekarang.
+        const startsAt = new Date()
+        const expiresAt = new Date(startsAt)
+
+        let resolvedPlanType = planTypeFromCustom
+        if (resolvedPlanType === '6months' || grossAmount === 449000) {
+          expiresAt.setMonth(expiresAt.getMonth() + 6)
+          resolvedPlanType = '6months'
+        } else if (resolvedPlanType === '12months' || grossAmount === 799000) {
+          expiresAt.setMonth(expiresAt.getMonth() + 12)
+          resolvedPlanType = '12months'
+        } else {
+          // Fallback based on other plans in catalog
+          const catalogPlan = resolvedPlanType ? PLAN_CATALOG[resolvedPlanType] : undefined
+          const monthsToAdd = catalogPlan ? catalogPlan.months : (grossAmount === 249000 ? 3 : grossAmount === 99000 ? 1 : 1)
+          expiresAt.setMonth(expiresAt.getMonth() + monthsToAdd)
+          if (!resolvedPlanType) {
+            resolvedPlanType = grossAmount === 249000 ? '3months' : grossAmount === 99000 ? '1month' : '1month'
+          }
+        }
+
+        console.log(`[WEBHOOK: MIDTRANS] Duration calculation: Plan=${resolvedPlanType}, Starts=${startsAt.toISOString()}, Expires=${expiresAt.toISOString()}`)
+
+        const [existingSub] = await tx
+          .select({ id: subscriptions.id })
+          .from(subscriptions)
+          .where(eq(subscriptions.studioId, finalStudioId))
+          .limit(1)
+
+        let subId: string
+        if (existingSub) {
+          console.log(`[WEBHOOK: MIDTRANS] Updating existing subscription ID: ${existingSub.id}`)
+          const [updatedSub] = await tx
+            .update(subscriptions)
+            .set({
+              planType: resolvedPlanType,
+              status: 'active',
+              startsAt,
+              expiresAt,
+              midtransOrderId: orderId,
+              midtransTransactionId: transactionId || null,
+              updatedAt: new Date(),
+            })
+            .where(eq(subscriptions.id, existingSub.id))
+            .returning({ id: subscriptions.id })
+          subId = updatedSub.id
+        } else {
+          console.log(`[WEBHOOK: MIDTRANS] Inserting new subscription for Studio ID: ${finalStudioId}`)
+          const [createdSub] = await tx
+            .insert(subscriptions)
+            .values({
+              studioId: finalStudioId,
+              planType: resolvedPlanType,
+              status: 'active',
+              startsAt,
+              expiresAt,
+              midtransOrderId: orderId,
+              midtransTransactionId: transactionId || null,
+            })
+            .returning({ id: subscriptions.id })
+          subId = createdSub.id
+        }
+
+        // Keep payments linked to the correct subscription record
+        await tx
+          .update(payments)
+          .set({ subscriptionId: subId })
+          .where(eq(payments.orderId, orderId))
+      })
+
+      console.log(`[WEBHOOK: MIDTRANS] DB transaction successfully committed for Order ID: ${orderId}`)
+      return NextResponse.json({ message: "Transaction processed successfully" }, { status: 200 })
+    } catch (dbError) {
+      console.error(`[WEBHOOK: MIDTRANS] DB transaction failed for Order ID: ${orderId}:`, dbError)
+      return NextResponse.json({ error: "Failed to process database updates" }, { status: 500 })
     }
-  } catch (error) {
-    console.error("[WEBHOOK: FAIL-SAFE] Error during fail-safe DB update", error);
   }
 
-  try {
-    console.log(`[WEBHOOK: MIDTRANS] Payment is successful. Activating subscription for Order ID: ${body.order_id}`)
-    await activateFromWebhookNotification(body)
-    console.log(`[WEBHOOK: MIDTRANS] Subscription successfully activated for Order ID: ${body.order_id}`)
-    return NextResponse.json({ message: "Subscription activated" })
-  } catch (error) {
-    if (error instanceof BillingActivationError) {
-      console.warn(`[WEBHOOK: MIDTRANS] Billing activation warning/error: ${error.message}`)
-      return NextResponse.json({ error: error.message }, { status: error.status })
+  // 4. HANDLING JIKA TRANSAKSI GAGAL
+  if (isFailed) {
+    if (!orderId) {
+      console.error("[WEBHOOK: MIDTRANS] Missing order_id in failed payload")
+      return NextResponse.json({ error: "Missing order_id" }, { status: 400 })
     }
 
-    console.error("[WEBHOOK: MIDTRANS] Webhook activation failed:", error)
-    return NextResponse.json({ error: "Activation failed" }, { status: 500 })
+    try {
+      console.log(`[WEBHOOK: MIDTRANS] Processing failed payment event for Order ID: ${orderId}`)
+      await dbInstance.transaction(async (tx) => {
+        const [existingPayment] = await tx
+          .select()
+          .from(payments)
+          .where(eq(payments.orderId, orderId))
+          .limit(1)
+
+        if (existingPayment) {
+          await tx
+            .update(payments)
+            .set({
+              transactionStatus: 'failed',
+              transactionId: transactionId || null,
+              paymentMethod: paymentMethod || null,
+              rawPayload: body as unknown as Record<string, unknown>,
+            })
+            .where(eq(payments.orderId, orderId))
+        } else {
+          const finalStudioId = studioIdFromCustom
+          if (finalStudioId) {
+            await tx
+              .insert(payments)
+              .values({
+                studioId: finalStudioId,
+                orderId,
+                amount: grossAmount,
+                transactionId: transactionId || null,
+                paymentMethod: paymentMethod || null,
+                transactionStatus: 'failed',
+                fraudStatus: body.fraud_status || null,
+                rawPayload: body as unknown as Record<string, unknown>,
+              })
+          } else {
+            console.warn(`[WEBHOOK: MIDTRANS] studioId unknown, failed payment recorded partially for Order ID: ${orderId}`)
+          }
+        }
+      })
+
+      console.log(`[WEBHOOK: MIDTRANS] Successfully updated payment status to failed for Order ID: ${orderId}`)
+      return NextResponse.json({ message: "Failed payment recorded" }, { status: 200 })
+    } catch (dbError) {
+      console.error(`[WEBHOOK: MIDTRANS] Failed to update failed payment status for Order ID: ${orderId}:`, dbError)
+      return NextResponse.json({ error: "Database update failed" }, { status: 500 })
+    }
   }
+
+  // 5. SECURE RESPONSE (Return HTTP 200 OK for unhandled/pending states)
+  console.log(`[WEBHOOK: MIDTRANS] Received unhandled status: '${transaction_status}' for Order ID: ${orderId}.`)
+  return NextResponse.json({ message: `Status '${transaction_status}' logged` }, { status: 200 })
 }
