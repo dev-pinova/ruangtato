@@ -1,5 +1,6 @@
+import { createDefaultPageConfig } from "@/lib/studio/default-page-config"
 import { PLACEHOLDER_IMAGES } from "@/lib/placeholder-images"
-import type { Block, Studio } from "@/lib/types"
+import type { Block, FooterData, GoalsData, Studio } from "@/lib/types"
 
 const SHOWCASE_GRID_SIZE = 6
 
@@ -144,6 +145,37 @@ export const SHOWCASE_DEMO_STUDIOS: Studio[] = [
     isVerified: false,
   }),
 ]
+
+/**
+ * Bangun landing page lengkap (preset Tattoo Studio 128) untuk satu demo studio
+ * showcase berdasarkan slug. Dipakai agar kartu demo di beranda saat diklik
+ * tetap membuka halaman landing page nyata, bukan 404.
+ */
+export function getShowcaseDemoStudioBySlug(slug: string): Studio | null {
+  const demo = SHOWCASE_DEMO_STUDIOS.find((studio) => studio.slug === slug)
+  if (!demo) return null
+
+  const blocks = createDefaultPageConfig(demo.name)
+
+  // Sesuaikan beberapa block dengan data demo agar landing page terasa spesifik.
+  for (const block of blocks) {
+    if (block.type === "Goals") {
+      block.data = {
+        ...(block.data as GoalsData),
+        description: demo.description,
+      }
+    }
+    if (block.type === "Footer") {
+      block.data = {
+        ...(block.data as FooterData),
+        title: demo.name,
+        address: `${demo.city}, Indonesia`,
+      }
+    }
+  }
+
+  return { ...demo, blocks }
+}
 
 /** Gabungkan studio publik dengan demo hingga grid 2×3 (6 kartu). */
 export function buildShowcaseStudios(published: Studio[]): Studio[] {
