@@ -46,6 +46,8 @@ export async function POST(request: Request) {
   }
 
   try {
+    // Verification only. Activation happens exclusively via the Midtrans
+    // webhook; this endpoint just reports the current verified status.
     const result = await confirmOrderPayment({
       orderId,
       planType,
@@ -53,8 +55,10 @@ export async function POST(request: Request) {
     })
 
     return NextResponse.json({
-      message: "Subscription activated",
-      subscription: result,
+      message: result.activated
+        ? "Langganan aktif."
+        : "Pembayaran sedang diverifikasi. Status akan diperbarui otomatis.",
+      status: result,
     })
   } catch (error) {
     if (error instanceof BillingActivationError) {
