@@ -5,6 +5,8 @@ import {
   getStudioForUser,
   getStudioSuspendedFlagForUser,
   getSubscriptionForStudio,
+  getUserStudioRole,
+  studioRoleHasPermission,
   updateStudioProfile,
 } from "@/lib/studio/studio-service"
 
@@ -58,6 +60,14 @@ export async function PATCH(request: Request) {
   const studio = await getStudioForUser(session.user.id)
   if (!studio) {
     return NextResponse.json({ error: "Studio not found" }, { status: 404 })
+  }
+
+  const role = await getUserStudioRole(session.user.id, studio.id)
+  if (!role || !studioRoleHasPermission(role, "profile:write")) {
+    return NextResponse.json(
+      { error: "Anda tidak memiliki izin untuk mengubah profil studio." },
+      { status: 403 },
+    )
   }
 
   const body = await request.json().catch(() => null)
