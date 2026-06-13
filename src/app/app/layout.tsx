@@ -9,16 +9,22 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
+  const headersList = await headers()
+  const pathname = headersList.get("x-pathname") || ""
+  const isPublicPath = pathname.startsWith("/app/studio/")
+
+  // Halaman publik studio (`/app/studio/[slug]`) bisa diakses guest tanpa login
+  // — ini target dari kartu showcase di beranda. Auth hanya untuk area dashboard.
+  if (isPublicPath) {
+    return <AppLayoutClient>{children}</AppLayoutClient>
+  }
+
   const session = await getServerSession()
   if (!session) {
     redirect("/login")
   }
 
-  const headersList = await headers()
-  const pathname = headersList.get("x-pathname") || ""
-  const isPublicPath = pathname.startsWith("/app/studio/")
-
-  if (!isPublicPath && db) {
+  if (db) {
     const studio = await getStudioForUser(session.user.id)
     if (!studio) {
       redirect("/register")

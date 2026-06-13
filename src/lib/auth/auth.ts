@@ -11,6 +11,11 @@ const { user } = authSchema
 import { sendEmail } from "@/lib/email"
 
 if (!process.env.BETTER_AUTH_SECRET) {
+  if (process.env.NODE_ENV === "production") {
+    // Fail fast: a missing secret in production means sessions cannot be
+    // signed/verified securely.
+    throw new Error("BETTER_AUTH_SECRET is required in production.")
+  }
   console.warn("BETTER_AUTH_SECRET is not set. Auth will not work until configured.")
 }
 
@@ -37,7 +42,6 @@ function buildTrustedOrigins(): string[] {
     authBaseURL,
     process.env.NEXT_PUBLIC_APP_URL,
     "https://studiotato.vercel.app",
-    "https://*.vercel.app",
     ...(process.env.NODE_ENV !== "production" ? buildLocalDevOrigins() : []),
   ]
 
@@ -94,9 +98,36 @@ export const auth = betterAuth({
           }
           return origins
         },
+  rateLimit: {
+    enabled: true,
+    window: 60,
+    max: 100,
+  },
+  emailVerification: {
+    sendOnSignUp: true,
+    autoSignInAfterVerification: true,
+    expiresIn: 60 * 60 * 24, // 24 hours
+    async sendVerificationEmail({ user, url }) {
+      const subject = "Verifikasi email akun Ruang Tato Anda"
+      const html = buildVerificationEmail({ name: user.name, url })
+      const text =
+        `Halo ${user.name || ""},\n\n` +
+        `Terima kasih telah mendaftar di Ruang Tato.\n` +
+        `Verifikasi alamat email Anda dengan membuka tautan berikut (berlaku 24 jam):\n${url}\n\n` +
+        `Jika Anda tidak membuat akun ini, abaikan email ini.\n`
+
+      try {
+        await sendEmail({ to: user.email, subject, html, text })
+      } catch (err) {
+        console.error("[auth] Failed to send verification email", err)
+        throw err
+      }
+    },
+  },
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 8,
+    requireEmailVerification: true,
     resetPasswordTokenExpiresIn: 60 * 60,
     async sendResetPassword({ user, url }) {
       const subject = "Reset password akun Ruang Tato Anda"
@@ -168,6 +199,35 @@ function buildResetPasswordEmail({ name, url }: { name: string; url: string }) {
         <p style="font-size:12px;line-height:1.6;margin:0 0 24px;color:#525252;word-break:break-all;">${url}</p>
         <p style="font-size:12px;line-height:1.6;margin:0;color:#737373;">
           Jika Anda tidak meminta reset password, abaikan email ini — password Anda tidak akan berubah.
+        </p>
+      </div>
+      <p style="font-size:11px;text-align:center;color:#a3a3a3;margin:16px 0 0;">© Ruang Tato</p>
+    </div>
+  </body>
+</html>`
+}
+
+function buildVerificationEmail({ name, url }: { name: string; url: string }) {
+  const greeting = name ? `Halo ${escapeHtml(name)},` : "Halo,"
+  return `<!doctype html>
+<html lang="id">
+  <body style="margin:0;padding:0;background-color:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#0a0a0a;">
+    <div style="max-width:480px;margin:0 auto;padding:32px 24px;">
+      <div style="background:#ffffff;border:1px solid #e5e5e5;border-radius:12px;padding:32px;">
+        <h1 style="font-size:18px;font-weight:600;margin:0 0 16px;">Verifikasi email Ruang Tato</h1>
+        <p style="font-size:14px;line-height:1.6;margin:0 0 16px;color:#404040;">${greeting}</p>
+        <p style="font-size:14px;line-height:1.6;margin:0 0 24px;color:#404040;">
+          Terima kasih telah mendaftar. Klik tombol di bawah untuk memverifikasi alamat email Anda. Tautan ini berlaku selama 24 jam.
+        </p>
+        <p style="margin:0 0 24px;">
+          <a href="${url}" style="display:inline-block;background:#0a0a0a;color:#ffffff;text-decoration:none;padding:12px 20px;border-radius:8px;font-size:14px;font-weight:500;">Verifikasi email</a>
+        </p>
+        <p style="font-size:12px;line-height:1.6;margin:0 0 12px;color:#737373;">
+          Atau salin tautan berikut ke browser Anda:
+        </p>
+        <p style="font-size:12px;line-height:1.6;margin:0 0 24px;color:#525252;word-break:break-all;">${url}</p>
+        <p style="font-size:12px;line-height:1.6;margin:0;color:#737373;">
+          Jika Anda tidak membuat akun ini, abaikan email ini.
         </p>
       </div>
       <p style="font-size:11px;text-align:center;color:#a3a3a3;margin:16px 0 0;">© Ruang Tato</p>

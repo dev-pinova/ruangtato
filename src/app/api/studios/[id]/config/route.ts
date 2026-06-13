@@ -1,12 +1,10 @@
 import { NextResponse } from "next/server"
 
-import { auth } from "@/lib/auth/auth"
+import { requireStudioPermission } from "@/lib/studio/studio-guard"
 import {
   getStudioForUser,
-  getStudioSuspendedFlagForUser,
   saveStudioPageConfig,
   studioHasActiveSubscription,
-  userCanAccessStudio,
 } from "@/lib/studio/studio-service"
 import type { Block } from "@/lib/types"
 
@@ -15,21 +13,12 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params
-  const session = await auth.api.getSession({ headers: request.headers })
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
 
-  if (await getStudioSuspendedFlagForUser(session.user.id)) {
-    return NextResponse.json({ error: "Account suspended", suspended: true }, { status: 403 })
-  }
+  // Read access: any active member of the studio may load its config.
+  const guard = await requireStudioPermission(request, id, "content:write")
+  if (guard instanceof Response) return guard
 
-  const allowed = await userCanAccessStudio(session.user.id, id)
-  if (!allowed) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-  }
-
-  const studio = await getStudioForUser(session.user.id)
+  const studio = await getStudioForUser(guard.userId)
   if (!studio || studio.id !== id) {
     return NextResponse.json({ error: "Studio not found" }, { status: 404 })
   }
@@ -46,19 +35,9 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params
-  const session = await auth.api.getSession({ headers: request.headers })
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
 
-  if (await getStudioSuspendedFlagForUser(session.user.id)) {
-    return NextResponse.json({ error: "Account suspended", suspended: true }, { status: 403 })
-  }
-
-  const allowed = await userCanAccessStudio(session.user.id, id)
-  if (!allowed) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-  }
+  const guard = await requireStudioPermission(request, id, "content:write")
+  if (guard instanceof Response) return guard
 
   const hasSubscription = await studioHasActiveSubscription(id)
   if (!hasSubscription) {
