@@ -9,6 +9,11 @@ import * as authSchema from "@/db/auth-schema"
 
 const { user } = authSchema
 import { sendEmail } from "@/lib/email"
+import {
+  buildTrustedOrigins,
+  getAuthBaseURL,
+  isLocalDevOrigin,
+} from "@/lib/auth/trusted-origins"
 
 if (!process.env.BETTER_AUTH_SECRET) {
   if (process.env.NODE_ENV === "production") {
@@ -19,43 +24,7 @@ if (!process.env.BETTER_AUTH_SECRET) {
   console.warn("BETTER_AUTH_SECRET is not set. Auth will not work until configured.")
 }
 
-const authBaseURL =
-  process.env.BETTER_AUTH_URL ?? process.env.NEXT_PUBLIC_APP_URL
-
-const LOCAL_DEV_HOSTS = ["localhost", "127.0.0.1"] as const
-const LOCAL_DEV_PORT_MIN = 3000
-const LOCAL_DEV_PORT_MAX = 3010
-
-function buildLocalDevOrigins(): string[] {
-  const origins: string[] = []
-  for (const host of LOCAL_DEV_HOSTS) {
-    origins.push(`http://${host}:*`)
-    for (let port = LOCAL_DEV_PORT_MIN; port <= LOCAL_DEV_PORT_MAX; port++) {
-      origins.push(`http://${host}:${port}`)
-    }
-  }
-  return origins
-}
-
-function buildTrustedOrigins(): string[] {
-  const origins = [
-    authBaseURL,
-    process.env.NEXT_PUBLIC_APP_URL,
-    "https://studiotato.vercel.app",
-    ...(process.env.NODE_ENV !== "production" ? buildLocalDevOrigins() : []),
-  ]
-
-  return [...new Set(origins.filter((value): value is string => Boolean(value)))]
-}
-
-function isLocalDevOrigin(origin: string): boolean {
-  try {
-    const { hostname } = new URL(origin)
-    return LOCAL_DEV_HOSTS.includes(hostname as (typeof LOCAL_DEV_HOSTS)[number])
-  } catch {
-    return false
-  }
-}
+const authBaseURL = getAuthBaseURL()
 
 export const auth = betterAuth({
   database: db
