@@ -2,6 +2,7 @@ import { and, asc, count, desc, eq, gte, ilike, lte, or, sql } from "drizzle-orm
 
 import { db, getDb, isDatabaseConfigured } from "@/db"
 import { payments, studios, subscriptions } from "@/db/schema"
+import type { TxOrDb } from "@/lib/studio/studio-service"
 import {
   isSuccessfulPayment,
   parsePaymentMetadata,
@@ -36,8 +37,11 @@ function shouldReplaceStatus(current: string | null | undefined, incoming: strin
   return incomingRank >= currentRank
 }
 
-export async function recordPaymentEvent(payload: MidtransNotificationPayload) {
-  const d = getDb()
+export async function recordPaymentEvent(
+  payload: MidtransNotificationPayload,
+  executor?: TxOrDb,
+) {
+  const d = executor ?? getDb()
 
   const orderId = payload.order_id
   if (!orderId) throw new Error("Missing order_id")

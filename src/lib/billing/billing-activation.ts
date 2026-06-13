@@ -1,3 +1,4 @@
+import { getDb } from "@/db"
 import {
   amountsMatchPlan,
   fetchTransactionStatus,
@@ -7,7 +8,14 @@ import {
   type MidtransNotificationPayload,
   type MidtransTransactionStatus,
 } from "@/lib/billing/midtrans"
-import { activateSubscription, recordInvoice } from "@/lib/studio/studio-service"
+import { recordPaymentEvent } from "@/lib/billing/payment-service"
+import {
+  activateSubscription,
+  getSubscriptionForStudio,
+  isActivePaidSubscription,
+  recordInvoice,
+  setStudioActiveIfNotSuspended,
+} from "@/lib/studio/studio-service"
 
 export class BillingActivationError extends Error {
   constructor(
@@ -19,68 +27,99 @@ export class BillingActivationError extends Error {
   }
 }
 
-function assertSuccessfulPayment(payload: MidtransNotificationPayload) {
-  if (!isSuccessfulPayment(payload)) {
-    throw new BillingActivationError("Payment not completed", 400)
-  }
-}
-
-export async function activatePaidOrder(input: {
+type ActivatePaidOrderInput = {
   orderId: string
   grossAmount: string | number | undefined
   customField1: string | undefined
   paymentStatus: MidtransNotificationPayload
   expectedStudioId?: string
-}) {
-  const { orderId, grossAmount, customField1, paymentStatus, expectedStudioId } =
-    input
+}
 
-  assertSuccessfulPayment(paymentStatus)
+/**
+ * Pure validation for an incoming paid order. Throws BillingActivationError on
+ * any inconsistency. Kept side-effect free so it is trivially unit-testable.
+ */
+export function validatePaidOrder(input: ActivatePaidOrderInput): {
+  studioId: string
+  planType: string
+  months: number
+  amount: number
+} {
+  if (!isSuccessfulPayment(input.paymentStatus)) {
+    throw new BillingActivationError("Payment not completed", 400)
+  }
 
-  const metadata = parsePaymentMetadata(customField1)
+  const metadata = parsePaymentMetadata(input.customField1)
   if (!metadata) {
     throw new BillingActivationError("Invalid payment metadata", 400)
   }
 
   const { studioId, planType } = metadata
 
-  if (expectedStudioId && studioId !== expectedStudioId) {
+  if (input.expectedStudioId && studioId !== input.expectedStudioId) {
     throw new BillingActivationError("Order does not belong to this studio", 403)
   }
 
-  if (!amountsMatchPlan(planType, grossAmount)) {
+  if (!amountsMatchPlan(planType, input.grossAmount)) {
     throw new BillingActivationError("Amount mismatch", 400)
   }
 
-  const months = PLAN_CATALOG[planType]?.months
-  if (!months) {
+  const plan = PLAN_CATALOG[planType]
+  if (!plan?.months) {
     throw new BillingActivationError("Invalid plan", 400)
   }
-
-  const amount = PLAN_CATALOG[planType]?.amount
-  if (!amount) {
+  if (!plan.amount) {
     throw new BillingActivationError("Invalid plan amount", 400)
   }
 
-  await recordInvoice({
-    studioId,
-    midtransOrderId: orderId,
-    planType,
-    amount,
-    status: "paid",
-    paidAt: new Date(),
-  })
+  return { studioId, planType, months: plan.months, amount: plan.amount }
+}
 
-  await activateSubscription({
-    studioId,
-    planType,
-    midtransOrderId: orderId,
-    months,
+/**
+ * Canonical activation. Single source of truth used by the Midtrans webhook.
+ * Writes payments + invoice + subscription + studio status atomically and
+ * idempotently. Activation must only ever happen from the async webhook.
+ */
+export async function activatePaidOrder(input: ActivatePaidOrderInput) {
+  const { studioId, planType, months, amount } = validatePaidOrder(input)
+
+  await getDb().transaction(async (tx) => {
+    await recordPaymentEvent(input.paymentStatus, tx)
+
+    await recordInvoice(
+      {
+        studioId,
+        midtransOrderId: input.orderId,
+        planType,
+        amount,
+        status: "paid",
+        paidAt: new Date(),
+      },
+      tx,
+    )
+
+    await activateSubscription(
+      {
+        studioId,
+        planType,
+        midtransOrderId: input.orderId,
+        months,
+      },
+      tx,
+    )
+
+    await setStudioActiveIfNotSuspended(studioId, tx)
   })
 
   return { studioId, planType }
 }
 
+/**
+ * Verification-only status check for the client (post-Snap polling).
+ * NEVER activates — it only re-checks the Midtrans transaction server-side and
+ * reports the current persisted subscription state. Activation is webhook-only
+ * per the platform billing rules.
+ */
 export async function confirmOrderPayment(input: {
   orderId: string
   planType: string
@@ -115,15 +154,22 @@ export async function confirmOrderPayment(input: {
     throw new BillingActivationError("Order ID mismatch", 400)
   }
 
-  return activatePaidOrder({
-    orderId: input.orderId,
-    grossAmount: status.gross_amount,
-    customField1: status.custom_field1,
-    paymentStatus: status,
-    expectedStudioId: input.studioId,
-  })
+  const subscription = await getSubscriptionForStudio(input.studioId)
+  const activated = subscription ? isActivePaidSubscription(subscription) : false
+
+  return {
+    studioId: input.studioId,
+    planType: input.planType,
+    transactionStatus: status.transaction_status ?? "unknown",
+    paid: isSuccessfulPayment(status),
+    activated,
+  }
 }
 
+/**
+ * Activate from a verified Midtrans webhook notification. The caller MUST have
+ * already verified the notification signature.
+ */
 export async function activateFromWebhookNotification(
   body: MidtransNotificationPayload,
 ) {

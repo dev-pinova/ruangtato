@@ -56,7 +56,7 @@ function demoStudio(input: {
   }
 }
 
-/** Studio demo untuk grid showcase (3 berlangganan paid, 3 trial). */
+/** Studio demo untuk grid showcase (sebagian terverifikasi, sebagian belum). */
 export const SHOWCASE_DEMO_STUDIOS: Studio[] = [
   demoStudio({
     id: "demo-ink-and-iron",

@@ -1,11 +1,9 @@
 import { NextResponse } from "next/server"
 
-import { auth } from "@/lib/auth/auth"
+import { requireStudioPermission } from "@/lib/studio/studio-guard"
 import {
-  getStudioSuspendedFlagForUser,
   publishStudio,
   studioHasActiveSubscription,
-  userCanAccessStudio,
 } from "@/lib/studio/studio-service"
 
 export async function POST(
@@ -13,19 +11,9 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params
-  const session = await auth.api.getSession({ headers: request.headers })
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
 
-  if (await getStudioSuspendedFlagForUser(session.user.id)) {
-    return NextResponse.json({ error: "Account suspended", suspended: true }, { status: 403 })
-  }
-
-  const allowed = await userCanAccessStudio(session.user.id, id)
-  if (!allowed) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-  }
+  const guard = await requireStudioPermission(request, id, "publish")
+  if (guard instanceof Response) return guard
 
   const hasSubscription = await studioHasActiveSubscription(id)
   if (!hasSubscription) {
