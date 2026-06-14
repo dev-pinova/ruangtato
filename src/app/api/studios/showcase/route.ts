@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server"
 
-import { buildShowcaseStudios } from "@/lib/studio/showcase-demos"
 import { listPublishedStudios } from "@/lib/studio/studio-service"
 
 export async function GET() {
-  const studios = buildShowcaseStudios(await listPublishedStudios())
+  const studios = await listPublishedStudios()
 
   return NextResponse.json({
     studios: studios.map((studio) => ({
