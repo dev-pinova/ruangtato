@@ -284,10 +284,10 @@ export function StudiosPanel({
                     setPage(1)
                   }}
                 >
-                  <SelectTrigger className="w-[140px] bg-zinc-900 border-zinc-800 text-zinc-100">
+                  <SelectTrigger className="w-[140px] bg-card border-border text-foreground">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-zinc-900 border-zinc-800 text-zinc-100">
+                  <SelectContent className="bg-card border-border text-foreground">
                     <SelectItem value="all">Semua</SelectItem>
                     <SelectItem value="active">Aktif</SelectItem>
                     <SelectItem value="suspended">Ditangguhkan</SelectItem>
@@ -303,10 +303,10 @@ export function StudiosPanel({
                     setPage(1)
                   }}
                 >
-                  <SelectTrigger className="w-[150px] bg-zinc-900 border-zinc-800 text-zinc-100">
+                  <SelectTrigger className="w-[150px] bg-card border-border text-foreground">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-zinc-900 border-zinc-800 text-zinc-100">
+                  <SelectContent className="bg-card border-border text-foreground">
                     <SelectItem value="newest">Terbaru</SelectItem>
                     <SelectItem value="oldest">Terlama</SelectItem>
                     <SelectItem value="views">Views Tertinggi</SelectItem>
@@ -330,25 +330,25 @@ export function StudiosPanel({
                 return (
                   <div className="space-y-1">
                     <div className="flex items-center gap-1.5">
-                      <span className="font-semibold text-zinc-100">{row.name}</span>
+                      <span className="font-semibold text-foreground">{row.name}</span>
                       <a
                         href={`/app/studio/${row.slug}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-zinc-500 hover:text-red-400 transition-colors"
+                        className="text-muted-foreground hover:text-primary transition-colors"
                         title="Buka landing page"
                       >
                         <ExternalLink className="size-3.5" />
                       </a>
                     </div>
-                    <div className="text-xs font-mono text-zinc-500">/{row.slug}</div>
+                    <div className="text-xs font-mono text-muted-foreground">/{row.slug}</div>
                     {tagsArray.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-1.5">
                         {tagsArray.map((tag) => (
                           <Badge
                             key={tag}
                             variant="outline"
-                            className="text-[10px] py-0 px-1.5 font-normal border-zinc-800 bg-zinc-950 text-zinc-400"
+                            className="text-[10px] py-0 px-1.5 font-normal border-border bg-background text-muted-foreground"
                           >
                             {tag}
                           </Badge>
@@ -363,21 +363,21 @@ export function StudiosPanel({
               key: "city",
               header: "Kota",
               cell: (row) => (
-                <span className="text-sm font-medium text-zinc-200">{row.city ?? "—"}</span>
+                <span className="text-sm font-medium text-muted-foreground">{row.city ?? "—"}</span>
               ),
             },
             {
               key: "artist",
               header: "Artis",
               cell: (row) => (
-                <span className="text-sm font-medium text-zinc-200">{row.artist ?? "—"}</span>
+                <span className="text-sm font-medium text-muted-foreground">{row.artist ?? "—"}</span>
               ),
             },
             {
               key: "metrics",
               header: "Metrik (Views / Clicks)",
               cell: (row) => (
-                <span className="text-xs font-mono text-zinc-300 bg-zinc-900 border border-zinc-800/60 rounded px-2 py-1 select-none">
+                <span className="text-xs font-mono text-muted-foreground bg-card border border-border/60 rounded px-2 py-1 select-none">
                   👁️ {formatNumber(row.viewCount)} / 🔗 {formatNumber(row.clickCount)}
                 </span>
               ),
@@ -390,14 +390,14 @@ export function StudiosPanel({
                   <div className="flex items-center gap-2">
                     <AdminStatusBadge status={row.status} />
                   </div>
-                  <div className="flex flex-col gap-1.5 pt-1.5 border-t border-zinc-900">
+                  <div className="flex flex-col gap-1.5 pt-1.5 border-t border-border">
                     <div className="flex items-center gap-2">
                       <Switch
                         checked={row.isTrusted}
                         onCheckedChange={(checked) => handleToggleTrusted(row.id, checked)}
                         disabled={!isSuperAdmin || togglingIds.has(row.id)}
                       />
-                      <span className="text-[11px] font-medium text-zinc-400">Trusted</span>
+                      <span className="text-[11px] font-medium text-muted-foreground">Trusted</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Switch
@@ -405,7 +405,7 @@ export function StudiosPanel({
                         onCheckedChange={(checked) => handleTogglePublished(row.id, checked)}
                         disabled={!isSuperAdmin || togglingIds.has(row.id)}
                       />
-                      <span className="text-[11px] font-medium text-zinc-400">Live (Tayang)</span>
+                      <span className="text-[11px] font-medium text-muted-foreground">Live (Tayang)</span>
                     </div>
                   </div>
                 </div>
@@ -419,7 +419,7 @@ export function StudiosPanel({
                   return (
                     <Button
                       size="sm"
-                      className="bg-red-600 hover:bg-red-700 text-white font-medium"
+                      className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-medium"
                       disabled={!canSuspend}
                       onClick={() => openActionDialog(row, "suspend")}
                     >
@@ -431,7 +431,7 @@ export function StudiosPanel({
                     <Button
                       size="sm"
                       variant="outline"
-                      className="border-zinc-800 bg-zinc-900 hover:bg-zinc-800 text-zinc-100 font-medium"
+                      className="border-border bg-card hover:bg-accent text-foreground font-medium"
                       disabled={!canSuspend}
                       onClick={() => openActionDialog(row, "reactivate")}
                     >
@@ -462,12 +462,12 @@ export function StudiosPanel({
 
       {/* Suspend / Reactivate Dialog */}
       <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <AlertDialogContent className="bg-zinc-950 border border-zinc-800 text-zinc-50 max-w-md">
+        <AlertDialogContent className="bg-background border border-border text-foreground max-w-md">
           <AlertDialogHeader>
             <AlertDialogTitle>
               {dialogType === "suspend" ? "Tangguhkan Akun Studio" : "Aktifkan Kembali Studio"}
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-zinc-400 text-sm">
+            <AlertDialogDescription className="text-muted-foreground text-sm">
               {dialogType === "suspend" ? (
                 <>
                   Apakah Anda yakin ingin menangguhkan studio <strong>{selectedStudio?.name}</strong>?
@@ -485,15 +485,15 @@ export function StudiosPanel({
           <div className="space-y-4 py-2">
             {dialogType === "suspend" && (
               <div className="space-y-2">
-                <label className="text-xs font-medium text-zinc-400">Kategori Alasan</label>
+                <label className="text-xs font-medium text-muted-foreground">Kategori Alasan</label>
                 <Select
                   value={reasonCategory}
                   onValueChange={(v) => setReasonCategory(v as SuspensionReasonCategory)}
                 >
-                  <SelectTrigger className="w-full bg-zinc-900 border-zinc-800 text-zinc-100">
+                  <SelectTrigger className="w-full bg-card border-border text-foreground">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-zinc-900 border-zinc-800 text-zinc-100">
+                  <SelectContent className="bg-card border-border text-foreground">
                     {SUSPENSION_REASON_CATEGORIES.map((item) => (
                       <SelectItem key={item.value} value={item.value}>
                         {item.label}
@@ -505,7 +505,7 @@ export function StudiosPanel({
             )}
 
             <div className="space-y-2">
-              <label className="text-xs font-medium text-zinc-400">
+              <label className="text-xs font-medium text-muted-foreground">
                 Catatan Alasan {dialogType === "suspend" ? "Penangguhan" : "Pengaktifan"} (Min. 10 Karakter)
               </label>
               <Textarea
@@ -513,19 +513,19 @@ export function StudiosPanel({
                 onChange={(e) => setReason(e.target.value)}
                 placeholder="Masukkan catatan audit penangguhan/pengaktifan..."
                 rows={3}
-                className="bg-zinc-900 border-zinc-800 text-zinc-100 placeholder-zinc-500 focus-visible:ring-red-600"
+                className="bg-card border-border text-foreground placeholder-muted-foreground focus-visible:ring-ring"
               />
             </div>
 
             {actionError && (
-              <p className="text-sm font-medium text-red-500">{actionError}</p>
+              <p className="text-sm font-medium text-destructive">{actionError}</p>
             )}
           </div>
 
           <AlertDialogFooter>
             <AlertDialogCancel
               disabled={actionLoading}
-              className="bg-zinc-900 border-zinc-800 text-zinc-100 hover:bg-zinc-800"
+              className="bg-card border-border text-foreground hover:bg-accent"
             >
               Batal
             </AlertDialogCancel>
@@ -537,8 +537,8 @@ export function StudiosPanel({
               }}
               className={
                 dialogType === "suspend"
-                  ? "bg-red-600 hover:bg-red-700 text-white font-medium"
-                  : "bg-zinc-100 hover:bg-zinc-200 text-zinc-950 font-medium"
+                  ? "bg-destructive hover:bg-destructive/90 text-destructive-foreground font-medium"
+                  : "bg-foreground hover:bg-foreground/90 text-background font-medium"
               }
             >
               {actionLoading ? "Memproses..." : dialogType === "suspend" ? "Ya, Suspend" : "Ya, Reactivate"}

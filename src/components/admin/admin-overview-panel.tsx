@@ -170,15 +170,15 @@ export function AdminOverviewPanel({
 
       {loading ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Skeleton className="h-[180px] lg:col-span-2 lg:row-span-2 rounded-xl bg-zinc-950/20" />
-          <Skeleton className="h-[180px] lg:col-span-1 lg:row-span-2 rounded-xl bg-zinc-950/20" />
-          <Skeleton className="h-[82px] lg:col-span-1 lg:row-span-1 rounded-xl bg-zinc-950/20" />
-          <Skeleton className="h-[82px] lg:col-span-1 lg:row-span-1 rounded-xl bg-zinc-950/20" />
+          <Skeleton className="h-[180px] lg:col-span-2 lg:row-span-2 rounded-xl bg-card/20" />
+          <Skeleton className="h-[180px] lg:col-span-1 lg:row-span-2 rounded-xl bg-card/20" />
+          <Skeleton className="h-[82px] lg:col-span-1 lg:row-span-1 rounded-xl bg-card/20" />
+          <Skeleton className="h-[82px] lg:col-span-1 lg:row-span-1 rounded-xl bg-card/20" />
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {/* Card 1: Revenue (Bento Hero - spans 2 cols, 2 rows on lg) */}
-          <div className="relative overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950/40 backdrop-blur-md p-6 flex flex-col justify-between min-h-[180px] lg:col-span-2 lg:row-span-2 group hover:border-zinc-700/85 transition-all shadow-lg shadow-black/25">
+          <div className="relative overflow-hidden rounded-xl border border-border bg-card/40 backdrop-blur-md p-6 flex flex-col justify-between min-h-[180px] lg:col-span-2 lg:row-span-2 group hover:border-border transition-all shadow-lg shadow-black/25">
             <div>
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Total Revenue</span>
@@ -187,15 +187,15 @@ export function AdminOverviewPanel({
                 </div>
               </div>
               <div className="mt-4">
-                <h3 className="text-3xl font-extrabold tracking-tight text-white tabular-nums">
+                <h3 className="text-3xl font-extrabold tracking-tight text-foreground tabular-nums">
                   {formatIDR(kpis?.totalRevenue ?? 0)}
                 </h3>
                 <p className="text-xs text-muted-foreground mt-1.5">
-                  Pendapatan bulan ini: <span className="font-semibold text-white">{formatIDR(kpis?.revenueThisMonth ?? 0)}</span>
+                  Pendapatan bulan ini: <span className="font-semibold text-foreground">{formatIDR(kpis?.revenueThisMonth ?? 0)}</span>
                 </p>
               </div>
             </div>
-            <div className="mt-4 flex items-center justify-between border-t border-zinc-900/60 pt-4 text-[10px] text-muted-foreground">
+            <div className="mt-4 flex items-center justify-between border-t border-border/60 pt-4 text-[10px] text-muted-foreground">
               <span>GERBANG PEMBAYARAN</span>
               <span className="text-[var(--admin-success)] flex items-center gap-1.5 font-medium">
                 <span className="size-1.5 rounded-full bg-[var(--admin-success)] animate-pulse" />
@@ -207,7 +207,7 @@ export function AdminOverviewPanel({
           </div>
 
           {/* Card 2: Active Subscribers (Tall card - spans 1 col, 2 rows on lg) */}
-          <div className="relative overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950/30 backdrop-blur-xs p-6 flex flex-col justify-between min-h-[180px] lg:col-span-1 lg:row-span-2 group hover:border-zinc-700/85 transition-all">
+          <div className="relative overflow-hidden rounded-xl border border-border bg-card/30 backdrop-blur-xs p-6 flex flex-col justify-between min-h-[180px] lg:col-span-1 lg:row-span-2 group hover:border-border transition-all">
             <div>
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Active Subscribers</span>
@@ -216,26 +216,26 @@ export function AdminOverviewPanel({
                 </div>
               </div>
               <div className="mt-4">
-                <h3 className="text-4xl font-extrabold tracking-tight text-white tabular-nums">
+                <h3 className="text-4xl font-extrabold tracking-tight text-foreground tabular-nums">
                   {kpis?.activeSubscribers ?? 0}
                 </h3>
                 <p className="text-xs text-muted-foreground mt-1.5">Studio tato yang terdaftar dan memiliki paket langganan aktif.</p>
               </div>
             </div>
-            <div className="mt-4 flex items-center justify-between border-t border-zinc-900/60 pt-4 text-[10px] text-muted-foreground">
+            <div className="mt-4 flex items-center justify-between border-t border-border/60 pt-4 text-[10px] text-muted-foreground">
               <span>TREN PLATFORM</span>
               <span className="text-[var(--admin-info)] font-medium">Pertumbuhan Stabil</span>
             </div>
           </div>
 
           {/* Card 3: Total Users (Small card - spans 1 col, 1 row on lg) */}
-          <div className="relative overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950/20 p-5 flex flex-col justify-between min-h-[82px] lg:col-span-1 lg:row-span-1 group hover:border-zinc-700/85 transition-all">
+          <div className="relative overflow-hidden rounded-xl border border-border bg-card/20 p-5 flex flex-col justify-between min-h-[82px] lg:col-span-1 lg:row-span-1 group hover:border-border transition-all">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Total Users</span>
               <Users className="size-4 text-muted-foreground" />
             </div>
             <div className="mt-2 flex items-baseline justify-between">
-              <h3 className="text-2xl font-bold text-white tabular-nums">
+              <h3 className="text-2xl font-bold text-foreground tabular-nums">
                 {kpis?.totalUsers ?? 0}
               </h3>
               <span className="text-[10px] text-muted-foreground font-mono">Terdaftar</span>
@@ -243,13 +243,13 @@ export function AdminOverviewPanel({
           </div>
 
           {/* Card 4: Suspended Tenants (Small card - spans 1 col, 1 row on lg) */}
-          <div className="relative overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950/20 p-5 flex flex-col justify-between min-h-[82px] lg:col-span-1 lg:row-span-1 group hover:border-zinc-700/85 transition-all">
+          <div className="relative overflow-hidden rounded-xl border border-border bg-card/20 p-5 flex flex-col justify-between min-h-[82px] lg:col-span-1 lg:row-span-1 group hover:border-border transition-all">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Suspended</span>
               <ShieldBan className={cn("size-4", suspendedCount > 0 ? "text-[var(--admin-error)] animate-pulse" : "text-muted-foreground")} />
             </div>
             <div className="mt-2 flex items-baseline justify-between">
-              <h3 className="text-2xl font-bold text-white tabular-nums">
+              <h3 className="text-2xl font-bold text-foreground tabular-nums">
                 {suspendedCount}
               </h3>
               <span className={cn("text-[9px] font-bold uppercase px-1.5 py-0.5 rounded", suspendedCount > 0 ? "bg-[var(--admin-error)]/10 text-[var(--admin-error)]" : "bg-[var(--admin-success)]/10 text-[var(--admin-success)]")}>
@@ -444,7 +444,7 @@ export function AdminOverviewPanel({
                 <tbody className="divide-y divide-border/60">
                   {latestSubs.map(sub => (
                     <tr key={sub.id} className="hover:bg-muted/10 transition-colors">
-                      <td className="py-3 font-medium text-white">{sub.studioName}</td>
+                      <td className="py-3 font-medium text-foreground">{sub.studioName}</td>
                       <td className="py-3 capitalize text-muted-foreground">{sub.planType}</td>
                       <td className="py-3">
                         <span className={cn(

@@ -89,11 +89,11 @@ export default async function TransactionDetailPage({
       {/* Page Header & Back Button */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-50">Detail Transaksi</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">Detail Transaksi</h1>
           <p className="text-sm text-muted-foreground font-mono mt-1">ID: {payment.id}</p>
         </div>
         <Link href="/admin/payments" passHref legacyBehavior>
-          <Button className="bg-red-600 hover:bg-red-700 text-white gap-2 rounded-md transition-colors self-start sm:self-center">
+          <Button className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2 rounded-md transition-colors self-start sm:self-center">
             <ArrowLeft className="size-4" />
             Kembali ke Daftar Transaksi
           </Button>
@@ -106,7 +106,7 @@ export default async function TransactionDetailPage({
           <CardHeader className="border-b border-border/50 pb-4">
             <div className="flex items-center justify-between gap-4">
               <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                <CreditCard className="size-5 text-red-600" />
+                <CreditCard className="size-5 text-primary" />
                 Informasi Pembayaran
               </CardTitle>
               <AdminStatusBadge
@@ -119,7 +119,7 @@ export default async function TransactionDetailPage({
             {/* Amount & Plan Section */}
             <div className="flex flex-col gap-1">
               <span className="text-xs text-muted-foreground uppercase tracking-wider">Nominal Transaksi</span>
-              <span className="text-3xl font-bold text-zinc-50 tabular-nums">{formatIDR(payment.amount)}</span>
+              <span className="text-3xl font-bold text-foreground tabular-nums">{formatIDR(payment.amount)}</span>
             </div>
 
             <Separator className="bg-border/50" />
@@ -131,28 +131,28 @@ export default async function TransactionDetailPage({
                   <Key className="size-4 text-muted-foreground/70" />
                   Order ID
                 </span>
-                <span className="font-mono font-medium text-zinc-200">{payment.orderId}</span>
+                <span className="font-mono font-medium text-foreground">{payment.orderId}</span>
               </div>
               <div className="flex flex-col gap-1">
                 <span className="text-muted-foreground flex items-center gap-1.5">
                   <Hash className="size-4 text-muted-foreground/70" />
                   Midtrans Transaction ID
                 </span>
-                <span className="font-mono font-medium text-zinc-200">{payment.transactionId ?? "—"}</span>
+                <span className="font-mono font-medium text-foreground">{payment.transactionId ?? "—"}</span>
               </div>
               <div className="flex flex-col gap-1">
                 <span className="text-muted-foreground flex items-center gap-1.5">
                   <CreditCard className="size-4 text-muted-foreground/70" />
                   Metode Pembayaran
                 </span>
-                <span className="font-medium text-zinc-200 capitalize">{payment.paymentMethod ?? "—"}</span>
+                <span className="font-medium text-foreground capitalize">{payment.paymentMethod ?? "—"}</span>
               </div>
               <div className="flex flex-col gap-1">
                 <span className="text-muted-foreground flex items-center gap-1.5">
                   <Shield className="size-4 text-muted-foreground/70" />
                   Fraud Status
                 </span>
-                <span className="font-medium text-zinc-200 uppercase">{payment.fraudStatus ?? "—"}</span>
+                <span className="font-medium text-foreground uppercase">{payment.fraudStatus ?? "—"}</span>
               </div>
             </div>
 
@@ -165,7 +165,7 @@ export default async function TransactionDetailPage({
                   <Calendar className="size-4 text-muted-foreground/70" />
                   Waktu Order
                 </span>
-                <span className="font-medium text-zinc-200">{formatDateTime(payment.createdAt)}</span>
+                <span className="font-medium text-foreground">{formatDateTime(payment.createdAt)}</span>
               </div>
               {isSuccess && payment.paidAt && (
                 <div className="flex flex-col gap-1">
@@ -173,7 +173,7 @@ export default async function TransactionDetailPage({
                     <Calendar className="size-4 text-muted-foreground/70" />
                     Waktu Lunas
                   </span>
-                  <span className="font-medium text-zinc-200">{formatDateTime(payment.paidAt)}</span>
+                  <span className="font-medium text-foreground">{formatDateTime(payment.paidAt)}</span>
                 </div>
               )}
             </div>
@@ -184,7 +184,7 @@ export default async function TransactionDetailPage({
         <Card className="border-border bg-card">
           <CardHeader className="border-b border-border/50 pb-4">
             <CardTitle className="text-lg font-semibold flex items-center gap-2">
-              <User className="size-5 text-red-600" />
+              <User className="size-5 text-primary" />
               Detail Pelanggan
             </CardTitle>
           </CardHeader>
@@ -192,7 +192,7 @@ export default async function TransactionDetailPage({
             {/* Studio Name */}
             <div className="flex flex-col gap-1">
               <span className="text-muted-foreground">Nama Studio</span>
-              <span className="font-semibold text-zinc-100 text-base">{studioName}</span>
+              <span className="font-semibold text-foreground text-base">{studioName}</span>
             </div>
 
             {/* Studio Slug */}
@@ -201,11 +201,11 @@ export default async function TransactionDetailPage({
                 <Globe className="size-4 text-muted-foreground/70" />
                 Slug Studio
               </span>
-              <span className="font-mono text-zinc-300">
+              <span className="font-mono text-muted-foreground">
                 <Link
                   href={`/app/studio/${studioSlug}`}
                   target="_blank"
-                  className="hover:underline text-red-400 hover:text-red-300"
+                  className="hover:underline text-primary hover:text-primary/80"
                 >
                   {studioSlug}
                 </Link>
@@ -220,7 +220,7 @@ export default async function TransactionDetailPage({
                 <FileText className="size-4 text-muted-foreground/70" />
                 Paket Langganan
               </span>
-              <span className="font-medium text-zinc-200">{planLabel}</span>
+              <span className="font-medium text-foreground">{planLabel}</span>
               {planType && (
                 <span className="text-xs text-muted-foreground font-mono">({planType})</span>
               )}
@@ -233,11 +233,11 @@ export default async function TransactionDetailPage({
       <Card className="border-border bg-card overflow-hidden">
         <Accordion className="w-full">
           <AccordionItem value="raw-payload" className="border-0">
-            <AccordionTrigger className="px-6 py-4 hover:no-underline text-zinc-200 font-semibold text-sm">
+            <AccordionTrigger className="px-6 py-4 hover:no-underline text-foreground font-semibold text-sm">
               Lihat Payload API Mentah (Developer Only)
             </AccordionTrigger>
             <AccordionContent className="px-6 pb-6 pt-2">
-              <pre className="max-h-96 overflow-auto rounded-md border border-border bg-zinc-950 p-4 text-xs font-mono text-zinc-400 scrollbar-thin scrollbar-thumb-zinc-800">
+              <pre className="max-h-96 overflow-auto rounded-md border border-border bg-background p-4 text-xs font-mono text-muted-foreground scrollbar-thin scrollbar-thumb-accent">
                 <code>{JSON.stringify(payment.rawPayload, null, 2)}</code>
               </pre>
             </AccordionContent>

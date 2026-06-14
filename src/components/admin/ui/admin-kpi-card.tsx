@@ -42,7 +42,7 @@ export function AdminKpiCard({
         <p
           className={cn(
             "text-xs font-medium",
-            deltaPositive === false ? "text-red-400" : "text-emerald-400",
+            deltaPositive === false ? "text-destructive" : "text-success",
           )}
         >
           {delta}

@@ -252,7 +252,7 @@ export default function AppLayoutClient({ children }: { children: React.ReactNod
       <aside
         data-collapsed={collapsed ? "true" : "false"}
         className={cn(
-          "absolute left-0 inset-y-0 z-20 hidden shrink-0 flex-col border-r border-zinc-800 bg-zinc-950 transition-all duration-300 ease-in-out md:flex",
+          "absolute left-0 inset-y-0 z-20 hidden shrink-0 flex-col border-r border-border bg-background transition-all duration-300 ease-in-out md:flex",
           collapsed ? "w-16" : "w-64"
         )}
       >
@@ -261,7 +261,7 @@ export default function AppLayoutClient({ children }: { children: React.ReactNod
           variant="ghost"
           size="icon"
           onClick={toggleCollapsed}
-          className="absolute -right-3 top-3 z-30 h-6 w-6 rounded-full border border-zinc-800 bg-zinc-950 p-0 text-zinc-400 hover:bg-zinc-900 hover:text-red-600 focus:outline-none transition-colors"
+          className="absolute -right-3 top-3 z-30 h-6 w-6 rounded-full border border-border bg-background p-0 text-muted-foreground hover:bg-accent hover:text-primary focus:outline-none transition-colors"
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {collapsed ? (
@@ -273,7 +273,7 @@ export default function AppLayoutClient({ children }: { children: React.ReactNod
 
         <div
           className={cn(
-            "flex h-14 items-center border-b border-zinc-800/60 shrink-0 transition-all duration-300 ease-in-out",
+            "flex h-14 items-center border-b border-border/60 shrink-0 transition-all duration-300 ease-in-out",
             collapsed ? "justify-center px-2" : "px-5"
           )}
         >
@@ -431,7 +431,7 @@ export default function AppLayoutClient({ children }: { children: React.ReactNod
                   </span>
                   {studio?.isPublished ? (
                     <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-muted/50 px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
-                      <span className="size-1.5 rounded-full bg-emerald-400" />
+                      <span className="size-1.5 rounded-full bg-success" />
                       Live
                     </span>
                   ) : null}

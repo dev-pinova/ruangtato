@@ -35,7 +35,7 @@ export function AdminPageToolbar({
     >
       <div className="flex min-w-0 flex-1 flex-col gap-3 sm:flex-row sm:items-center">
         {search ? (
-          <div className="relative min-w-0 flex-1 overflow-hidden rounded-lg border border-zinc-800 bg-zinc-950/20 backdrop-blur-md transition-all focus-within:border-zinc-700/80 focus-within:ring-1 focus-within:ring-zinc-700/50 [&_input]:border-0 [&_input]:bg-transparent [&_input]:focus-visible:ring-0">
+          <div className="relative min-w-0 flex-1 overflow-hidden rounded-lg border border-border bg-card/20 backdrop-blur-md transition-all focus-within:border-border focus-within:ring-1 focus-within:ring-ring/50 [&_input]:border-0 [&_input]:bg-transparent [&_input]:focus-visible:ring-0">
             {search}
             <BorderBeam size={100} duration={8} borderWidth={1} colorFrom="var(--brand-scarlet)" colorTo="transparent" />
           </div>

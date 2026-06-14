@@ -111,7 +111,7 @@ export default async function BillingPage() {
                     variant={isActive ? "default" : "destructive"}
                     className={
                       isActive
-                        ? "bg-emerald-500/15 text-emerald-500 hover:bg-emerald-500/25"
+                                ? "bg-success/15 text-success hover:bg-success/25"
                         : ""
                     }
                   >
@@ -209,7 +209,7 @@ export default async function BillingPage() {
                             }
                             className={
                               isSuccess
-                                ? "bg-emerald-500/15 text-emerald-500 hover:bg-emerald-500/25"
+                        ? "bg-success/15 text-success hover:bg-success/25"
                                 : ""
                             }
                           >
