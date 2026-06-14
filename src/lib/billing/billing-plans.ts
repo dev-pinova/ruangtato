@@ -88,10 +88,6 @@ export function getSubscriptionPlanLabel(planType: string): {
   name: string
   duration: string
 } {
-  if (planType === "trial") {
-    return { name: "Trial", duration: "14 Hari" }
-  }
-
   const plan = getPlanByType(planType)
   if (plan) {
     return { name: plan.name, duration: plan.duration }

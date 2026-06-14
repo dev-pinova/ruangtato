@@ -1,6 +1,6 @@
-import { and, desc, eq, inArray, sql } from "drizzle-orm"
+import { and, desc, eq, inArray, ne, sql } from "drizzle-orm"
 
-import { db, getDb, isDatabaseConfigured } from "@/db"
+import { db, getDb, isDatabaseConfigured, type AppDb } from "@/db"
 import { user } from "@/db/auth-schema"
 import {
   leads,
@@ -18,13 +18,18 @@ import { DEFAULT_STUDIO_COVER } from "@/lib/placeholder-images"
 import { getStudioArtistImage, resolveStudioCoverImage } from "@/lib/studio/studio-utils"
 import { type Block, type Studio, mapDbBlocksToBlocks, mapBlocksToDbBlocks } from "@/lib/types"
 
+/**
+ * Drizzle executor: either the root db handle or a transaction handle.
+ * Lets write helpers run standalone or inside a shared transaction.
+ */
+export type TxOrDb = AppDb | Parameters<Parameters<AppDb["transaction"]>[0]>[0]
+
 export function isActivePaidSubscription(sub: {
   planType: string
   status: string
   expiresAt: Date | null
 }): boolean {
   if (sub.status !== "active") return false
-  if (sub.planType === "trial") return false
   if (sub.expiresAt && sub.expiresAt.getTime() <= Date.now()) return false
   return true
 }
@@ -153,6 +158,55 @@ export async function userCanAccessStudio(userId: string, studioId: string): Pro
   return Boolean(membership)
 }
 
+export type StudioRole = "owner" | "admin" | "member"
+export type StudioPermission =
+  | "content:write"
+  | "publish"
+  | "profile:write"
+  | "billing:manage"
+
+const STUDIO_ROLE_PERMISSIONS: Record<StudioRole, StudioPermission[]> = {
+  owner: ["content:write", "publish", "profile:write", "billing:manage"],
+  admin: ["content:write", "publish", "profile:write"],
+  member: ["content:write"],
+}
+
+export function isStudioRole(value: string | null | undefined): value is StudioRole {
+  return value === "owner" || value === "admin" || value === "member"
+}
+
+export function studioRoleHasPermission(
+  role: StudioRole,
+  permission: StudioPermission,
+): boolean {
+  return STUDIO_ROLE_PERMISSIONS[role].includes(permission)
+}
+
+/** Resolve the membership role name a user holds for a given studio. */
+export async function getUserStudioRole(
+  userId: string,
+  studioId: string,
+): Promise<StudioRole | null> {
+  if (!isDatabaseConfigured() || !db) return null
+
+  const [membership] = await db
+    .select({ roleName: roles.name, isPrimaryOwner: studioMemberships.isPrimaryOwner })
+    .from(studioMemberships)
+    .innerJoin(roles, eq(studioMemberships.roleId, roles.id))
+    .where(
+      and(
+        eq(studioMemberships.userId, userId),
+        eq(studioMemberships.studioId, studioId),
+      ),
+    )
+    .limit(1)
+
+  if (!membership) return null
+  // The primary owner is always treated as `owner` regardless of role row drift.
+  if (membership.isPrimaryOwner) return "owner"
+  return isStudioRole(membership.roleName) ? membership.roleName : "member"
+}
+
 export async function studioHasActiveSubscription(studioId: string): Promise<boolean> {
   if (!isDatabaseConfigured() || !db) return false
 
@@ -216,9 +270,9 @@ export async function createStudioForUser(input: {
 }) {
   const d = getDb()
 
-  // Wrap all three inserts in a transaction so that a failure in any step
+  // Wrap all inserts in a transaction so that a failure in any step
   // rolls back the entire operation (prevents orphaned studios without
-  // an owner membership or trial subscription).
+  // an owner membership).
   return d.transaction(async (tx) => {
     const ownerRole = await ensureOwnerRole(tx)
     const baseSlug = createSlugFromName(input.studioName) || "studio"
@@ -412,10 +466,14 @@ export async function createStudioLead(input: {
   return lead
 }
 
-export async function getSubscriptionForStudio(studioId: string) {
-  if (!isDatabaseConfigured() || !db) return null
+export async function getSubscriptionForStudio(
+  studioId: string,
+  executor?: TxOrDb,
+) {
+  if (!executor && (!isDatabaseConfigured() || !db)) return null
+  const d = executor ?? getDb()
 
-  const [sub] = await db
+  const [sub] = await d
     .select()
     .from(subscriptions)
     .where(eq(subscriptions.studioId, studioId))
@@ -424,33 +482,33 @@ export async function getSubscriptionForStudio(studioId: string) {
   return sub ?? null
 }
 
-export async function activateSubscription(input: {
-  studioId: string
-  planType: string
-  midtransOrderId: string
-  months: number
-}) {
-  const d = getDb()
+export async function activateSubscription(
+  input: {
+    studioId: string
+    planType: string
+    midtransOrderId: string
+    months: number
+  },
+  executor?: TxOrDb,
+) {
+  const d = executor ?? getDb()
 
-  const existing = await getSubscriptionForStudio(input.studioId)
+  const existing = await getSubscriptionForStudio(input.studioId, d)
 
+  // Idempotent: the same order already activated for the same plan is a no-op.
   if (
     existing &&
     existing.midtransOrderId === input.midtransOrderId &&
     existing.planType === input.planType &&
-    existing.status === "active" &&
-    existing.planType !== "trial"
+    existing.status === "active"
   ) {
     return existing
   }
 
-  const upgradingFromTrial = existing?.planType === "trial"
-  const hasActivePaidTime =
-    !upgradingFromTrial &&
-    existing?.expiresAt &&
-    existing.expiresAt > new Date()
-
+  // Stack remaining paid time when extending/renewing an active subscription.
+  const hasActivePaidTime = existing?.expiresAt && existing.expiresAt > new Date()
   const base = hasActivePaidTime ? new Date(existing.expiresAt!) : new Date()
+  const startsAt = new Date()
   const expiresAt = new Date(base)
   expiresAt.setMonth(expiresAt.getMonth() + input.months)
 
@@ -460,8 +518,10 @@ export async function activateSubscription(input: {
       .set({
         planType: input.planType,
         status: "active",
+        startsAt,
         expiresAt,
         midtransOrderId: input.midtransOrderId,
+        updatedAt: new Date(),
       })
       .where(eq(subscriptions.studioId, input.studioId))
       .returning()
@@ -474,6 +534,7 @@ export async function activateSubscription(input: {
       studioId: input.studioId,
       planType: input.planType,
       status: "active",
+      startsAt,
       expiresAt,
       midtransOrderId: input.midtransOrderId,
     })
@@ -482,15 +543,34 @@ export async function activateSubscription(input: {
   return created ?? null
 }
 
-export async function recordInvoice(input: {
-  studioId: string
-  midtransOrderId: string
-  planType: string
-  amount: number
-  status: "paid" | "pending" | "failed"
-  paidAt?: Date | null
-}) {
-  const d = getDb()
+/**
+ * Mark a studio active after a successful payment WITHOUT clobbering an
+ * admin suspension. A studio in `suspended` status stays suspended even if a
+ * (possibly stale/duplicate) payment webhook arrives.
+ */
+export async function setStudioActiveIfNotSuspended(
+  studioId: string,
+  executor?: TxOrDb,
+) {
+  const d = executor ?? getDb()
+  await d
+    .update(studios)
+    .set({ status: "active", updatedAt: new Date() })
+    .where(and(eq(studios.id, studioId), ne(studios.status, "suspended")))
+}
+
+export async function recordInvoice(
+  input: {
+    studioId: string
+    midtransOrderId: string
+    planType: string
+    amount: number
+    status: "paid" | "pending" | "failed"
+    paidAt?: Date | null
+  },
+  executor?: TxOrDb,
+) {
+  const d = executor ?? getDb()
 
   const paidAt =
     input.status === "paid" ? (input.paidAt ?? new Date()) : input.paidAt ?? null

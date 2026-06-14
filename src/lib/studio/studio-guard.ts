@@ -3,6 +3,14 @@ import { eq } from "drizzle-orm"
 import { db, isDatabaseConfigured } from "@/db"
 import { user } from "@/db/auth-schema"
 import { studios } from "@/db/schema"
+import { auth } from "@/lib/auth/auth"
+import {
+  getStudioSuspendedFlagForUser,
+  getUserStudioRole,
+  studioRoleHasPermission,
+  type StudioPermission,
+  type StudioRole,
+} from "@/lib/studio/studio-service"
 
 export class StudioSuspendedError extends Error {
   constructor(message = "Studio account is suspended") {
@@ -69,4 +77,47 @@ export function studioGuardErrorResponse(error: unknown) {
     return Response.json({ error: error.message, suspended: true }, { status: 403 })
   }
   return null
+}
+
+export type StudioApiContext = {
+  userId: string
+  studioId: string
+  role: StudioRole
+}
+
+/**
+ * Centralized guard for studio-scoped API mutations. Validates, in order:
+ * session → account/studio suspension → membership → role permission.
+ * Returns a ready-to-send `Response` on failure, or the resolved context.
+ */
+export async function requireStudioPermission(
+  request: Request,
+  studioId: string,
+  permission: StudioPermission,
+): Promise<StudioApiContext | Response> {
+  const session = await auth.api.getSession({ headers: request.headers })
+  if (!session) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
+  if (await getStudioSuspendedFlagForUser(session.user.id)) {
+    return Response.json(
+      { error: "Account suspended", suspended: true },
+      { status: 403 },
+    )
+  }
+
+  const role = await getUserStudioRole(session.user.id, studioId)
+  if (!role) {
+    return Response.json({ error: "Forbidden" }, { status: 403 })
+  }
+
+  if (!studioRoleHasPermission(role, permission)) {
+    return Response.json(
+      { error: "Anda tidak memiliki izin untuk tindakan ini." },
+      { status: 403 },
+    )
+  }
+
+  return { userId: session.user.id, studioId, role }
 }

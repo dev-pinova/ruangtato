@@ -9,6 +9,7 @@ import {
   getSuspendedStudioBySlug,
   listPublishedStudios,
 } from "@/lib/studio/studio-service"
+import { getShowcaseDemoStudioBySlug } from "@/lib/studio/showcase-demos"
 import { getVisibleBlocks } from "@/lib/studio/studio-utils"
 import { BlockHeader } from "@/components/blocks/header"
 import { BlockHeaderOverlay } from "@/components/blocks/header-overlay"
@@ -48,7 +49,8 @@ type PageProps = { params: Promise<{ slug: string }> }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
-  const studio = await getPublishedStudioBySlug(slug)
+  const studio =
+    (await getPublishedStudioBySlug(slug)) ?? getShowcaseDemoStudioBySlug(slug)
 
   if (!studio) {
     return createPageMetadata({
@@ -139,7 +141,8 @@ export default async function StudioRendererPage({ params }: PageProps) {
     )
   }
 
-  const studio = await getPublishedStudioBySlug(slug)
+  const studio =
+    (await getPublishedStudioBySlug(slug)) ?? getShowcaseDemoStudioBySlug(slug)
 
   if (!studio) {
     notFound()
