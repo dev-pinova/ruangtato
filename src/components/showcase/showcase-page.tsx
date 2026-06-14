@@ -93,6 +93,11 @@ export function ShowcasePage({
         sortBy={sortBy}
         trustedOnly={trustedOnly}
         selectedCity={selectedCity}
+        onResetFilters={() => {
+          setSearchQuery("")
+          setSelectedCity("")
+          setTrustedOnly(false)
+        }}
       />
 
       {/* Studio-owner conversion path */}

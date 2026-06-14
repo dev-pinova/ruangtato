@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { ArrowRight, BadgeCheck } from "lucide-react"
+import { ArrowRight, BadgeCheck, Store, SlidersHorizontal } from "lucide-react"
 
 import { BlurFade } from "@/components/ui/blur-fade"
 import { MagicSpotlight } from "@/components/ui/magic-spotlight"
@@ -23,12 +23,14 @@ export function StudioGrid({
   sortBy,
   trustedOnly,
   selectedCity,
+  onResetFilters,
 }: {
   studios: Studio[]
   searchQuery: string
   sortBy: SortBy
   trustedOnly: boolean
   selectedCity: string
+  onResetFilters?: () => void
 }) {
   const [showAll, setShowAll] = useState(false)
   const query = searchQuery.toLowerCase()
@@ -65,18 +67,59 @@ export function StudioGrid({
   const visibleStudios = showAll ? sorted : sorted.slice(0, GRID_PREVIEW_LIMIT)
 
   if (sorted.length === 0) {
+    // Distinguish "filters/search hide everything" from "no studios exist yet".
+    const hasActiveFilters = Boolean(query || selectedCity || trustedOnly)
+
     return (
       <section
         id="browse"
         className="mx-auto max-w-6xl scroll-mt-16 px-4 py-16 md:px-6"
       >
-        <div className="rounded-xl border border-border bg-card px-8 py-16 text-center">
-          <p className="text-base font-medium text-foreground">
-            Tidak ada studio ditemukan
-          </p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Coba ubah filter atau kata kunci pencarian Anda
-          </p>
+        <div className="flex flex-col items-center rounded-2xl border border-border bg-card px-8 py-16 text-center">
+          {hasActiveFilters ? (
+            <>
+              <div className="mb-4 inline-flex size-11 items-center justify-center rounded-lg border border-border bg-background text-muted-foreground">
+                <SlidersHorizontal className="size-5" />
+              </div>
+              <p className="text-base font-medium text-foreground">
+                Tidak ada studio yang cocok dengan filtermu
+              </p>
+              <p className="mt-1 max-w-sm text-sm text-muted-foreground">
+                Coba ganti kota, hapus filter terverifikasi, atau ubah kata kunci pencarianmu.
+              </p>
+              {onResetFilters && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onResetFilters}
+                  className="mt-6"
+                >
+                  Reset filter
+                </Button>
+              )}
+            </>
+          ) : (
+            <>
+              <div className="mb-4 inline-flex size-11 items-center justify-center rounded-lg border border-border bg-background text-muted-foreground">
+                <Store className="size-5" />
+              </div>
+              <p className="text-base font-medium text-foreground">
+                Belum ada studio yang tampil
+              </p>
+              <p className="mt-1 max-w-sm text-sm text-muted-foreground">
+                Direktori sedang bertumbuh. Jadilah studio pertama yang tampil di {SITE_NAME}.
+              </p>
+              <Button
+                size="sm"
+                nativeButton={false}
+                className="mt-6 gap-2"
+                render={<Link href="/register" />}
+              >
+                Tampilkan Studiomu
+                <ArrowRight className="size-3.5" />
+              </Button>
+            </>
+          )}
         </div>
       </section>
     )

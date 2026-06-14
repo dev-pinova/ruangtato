@@ -40,7 +40,7 @@ export function BentoCard({
   return (
     <div
       className={cn(
-        "group relative flex flex-col justify-end overflow-hidden rounded-2xl border border-border bg-card",
+        "group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-border bg-card",
         "transition-all duration-300 hover:border-foreground/30 hover:shadow-md",
         className,
       )}
@@ -50,16 +50,16 @@ export function BentoCard({
         <div className="pointer-events-none absolute inset-0 z-0">{background}</div>
       )}
 
-      <div className="relative z-10 flex flex-col gap-2 p-6">
+      <div className="relative z-10 flex h-full flex-col gap-2 overflow-hidden p-6">
         {icon && (
-          <div className="mb-2 inline-flex size-10 items-center justify-center rounded-lg border border-border bg-background/60 text-foreground backdrop-blur-sm transition-transform duration-300 group-hover:scale-105">
+          <div className="mb-2 inline-flex size-10 shrink-0 items-center justify-center rounded-lg border border-border bg-background/60 text-foreground backdrop-blur-sm transition-transform duration-300 group-hover:scale-105">
             {icon}
           </div>
         )}
-        <h3 className="text-lg font-semibold tracking-tight text-foreground">
+        <h3 className="line-clamp-2 text-lg font-semibold tracking-tight text-foreground">
           {name}
         </h3>
-        <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
+        <p className="line-clamp-4 max-w-md text-sm leading-relaxed text-muted-foreground">
           {description}
         </p>
       </div>

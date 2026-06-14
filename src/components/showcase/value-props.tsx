@@ -69,7 +69,7 @@ export function ShowcaseValueProps() {
           description="Satu tempat untuk menjelajah, membandingkan, dan menghubungi studio tattoo profesional di Indonesia."
         />
 
-        {/* Bento value props — 3 equal square (1:1) cards */}
+        {/* Bento value props — 3 equal square (1:1) cards, min-height safe */}
         <div className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {VALUE_PROPS.map((item) => (
             <BentoCard
@@ -77,7 +77,7 @@ export function ShowcaseValueProps() {
               name={item.name}
               description={item.description}
               icon={item.icon}
-              className="aspect-square"
+              className="min-h-[15rem] lg:aspect-square lg:min-h-0"
             />
           ))}
         </div>
