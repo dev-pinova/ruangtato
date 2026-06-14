@@ -41,6 +41,7 @@ function buildTrustedOrigins(): string[] {
   const origins = [
     authBaseURL,
     process.env.NEXT_PUBLIC_APP_URL,
+    "https://ruangtato.vercel.app",
     "https://studiotato.vercel.app",
     ...(process.env.NODE_ENV !== "production" ? buildLocalDevOrigins() : []),
   ]
