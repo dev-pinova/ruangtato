@@ -1,6 +1,6 @@
 "use client"
 
-import { ArrowUpDown, BadgeCheck, MapPin } from "lucide-react"
+import { ArrowUpDown, BadgeCheck, MapPin, X } from "lucide-react"
 
 import { NumberTicker } from "@/components/ui/number-ticker"
 import { Button } from "@/components/ui/button"
@@ -24,6 +24,8 @@ export function FilterBar({
   onTrustedToggle,
   selectedCity,
   onCityChange,
+  onClearSearch,
+  searchQuery,
   resultCount,
 }: {
   cities: string[]
@@ -34,9 +36,14 @@ export function FilterBar({
   onTrustedToggle: () => void
   selectedCity: string
   onCityChange: (city: string) => void
+  onClearSearch?: () => void
+  searchQuery?: string
   resultCount: number
 }) {
   const totalStudios = Object.values(cityCounts).reduce((sum, n) => sum + n, 0)
+
+  const trimmedQuery = searchQuery?.trim() ?? ""
+  const hasActiveFilters = Boolean(selectedCity || trustedOnly || trimmedQuery)
 
   return (
     <div className="border-b border-border bg-background">
@@ -100,7 +107,48 @@ export function FilterBar({
             </Button>
           </div>
         </div>
+
+        {/* Active filter chips */}
+        {hasActiveFilters && (
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <span className="text-xs text-muted-foreground">Filter aktif:</span>
+
+            {trimmedQuery && onClearSearch && (
+              <FilterChip label={`"${trimmedQuery}"`} onRemove={onClearSearch} />
+            )}
+
+            {selectedCity && (
+              <FilterChip label={selectedCity} onRemove={() => onCityChange("")} />
+            )}
+
+            {trustedOnly && (
+              <FilterChip label="Trusted" onRemove={onTrustedToggle} />
+            )}
+          </div>
+        )}
       </div>
     </div>
+  )
+}
+
+function FilterChip({
+  label,
+  onRemove,
+}: {
+  label: string
+  onRemove: () => void
+}) {
+  return (
+    <span className="inline-flex items-center gap-1 rounded-full border border-border bg-muted/50 py-1 pl-2.5 pr-1 text-xs text-foreground">
+      <span className="max-w-[160px] truncate">{label}</span>
+      <button
+        type="button"
+        onClick={onRemove}
+        aria-label={`Hapus filter ${label}`}
+        className="inline-flex size-4 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-foreground/10 hover:text-foreground"
+      >
+        <X className="size-3" />
+      </button>
+    </span>
   )
 }

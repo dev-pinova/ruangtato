@@ -85,6 +85,8 @@ export function ShowcasePage({
         onTrustedToggle={() => setTrustedOnly((prev) => !prev)}
         selectedCity={selectedCity}
         onCityChange={setSelectedCity}
+        searchQuery={searchQuery}
+        onClearSearch={() => setSearchQuery("")}
         resultCount={resultCount}
       />
       <StudioGrid
