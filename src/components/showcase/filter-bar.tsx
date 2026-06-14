@@ -43,7 +43,7 @@ export function FilterBar({
               Katalog Studio Tattoo
             </h2>
             <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              Sistem kurasi studio profesional di Indonesia. Gunakan filter wilayah dan verifikasi status untuk memastikan pilihan Anda memenuhi standar industri.
+              Semua studio dikurasi dan dicek standarnya. Pakai filter wilayah dan status terverifikasi untuk menemukan yang paling pas buatmu.
             </p>
             <p className="text-sm text-muted-foreground">
               <NumberTicker

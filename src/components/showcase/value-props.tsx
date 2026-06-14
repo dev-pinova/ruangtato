@@ -12,14 +12,14 @@ const VALUE_PROPS = [
   {
     name: "Kurasi profesional",
     description:
-      "Setiap studio melewati kurasi standar industri — portofolio, kebersihan, dan reputasi diperiksa sebelum tampil.",
+      "Setiap studio dikurasi sebelum tampil — portofolio, kebersihan, dan reputasi kami cek dulu.",
     icon: <Sparkles className="size-5" />,
     className: "lg:col-span-2",
   },
   {
-    name: "Verifikasi higienitas",
+    name: "Kebersihan terverifikasi",
     description:
-      "Badge sanitasi & sterilisasi untuk studio terverifikasi, supaya Anda aman memilih.",
+      "Badge sterilisasi untuk studio yang sudah lolos cek, supaya kamu aman memilih.",
     icon: <ShieldCheck className="size-5" />,
     className: "lg:col-span-1",
   },

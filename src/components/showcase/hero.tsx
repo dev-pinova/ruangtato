@@ -88,17 +88,17 @@ export function ShowcaseHero({
 
         {/* Heading */}
         <h1 className="mt-6 text-4xl font-semibold tracking-tight text-white md:text-5xl flex flex-wrap justify-center gap-x-2.5 gap-y-2">
-          <GradualSpacing text="Eksplorasi Karya." />
           <span className="inline-flex items-center gap-2">
             <GradualSpacing text="Bandingkan" />
             <AnimatedGradientText className="[--bg-size:200%] font-semibold tracking-tight">
               Studio Tattoo
             </AnimatedGradientText>
           </span>
-          <GradualSpacing text="Booking Instan." />
+          <GradualSpacing text="Lihat Portofolio." />
+          <GradualSpacing text="Chat Langsung." />
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-white/70 md:text-lg">
-          Akses kurasi portofolio profesional, verifikasi higienitas sanitasi, dan hubungi artist pilihan Anda secara langsung.
+          Jelajahi portofolio, cek studio yang sudah terverifikasi kebersihannya, lalu chat artist pilihanmu langsung lewat WhatsApp.
         </p>
 
         {/* Search bar */}
