@@ -47,6 +47,11 @@ export function ShowcasePage({
 
   const cityCounts = useMemo(() => getCityCounts(studios), [studios])
 
+  const verifiedCount = useMemo(
+    () => studios.filter((s) => s.isVerified || s.isTrusted).length,
+    [studios],
+  )
+
   const resultCount = useMemo(() => {
     const query = searchQuery.toLowerCase()
     return studios.filter((studio) => {
@@ -88,6 +93,7 @@ export function ShowcasePage({
         searchQuery={searchQuery}
         onClearSearch={() => setSearchQuery("")}
         resultCount={resultCount}
+        verifiedCount={verifiedCount}
       />
       <StudioGrid
         studios={studios}

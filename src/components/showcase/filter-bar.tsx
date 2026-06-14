@@ -27,6 +27,7 @@ export function FilterBar({
   onClearSearch,
   searchQuery,
   resultCount,
+  verifiedCount,
 }: {
   cities: string[]
   cityCounts: Record<string, number>
@@ -39,6 +40,7 @@ export function FilterBar({
   onClearSearch?: () => void
   searchQuery?: string
   resultCount: number
+  verifiedCount?: number
 }) {
   const totalStudios = Object.values(cityCounts).reduce((sum, n) => sum + n, 0)
 
@@ -56,12 +58,20 @@ export function FilterBar({
             <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
               Semua studio dikurasi dan dicek standarnya. Pakai filter wilayah dan status terverifikasi untuk menemukan yang paling pas buatmu.
             </p>
-            <p className="text-sm text-muted-foreground">
-              <NumberTicker
-                value={resultCount}
-                className="font-medium text-foreground"
-              />{" "}
-              studio terdaftar
+            <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
+              <span>
+                <NumberTicker
+                  value={resultCount}
+                  className="font-medium text-foreground"
+                />{" "}
+                studio terdaftar
+              </span>
+              {typeof verifiedCount === "number" && verifiedCount > 0 && (
+                <span className="inline-flex items-center gap-1 text-foreground/70">
+                  <BadgeCheck className="size-3.5 text-primary" />
+                  {verifiedCount} terverifikasi
+                </span>
+              )}
             </p>
           </div>
 
