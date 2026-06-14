@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { revalidatePath } from "next/cache"
 
 import { reactivateStudio } from "@/lib/admin/admin-suspend-service"
 import {
@@ -45,6 +46,8 @@ export async function POST(
       actorUserId: authResult.id,
       reason,
     })
+    // Reactivated studio should reappear on the cached homepage immediately.
+    revalidatePath("/")
     return NextResponse.json({ data: result })
   } catch (error) {
     return NextResponse.json(

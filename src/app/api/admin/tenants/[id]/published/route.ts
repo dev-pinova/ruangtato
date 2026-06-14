@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { revalidatePath } from "next/cache"
 
 import {
   isPlatformApiUser,
@@ -67,6 +68,12 @@ export async function PATCH(
         isPublished,
       },
     })
+
+    // Visibility changed — refresh the statically cached homepage + studio page.
+    revalidatePath("/")
+    if (studio.slug) {
+      revalidatePath(`/app/studio/${studio.slug}`)
+    }
 
     return NextResponse.json({ data: { id: studio.id, name: studio.name, isPublished } })
   } catch (error) {

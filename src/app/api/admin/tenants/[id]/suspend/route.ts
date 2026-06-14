@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { revalidatePath } from "next/cache"
 
 import { suspendStudio } from "@/lib/admin/admin-suspend-service"
 import {
@@ -50,6 +51,8 @@ export async function POST(
       reason,
       reasonCategory,
     })
+    // Suspended studio must drop off the cached homepage immediately.
+    revalidatePath("/")
     return NextResponse.json({ data: result })
   } catch (error) {
     return NextResponse.json(

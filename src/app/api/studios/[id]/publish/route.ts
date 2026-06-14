@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { revalidatePath } from "next/cache"
 
 import { requireStudioPermission } from "@/lib/studio/studio-guard"
 import {
@@ -25,6 +26,15 @@ export async function POST(
     if (!studio) {
       return NextResponse.json({ error: "Studio not found" }, { status: 404 })
     }
+
+    // The homepage and the studio's public page are statically cached (ISR).
+    // Revalidate them on publish so the newly published studio appears
+    // immediately instead of after the revalidate window elapses.
+    revalidatePath("/")
+    if (studio.slug) {
+      revalidatePath(`/app/studio/${studio.slug}`)
+    }
+
     return NextResponse.json({ studio })
   } catch (error) {
     console.error("Failed to publish studio:", error)
