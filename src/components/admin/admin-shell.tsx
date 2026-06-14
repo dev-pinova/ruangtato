@@ -275,7 +275,7 @@ export function AdminShell({
         ? "h-11 justify-center md:h-9"
         : "min-h-11 gap-2.5 pl-4 pr-2.5 py-2 md:min-h-0 md:py-1.5",
       isActive
-        ? "bg-sidebar-accent/50 text-white font-medium"
+        ? "bg-sidebar-accent/50 text-foreground font-medium"
         : "text-muted-foreground hover:bg-sidebar-accent/30 hover:text-foreground",
     )
 
@@ -287,7 +287,7 @@ export function AdminShell({
         <Icon
           className={cn(
             "size-4 shrink-0",
-            isActive ? "text-white" : "text-muted-foreground group-hover:text-foreground",
+            isActive ? "text-foreground" : "text-muted-foreground group-hover:text-foreground",
           )}
         />
         <span
@@ -389,7 +389,7 @@ export function AdminShell({
           data-admin-sidebar
           data-collapsed={collapsed ? "true" : "false"}
           className={cn(
-            "absolute left-0 inset-y-0 z-20 hidden shrink-0 flex-col border-r border-zinc-800 bg-zinc-950 transition-all duration-300 ease-in-out md:flex",
+            "absolute left-0 inset-y-0 z-20 hidden shrink-0 flex-col border-r border-border bg-card transition-all duration-300 ease-in-out md:flex",
             collapsed ? "w-16" : "w-64",
           )}
         >
@@ -398,7 +398,7 @@ export function AdminShell({
             variant="ghost"
             size="icon"
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="absolute -right-3 top-3 z-30 h-6 w-6 rounded-full border border-zinc-800 bg-zinc-950 p-0 text-zinc-400 hover:bg-zinc-900 hover:text-red-600 focus:outline-none transition-colors"
+            className="absolute -right-3 top-3 z-30 h-6 w-6 rounded-full border border-border bg-card p-0 text-muted-foreground hover:bg-accent hover:text-primary focus:outline-none transition-colors"
             aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             {isCollapsed ? (
@@ -410,7 +410,7 @@ export function AdminShell({
 
           <div
             className={cn(
-              "flex h-12 shrink-0 items-center border-b border-zinc-800/60 transition-all duration-300 ease-in-out",
+              "flex h-12 shrink-0 items-center border-b border-border/60 transition-all duration-300 ease-in-out",
               collapsed ? "justify-center px-2" : "px-5",
             )}
           >
@@ -419,7 +419,7 @@ export function AdminShell({
 
           <div className="flex-1 overflow-y-auto py-4">{renderNav({ collapsed })}</div>
 
-          <div className="shrink-0 border-t border-zinc-800 p-3">
+          <div className="shrink-0 border-t border-border p-3">
             <div
               className={cn(
                 "flex flex-col rounded-md transition-all duration-300 ease-in-out",
@@ -459,7 +459,7 @@ export function AdminShell({
                   <Tooltip>
                     <TooltipTrigger
                       render={
-                        <span className="mt-1 flex size-6 items-center justify-center rounded-full bg-zinc-900 border border-zinc-800 text-[10px] font-medium uppercase text-muted-foreground">
+                        <span className="mt-1 flex size-6 items-center justify-center rounded-full bg-card border border-border text-[10px] font-medium uppercase text-muted-foreground">
                           {user.platformRole.slice(0, 2)}
                         </span>
                       }

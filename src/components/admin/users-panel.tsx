@@ -190,15 +190,15 @@ export function UsersPanel({
   const getRoleBadgeVariant = (role: string | null) => {
     switch (role) {
       case "super_admin":
-        return "bg-red-500/10 text-red-500 border-red-500/20"
+        return "bg-destructive/10 text-destructive border-destructive/20"
       case "admin":
-        return "bg-orange-500/10 text-orange-500 border-orange-500/20"
+        return "bg-warning/10 text-warning border-warning/20"
       case "support":
-        return "bg-blue-500/10 text-blue-500 border-blue-500/20"
+        return "bg-info/10 text-info border-info/20"
       case "finance":
-        return "bg-green-500/10 text-green-500 border-green-500/20"
+        return "bg-success/10 text-success border-success/20"
       default:
-        return "bg-zinc-500/10 text-zinc-400 border-zinc-800"
+        return "bg-muted text-muted-foreground border-border"
     }
   }
 
@@ -247,10 +247,10 @@ export function UsersPanel({
                     setPage(1)
                   }}
                 >
-                  <SelectTrigger className="w-[140px] bg-zinc-900 border-zinc-800 text-zinc-100">
+                  <SelectTrigger className="w-[140px] bg-card border-border text-foreground">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-zinc-900 border-zinc-800 text-zinc-100">
+                  <SelectContent className="bg-card border-border text-foreground">
                     <SelectItem value="all">Semua Role</SelectItem>
                     <SelectItem value="super_admin">Super Admin</SelectItem>
                     <SelectItem value="admin">Admin</SelectItem>
@@ -269,10 +269,10 @@ export function UsersPanel({
                     setPage(1)
                   }}
                 >
-                  <SelectTrigger className="w-[140px] bg-zinc-900 border-zinc-800 text-zinc-100">
+                  <SelectTrigger className="w-[140px] bg-card border-border text-foreground">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-zinc-900 border-zinc-800 text-zinc-100">
+                  <SelectContent className="bg-card border-border text-foreground">
                     <SelectItem value="all">Semua Status</SelectItem>
                     <SelectItem value="active">Aktif</SelectItem>
                     <SelectItem value="suspended">Ditangguhkan</SelectItem>
@@ -292,13 +292,13 @@ export function UsersPanel({
               header: "Avatar & Nama",
               cell: (row) => (
                 <div className="flex items-center gap-3">
-                  <Avatar className="size-9 border border-zinc-800 bg-zinc-950">
+                  <Avatar className="size-9 border border-border bg-background">
                     {row.image && <AvatarImage src={row.image} alt={row.name} />}
-                    <AvatarFallback className="bg-zinc-900 text-zinc-300 text-xs font-semibold select-none">
+                    <AvatarFallback className="bg-card text-muted-foreground text-xs font-semibold select-none">
                       {getInitials(row.name)}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="font-semibold text-zinc-100 truncate max-w-[150px]">
+                  <span className="font-semibold text-foreground truncate max-w-[150px]">
                     {row.name}
                   </span>
                 </div>
@@ -309,12 +309,12 @@ export function UsersPanel({
               header: "Email",
               cell: (row) => (
                 <div className="flex items-center gap-1.5 min-w-0">
-                  <span className="text-sm text-zinc-300 truncate max-w-[200px]" title={row.email}>
+                  <span className="text-sm text-muted-foreground truncate max-w-[200px]" title={row.email}>
                     {row.email}
                   </span>
                   {row.emailVerified && (
                     <span title="Email Terverifikasi">
-                      <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
+                      <CheckCircle2 className="size-4 text-success shrink-0" />
                     </span>
                   )}
                 </div>
@@ -340,10 +340,10 @@ export function UsersPanel({
                     onValueChange={(val) => handleRoleChange(row.id, val === "user" ? null : val)}
                     disabled={isSelf || updatingId === row.id}
                   >
-                    <SelectTrigger className="w-[130px] h-8 bg-zinc-900 border-zinc-800 text-zinc-100 text-xs focus:ring-0">
+                    <SelectTrigger className="w-[130px] h-8 bg-card border-border text-foreground text-xs focus:ring-0">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-zinc-900 border-zinc-800 text-zinc-100">
+                    <SelectContent className="bg-card border-border text-foreground">
                       <SelectItem value="user">Regular User</SelectItem>
                       <SelectItem value="super_admin">Super Admin</SelectItem>
                       <SelectItem value="admin">Admin</SelectItem>
@@ -363,7 +363,7 @@ export function UsersPanel({
               key: "registered",
               header: "Terdaftar",
               cell: (row) => (
-                <span className="text-xs text-zinc-400 font-medium">{formatDate(row.createdAt)}</span>
+                <span className="text-xs text-muted-foreground font-medium">{formatDate(row.createdAt)}</span>
               ),
             },
             {
@@ -375,7 +375,7 @@ export function UsersPanel({
                   return (
                     <Button
                       size="sm"
-                      className="bg-red-600 hover:bg-red-700 text-white font-medium h-8"
+                      className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-medium h-8"
                       disabled={isSelf}
                       onClick={() => openStatusConfirm(row)}
                     >
@@ -387,7 +387,7 @@ export function UsersPanel({
                     <Button
                       size="sm"
                       variant="outline"
-                      className="border-zinc-800 bg-zinc-900 hover:bg-zinc-800 text-zinc-100 font-medium h-8"
+                      className="border-border bg-card hover:bg-accent text-foreground font-medium h-8"
                       disabled={isSelf}
                       onClick={() => openStatusConfirm(row)}
                     >
@@ -418,17 +418,17 @@ export function UsersPanel({
 
       {/* Status Toggle Confirmation */}
       <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <AlertDialogContent className="bg-zinc-950 border border-zinc-800 text-zinc-50 max-w-md">
+        <AlertDialogContent className="bg-background border border-border text-foreground max-w-md">
           <AlertDialogHeader>
             <AlertDialogTitle>
               {selectedUser?.status === "active" ? "Tangguhkan Akun Pengguna" : "Aktifkan Kembali Akun"}
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-zinc-400 text-sm">
+            <AlertDialogDescription className="text-muted-foreground text-sm">
               {selectedUser?.status === "active" ? (
                 <>
                   Apakah Anda yakin ingin menangguhkan akun milik <strong>{selectedUser?.name}</strong> ({selectedUser?.email})?
                   <br />
-                  <span className="text-red-500 font-semibold block mt-2">
+                  <span className="text-destructive font-semibold block mt-2">
                     ⚠️ Pengguna ini akan didepak seketika dari sesi aktif mereka dan dilarang masuk ke sistem!
                   </span>
                 </>
@@ -443,7 +443,7 @@ export function UsersPanel({
           <AlertDialogFooter>
             <AlertDialogCancel
               disabled={actionLoading}
-              className="bg-zinc-900 border-zinc-800 text-zinc-100 hover:bg-zinc-800"
+              className="bg-card border-border text-foreground hover:bg-accent"
             >
               Batal
             </AlertDialogCancel>
@@ -455,8 +455,8 @@ export function UsersPanel({
               }}
               className={
                 selectedUser?.status === "active"
-                  ? "bg-red-600 hover:bg-red-700 text-white font-medium"
-                  : "bg-zinc-100 hover:bg-zinc-200 text-zinc-950 font-medium"
+                  ? "bg-destructive hover:bg-destructive/90 text-destructive-foreground font-medium"
+                  : "bg-foreground hover:bg-foreground/90 text-background font-medium"
               }
             >
               {actionLoading ? "Memproses..." : selectedUser?.status === "active" ? "Ya, Suspend" : "Ya, Reactivate"}

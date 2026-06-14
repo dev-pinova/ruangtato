@@ -217,7 +217,7 @@ function ProfilStudioTab({
             <p className="text-sm text-destructive">{error}</p>
           ) : null}
           {success ? (
-            <p className="text-sm text-emerald-600 dark:text-emerald-400">
+            <p className="text-sm text-success">
               Profil studio berhasil disimpan.
             </p>
           ) : null}

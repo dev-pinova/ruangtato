@@ -55,14 +55,14 @@ export function MetricCard({
         <CardContent>
           <div className="flex items-center gap-1 text-xs">
             {isPositive ? (
-              <TrendingUp className="size-3 text-emerald-400" />
+              <TrendingUp className="size-3 text-success" />
             ) : (
-              <TrendingDown className="size-3 text-red-400" />
+              <TrendingDown className="size-3 text-destructive" />
             )}
             <span
               className={cn(
                 "font-medium",
-                isPositive ? "text-emerald-400" : "text-red-400"
+                isPositive ? "text-success" : "text-destructive"
               )}
             >
               {isPositive ? "+" : ""}

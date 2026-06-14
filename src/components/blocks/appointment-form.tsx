@@ -183,7 +183,7 @@ export function BlockAppointmentForm({
                 ref={errorRef}
                 tabIndex={-1}
                 aria-live="assertive"
-                className="text-xs uppercase tracking-[0.2em] text-red-400 focus:outline-none"
+                className="text-xs uppercase tracking-[0.2em] text-destructive focus:outline-none"
               >
                 {error}
               </p>
