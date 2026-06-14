@@ -87,10 +87,10 @@ export function ShowcaseHero({
         </div>
 
         {/* Heading */}
-        <h1 className="mt-6 text-4xl font-semibold tracking-tight text-white md:text-5xl flex flex-wrap justify-center gap-x-2.5 gap-y-2">
-          <span className="inline-flex items-center gap-2">
+        <h1 className="mt-6 text-4xl font-semibold leading-tight tracking-tight text-white md:text-5xl md:leading-tight flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1">
+          <span className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
             <GradualSpacing text="Bandingkan" />
-            <AnimatedGradientText className="[--bg-size:200%] font-semibold tracking-tight">
+            <AnimatedGradientText className="[--bg-size:200%] font-semibold leading-tight tracking-tight">
               Studio Tattoo
             </AnimatedGradientText>
           </span>

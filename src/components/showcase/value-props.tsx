@@ -1,41 +1,31 @@
 "use client"
 
 import { useRef } from "react"
-import { Search, GitCompareArrows, CalendarCheck, ShieldCheck, Sparkles, MessageCircle } from "lucide-react"
+import { Search, GitCompareArrows, CalendarCheck, ShieldCheck, MessageCircle } from "lucide-react"
 
-import { BentoGrid, BentoCard } from "@/components/ui/bento-grid"
+import { BentoCard } from "@/components/ui/bento-grid"
 import { AnimatedBeam } from "@/components/ui/animated-beam"
 import { SectionHeading } from "@/components/design"
 import { SITE_NAME } from "@/lib/site"
 
 const VALUE_PROPS = [
   {
-    name: "Kurasi profesional",
+    name: "Kurasi & kebersihan terverifikasi",
     description:
-      "Setiap studio dikurasi sebelum tampil — portofolio, kebersihan, dan reputasi kami cek dulu.",
-    icon: <Sparkles className="size-5" />,
-    className: "lg:col-span-2",
-  },
-  {
-    name: "Kebersihan terverifikasi",
-    description:
-      "Badge sterilisasi untuk studio yang sudah lolos cek, supaya kamu aman memilih.",
+      "Setiap studio dikurasi sebelum tampil — portofolio, reputasi, dan badge sterilisasi kami cek dulu supaya kamu aman memilih.",
     icon: <ShieldCheck className="size-5" />,
-    className: "lg:col-span-1",
-  },
-  {
-    name: "Hubungi artist langsung",
-    description:
-      "Tanpa perantara. Diskusi ide, ukuran, dan estimasi harga langsung lewat WhatsApp.",
-    icon: <MessageCircle className="size-5" />,
-    className: "lg:col-span-1",
   },
   {
     name: "Bandingkan dengan tenang",
     description:
       "Filter wilayah, gaya, dan status terverifikasi. Bandingkan portofolio berdampingan sebelum memutuskan.",
     icon: <GitCompareArrows className="size-5" />,
-    className: "lg:col-span-2",
+  },
+  {
+    name: "Hubungi artist langsung",
+    description:
+      "Tanpa perantara. Diskusi ide, ukuran, dan estimasi harga langsung lewat WhatsApp.",
+    icon: <MessageCircle className="size-5" />,
   },
 ]
 
@@ -79,18 +69,18 @@ export function ShowcaseValueProps() {
           description="Satu tempat untuk menjelajah, membandingkan, dan menghubungi studio tattoo profesional di Indonesia."
         />
 
-        {/* Bento value props */}
-        <BentoGrid className="mt-14">
+        {/* Bento value props — 3 equal square (1:1) cards */}
+        <div className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {VALUE_PROPS.map((item) => (
             <BentoCard
               key={item.name}
               name={item.name}
               description={item.description}
               icon={item.icon}
-              className={item.className}
+              className="aspect-square"
             />
           ))}
-        </BentoGrid>
+        </div>
 
         {/* Animated flow: Cari -> Bandingkan -> Booking */}
         <div className="mt-20">

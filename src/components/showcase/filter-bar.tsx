@@ -17,6 +17,7 @@ type SortBy = "views" | "clicks" | "name"
 
 export function FilterBar({
   cities,
+  cityCounts,
   sortBy,
   onSortChange,
   trustedOnly,
@@ -26,6 +27,7 @@ export function FilterBar({
   resultCount,
 }: {
   cities: string[]
+  cityCounts: Record<string, number>
   sortBy: SortBy
   onSortChange: (sort: SortBy) => void
   trustedOnly: boolean
@@ -34,6 +36,8 @@ export function FilterBar({
   onCityChange: (city: string) => void
   resultCount: number
 }) {
+  const totalStudios = Object.values(cityCounts).reduce((sum, n) => sum + n, 0)
+
   return (
     <div className="border-b border-border bg-background">
       <div className="mx-auto max-w-6xl px-4 py-5 md:px-6">
@@ -54,24 +58,24 @@ export function FilterBar({
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-row flex-wrap items-center gap-2">
             <Select value={selectedCity || "all"} onValueChange={(v: string | null) => onCityChange(v === "all" || !v ? "" : v)}>
-              <SelectTrigger className="h-8 min-w-[140px]">
+              <SelectTrigger className="h-8 min-w-[150px]">
                 <MapPin className="size-3.5 text-muted-foreground" />
                 <SelectValue placeholder="Semua kota" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Semua Kota</SelectItem>
+                <SelectItem value="all">Semua Kota ({totalStudios})</SelectItem>
                 {cities.map((city) => (
                   <SelectItem key={city} value={city}>
-                    {city}
+                    {city} ({cityCounts[city] ?? 0})
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
 
             <Select value={sortBy} onValueChange={(v: string | null) => { if (v) onSortChange(v as SortBy) }}>
-              <SelectTrigger className="h-8 min-w-[140px]">
+              <SelectTrigger className="h-8 min-w-[150px]">
                 <ArrowUpDown className="size-3.5 text-muted-foreground" />
                 <SelectValue />
               </SelectTrigger>

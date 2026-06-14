@@ -71,3 +71,14 @@ export function resolveStudioCoverImage(
 export function getCitiesFromStudios(studios: Studio[]): string[] {
   return [...new Set(studios.map((s) => s.city).filter(Boolean))].sort()
 }
+
+/** Jumlah studio per kota, untuk ditampilkan di filter. */
+export function getCityCounts(studios: Studio[]): Record<string, number> {
+  const counts: Record<string, number> = {}
+  for (const studio of studios) {
+    const city = studio.city?.trim()
+    if (!city) continue
+    counts[city] = (counts[city] ?? 0) + 1
+  }
+  return counts
+}
