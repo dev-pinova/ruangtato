@@ -3,7 +3,6 @@ import { NextResponse } from "next/server"
 import type { PlatformRole } from "@/lib/admin/admin-auth"
 import {
   isPlatformApiUser,
-  isPlatformRole,
   requirePlatformApiPermission,
 } from "@/lib/admin/admin-auth"
 import {
@@ -11,6 +10,15 @@ import {
   listPlatformStaff,
   revokePlatformRole,
 } from "@/lib/admin/admin-staff-service"
+import { parseJsonBody, z } from "@/lib/validation"
+
+const PLATFORM_ROLES = ["super_admin", "admin", "support", "finance"] as const
+
+// platformRole === null revokes the role; a valid role assigns it.
+const StaffSchema = z.object({
+  email: z.string().trim().min(1, "Email wajib diisi.").max(254),
+  platformRole: z.union([z.enum(PLATFORM_ROLES), z.null()]).optional(),
+})
 
 export async function GET(request: Request) {
   const authResult = await requirePlatformApiPermission(
@@ -32,32 +40,17 @@ export async function PATCH(request: Request) {
   )
   if (!isPlatformApiUser(authResult)) return authResult
 
-  const body = await request.json().catch(() => null)
-  if (!body || typeof body !== "object") {
-    return NextResponse.json({ error: "Invalid body" }, { status: 400 })
-  }
-
-  const email = (body as { email?: unknown }).email
-  if (typeof email !== "string" || !email.trim()) {
-    return NextResponse.json({ error: "Email wajib diisi." }, { status: 400 })
-  }
-
-  const platformRole = (body as { platformRole?: unknown }).platformRole
+  const parsed = await parseJsonBody(request, StaffSchema)
+  if (!parsed.ok) return parsed.response
+  const { email, platformRole } = parsed.data
 
   try {
-    if (platformRole === null) {
+    if (platformRole === null || platformRole === undefined) {
       await revokePlatformRole({
         email,
         actorUserId: authResult.id,
       })
       return NextResponse.json({ data: { revoked: true } })
-    }
-
-    if (typeof platformRole !== "string" || !isPlatformRole(platformRole)) {
-      return NextResponse.json(
-        { error: "Role tidak valid. Gunakan super_admin, admin, support, atau finance." },
-        { status: 400 },
-      )
     }
 
     const data = await assignPlatformRole({

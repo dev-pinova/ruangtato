@@ -1,3 +1,5 @@
+import { BlurFade } from "@/components/ui/blur-fade"
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function BlockFeatures({ data }: { data: any }) {
   const items = data?.items || [
@@ -23,17 +25,16 @@ export function BlockFeatures({ data }: { data: any }) {
         <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           {items.map((item: any, i: number) => (
-            <div
-              key={i}
-              className="rounded-xl border border-border bg-card p-5 transition-colors hover:border-foreground/30"
-            >
-              <h3 className="text-sm font-semibold tracking-tight text-foreground">
-                {item.title}
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                {item.desc}
-              </p>
-            </div>
+            <BlurFade key={i} inView delay={i * 0.08} className="h-full">
+              <div className="h-full rounded-xl border border-border bg-card p-5 transition-colors hover:border-foreground/30">
+                <h3 className="text-sm font-semibold tracking-tight text-foreground">
+                  {item.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {item.desc}
+                </p>
+              </div>
+            </BlurFade>
           ))}
         </div>
       </div>

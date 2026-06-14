@@ -1,4 +1,5 @@
 import type { GalleryData } from "@/lib/types"
+import { BlurFade } from "@/components/ui/blur-fade"
 
 const DEFAULT_IMAGES: { src: string; alt?: string }[] = [
   {
@@ -51,8 +52,10 @@ export function BlockGallery({ data }: { data: GalleryData }) {
           {images.map((img, i) => {
             const src = img.src?.trim()
             return (
-              <div
+              <BlurFade
                 key={i}
+                inView
+                delay={i * 0.06}
                 className="group relative aspect-square overflow-hidden bg-black"
               >
                 {src ? (
@@ -68,7 +71,7 @@ export function BlockGallery({ data }: { data: GalleryData }) {
                   </div>
                 )}
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-              </div>
+              </BlurFade>
             )
           })}
         </div>

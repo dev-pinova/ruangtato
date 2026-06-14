@@ -257,7 +257,7 @@ export interface DbBlock {
   block_id: string
   type: string
   order: number
-  content: any
+  content: Record<string, unknown>
 }
 
 export function mapBlocksToDbBlocks(blocks: Block[]): DbBlock[] {

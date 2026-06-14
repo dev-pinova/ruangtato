@@ -5,6 +5,11 @@ import {
   requirePlatformApiPermission,
 } from "@/lib/admin/admin-auth"
 import { setStudioTrusted } from "@/lib/admin/admin-staff-service"
+import { parseJsonBody, z } from "@/lib/validation"
+
+const TrustedSchema = z.object({
+  isTrusted: z.boolean({ message: "isTrusted harus boolean." }),
+})
 
 export async function PATCH(
   request: Request,
@@ -18,18 +23,9 @@ export async function PATCH(
   if (!isPlatformApiUser(authResult)) return authResult
 
   const { id } = await params
-  const body = await request.json().catch(() => null)
-  if (!body || typeof body !== "object") {
-    return NextResponse.json({ error: "Invalid body" }, { status: 400 })
-  }
-
-  const isTrusted = (body as { isTrusted?: unknown }).isTrusted
-  if (typeof isTrusted !== "boolean") {
-    return NextResponse.json(
-      { error: "isTrusted harus boolean." },
-      { status: 400 },
-    )
-  }
+  const parsed = await parseJsonBody(request, TrustedSchema)
+  if (!parsed.ok) return parsed.response
+  const { isTrusted } = parsed.data
 
   try {
     const data = await setStudioTrusted({

@@ -43,6 +43,7 @@ export function AuditLogPanel() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- legitimate data fetch on mount; loadLogs sets loading state before fetching
     loadLogs()
   }, [])
 

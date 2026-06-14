@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { Building2, ExternalLink, RefreshCw } from "lucide-react"
+import { Building2, ExternalLink } from "lucide-react"
 import { toast } from "sonner"
 
 import {
@@ -113,6 +113,7 @@ export function StudiosPanel({
   }, [page, q, status, sort])
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- legitimate data fetch on mount; loader sets loading state before fetching
     void loadStudios()
   }, [loadStudios])
 

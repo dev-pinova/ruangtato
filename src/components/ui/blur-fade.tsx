@@ -6,10 +6,6 @@ import { cn } from "@/lib/utils"
 interface BlurFadeProps {
   children: React.ReactNode
   className?: string
-  variant?: {
-    hidden: { y: number; opacity: number; filter: string }
-    visible: { y: number; opacity: number; filter: string }
-  }
   duration?: number
   delay?: number
   offset?: number
@@ -19,15 +15,9 @@ interface BlurFadeProps {
   blur?: string
 }
 
-const defaultVariant = {
-  hidden: { y: 6, opacity: 0, filter: "blur(6px)" },
-  visible: { y: -6, opacity: 1, filter: "blur(0px)" },
-}
-
 export function BlurFade({
   children,
   className,
-  variant,
   duration = 0.4,
   delay = 0,
   offset = 6,

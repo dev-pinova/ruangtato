@@ -6,28 +6,18 @@ import {
   requirePlatformApiPermission,
 } from "@/lib/admin/admin-auth"
 import { checkRateLimit } from "@/lib/admin/admin-rate-limit"
-import {
-  isSuspensionReasonCategory,
-  type SuspensionReasonCategory,
-} from "@/lib/admin/suspension-types"
+import { isSuspensionReasonCategory } from "@/lib/admin/suspension-types"
+import { parseJsonBody, z } from "@/lib/validation"
 
-function parseReason(body: unknown): string | null {
-  if (!body || typeof body !== "object") return null
-  const reason = (body as { reason?: unknown }).reason
-  if (typeof reason !== "string") return null
-  const trimmed = reason.trim()
-  if (trimmed.length < 10) return null
-  return trimmed
-}
-
-function parseReasonCategory(body: unknown): SuspensionReasonCategory | null {
-  if (!body || typeof body !== "object") return null
-  const category = (body as { reasonCategory?: unknown }).reasonCategory
-  if (typeof category !== "string" || !isSuspensionReasonCategory(category)) {
-    return null
-  }
-  return category
-}
+const SuspendSchema = z.object({
+  reasonCategory: z
+    .string()
+    .refine(isSuspensionReasonCategory, "Kategori alasan wajib dipilih."),
+  reason: z
+    .string()
+    .transform((v) => v.trim())
+    .refine((v) => v.length >= 10, "Alasan suspend wajib diisi (min. 10 karakter)."),
+})
 
 export async function POST(
   request: Request,
@@ -49,22 +39,9 @@ export async function POST(
   }
 
   const { id } = await params
-  const body = await request.json().catch(() => null)
-  const reasonCategory = parseReasonCategory(body)
-  if (!reasonCategory) {
-    return NextResponse.json(
-      { error: "Kategori alasan wajib dipilih." },
-      { status: 400 },
-    )
-  }
-
-  const reason = parseReason(body)
-  if (!reason) {
-    return NextResponse.json(
-      { error: "Alasan suspend wajib diisi (min. 10 karakter)." },
-      { status: 400 },
-    )
-  }
+  const parsed = await parseJsonBody(request, SuspendSchema)
+  if (!parsed.ok) return parsed.response
+  const { reason, reasonCategory } = parsed.data
 
   try {
     const result = await suspendStudio({

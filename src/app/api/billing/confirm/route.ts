@@ -7,6 +7,12 @@ import {
 import { isMidtransConfigured } from "@/lib/billing/midtrans"
 import { auth } from "@/lib/auth/auth"
 import { getStudioForUser, getStudioSuspendedFlagForUser } from "@/lib/studio/studio-service"
+import { parseJsonBody, z } from "@/lib/validation"
+
+const ConfirmSchema = z.object({
+  orderId: z.string().trim().min(1, "orderId is required").max(100),
+  planType: z.string().trim().min(1, "planType is required").max(40),
+})
 
 export async function POST(request: Request) {
   const session = await auth.api.getSession({ headers: request.headers })
@@ -30,20 +36,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Studio not found" }, { status: 404 })
   }
 
-  const body = await request.json().catch(() => null)
-  if (!body || typeof body !== "object") {
-    return NextResponse.json({ error: "Invalid request body" }, { status: 400 })
-  }
-
-  const orderId = typeof body.orderId === "string" ? body.orderId.trim() : ""
-  const planType = typeof body.planType === "string" ? body.planType.trim() : ""
-
-  if (!orderId || !planType) {
-    return NextResponse.json(
-      { error: "orderId and planType are required" },
-      { status: 400 },
-    )
-  }
+  const parsed = await parseJsonBody(request, ConfirmSchema)
+  if (!parsed.ok) return parsed.response
+  const { orderId, planType } = parsed.data
 
   try {
     const result = await confirmOrderPayment({

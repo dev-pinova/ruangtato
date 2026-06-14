@@ -6,15 +6,14 @@ import {
   requirePlatformApiPermission,
 } from "@/lib/admin/admin-auth"
 import { checkRateLimit } from "@/lib/admin/admin-rate-limit"
+import { parseJsonBody, z } from "@/lib/validation"
 
-function parseReason(body: unknown): string | null {
-  if (!body || typeof body !== "object") return null
-  const reason = (body as { reason?: unknown }).reason
-  if (typeof reason !== "string") return null
-  const trimmed = reason.trim()
-  if (trimmed.length < 10) return null
-  return trimmed
-}
+const ReactivateSchema = z.object({
+  reason: z
+    .string()
+    .transform((v) => v.trim())
+    .refine((v) => v.length >= 10, "Alasan reactivate wajib diisi (min. 10 karakter)."),
+})
 
 export async function POST(
   request: Request,
@@ -36,14 +35,9 @@ export async function POST(
   }
 
   const { id } = await params
-  const body = await request.json().catch(() => null)
-  const reason = parseReason(body)
-  if (!reason) {
-    return NextResponse.json(
-      { error: "Alasan reactivate wajib diisi (min. 10 karakter)." },
-      { status: 400 },
-    )
-  }
+  const parsed = await parseJsonBody(request, ReactivateSchema)
+  if (!parsed.ok) return parsed.response
+  const { reason } = parsed.data
 
   try {
     const result = await reactivateStudio({

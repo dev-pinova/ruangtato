@@ -1,6 +1,6 @@
 import { db } from "../src/db"
 import { user } from "../src/db/auth-schema"
-import { studios, studioMemberships, subscriptions, invoices, payments, auditLogs, suspensionLogs, leads } from "../src/db/schema"
+import { studios, subscriptions, invoices, payments } from "../src/db/schema"
 import { eq, or, sql } from "drizzle-orm"
 
 async function search() {
@@ -30,12 +30,12 @@ async function search() {
   try {
     const matchedStudios = await db.select().from(studios).where(
       or(
-        eq(studios.id, queryStr as any),
+        eq(studios.id, queryStr),
         eq(studios.slug, queryStr)
       )
     )
     if (matchedStudios.length > 0) console.log("Found in studios:", matchedStudios)
-  } catch (e) {
+  } catch {
     // Ignore cast error if UUID doesn't match string format
   }
 
@@ -43,37 +43,37 @@ async function search() {
   try {
     const subs = await db.select().from(subscriptions).where(
       or(
-        eq(subscriptions.id, queryStr as any),
+        eq(subscriptions.id, queryStr),
         eq(subscriptions.midtransOrderId, queryStr)
       )
     )
     if (subs.length > 0) console.log("Found in subscriptions:", subs)
-  } catch (e) {
+  } catch {
   }
 
   // 4. Check invoices
   try {
     const invs = await db.select().from(invoices).where(
       or(
-        eq(invoices.id, queryStr as any),
+        eq(invoices.id, queryStr),
         eq(invoices.midtransOrderId, queryStr)
       )
     )
     if (invs.length > 0) console.log("Found in invoices:", invs)
-  } catch (e) {
+  } catch {
   }
 
   // 5. Check payments
   try {
     const pmts = await db.select().from(payments).where(
       or(
-        eq(payments.id, queryStr as any),
+        eq(payments.id, queryStr),
         eq(payments.orderId, queryStr),
         eq(payments.transactionId, queryStr)
       )
     )
     if (pmts.length > 0) console.log("Found in payments:", pmts)
-  } catch (e) {
+  } catch {
   }
 
   // 6. Generic check in all tables / columns via SQL search
@@ -91,7 +91,7 @@ async function search() {
         FROM information_schema.columns 
         WHERE table_schema = 'public' AND table_name = ${table} AND data_type IN ('character varying', 'text', 'uuid')
       `)
-      const columns = res.rows.map((row: any) => row.column_name)
+      const columns = res.rows.map((row: Record<string, unknown>) => row.column_name as string)
       if (columns.length > 0) {
         const conditions = columns.map((col: string) => `CAST("${col}" AS text) = '${queryStr}'`).join(" OR ")
         const query = sql.raw(`SELECT * FROM "${table}" WHERE ${conditions}`)

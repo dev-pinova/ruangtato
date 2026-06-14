@@ -123,6 +123,7 @@ export function TenantsPanel({ canSuspend = false }: { canSuspend?: boolean }) {
   }, [page, q, studioStatus, subscriptionStatus, planType, city, sort])
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- legitimate data fetch on mount; loader sets loading state before fetching
     void loadTenants()
   }, [loadTenants])
 

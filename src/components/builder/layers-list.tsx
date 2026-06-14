@@ -138,6 +138,7 @@ export function LayersList({
   const [dndReady, setDndReady] = useState(false)
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- client-only mount flag to defer DnD setup until after hydration
     setDndReady(true)
   }, [])
 

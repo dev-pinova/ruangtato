@@ -1,7 +1,19 @@
 "use client"
 
-import React, { useEffect, useRef, useState } from "react"
+import React, { useEffect, useRef } from "react"
 import { cn } from "@/lib/utils"
+
+type Circle = {
+  x: number
+  y: number
+  translateX: number
+  translateY: number
+  alpha: number
+  targetAlpha: number
+  dx: number
+  dy: number
+  magnet: number
+}
 
 interface ParticlesProps {
   className?: string
@@ -17,8 +29,6 @@ interface ParticlesProps {
 export const Particles = ({
   className,
   quantity = 30,
-  staticity = 50,
-  ease = 50,
   size = 0.6,
   color = "#ffffff",
   vx = 0,
@@ -27,23 +37,9 @@ export const Particles = ({
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const canvasContainerRef = useRef<HTMLDivElement>(null)
   const context = useRef<CanvasRenderingContext2D | null>(null)
-  const circle = useRef<any[]>([])
-  const mouse = useRef<{ x: number; y: number }>({ x: 0, y: 0 })
+  const circle = useRef<Circle[]>([])
   const canvasSize = useRef<{ w: number; h: number }>({ w: 0, h: 0 })
   const dpr = typeof window !== "undefined" ? window.devicePixelRatio : 1
-
-  useEffect(() => {
-    if (canvasRef.current) {
-      context.current = canvasRef.current.getContext("2d")
-    }
-    initCanvas()
-    animate()
-    window.addEventListener("resize", initCanvas)
-
-    return () => {
-      window.removeEventListener("resize", initCanvas)
-    }
-  }, [color])
 
   const initCanvas = () => {
     resizeCanvas()
@@ -93,7 +89,7 @@ export const Particles = ({
     }
   }
 
-  const drawCircle = (circleArgs: any, update = false) => {
+  const drawCircle = (circleArgs: Circle) => {
     if (context.current) {
       const { x, y, translateX, translateY, alpha } = circleArgs
       context.current.save()
@@ -128,7 +124,7 @@ export const Particles = ({
   const animate = () => {
     if (context.current) {
       context.current.clearRect(0, 0, canvasSize.current.w, canvasSize.current.h)
-      circle.current.forEach((circleArgs: any, i: number) => {
+      circle.current.forEach((circleArgs: Circle) => {
         // Handle border overlap
         if (circleArgs.x < 0 || circleArgs.x > canvasSize.current.w) {
           circleArgs.dx = -circleArgs.dx
@@ -143,6 +139,20 @@ export const Particles = ({
       requestAnimationFrame(animate)
     }
   }
+
+  useEffect(() => {
+    if (canvasRef.current) {
+      context.current = canvasRef.current.getContext("2d")
+    }
+    initCanvas()
+    animate()
+    window.addEventListener("resize", initCanvas)
+
+    return () => {
+      window.removeEventListener("resize", initCanvas)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- re-init only on color change to preserve original animation lifecycle
+  }, [color])
 
   return (
     <div

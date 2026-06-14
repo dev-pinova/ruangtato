@@ -4,6 +4,7 @@ import { useMemo, useState } from "react"
 
 import { MarketingShell } from "@/components/marketing/marketing-shell"
 import { ShowcaseHero } from "@/components/showcase/hero"
+import { ShowcaseValueProps } from "@/components/showcase/value-props"
 import { FilterBar } from "@/components/showcase/filter-bar"
 import { StudioGrid } from "@/components/showcase/studio-grid"
 import type { Studio } from "@/lib/types"
@@ -68,6 +69,7 @@ export function ShowcasePage({
         featuredStudios={featuredStudios}
         popularTags={popularTags}
       />
+      <ShowcaseValueProps />
       <FilterBar
         cities={cities}
         sortBy={sortBy}

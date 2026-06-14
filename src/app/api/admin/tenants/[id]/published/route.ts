@@ -8,6 +8,11 @@ import { getDb } from "@/db"
 import { studios } from "@/db/schema"
 import { eq } from "drizzle-orm"
 import { writeAuditLog } from "@/lib/admin/audit-log"
+import { parseJsonBody, z } from "@/lib/validation"
+
+const PublishedSchema = z.object({
+  isPublished: z.boolean({ message: "isPublished harus boolean." }),
+})
 
 export async function PATCH(
   request: Request,
@@ -21,18 +26,9 @@ export async function PATCH(
   if (!isPlatformApiUser(authResult)) return authResult
 
   const { id } = await params
-  const body = await request.json().catch(() => null)
-  if (!body || typeof body !== "object") {
-    return NextResponse.json({ error: "Invalid body" }, { status: 400 })
-  }
-
-  const isPublished = (body as { isPublished?: unknown }).isPublished
-  if (typeof isPublished !== "boolean") {
-    return NextResponse.json(
-      { error: "isPublished harus boolean." },
-      { status: 400 },
-    )
-  }
+  const parsed = await parseJsonBody(request, PublishedSchema)
+  if (!parsed.ok) return parsed.response
+  const { isPublished } = parsed.data
 
   const db = getDb()
 

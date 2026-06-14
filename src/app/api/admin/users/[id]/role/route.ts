@@ -2,13 +2,22 @@ import { NextResponse } from "next/server"
 
 import {
   isPlatformApiUser,
-  isPlatformRole,
   requirePlatformApiPermission,
 } from "@/lib/admin/admin-auth"
 import { getDb } from "@/db"
 import { user } from "@/db/auth-schema"
 import { eq } from "drizzle-orm"
 import { writeAuditLog } from "@/lib/admin/audit-log"
+import { parseJsonBody, z } from "@/lib/validation"
+
+const PLATFORM_ROLES = ["super_admin", "admin", "support", "finance"] as const
+
+// platformRole may be a valid role, or null / "" to revoke the role.
+const RoleSchema = z.object({
+  platformRole: z
+    .union([z.enum(PLATFORM_ROLES), z.null(), z.literal("")])
+    .optional(),
+})
 
 export async function PATCH(
   request: Request,
@@ -31,24 +40,14 @@ export async function PATCH(
     )
   }
 
-  const body = await request.json().catch(() => null)
-  if (!body || typeof body !== "object") {
-    return NextResponse.json({ error: "Invalid body" }, { status: 400 })
-  }
+  const parsed = await parseJsonBody(request, RoleSchema)
+  if (!parsed.ok) return parsed.response
 
-  const platformRole = (body as { platformRole?: unknown }).platformRole
-  
-  // Validate platformRole
-  let finalRole: string | null = null
-  if (platformRole !== null && platformRole !== "") {
-    if (typeof platformRole !== "string" || !isPlatformRole(platformRole)) {
-      return NextResponse.json(
-        { error: "Role tidak valid. Gunakan super_admin, admin, support, atau finance." },
-        { status: 400 },
-      )
-    }
-    finalRole = platformRole
-  }
+  const platformRole = parsed.data.platformRole
+  const finalRole: string | null =
+    platformRole === null || platformRole === undefined || platformRole === ""
+      ? null
+      : platformRole
 
   const db = getDb()
 

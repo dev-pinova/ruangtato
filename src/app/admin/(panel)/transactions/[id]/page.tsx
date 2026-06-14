@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import { eq } from "drizzle-orm"
-import { ArrowLeft, Calendar, CreditCard, DollarSign, FileText, Globe, Hash, Key, Shield, User } from "lucide-react"
+import { ArrowLeft, Calendar, CreditCard, FileText, Globe, Hash, Key, Shield, User } from "lucide-react"
 
 import { getDb } from "@/db"
 import { payments, studios, subscriptions } from "@/db/schema"

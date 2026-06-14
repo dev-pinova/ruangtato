@@ -7,6 +7,19 @@ import { user } from "@/db/auth-schema"
 import { studios, studioMemberships } from "@/db/schema"
 import { auth } from "@/lib/auth/auth"
 import { createStudioForUser } from "@/lib/studio/studio-service"
+import { parseJsonBody, z } from "@/lib/validation"
+
+const RegisterSchema = z.object({
+  name: z.string().trim().min(1, "Nama wajib diisi").max(120),
+  email: z.string().trim().email("Email tidak valid").max(254),
+  password: z.string().min(8, "Password minimal 8 karakter").max(200),
+  studioName: z.string().trim().min(1, "Nama studio wajib diisi").max(120),
+  city: z.string().trim().min(1, "Kota wajib diisi").max(80),
+  waNumber: z
+    .string()
+    .transform((v) => v.replace(/[^\d]/g, ""))
+    .refine((v) => v.length >= 8 && v.length <= 15, "Nomor WhatsApp tidak valid"),
+})
 
 function getErrorMessage(error: unknown): string {
   if (error instanceof APIError) {
@@ -60,25 +73,9 @@ export async function POST(request: Request) {
     )
   }
 
-  const body = await request.json().catch(() => ({}))
-  const name = typeof body.name === "string" ? body.name.trim() : ""
-  const email = typeof body.email === "string" ? body.email.trim() : ""
-  const password = typeof body.password === "string" ? body.password : ""
-  const studioName = typeof body.studioName === "string" ? body.studioName.trim() : ""
-  const city = typeof body.city === "string" ? body.city.trim() : ""
-  const waNumber =
-    typeof body.waNumber === "string" ? body.waNumber.replace(/[^\d]/g, "") : ""
-
-  if (!name || !email || !password || !studioName || !city || !waNumber) {
-    return NextResponse.json(
-      {
-        error:
-          "Nama, email, password, nomor WhatsApp, kota, dan nama studio wajib diisi.",
-      },
-      { status: 400 },
-    )
-  }
-
+  const parsed = await parseJsonBody(request, RegisterSchema)
+  if (!parsed.ok) return parsed.response
+  const { name, email, password, studioName, city, waNumber } = parsed.data
   try {
     const db = getDb()
 

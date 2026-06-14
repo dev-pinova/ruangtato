@@ -14,9 +14,12 @@ const ALLOWED_MIME_TYPES = new Set([
   "image/png",
   "image/webp",
   "image/gif",
-  "image/svg+xml",
   "image/avif",
 ])
+
+// NOTE: SVG (image/svg+xml) is intentionally NOT allowed. SVG files can embed
+// <script> and event handlers, so serving user-uploaded SVGs inline is an XSS
+// vector. Use raster formats only.
 
 /** File extensions we consider safe for images. */
 const ALLOWED_EXTENSIONS = new Set([
@@ -25,7 +28,6 @@ const ALLOWED_EXTENSIONS = new Set([
   ".png",
   ".webp",
   ".gif",
-  ".svg",
   ".avif",
 ])
 
@@ -61,7 +63,7 @@ export function validateUploadedFile(file: File): UploadValidationError[] {
   if (!ALLOWED_MIME_TYPES.has(file.type)) {
     errors.push({
       field: "file",
-      message: `Tipe file "${file.type || "unknown"}" tidak diizinkan. Gunakan JPG, PNG, WebP, GIF, SVG, atau AVIF.`,
+      message: `Tipe file "${file.type || "unknown"}" tidak diizinkan. Gunakan JPG, PNG, WebP, GIF, atau AVIF.`,
     })
   }
 

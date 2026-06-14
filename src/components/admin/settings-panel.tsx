@@ -75,6 +75,7 @@ export function SettingsPanel() {
   }, [])
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- legitimate data fetch on mount; loader sets loading state before fetching
     void loadStaff()
   }, [loadStaff])
 

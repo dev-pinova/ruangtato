@@ -11,6 +11,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Particles } from "@/components/ui/particles"
+import { BorderBeam } from "@/components/ui/border-beam"
 import { authClient } from "@/lib/auth/auth-client"
 
 function LoginForm() {
@@ -47,13 +49,15 @@ function LoginForm() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="w-full max-w-sm">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4">
+      <Particles className="absolute inset-0 z-0" quantity={30} ease={80} color="var(--brand-scarlet)" />
+      <div className="relative z-10 w-full max-w-sm">
         <div className="mb-8 flex justify-center">
           <PlatformLogo variant="auth" />
         </div>
 
-        <div className="rounded-xl border border-border bg-card p-6 md:p-8">
+        <div className="relative overflow-hidden rounded-xl border border-border bg-card p-6 md:p-8">
+          <BorderBeam size={180} duration={14} />
           <PageHeading
             size="sm"
             align="center"

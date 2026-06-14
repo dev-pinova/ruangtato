@@ -3,6 +3,13 @@ import { NextResponse } from "next/server"
 import { isDatabaseConfigured } from "@/db"
 import { auth } from "@/lib/auth/auth"
 import { createStudioForUser, getStudioForUser, getStudioSuspendedFlagForUser } from "@/lib/studio/studio-service"
+import { parseJsonBody, z } from "@/lib/validation"
+
+const StudioRegisterSchema = z.object({
+  studioName: z.string().trim().min(1, "studioName is required").max(120),
+  city: z.string().trim().min(1).max(80).optional(),
+  waNumber: z.string().optional(),
+})
 
 export async function POST(request: Request) {
   if (!isDatabaseConfigured()) {
@@ -30,17 +37,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ studio: existing })
   }
 
-  const body = await request.json().catch(() => ({}))
-  const studioName = typeof body.studioName === "string" ? body.studioName.trim() : ""
+  const parsed = await parseJsonBody(request, StudioRegisterSchema)
+  if (!parsed.ok) return parsed.response
 
-  if (!studioName) {
-    return NextResponse.json({ error: "studioName is required" }, { status: 400 })
-  }
+  const studioName = parsed.data.studioName
 
   try {
-    const city = typeof body.city === "string" ? body.city.trim() : "Jakarta"
-    const waNumber =
-      typeof body.waNumber === "string" ? body.waNumber.replace(/[^\d]/g, "") : ""
+    const city = parsed.data.city?.trim() || "Jakarta"
+    const waNumber = parsed.data.waNumber
+      ? parsed.data.waNumber.replace(/[^\d]/g, "")
+      : ""
 
     const studio = await createStudioForUser({
       userId: session.user.id,

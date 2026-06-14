@@ -24,6 +24,9 @@ npm run db:push
 npm run auth:migrate
 ```
 
+For local development, `db:push` syncs the schema directly. For production, use
+versioned migrations instead — see [Database migrations](#database-migrations).
+
 ### 3. Run app
 
 ```bash
@@ -48,11 +51,44 @@ Creates published demo studios at `/app/studio/demo-studio-1`, etc.
 | `npm run dev` | Development server |
 | `npm run build` | Production build (standalone) |
 | `npm run start` | Start production server |
-| `npm run db:push` | Push Drizzle schema to PostgreSQL |
+| `npm run db:push` | Push Drizzle schema directly (dev only) |
+| `npm run db:generate` | Generate a versioned SQL migration from schema changes |
+| `npm run db:migrate` | Apply pending migrations (production-safe) |
 | `npm run auth:migrate` | Better Auth tables migration |
 | `node scripts/seed-studios.mjs N` | Seed N demo studios |
 | `npm run admin:seed` | Assign `super_admin` ke `PLATFORM_ADMIN_EMAIL` |
 | `npm run admin:backfill-payments` | Backfill histori invoice ke tabel `payments` |
+
+## Database migrations
+
+Two workflows are supported:
+
+- **Local development** — `npm run db:push` syncs the schema straight to your
+  local database. Fast, but no history and not safe for shared/production data.
+- **Production** — versioned SQL migrations in `./drizzle`:
+  1. After editing `src/db/schema.ts`, run `npm run db:generate` to create a new
+     timestamped SQL file in `./drizzle`.
+  2. Review the generated SQL, commit it.
+  3. Run `npm run db:migrate` (in CI or on the server) to apply pending
+     migrations. Drizzle records applied migrations in
+     `drizzle.__drizzle_migrations` and skips ones already run.
+
+### Baseline adoption (existing databases)
+
+`drizzle/0000_baseline.sql` is a full snapshot of the current schema. A fresh
+database can apply it directly with `npm run db:migrate`.
+
+A database that was originally created with `db:push` already has these tables,
+so applying the `0000` baseline as-is would fail on `CREATE TABLE`. To adopt
+migrations on such a database **without recreating tables**, run the baseline
+helper once — it records the current migrations as already applied (matching
+Drizzle's SHA256 hashing) without executing their SQL:
+
+```bash
+npm run db:baseline
+```
+
+After that, only new migrations (`0001+`) will be applied by `npm run db:migrate`.
 
 ## Docker / Coolify
 

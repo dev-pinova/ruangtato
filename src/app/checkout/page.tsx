@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation"
-import { ShieldCheck, CreditCard, Lock, CheckCircle2, AlertCircle } from "lucide-react"
+import { ShieldCheck, Lock, CheckCircle2, AlertCircle } from "lucide-react"
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 import { SubscribeButton } from "@/components/billing/subscribe-button"

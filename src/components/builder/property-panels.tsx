@@ -28,11 +28,6 @@ import type {
   FinalCTAData,
   FooterData,
   HeaderOverlayLink,
-  HeroSlide,
-  ArtistItem,
-  StatItem,
-  ServiceCard,
-  GalleryImage,
 } from "@/lib/types"
 
 const inputClass = ""

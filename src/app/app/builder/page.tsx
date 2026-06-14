@@ -1,7 +1,7 @@
 import type { ReactNode } from "react"
 import Link from "next/link"
 import { redirect } from "next/navigation"
-import { ArrowLeft, Lock, ShieldAlert } from "lucide-react"
+import { ArrowLeft, ShieldAlert } from "lucide-react"
 import { eq } from "drizzle-orm"
 
 import { PlatformLogo } from "@/components/brand/platform-logo"
@@ -66,8 +66,8 @@ export default async function BuilderPage() {
     p.transactionStatus === "capture" ||
     p.transactionStatus === "success" ||
     (p.rawPayload && typeof p.rawPayload === "object" &&
-      ((p.rawPayload as Record<string, any>).transaction_status === "settlement" ||
-       (p.rawPayload as Record<string, any>).transaction_status === "capture")
+      ((p.rawPayload as Record<string, unknown>).transaction_status === "settlement" ||
+       (p.rawPayload as Record<string, unknown>).transaction_status === "capture")
     )
   )
 

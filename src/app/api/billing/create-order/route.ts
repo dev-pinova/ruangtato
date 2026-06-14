@@ -9,6 +9,11 @@ import {
 } from "@/lib/billing/midtrans"
 import { recordPendingPayment } from "@/lib/billing/payment-service"
 import { getStudioForUser, getStudioSuspendedFlagForUser } from "@/lib/studio/studio-service"
+import { parseJsonBody, z } from "@/lib/validation"
+
+const CreateOrderSchema = z.object({
+  planType: z.enum(["1month", "3months", "6months", "12months"]).default("1month"),
+})
 
 export async function POST(request: Request) {
   const session = await auth.api.getSession({ headers: request.headers })
@@ -32,8 +37,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Studio not found" }, { status: 404 })
   }
 
-  const body = await request.json().catch(() => ({}))
-  const planType = typeof body.planType === "string" ? body.planType : "1month"
+  const parsed = await parseJsonBody(request, CreateOrderSchema)
+  if (!parsed.ok) return parsed.response
+  const planType = parsed.data.planType
   const plan = PLAN_CATALOG[planType]
 
   if (!plan) {

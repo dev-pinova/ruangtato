@@ -5,6 +5,8 @@ import { eq } from "drizzle-orm"
 import {
   isMidtransConfigured,
   verifyNotificationSignature,
+  isSuccessfulPayment,
+  amountsMatchPlan,
   type MidtransNotificationPayload,
   PLAN_CATALOG,
 } from "@/lib/billing/midtrans"
@@ -47,7 +49,7 @@ export async function POST(request: Request) {
   }
 
   // 1. DETEKSI STATUS SUKSES (HANDLING CREDIT CARD & QRIS) & STATUS GAGAL
-  const isSuccess = transaction_status === 'settlement' || transaction_status === 'capture'
+  const isSuccess = isSuccessfulPayment(body)
   const isFailed = ['deny', 'expire', 'cancel'].includes(transaction_status)
 
   console.log(`[WEBHOOK: MIDTRANS] Detection - isSuccess: ${isSuccess}, isFailed: ${isFailed}`)
@@ -79,6 +81,8 @@ export async function POST(request: Request) {
     }
 
     try {
+      let alreadyProcessed = false
+      let amountMismatch = false
       await dbInstance.transaction(async (tx) => {
         console.log(`[WEBHOOK: MIDTRANS] Transaction started for Order ID: ${orderId}`)
 
@@ -87,15 +91,47 @@ export async function POST(request: Request) {
         // - Ubah transaction_status menjadi 'settlement'.
         // - Isi paid_at = new Date().
         // - Ambil studio_id dari baris pembayaran ini jika di custom_field_1 kosong.
+        // FOR UPDATE locks the existing payment row so two concurrent duplicate
+        // notifications serialize here: the first flips status to 'success' and
+        // commits, the second then sees 'success' and hits the idempotency guard.
+        // (A brand-new order has no row to lock, but payments.orderId is UNIQUE,
+        // so a racing second insert fails and Midtrans retries into the guard.)
         const [existingPayment] = await tx
-          .select({ studioId: payments.studioId, subscriptionId: payments.subscriptionId })
+          .select({
+            studioId: payments.studioId,
+            subscriptionId: payments.subscriptionId,
+            transactionStatus: payments.transactionStatus,
+          })
           .from(payments)
           .where(eq(payments.orderId, orderId))
           .limit(1)
+          .for("update")
+
+        // IDEMPOTENCY GUARD: a replayed success notification must not re-run
+        // activation or re-extend subscription expiry. If this order is already
+        // marked successful, acknowledge and stop without mutating anything.
+        if (existingPayment && existingPayment.transactionStatus === 'success') {
+          console.log(`[WEBHOOK: MIDTRANS] Duplicate success notification ignored for Order ID: ${orderId} (already processed)`)
+          alreadyProcessed = true
+          return
+        }
 
         const finalStudioId = studioIdFromCustom || existingPayment?.studioId
         if (!finalStudioId) {
           throw new Error(`Studio ID could not be resolved from metadata or existing payments for Order ID: ${orderId}`)
+        }
+
+        // AMOUNT VERIFICATION: when the buyer declared a plan in metadata, the
+        // paid gross amount MUST equal that plan's catalog price. A mismatch is
+        // a tampering signal — record nothing, do not grant access. We still
+        // return 200 (handled below) so Midtrans stops retrying.
+        if (planTypeFromCustom && !amountsMatchPlan(planTypeFromCustom, grossAmountStr)) {
+          console.warn(
+            `[WEBHOOK: MIDTRANS] SECURITY: amount mismatch for Order ID: ${orderId}. ` +
+              `Plan=${planTypeFromCustom}, expected=${PLAN_CATALOG[planTypeFromCustom]?.amount}, received=${grossAmountStr}. Activation refused.`
+          )
+          amountMismatch = true
+          return
         }
 
         console.log(`[WEBHOOK: MIDTRANS] Updating payment for Order ID: ${orderId}. Studio ID: ${finalStudioId}`)
@@ -139,28 +175,26 @@ export async function POST(request: Request) {
         // - Jika pembayaran ini terhubung dengan paket langganan, buat atau perbarui data di tabel subscriptions.
         // - Setel status menjadi 'active'.
         // - Setel tanggal mulai (starts_at = new Date()).
-        // - Hitung tanggal berakhir (ends_at): Jika planType adalah '6months' atau nominal sekitar Rp 449.000, tambahkan 6 bulan dari sekarang. Jika '12months' atau Rp 799.000, tambahkan 12 bulan dari sekarang.
+        // - Hitung tanggal berakhir (expires_at) dari PLAN_CATALOG[planType].months.
         const startsAt = new Date()
         const expiresAt = new Date(startsAt)
 
+        // Resolve plan: prefer the metadata planType (already amount-verified
+        // above when present). Fall back to a catalog lookup by gross amount so
+        // legacy/no-metadata orders still resolve a known plan.
         let resolvedPlanType = planTypeFromCustom
-        if (resolvedPlanType === '6months' || grossAmount === 449000) {
-          expiresAt.setMonth(expiresAt.getMonth() + 6)
-          resolvedPlanType = '6months'
-        } else if (resolvedPlanType === '12months' || grossAmount === 799000) {
-          expiresAt.setMonth(expiresAt.getMonth() + 12)
-          resolvedPlanType = '12months'
-        } else {
-          // Fallback based on other plans in catalog
-          const catalogPlan = resolvedPlanType ? PLAN_CATALOG[resolvedPlanType] : undefined
-          const monthsToAdd = catalogPlan ? catalogPlan.months : (grossAmount === 249000 ? 3 : grossAmount === 99000 ? 1 : 1)
-          expiresAt.setMonth(expiresAt.getMonth() + monthsToAdd)
-          if (!resolvedPlanType) {
-            resolvedPlanType = grossAmount === 249000 ? '3months' : grossAmount === 99000 ? '1month' : '1month'
-          }
+        if (!resolvedPlanType || !PLAN_CATALOG[resolvedPlanType]) {
+          const matchedPlan = Object.keys(PLAN_CATALOG).find(
+            (plan) => PLAN_CATALOG[plan].amount === grossAmount
+          )
+          resolvedPlanType = matchedPlan ?? resolvedPlanType ?? '1month'
         }
 
-        console.log(`[WEBHOOK: MIDTRANS] Duration calculation: Plan=${resolvedPlanType}, Starts=${startsAt.toISOString()}, Expires=${expiresAt.toISOString()}`)
+        // Duration is derived solely from the catalog, never from raw amounts.
+        const months = PLAN_CATALOG[resolvedPlanType]?.months ?? 1
+        expiresAt.setMonth(expiresAt.getMonth() + months)
+
+        console.log(`[WEBHOOK: MIDTRANS] Duration calculation: Plan=${resolvedPlanType}, Months=${months}, Starts=${startsAt.toISOString()}, Expires=${expiresAt.toISOString()}`)
 
         const [existingSub] = await tx
           .select({ id: subscriptions.id })
@@ -208,6 +242,14 @@ export async function POST(request: Request) {
           .set({ subscriptionId: subId })
           .where(eq(payments.orderId, orderId))
       })
+
+      if (alreadyProcessed) {
+        return NextResponse.json({ message: "Already processed" }, { status: 200 })
+      }
+
+      if (amountMismatch) {
+        return NextResponse.json({ message: "Amount mismatch logged" }, { status: 200 })
+      }
 
       console.log(`[WEBHOOK: MIDTRANS] DB transaction successfully committed for Order ID: ${orderId}`)
       return NextResponse.json({ message: "Transaction processed successfully" }, { status: 200 })

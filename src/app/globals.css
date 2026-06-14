@@ -409,3 +409,34 @@
   color: var(--brand-scarlet-hover);
 }
 
+/* ============================================================
+   Accessibility: respect prefers-reduced-motion
+   ------------------------------------------------------------
+   Neutralizes non-essential animation/transition for users who
+   request reduced motion. Keeps content visible (no stuck
+   opacity:0 / off-screen states) so in-view reveal animations
+   degrade gracefully to plain visible content.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Magic UI / decorative continuous effects: stop entirely. */
+  .animate-marquee,
+  .animate-marquee-vertical,
+  .animate-shiny-text,
+  .animate-ripple,
+  .animate-gradient,
+  .animate-border-beam,
+  .animate-shimmer,
+  .animate-grid {
+    animation: none !important;
+  }
+}
+

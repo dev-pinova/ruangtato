@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { AnimatePresence, motion, Variants } from "framer-motion"
+import { AnimatePresence, motion, useReducedMotion, Variants } from "framer-motion"
 import { cn } from "@/lib/utils"
 
 interface GradualSpacingProps {
@@ -23,12 +23,16 @@ export function GradualSpacing({
   },
 }: GradualSpacingProps) {
   const [mounted, setMounted] = useState(false)
+  const prefersReducedMotion = useReducedMotion()
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- client-only mount flag to avoid SSR/animation hydration mismatch
     setMounted(true)
   }, [])
 
-  if (!mounted) {
+  // Render plain text before hydration (good for LCP) and when the user
+  // prefers reduced motion (skip the letter-by-letter animation entirely).
+  if (!mounted || prefersReducedMotion) {
     return <span className={className}>{text}</span>
   }
 

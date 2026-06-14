@@ -221,6 +221,7 @@ export function AdminShell({
   const initials = getInitials(user.name)
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- close mobile nav on route change; pathname is an external (router) signal
     setMobileOpen(false)
   }, [pathname])
 

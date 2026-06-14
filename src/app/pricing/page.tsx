@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { ShimmerButton } from "@/components/ui/shimmer-button"
 import { Particles } from "@/components/ui/particles"
+import { BorderBeam } from "@/components/ui/border-beam"
 import { SUBSCRIPTION_PLANS } from "@/lib/billing/billing-plans"
 import { staticPageMetadata } from "@/lib/seo"
 import { SUPPORT_EMAIL } from "@/lib/site"
@@ -65,7 +66,7 @@ export default function PricingPage() {
       </section>
 
       <section className="relative border-b border-border bg-background overflow-hidden">
-        <Particles className="absolute inset-0 z-0" quantity={80} ease={80} color="#ffffff" />
+        <Particles className="absolute inset-0 z-0" quantity={40} ease={80} color="#ffffff" />
         <div className="relative z-10 mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-20">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {SUBSCRIPTION_PLANS.map((plan) => (
@@ -73,13 +74,16 @@ export default function PricingPage() {
                 key={plan.id}
                 className={cn(
                   "relative flex flex-col rounded-xl border bg-card p-6",
-                  plan.popular ? "border-primary/40" : "border-border"
+                  plan.popular ? "border-primary/40 overflow-hidden" : "border-border"
                 )}
               >
                 {plan.popular && (
-                  <span className="absolute -top-3 left-6 inline-flex items-center rounded-full bg-primary px-2.5 py-0.5 text-[10px] font-medium text-primary-foreground">
-                    Populer
-                  </span>
+                  <>
+                    <BorderBeam size={220} duration={12} />
+                    <span className="absolute right-4 top-4 inline-flex items-center rounded-full bg-primary px-2.5 py-0.5 text-[10px] font-medium text-primary-foreground">
+                      Populer
+                    </span>
+                  </>
                 )}
 
                 <h3 className="text-base font-semibold tracking-tight text-foreground">

@@ -1,13 +1,28 @@
 import { NextResponse } from "next/server"
 import { cookies } from "next/headers"
 
+import { checkRateLimit } from "@/lib/admin/admin-rate-limit"
 import { incrementStudioViewCount } from "@/lib/studio/studio-service"
 
+function getClientIp(request: Request): string {
+  const forwarded = request.headers.get("x-forwarded-for")
+  if (forwarded) return forwarded.split(",")[0]!.trim()
+  return request.headers.get("x-real-ip")?.trim() || "unknown"
+}
+
 export async function POST(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id: slug } = await params
+
+  // Cookie dedup below handles normal browsers; this IP cap is a second layer
+  // against bots/scripts that drop cookies to inflate the view count.
+  const ip = getClientIp(request)
+  const rate = checkRateLimit(`track-view:${ip}:${slug}`, 10, 60_000)
+  if (!rate.allowed) {
+    return NextResponse.json({ ok: true, throttled: true })
+  }
 
   try {
     const cookieStore = await cookies()

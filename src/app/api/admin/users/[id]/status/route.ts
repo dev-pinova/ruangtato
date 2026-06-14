@@ -8,6 +8,13 @@ import { getDb } from "@/db"
 import { user, session } from "@/db/auth-schema"
 import { eq } from "drizzle-orm"
 import { writeAuditLog } from "@/lib/admin/audit-log"
+import { parseJsonBody, z } from "@/lib/validation"
+
+const StatusSchema = z.object({
+  status: z.enum(["active", "suspended"], {
+    message: "Status harus 'active' atau 'suspended'.",
+  }),
+})
 
 export async function PATCH(
   request: Request,
@@ -30,18 +37,9 @@ export async function PATCH(
     )
   }
 
-  const body = await request.json().catch(() => null)
-  if (!body || typeof body !== "object") {
-    return NextResponse.json({ error: "Invalid body" }, { status: 400 })
-  }
-
-  const statusVal = (body as { status?: unknown }).status
-  if (statusVal !== "active" && statusVal !== "suspended") {
-    return NextResponse.json(
-      { error: "Status harus 'active' atau 'suspended'." },
-      { status: 400 },
-    )
-  }
+  const parsed = await parseJsonBody(request, StatusSchema)
+  if (!parsed.ok) return parsed.response
+  const statusVal = parsed.data.status
 
   const db = getDb()
 

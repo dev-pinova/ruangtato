@@ -65,6 +65,7 @@ function ProfilStudioTab({
 
   useEffect(() => {
     if (!studio) return
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- sync editable form fields when the studio prop loads/changes
     setName(studio.name)
     setSlug(studio.slug)
     setCity(studio.city)

@@ -33,7 +33,7 @@ import { BlockFooter } from "@/components/blocks/footer"
 import { BlockLeadForm } from "@/components/blocks/lead-form"
 import { StudioTracker } from "@/components/studio/studio-tracker"
 import { FloatingWhatsAppButton } from "@/components/studio/floating-whatsapp"
-import type { AppointmentFormData, BlockType, Studio } from "@/lib/types"
+import type { AppointmentFormData, BlockType } from "@/lib/types"
 
 export const revalidate = 300
 

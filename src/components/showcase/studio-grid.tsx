@@ -5,6 +5,7 @@ import Link from "next/link"
 import { ArrowRight, BadgeCheck } from "lucide-react"
 
 import { BlurFade } from "@/components/ui/blur-fade"
+import { MagicSpotlight } from "@/components/ui/magic-spotlight"
 import { LaurelWreath } from "@/components/showcase/laurel-wreath"
 import { VerifiedCheck } from "@/components/showcase/verified-check"
 import { Button } from "@/components/ui/button"
@@ -33,6 +34,7 @@ export function StudioGrid({
   const query = searchQuery.toLowerCase()
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- reset pagination to collapsed view whenever filter/sort inputs change
     setShowAll(false)
   }, [searchQuery, sortBy, trustedOnly, selectedCity])
 
@@ -133,6 +135,7 @@ function StudioCard({ studio }: { studio: Studio }) {
       rel="noopener noreferrer"
       className="group relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-border bg-card transition-shadow duration-300 hover:shadow-md"
     >
+      <MagicSpotlight size={260} />
       <div className="relative overflow-hidden bg-muted w-full aspect-square">
         {studio.image && (
           /* eslint-disable-next-line @next/next/no-img-element */
@@ -171,7 +174,7 @@ function StudioCard({ studio }: { studio: Studio }) {
         </div>
       </div>
 
-      <div className="flex flex-col justify-between p-6 w-full flex-1">
+      <div className="relative z-10 flex flex-col justify-between p-6 w-full flex-1">
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-2.5">
             {avatarSrc && (

@@ -1,6 +1,26 @@
 import { NextResponse } from "next/server"
 
+import { checkRateLimit } from "@/lib/admin/admin-rate-limit"
 import { createStudioLead } from "@/lib/studio/studio-service"
+import { parseJsonBody, z } from "@/lib/validation"
+
+const LeadSchema = z.object({
+  name: z.string().trim().min(1, "name is required").max(120),
+  message: z.string().trim().min(1, "message is required").max(2000),
+  email: z
+    .string()
+    .trim()
+    .max(254)
+    .email("email is not valid")
+    .optional()
+    .or(z.literal("").transform(() => undefined)),
+})
+
+function getClientIp(request: Request): string {
+  const forwarded = request.headers.get("x-forwarded-for")
+  if (forwarded) return forwarded.split(",")[0]!.trim()
+  return request.headers.get("x-real-ip")?.trim() || "unknown"
+}
 
 export async function POST(
   request: Request,
@@ -8,21 +28,19 @@ export async function POST(
 ) {
   const { id: slug } = await params
 
-  const body = await request.json().catch(() => null)
-  if (!body || typeof body.name !== "string" || typeof body.message !== "string") {
+  // Public, unauthenticated endpoint — rate limit per IP+studio to curb spam.
+  const ip = getClientIp(request)
+  const rate = checkRateLimit(`lead:${ip}:${slug}`, 5, 60_000)
+  if (!rate.allowed) {
     return NextResponse.json(
-      { error: "name and message are required" },
-      { status: 400 },
+      { error: `Terlalu banyak permintaan. Coba lagi dalam ${rate.retryAfterSec} detik.` },
+      { status: 429 },
     )
   }
 
-  const name = body.name.trim()
-  const message = body.message.trim()
-  const email = typeof body.email === "string" ? body.email.trim() : undefined
-
-  if (!name || !message) {
-    return NextResponse.json({ error: "name and message are required" }, { status: 400 })
-  }
+  const parsed = await parseJsonBody(request, LeadSchema)
+  if (!parsed.ok) return parsed.response
+  const { name, message, email } = parsed.data
 
   try {
     const lead = await createStudioLead({ slug, name, email, message })

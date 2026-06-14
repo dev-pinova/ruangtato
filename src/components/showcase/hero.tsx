@@ -6,7 +6,6 @@ import { ArrowRight, ChevronRight, Search, Sparkles } from "lucide-react"
 import { AnimatedGradientText } from "@/components/ui/animated-gradient-text"
 import { AnimatedShinyText } from "@/components/ui/animated-shiny-text"
 import { Marquee } from "@/components/ui/marquee"
-import { Ripple } from "@/components/ui/ripple"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
@@ -71,15 +70,6 @@ export function ShowcaseHero({
         <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/30 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60" />
         <RetroGrid className="opacity-20 z-0" />
-      </div>
-
-      {/* Ripple accent — subtle, bottom-right corner */}
-      <div className="pointer-events-none absolute -bottom-20 -right-20 z-0 opacity-20">
-        <Ripple
-          mainCircleSize={160}
-          mainCircleOpacity={0.15}
-          numCircles={5}
-        />
       </div>
 
       {/* Main content */}

@@ -124,6 +124,7 @@ export const payments = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
+    index("payments_studio_id_idx").on(table.studioId),
     index("payments_transaction_status_idx").on(table.transactionStatus),
     index("payments_created_at_idx").on(table.createdAt),
   ],
@@ -141,21 +142,28 @@ export const auditLogs = pgTable(
     metadata: jsonb("metadata").$type<Record<string, unknown>>(),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => [index("audit_logs_created_at_idx").on(table.createdAt)],
+  (table) => [
+    index("audit_logs_actor_user_id_idx").on(table.actorUserId),
+    index("audit_logs_created_at_idx").on(table.createdAt),
+  ],
 ).enableRLS()
 
-export const suspensionLogs = pgTable("suspension_logs", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  actorUserId: text("actor_user_id").notNull(),
-  studioId: uuid("studio_id")
-    .notNull()
-    .references(() => studios.id, { onDelete: "cascade" }),
-  statusBefore: text("status_before").notNull(),
-  statusAfter: text("status_after").notNull(),
-  reasonCategory: text("reason_category"),
-  reason: text("reason").notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-}).enableRLS()
+export const suspensionLogs = pgTable(
+  "suspension_logs",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    actorUserId: text("actor_user_id").notNull(),
+    studioId: uuid("studio_id")
+      .notNull()
+      .references(() => studios.id, { onDelete: "cascade" }),
+    statusBefore: text("status_before").notNull(),
+    statusAfter: text("status_after").notNull(),
+    reasonCategory: text("reason_category"),
+    reason: text("reason").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index("suspension_logs_studio_id_idx").on(table.studioId)],
+).enableRLS()
 
 export const leads = pgTable(
   "leads",
@@ -171,6 +179,7 @@ export const leads = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
+    index("leads_studio_id_idx").on(table.studioId),
     check("leads_status_check", sql`${table.status} IN ('new', 'read', 'replied')`),
   ],
 ).enableRLS()

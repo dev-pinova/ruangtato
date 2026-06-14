@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, type DragEvent, type ChangeEvent } from "react"
-import { Upload, Trash2, Image as ImageIcon, Loader2, Link as LinkIcon, AlertCircle } from "lucide-react"
+import { Upload, Trash2, Loader2, Link as LinkIcon, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
