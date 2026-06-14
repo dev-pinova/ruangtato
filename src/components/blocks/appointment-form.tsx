@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { ArrowRight, Check, CheckCircle } from "lucide-react"
 
 import { normalizeGoogleMapsEmbedUrl } from "@/lib/google-maps-embed"
@@ -24,6 +24,7 @@ export function BlockAppointmentForm({
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const errorRef = useRef<HTMLParagraphElement>(null)
 
   const requireAge = data?.requireAge !== false
   const ageLabel = data?.ageLabel || "Are you 18 years old?"
@@ -40,6 +41,7 @@ export function BlockAppointmentForm({
     if (!name.trim() || !message.trim()) return
     if (requireAge && !ageOk) {
       setError("Mohon konfirmasi bahwa Anda berusia 18 tahun atau lebih.")
+      requestAnimationFrame(() => errorRef.current?.focus())
       return
     }
 
@@ -62,6 +64,7 @@ export function BlockAppointmentForm({
     if (!res.ok) {
       const body = await res.json().catch(() => ({}))
       setError(body.error ?? "Gagal mengirim pesan.")
+      requestAnimationFrame(() => errorRef.current?.focus())
       return
     }
 
@@ -129,6 +132,8 @@ export function BlockAppointmentForm({
                 value={name}
                 onChange={setName}
                 required
+                name="name"
+                autoComplete="name"
                 placeholder="Your full name"
               />
               <Field
@@ -136,6 +141,8 @@ export function BlockAppointmentForm({
                 type="email"
                 value={email}
                 onChange={setEmail}
+                name="email"
+                autoComplete="email"
                 placeholder="email@example.com"
               />
             </div>
@@ -150,8 +157,14 @@ export function BlockAppointmentForm({
 
             {requireAge && (
               <label className="flex cursor-pointer select-none items-center gap-3 border-y border-white/10 py-5">
+                <input
+                  type="checkbox"
+                  checked={ageOk}
+                  onChange={(e) => setAgeOk(e.target.checked)}
+                  className="peer sr-only"
+                />
                 <span
-                  className={`relative inline-flex size-5 shrink-0 items-center justify-center border ${
+                  className={`relative inline-flex size-5 shrink-0 items-center justify-center border peer-focus-visible:ring-2 peer-focus-visible:ring-white peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-black ${
                     ageOk
                       ? "border-white bg-white text-black"
                       : "border-white/40"
@@ -159,12 +172,6 @@ export function BlockAppointmentForm({
                 >
                   {ageOk && <Check className="size-3.5" strokeWidth={3} />}
                 </span>
-                <input
-                  type="checkbox"
-                  checked={ageOk}
-                  onChange={(e) => setAgeOk(e.target.checked)}
-                  className="sr-only"
-                />
                 <span className="font-display text-xs uppercase tracking-[0.32em] text-white/80">
                   {ageLabel}
                 </span>
@@ -172,7 +179,12 @@ export function BlockAppointmentForm({
             )}
 
             {error && (
-              <p className="text-xs uppercase tracking-[0.2em] text-red-400">
+              <p
+                ref={errorRef}
+                tabIndex={-1}
+                aria-live="assertive"
+                className="text-xs uppercase tracking-[0.2em] text-red-400 focus:outline-none"
+              >
                 {error}
               </p>
             )}
@@ -260,6 +272,8 @@ function Field({
   type = "text",
   required,
   placeholder,
+  name,
+  autoComplete,
 }: {
   label: string
   value: string
@@ -267,6 +281,8 @@ function Field({
   type?: string
   required?: boolean
   placeholder?: string
+  name?: string
+  autoComplete?: string
 }) {
   return (
     <label className="block">
@@ -279,6 +295,8 @@ function Field({
         value={value}
         required={required}
         placeholder={placeholder}
+        name={name}
+        autoComplete={autoComplete}
         onChange={(e) => onChange(e.target.value)}
         className="mt-3 block w-full border-0 border-b border-white/20 bg-transparent py-2.5 text-sm text-white placeholder:text-white/30 focus:border-white focus:outline-none"
       />

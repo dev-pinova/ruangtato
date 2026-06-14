@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { Send, CheckCircle } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -21,6 +21,7 @@ export function BlockLeadForm({
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const errorRef = useRef<HTMLParagraphElement>(null)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -45,6 +46,7 @@ export function BlockLeadForm({
     if (!res.ok) {
       const body = await res.json().catch(() => ({}))
       setError(body.error ?? "Gagal mengirim pesan.")
+      requestAnimationFrame(() => errorRef.current?.focus())
       return
     }
 
@@ -92,6 +94,7 @@ export function BlockLeadForm({
             <Input
               id="lead-name"
               placeholder="Nama lengkap Anda"
+              autoComplete="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -106,6 +109,7 @@ export function BlockLeadForm({
               id="lead-email"
               type="email"
               placeholder="email@contoh.com"
+              autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -123,11 +127,20 @@ export function BlockLeadForm({
             />
           </div>
 
-          {error && <p className="text-sm text-destructive">{error}</p>}
+          {error && (
+            <p
+              ref={errorRef}
+              tabIndex={-1}
+              aria-live="assertive"
+              className="text-sm text-destructive focus:outline-none"
+            >
+              {error}
+            </p>
+          )}
 
           <Button type="submit" className="w-full" disabled={loading}>
             <Send className="size-4" data-icon="inline-start" />
-            {loading ? "Mengirim..." : "Kirim Pesan"}
+            {loading ? "Mengirim…" : "Kirim Pesan"}
           </Button>
         </form>
       </div>

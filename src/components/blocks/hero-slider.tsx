@@ -53,6 +53,9 @@ export function BlockHeroSlider({
           <img
             src={slide.image}
             alt=""
+            width={1600}
+            height={900}
+            fetchPriority="high"
             className="h-full w-full object-cover"
             key={active}
           />
@@ -63,7 +66,7 @@ export function BlockHeroSlider({
 
       {/* Content */}
       <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center justify-center px-6 pb-24 pt-40 text-center md:pb-32 md:pt-44">
-        <h1 className="font-display text-5xl font-light uppercase tracking-[0.18em] text-white md:text-7xl lg:text-8xl">
+        <h1 className="font-display text-5xl font-light uppercase tracking-[0.18em] text-white text-pretty md:text-7xl lg:text-8xl">
           {slide.headline}
         </h1>
         {slide.subheadline && (

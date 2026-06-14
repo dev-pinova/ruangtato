@@ -43,7 +43,10 @@ export function BlockFinalCTA({
               <ArrowRight className="size-4" />
             </a>
           ) : (
-            <button className="inline-flex h-11 items-center justify-center gap-1.5 rounded-md bg-primary px-6 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
+            <button
+              type="button"
+              className="inline-flex h-11 items-center justify-center gap-1.5 rounded-md bg-primary px-6 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            >
               {ctaText}
               <ArrowRight className="size-4" />
             </button>

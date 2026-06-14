@@ -36,7 +36,7 @@ export function BlockHero({
     <section className="border-b border-border bg-background">
       <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-20 md:grid-cols-2 md:gap-16 md:px-6 md:py-28">
         <div>
-          <h1 className="text-4xl font-semibold tracking-tight text-foreground md:text-5xl lg:text-6xl">
+          <h1 className="text-4xl font-semibold tracking-tight text-foreground text-pretty md:text-5xl lg:text-6xl">
             {headline}
           </h1>
           <p className="mt-5 text-base leading-relaxed text-muted-foreground md:text-lg">
@@ -74,7 +74,7 @@ export function BlockHero({
               </button>
             )}
             <Link
-              href="#portfolio"
+              href="#gallery"
               className="inline-flex h-10 items-center justify-center rounded-md border border-border bg-background px-5 text-sm font-medium text-foreground transition-colors hover:bg-muted/60"
             >
               Lihat Portofolio
@@ -91,6 +91,9 @@ export function BlockHero({
                 "https://images.unsplash.com/photo-1565058379802-bbe93b2f703a?q=80&w=1200&auto=format&fit=crop"
               }
               alt="Studio Portfolio"
+              width={1200}
+              height={1500}
+              fetchPriority="high"
               className="aspect-[4/5] w-full object-cover"
             />
           </div>

@@ -31,7 +31,10 @@ export function BlockNewsletter({ data }: { data: NewsletterData }) {
         )}
 
         {done ? (
-          <div className="mx-auto mt-12 inline-flex items-center gap-3 border border-white/30 px-8 py-4 font-display text-[11px] uppercase tracking-[0.4em] text-white">
+          <div
+            aria-live="polite"
+            className="mx-auto mt-12 inline-flex items-center gap-3 border border-white/30 px-8 py-4 font-display text-[11px] uppercase tracking-[0.4em] text-white"
+          >
             <Check className="size-4" />
             Subscribed
           </div>
@@ -43,9 +46,12 @@ export function BlockNewsletter({ data }: { data: NewsletterData }) {
             <input
               type="email"
               required
+              name="email"
+              autoComplete="email"
+              aria-label="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder={data?.placeholder || "Enter your email"}
+              placeholder={data?.placeholder || "Enter your email…"}
               className="flex-1 border border-white/20 bg-transparent px-6 py-3 font-display text-xs uppercase tracking-[0.2em] text-white placeholder:text-white/30 focus:border-white focus:outline-none"
             />
             <button

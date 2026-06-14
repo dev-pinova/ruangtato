@@ -44,7 +44,10 @@ export function BlockFooter({ data }: { data: FooterData }) {
             </h2>
 
             {done ? (
-              <div className="mx-auto mt-10 inline-flex items-center gap-3 border border-white/30 px-8 py-4 font-display text-[11px] uppercase tracking-[0.4em] text-white">
+              <div
+                aria-live="polite"
+                className="mx-auto mt-10 inline-flex items-center gap-3 border border-white/30 px-8 py-4 font-display text-[11px] uppercase tracking-[0.4em] text-white"
+              >
                 <Check className="size-4" />
                 Subscribed
               </div>
@@ -56,6 +59,9 @@ export function BlockFooter({ data }: { data: FooterData }) {
                 <input
                   type="email"
                   required
+                  name="email"
+                  autoComplete="email"
+                  aria-label="Email"
                   value={emailValue}
                   onChange={(e) => setEmailValue(e.target.value)}
                   placeholder={newsletterPlaceholder}
@@ -133,7 +139,7 @@ export function BlockFooter({ data }: { data: FooterData }) {
           </div>
 
           <div className="mt-16 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-8 text-[10px] uppercase tracking-[0.32em] text-white/40 md:flex-row">
-            <p>
+            <p suppressHydrationWarning>
               © {new Date().getFullYear()} {title}. All Rights Reserved.
             </p>
             <p>Powered By Ruang Tato</p>

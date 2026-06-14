@@ -63,10 +63,13 @@ export function BlockGallery({ data }: { data: GalleryData }) {
                   <img
                     src={src}
                     alt={img.alt || `Gallery image ${i + 1}`}
-                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    width={900}
+                    height={900}
+                    loading="lazy"
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 motion-reduce:transition-none"
                   />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-zinc-900 text-xs uppercase tracking-widest text-white/30">
+                  <div className="flex h-full w-full items-center justify-center bg-muted text-xs uppercase tracking-widest text-muted-foreground">
                     Tambah URL gambar
                   </div>
                 )}

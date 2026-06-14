@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Menu, X } from "lucide-react"
 
 import type { HeaderOverlayData, HeaderOverlayLink } from "@/lib/types"
@@ -34,6 +34,30 @@ function NavLink({ link }: { link: HeaderOverlayLink }) {
  */
 export function BlockHeaderOverlay({ data }: { data: HeaderOverlayData }) {
   const [open, setOpen] = useState(false)
+  const toggleRef = useRef<HTMLButtonElement>(null)
+  const drawerNavRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+
+    const firstLink = drawerNavRef.current?.querySelector<HTMLAnchorElement>("a")
+    ;(firstLink ?? drawerNavRef.current)?.focus()
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setOpen(false)
+        toggleRef.current?.focus()
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown)
+    return () => document.removeEventListener("keydown", handleKeyDown)
+  }, [open])
+
+  function closeDrawer() {
+    setOpen(false)
+    toggleRef.current?.focus()
+  }
 
   const leftLinks = data?.leftLinks?.length ? data.leftLinks : DEFAULT_LEFT
   const rightLinks = data?.rightLinks?.length ? data.rightLinks : DEFAULT_RIGHT
@@ -86,10 +110,13 @@ export function BlockHeaderOverlay({ data }: { data: HeaderOverlayData }) {
           {logoText}
         </a>
         <button
+          ref={toggleRef}
           type="button"
           onClick={() => setOpen((v) => !v)}
           className="inline-flex size-10 items-center justify-center rounded-full border border-white/20 text-white md:hidden"
           aria-label={open ? "Tutup menu" : "Buka menu"}
+          aria-expanded={open}
+          aria-controls="mobile-nav"
         >
           {open ? <X className="size-4" /> : <Menu className="size-4" />}
         </button>
@@ -99,12 +126,17 @@ export function BlockHeaderOverlay({ data }: { data: HeaderOverlayData }) {
       {open && (
         <div className="md:hidden">
           <div className="border-y border-white/10 bg-black/85 backdrop-blur-md">
-            <nav className="mx-auto flex max-w-7xl flex-col gap-1 px-6 py-4">
+            <nav
+              ref={drawerNavRef}
+              id="mobile-nav"
+              tabIndex={-1}
+              className="mx-auto flex max-w-7xl flex-col gap-1 px-6 py-4"
+            >
               {[...leftLinks, ...rightLinks].map((link, i) => (
                 <a
                   key={i}
                   href={link.href || "#"}
-                  onClick={() => setOpen(false)}
+                  onClick={closeDrawer}
                   className="block py-3 font-display text-xs uppercase tracking-[0.32em] text-white/80 transition-colors hover:text-white"
                 >
                   {link.label}
@@ -112,7 +144,7 @@ export function BlockHeaderOverlay({ data }: { data: HeaderOverlayData }) {
               ))}
               <button
                 type="button"
-                onClick={() => setOpen(false)}
+                onClick={closeDrawer}
                 className="mt-2 inline-flex items-center justify-center gap-2 self-start rounded-full border border-white/20 px-4 py-2 text-[10px] uppercase tracking-[0.32em] text-white/70"
               >
                 <X className="size-3" />

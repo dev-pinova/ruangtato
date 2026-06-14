@@ -1,7 +1,23 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, useSyncExternalStore } from "react"
 import { cn } from "@/lib/utils"
+
+const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)"
+
+function subscribeReducedMotion(callback: () => void) {
+  const mq = window.matchMedia(REDUCED_MOTION_QUERY)
+  mq.addEventListener("change", callback)
+  return () => mq.removeEventListener("change", callback)
+}
+
+function usePrefersReducedMotion() {
+  return useSyncExternalStore(
+    subscribeReducedMotion,
+    () => window.matchMedia(REDUCED_MOTION_QUERY).matches,
+    () => false,
+  )
+}
 
 interface BlurFadeProps {
   children: React.ReactNode
@@ -28,9 +44,10 @@ export function BlurFade({
 }: BlurFadeProps) {
   const ref = useRef<HTMLDivElement>(null)
   const [isVisible, setIsVisible] = useState(!inView)
+  const reducedMotion = usePrefersReducedMotion()
 
   useEffect(() => {
-    if (!inView) return
+    if (!inView || reducedMotion) return
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -47,7 +64,7 @@ export function BlurFade({
     }
 
     return () => observer.disconnect()
-  }, [inView, inViewMargin])
+  }, [inView, inViewMargin, reducedMotion])
 
   const getTranslate = () => {
     if (direction === "up") return `0, ${offset}px`
@@ -57,12 +74,14 @@ export function BlurFade({
     return `0, ${offset}px`
   }
 
-  const styles: React.CSSProperties = {
-    transition: `opacity ${duration}s ease ${delay}s, transform ${duration}s ease ${delay}s, filter ${duration}s ease ${delay}s`,
-    opacity: isVisible ? 1 : 0,
-    transform: isVisible ? "translate(0, 0)" : `translate(${getTranslate()})`,
-    filter: isVisible ? "blur(0px)" : `blur(${blur})`,
-  }
+  const styles: React.CSSProperties = reducedMotion
+    ? { opacity: 1 }
+    : {
+        transition: `opacity ${duration}s ease ${delay}s, transform ${duration}s ease ${delay}s, filter ${duration}s ease ${delay}s`,
+        opacity: isVisible ? 1 : 0,
+        transform: isVisible ? "translate(0, 0)" : `translate(${getTranslate()})`,
+        filter: isVisible ? "blur(0px)" : `blur(${blur})`,
+      }
 
   return (
     <div ref={ref} className={cn(className)} style={styles}>
