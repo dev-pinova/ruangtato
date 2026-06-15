@@ -17,5 +17,10 @@ export { AdminPageHeaderV2 } from "./admin-page-header-v2"
 export { AdminPageToolbar } from "./admin-page-toolbar"
 export { AdminPagination } from "./admin-pagination"
 export { AdminPanel, AdminPanelInset } from "./admin-panel"
+export {
+  AdminRoleBadge,
+  roleBadgeClass,
+  roleLabel,
+} from "./admin-role-badge"
 export { AdminSectionCard } from "./admin-section-card"
 export { AdminStatusBadge } from "./admin-status-badge"

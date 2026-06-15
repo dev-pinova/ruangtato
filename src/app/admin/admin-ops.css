@@ -7,11 +7,22 @@
   --primary-foreground: oklch(0.12 0 0);
   --ring: oklch(0.92 0 0 / 40%);
 
-  /* Semantic status (badges / metric strip only) */
-  --admin-success: oklch(0.72 0.17 145);
-  --admin-warning: oklch(0.75 0.15 75);
-  --admin-error: oklch(0.65 0.2 25);
-  --admin-info: oklch(0.7 0.1 250);
+  /* Semantic status — single source of truth.
+     Override the global status tokens with admin-tuned (slightly muted,
+     enterprise) values so `text-success`, `bg-warning/10`, etc. resolve
+     consistently inside the admin scope. */
+  --success: oklch(0.72 0.17 145);
+  --warning: oklch(0.75 0.15 75);
+  --destructive: oklch(0.65 0.2 25);
+  --info: oklch(0.7 0.1 250);
+
+  /* Back-compat aliases — `--admin-*` now point at the global tokens so
+     existing inline `var(--admin-*)` usages stay in sync. Prefer the
+     global tokens (success/warning/destructive/info) in new code. */
+  --admin-success: var(--success);
+  --admin-warning: var(--warning);
+  --admin-error: var(--destructive);
+  --admin-info: var(--info);
 
   /* Surface ladder */
   --sidebar: oklch(0.06 0 0);

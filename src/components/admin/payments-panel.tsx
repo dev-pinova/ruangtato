@@ -15,6 +15,7 @@ import {
   AdminPanelInset,
   AdminStatusBadge,
 } from "@/components/admin/ui"
+import { ADMIN_PAGE_SIZE } from "@/lib/admin/admin-constants"
 import {
   Select,
   SelectContent,
@@ -63,7 +64,7 @@ export function PaymentsPanel() {
   const [detailOpen, setDetailOpen] = useState(false)
   const [detailLoading, setDetailLoading] = useState(false)
 
-  const totalPages = useMemo(() => Math.max(1, Math.ceil(total / 20)), [total])
+  const totalPages = useMemo(() => Math.max(1, Math.ceil(total / ADMIN_PAGE_SIZE)), [total])
 
   const statusCounts = useMemo(() => {
     const pending = rows.filter((r) => r.transactionStatus === "pending").length
@@ -76,7 +77,7 @@ export function PaymentsPanel() {
 
   const loadPayments = useCallback(async () => {
     setLoading(true)
-    const params = new URLSearchParams({ page: String(page), limit: "20", sort })
+    const params = new URLSearchParams({ page: String(page), limit: String(ADMIN_PAGE_SIZE), sort })
     if (q.trim()) params.set("q", q.trim())
     if (status) params.set("status", status)
 
