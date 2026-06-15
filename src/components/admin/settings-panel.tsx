@@ -159,7 +159,7 @@ export function SettingsPanel() {
         <AdminPanelInset>
           <div className="flex items-center gap-2">
             <UserCog className="size-5 text-muted-foreground" aria-hidden />
-            <h2 className="text-lg font-semibold">Staff internal</h2>
+            <h2 className="text-sm font-medium">Staff internal</h2>
           </div>
         </AdminPanelInset>
 
@@ -271,7 +271,7 @@ export function SettingsPanel() {
         <AdminPanelInset>
           <div className="flex items-center gap-2">
             <ShieldCheck className="size-5 text-muted-foreground" aria-hidden />
-            <h2 className="text-lg font-semibold">Trusted badge studio</h2>
+            <h2 className="text-sm font-medium">Trusted badge studio</h2>
           </div>
           <p className="mt-1 text-sm text-muted-foreground">
             Cari studio lalu toggle trusted badge untuk verifikasi di showcase.

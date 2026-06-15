@@ -12,14 +12,16 @@ import {
 } from "lucide-react"
 
 import {
+  AdminDataTable,
+  AdminKpiCard,
   AdminLineChart,
   AdminPageHeaderV2,
   AdminPanel,
+  AdminStatusBadge,
+  type AdminTableColumn,
 } from "@/components/admin/ui"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
-import { BorderBeam } from "@/components/ui/border-beam"
-import { cn } from "@/lib/utils"
 import type { PlatformRole } from "@/lib/admin/admin-auth"
 
 type AnalyticsKpis = {
@@ -65,6 +67,8 @@ type AuditRow = {
   targetId: string
   createdAt: string
 }
+
+type LatestSubscription = AnalyticsPayload["latestSubscriptions"][number]
 
 function formatIDR(amount: number) {
   return `Rp ${amount.toLocaleString("id-ID")}`
@@ -161,6 +165,46 @@ export function AdminOverviewPanel({
     (action) => !action.roles || action.roles.includes(platformRole),
   )
 
+  const subscriberColumns: AdminTableColumn<LatestSubscription>[] = [
+    {
+      key: "studioName",
+      header: "Studio",
+      cell: (row) => <span className="font-medium text-foreground">{row.studioName}</span>,
+    },
+    {
+      key: "planType",
+      header: "Paket",
+      cell: (row) => <span className="capitalize text-muted-foreground">{row.planType}</span>,
+    },
+    {
+      key: "status",
+      header: "Status",
+      cell: (row) => <AdminStatusBadge status={row.status} />,
+    },
+    {
+      key: "createdAt",
+      header: "Tanggal Daftar",
+      numeric: true,
+      hideOnMobile: true,
+      cell: (row) => (
+        <span className="text-xs text-muted-foreground">
+          {row.createdAt ? formatDate(row.createdAt) : "—"}
+        </span>
+      ),
+    },
+    {
+      key: "expiresAt",
+      header: "Masa Berlaku",
+      numeric: true,
+      hideOnMobile: true,
+      cell: (row) => (
+        <span className="text-xs text-muted-foreground">
+          {row.expiresAt ? formatDate(row.expiresAt) : "—"}
+        </span>
+      ),
+    },
+  ]
+
   return (
     <div className="mx-auto max-w-7xl space-y-6">
       <AdminPageHeaderV2
@@ -168,97 +212,35 @@ export function AdminOverviewPanel({
         description={`Selamat datang, ${userName} (${platformRole.replace("_", " ")}).`}
       />
 
-      {loading ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Skeleton className="h-[180px] lg:col-span-2 lg:row-span-2 rounded-xl bg-card/20" />
-          <Skeleton className="h-[180px] lg:col-span-1 lg:row-span-2 rounded-xl bg-card/20" />
-          <Skeleton className="h-[82px] lg:col-span-1 lg:row-span-1 rounded-xl bg-card/20" />
-          <Skeleton className="h-[82px] lg:col-span-1 lg:row-span-1 rounded-xl bg-card/20" />
-        </div>
-      ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {/* Card 1: Revenue (Bento Hero - spans 2 cols, 2 rows on lg) */}
-          <div className="relative overflow-hidden rounded-xl border border-border bg-card/40 backdrop-blur-md p-6 flex flex-col justify-between min-h-[180px] lg:col-span-2 lg:row-span-2 group hover:border-border transition-all shadow-lg shadow-black/25">
-            <div>
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Total Revenue</span>
-                <div className="flex size-8 items-center justify-center rounded-lg bg-[var(--brand-scarlet)]/10 text-[var(--brand-scarlet)]">
-                  <CreditCard className="size-4" />
-                </div>
-              </div>
-              <div className="mt-4">
-                <h3 className="text-3xl font-extrabold tracking-tight text-foreground tabular-nums">
-                  {formatIDR(kpis?.totalRevenue ?? 0)}
-                </h3>
-                <p className="text-xs text-muted-foreground mt-1.5">
-                  Pendapatan bulan ini: <span className="font-semibold text-foreground">{formatIDR(kpis?.revenueThisMonth ?? 0)}</span>
-                </p>
-              </div>
-            </div>
-            <div className="mt-4 flex items-center justify-between border-t border-border/60 pt-4 text-[10px] text-muted-foreground">
-              <span>GERBANG PEMBAYARAN</span>
-              <span className="text-[var(--admin-success)] flex items-center gap-1.5 font-medium">
-                <span className="size-1.5 rounded-full bg-[var(--admin-success)] animate-pulse" />
-                Midtrans Terkoneksi
-              </span>
-            </div>
-            {/* Premium neon glow BorderBeam */}
-            <BorderBeam size={250} duration={8} borderWidth={1.5} colorFrom="var(--brand-scarlet)" colorTo="transparent" />
-          </div>
-
-          {/* Card 2: Active Subscribers (Tall card - spans 1 col, 2 rows on lg) */}
-          <div className="relative overflow-hidden rounded-xl border border-border bg-card/30 backdrop-blur-xs p-6 flex flex-col justify-between min-h-[180px] lg:col-span-1 lg:row-span-2 group hover:border-border transition-all">
-            <div>
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Active Subscribers</span>
-                <div className="flex size-8 items-center justify-center rounded-lg bg-[var(--admin-info)]/10 text-[var(--admin-info)]">
-                  <Users className="size-4" />
-                </div>
-              </div>
-              <div className="mt-4">
-                <h3 className="text-4xl font-extrabold tracking-tight text-foreground tabular-nums">
-                  {kpis?.activeSubscribers ?? 0}
-                </h3>
-                <p className="text-xs text-muted-foreground mt-1.5">Studio tato yang terdaftar dan memiliki paket langganan aktif.</p>
-              </div>
-            </div>
-            <div className="mt-4 flex items-center justify-between border-t border-border/60 pt-4 text-[10px] text-muted-foreground">
-              <span>TREN PLATFORM</span>
-              <span className="text-[var(--admin-info)] font-medium">Pertumbuhan Stabil</span>
-            </div>
-          </div>
-
-          {/* Card 3: Total Users (Small card - spans 1 col, 1 row on lg) */}
-          <div className="relative overflow-hidden rounded-xl border border-border bg-card/20 p-5 flex flex-col justify-between min-h-[82px] lg:col-span-1 lg:row-span-1 group hover:border-border transition-all">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Total Users</span>
-              <Users className="size-4 text-muted-foreground" />
-            </div>
-            <div className="mt-2 flex items-baseline justify-between">
-              <h3 className="text-2xl font-bold text-foreground tabular-nums">
-                {kpis?.totalUsers ?? 0}
-              </h3>
-              <span className="text-[10px] text-muted-foreground font-mono">Terdaftar</span>
-            </div>
-          </div>
-
-          {/* Card 4: Suspended Tenants (Small card - spans 1 col, 1 row on lg) */}
-          <div className="relative overflow-hidden rounded-xl border border-border bg-card/20 p-5 flex flex-col justify-between min-h-[82px] lg:col-span-1 lg:row-span-1 group hover:border-border transition-all">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Suspended</span>
-              <ShieldBan className={cn("size-4", suspendedCount > 0 ? "text-[var(--admin-error)] animate-pulse" : "text-muted-foreground")} />
-            </div>
-            <div className="mt-2 flex items-baseline justify-between">
-              <h3 className="text-2xl font-bold text-foreground tabular-nums">
-                {suspendedCount}
-              </h3>
-              <span className={cn("text-[9px] font-bold uppercase px-1.5 py-0.5 rounded", suspendedCount > 0 ? "bg-[var(--admin-error)]/10 text-[var(--admin-error)]" : "bg-[var(--admin-success)]/10 text-[var(--admin-success)]")}>
-                {suspendedCount > 0 ? "Perlu Tinjauan" : "Sistem Aman"}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <AdminKpiCard
+          label="Total Revenue"
+          value={formatIDR(kpis?.totalRevenue ?? 0)}
+          icon={CreditCard}
+          delta={`Bulan ini: ${formatIDR(kpis?.revenueThisMonth ?? 0)}`}
+          loading={loading}
+        />
+        <AdminKpiCard
+          label="Active Subscribers"
+          value={(kpis?.activeSubscribers ?? 0).toLocaleString("id-ID")}
+          icon={Users}
+          loading={loading}
+        />
+        <AdminKpiCard
+          label="Total Users"
+          value={(kpis?.totalUsers ?? 0).toLocaleString("id-ID")}
+          icon={Users}
+          loading={loading}
+        />
+        <AdminKpiCard
+          label="Suspended"
+          value={suspendedCount.toLocaleString("id-ID")}
+          icon={ShieldBan}
+          delta={suspendedCount > 0 ? "Perlu tinjauan" : "Sistem aman"}
+          deltaPositive={suspendedCount === 0}
+          loading={loading}
+        />
+      </div>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {visibleActions.map((action) => {
@@ -394,16 +376,7 @@ export function AdminOverviewPanel({
                             <p className="font-medium">{log.studioName}</p>
                             <p className="truncate text-muted-foreground text-[10px]">{log.reason}</p>
                           </div>
-                          <span
-                            className={cn(
-                              "shrink-0 text-[10px] uppercase font-semibold",
-                              log.statusAfter === "suspended"
-                                ? "text-[var(--admin-error)]"
-                                : "text-[var(--admin-success)]",
-                            )}
-                          >
-                            {log.statusAfter}
-                          </span>
+                          <AdminStatusBadge status={log.statusAfter} className="shrink-0" />
                         </li>
                       ))}
                   {recentAudit.length === 0 && recentSuspensions.length === 0 ? (
@@ -421,50 +394,16 @@ export function AdminOverviewPanel({
           <div className="border-b border-border px-4 py-3">
             <h2 className="text-sm font-medium">Pendaftar Langganan Terbaru</h2>
           </div>
-          <div className="p-4 overflow-x-auto">
-            {loading ? (
-              <div className="space-y-4">
-                <Skeleton className="h-8 w-full" />
-                <Skeleton className="h-8 w-full" />
-                <Skeleton className="h-8 w-full" />
-              </div>
-            ) : latestSubs.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Belum ada data pendaftar langganan.</p>
-            ) : (
-              <table className="w-full text-sm text-left">
-                <thead>
-                  <tr className="border-b border-border text-muted-foreground">
-                    <th className="pb-3 font-medium">Studio</th>
-                    <th className="pb-3 font-medium">Paket</th>
-                    <th className="pb-3 font-medium">Status</th>
-                    <th className="pb-3 font-medium">Tanggal Daftar</th>
-                    <th className="pb-3 font-medium">Masa Berlaku</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/60">
-                  {latestSubs.map(sub => (
-                    <tr key={sub.id} className="hover:bg-muted/10 transition-colors">
-                      <td className="py-3 font-medium text-foreground">{sub.studioName}</td>
-                      <td className="py-3 capitalize text-muted-foreground">{sub.planType}</td>
-                      <td className="py-3">
-                        <span className={cn(
-                          "px-2 py-0.5 rounded text-[10px] font-semibold tracking-wide uppercase",
-                          sub.status === "active" ? "bg-[var(--admin-success)]/10 text-[var(--admin-success)]" : "bg-muted text-muted-foreground"
-                        )}>
-                          {sub.status}
-                        </span>
-                      </td>
-                      <td className="py-3 text-muted-foreground tabular-nums text-xs">
-                        {sub.createdAt ? formatDate(sub.createdAt) : "—"}
-                      </td>
-                      <td className="py-3 text-muted-foreground tabular-nums text-xs">
-                        {sub.expiresAt ? formatDate(sub.expiresAt) : "—"}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
+          <div className="p-4">
+            <AdminDataTable
+              columns={subscriberColumns}
+              rows={latestSubs}
+              rowKey={(row) => row.id}
+              loading={loading}
+              emptyIcon={CreditCard}
+              emptyTitle="Belum ada pendaftar langganan"
+              emptyDescription="Pendaftar langganan terbaru akan muncul di sini."
+            />
           </div>
         </AdminPanel>
       </div>
