@@ -38,10 +38,14 @@ import type { AppointmentFormData, BlockType } from "@/lib/types"
 export const revalidate = 300
 
 export async function generateStaticParams() {
-  const published = await listPublishedStudios()
-  return published.map((studio) => ({
-    slug: studio.slug,
-  }))
+  try {
+    const published = await listPublishedStudios()
+    return published.map((studio) => ({
+      slug: studio.slug,
+    }))
+  } catch {
+    return []
+  }
 }
 
 type PageProps = { params: Promise<{ slug: string }> }

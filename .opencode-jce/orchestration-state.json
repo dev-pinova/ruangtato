@@ -1,0 +1,695 @@
+{
+  "version": 2,
+  "updatedAt": "2026-06-15T06:46:12.587Z",
+  "memoryTiers": {
+    "session": {
+      "blockers": [],
+      "pendingPlan": "You are refactoring raw Tailwind color classes to shadcn/ui semantic tokens in a Next.js 16 + Tailwind v4 project at D:\\ruangtato.\n\nThe semantic tokens are ALREADY defined in src/app/globals.css (DO NOT touch globals.css). Available tokens you can use as Tailwind utilities: bg-background, bg-card, b (executing)"
+    },
+    "project": {
+      "conventions": [],
+      "releaseFiles": [],
+      "standardVerification": [],
+      "dangerousAreas": []
+    },
+    "failure": {
+      "knownErrors": [],
+      "badFixes": [],
+      "successfulFixes": []
+    },
+    "operator": {
+      "preferTerseReports": false,
+      "preferAutonomousCompletion": false,
+      "preferBroadVerification": true
+    }
+  },
+  "facts": [
+    {
+      "id": "fact-1781379294342-1qarcx",
+      "key": "build.typecheck",
+      "value": "tsc",
+      "source": "tool",
+      "confidence": 0.9,
+      "discoveredAt": "2026-06-13T19:34:54.339Z"
+    },
+    {
+      "id": "fact-1781379294343-ikg782",
+      "key": "last.error.type",
+      "value": "typescript",
+      "source": "tool",
+      "confidence": 0.9,
+      "discoveredAt": "2026-06-13T19:34:54.343Z"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec-1781367551786-8ckfi5",
+      "description": "Plan created for: You are fixing ESLint ERRORS so `npm run lint` exits 0 in a Next.js 16 + React 19 + TypeScript project. Working directory: D:\\ruangtato. Behavior must NOT change — these are mostly working UI components with NO tests, so be conservative.\n\n## GOAL\n`npm run lint` currently reports 25 errors + 30 warni",
+      "reasoning": "Intent: bugfix (confidence: 0.83), 4 nodes",
+      "alternatives": [],
+      "status": "active",
+      "madeAt": "2026-06-13T16:19:11.786Z"
+    },
+    {
+      "id": "dec-1781468288780-ddryr0",
+      "description": "Plan created for: You are refactoring raw Tailwind color classes to shadcn/ui semantic tokens in a Next.js 16 + Tailwind v4 project at D:\\ruangtato.\n\nThe semantic tokens are ALREADY defined in src/app/globals.css (DO NOT touch globals.css). Available tokens you can use as Tailwind utilities: bg-background, bg-card, b",
+      "reasoning": "Intent: feature (confidence: 0.94), 5 nodes",
+      "alternatives": [],
+      "status": "active",
+      "madeAt": "2026-06-14T20:18:08.779Z"
+    }
+  ],
+  "artifacts": [],
+  "evidence": [],
+  "wisdom": [],
+  "taskLearnings": [],
+  "sessionHistory": [
+    {
+      "id": "session-1781358690675-i22v",
+      "startedAt": "2026-06-13T13:51:30.675Z",
+      "nodesCompleted": 0,
+      "nodesFailed": 0,
+      "endedAt": "2026-06-13T13:59:51.730Z"
+    },
+    {
+      "id": "session-1781360027809-nqex",
+      "startedAt": "2026-06-13T14:13:47.809Z",
+      "nodesCompleted": 0,
+      "nodesFailed": 0,
+      "endedAt": "2026-06-14T18:53:18.142Z"
+    },
+    {
+      "id": "session-1781466037438-v3xv",
+      "startedAt": "2026-06-14T19:40:37.438Z",
+      "nodesCompleted": 0,
+      "nodesFailed": 0,
+      "endedAt": "2026-06-15T06:09:17.838Z"
+    },
+    {
+      "id": "session-1781504217746-ma2n",
+      "startedAt": "2026-06-15T06:16:57.746Z",
+      "nodesCompleted": 0,
+      "nodesFailed": 0,
+      "endedAt": "2026-06-15T06:19:47.709Z"
+    },
+    {
+      "id": "session-1781504476997-rudl",
+      "startedAt": "2026-06-15T06:21:16.997Z",
+      "nodesCompleted": 0,
+      "nodesFailed": 0,
+      "endedAt": "2026-06-15T06:46:12.586Z"
+    }
+  ],
+  "orchestration": {
+    "constraints": [
+      {
+        "id": "con-1781364481089-56em00",
+        "description": "Do NOT change the data model (keep all writes to payments + studios + subscriptions tab",
+        "origin": "user",
+        "active": true,
+        "createdAt": "2026-06-13T15:28:01.089Z"
+      },
+      {
+        "id": "con-1781367551670-2244v3",
+        "description": "must NOT change — these are mostly working UI components with NO tests, so be conservativ",
+        "origin": "user",
+        "active": true,
+        "createdAt": "2026-06-13T16:19:11.670Z"
+      },
+      {
+        "id": "con-1781466241679-5ks05v",
+        "description": "Do NOT write any code. This is research only. Be thorough.",
+        "origin": "user",
+        "active": true,
+        "createdAt": "2026-06-14T19:44:01.678Z"
+      },
+      {
+        "id": "con-1781467482478-pjaxvm",
+        "description": "don't reinvent.** Settings page = Tabs + Card + form controls. Dashboard = Sidebar + C",
+        "origin": "user",
+        "active": true,
+        "createdAt": "2026-06-14T20:04:42.478Z"
+      },
+      {
+        "id": "con-1781468288673-fkbuzi",
+        "description": "DO NOT touch globals.css). Available tokens you can use as Tailwind utilities: bg-backg",
+        "origin": "user",
+        "active": true,
+        "createdAt": "2026-06-14T20:18:08.672Z"
+      },
+      {
+        "id": "con-1781468294660-b40rmv",
+        "description": "DO NOT touch globals.css). Available tokens as Tailwind utilities: bg-background, bg-ca",
+        "origin": "user",
+        "active": true,
+        "createdAt": "2026-06-14T20:18:14.660Z"
+      },
+      {
+        "id": "con-1781481885478-vqntf7",
+        "description": "Do NOT write code.",
+        "origin": "user",
+        "active": true,
+        "createdAt": "2026-06-15T00:04:45.478Z"
+      },
+      {
+        "id": "con-1781483695557-pdcrcg",
+        "description": "Do not modify unrelated files",
+        "origin": "user",
+        "active": true,
+        "createdAt": "2026-06-15T00:34:55.557Z"
+      },
+      {
+        "id": "con-1781483846876-wcmqus",
+        "description": "Do NOT touch any other file (globals.css, admin-ops.css, src/components/admin/ui/* are",
+        "origin": "user",
+        "active": true,
+        "createdAt": "2026-06-15T00:37:26.876Z"
+      },
+      {
+        "id": "con-1781483856384-m1fu6q",
+        "description": "Do NOT touch any other file.",
+        "origin": "user",
+        "active": true,
+        "createdAt": "2026-06-15T00:37:36.384Z"
+      },
+      {
+        "id": "con-1781483866485-xz8ugd",
+        "description": "DO NOT touch any other file (other agents are editing admin-overview-panel.tsx and tran",
+        "origin": "user",
+        "active": true,
+        "createdAt": "2026-06-15T00:37:46.485Z"
+      },
+      {
+        "id": "con-1781495090464-vgif7d",
+        "description": "cannot access '/home/tato/.ssh/id_ed25519.pub': No such file or directory  Ini yang mun",
+        "origin": "user",
+        "active": true,
+        "createdAt": "2026-06-15T03:44:50.463Z"
+      }
+    ],
+    "signals": []
+  },
+  "autonomyLevel": "balanced",
+  "operatorPreferences": {
+    "preferAutonomousCompletion": false,
+    "askBeforeArchitectureChange": true,
+    "preferBroadVerification": true,
+    "preferTerseReports": false,
+    "defaultReleaseStrictness": "medium"
+  },
+  "graph": {
+    "id": "graph-1781468288770-ek2g",
+    "goal": "You are refactoring raw Tailwind color classes to shadcn/ui semantic tokens in a Next.js 16 + Tailwind v4 project at D:\\ruangtato.\n\nThe semantic tokens are ALREADY defined in src/app/globals.css (DO NOT touch globals.css). Available tokens you can use as Tailwind utilities: bg-background, bg-card, b",
+    "status": "executing",
+    "nodes": [
+      {
+        "id": "node-feature-0-kykt",
+        "type": "research",
+        "title": "Understand requirements and codebase",
+        "description": "Understand requirements and codebase for: You are refactoring raw Tailwind color classes to shadcn/ui semantic tokens in a Next.js 16 + Tailwind v4 project at D:\\ruangtato.\n\nThe semantic tokens are ALREADY defined in src/app/globals.css (DO NOT touch globals.css). Available tokens you can use as Tailwind utilities: bg-background, bg-card, b",
+        "agent": "explorer",
+        "status": "ready",
+        "dependencies": [],
+        "input": {
+          "prompt": "Explore the codebase to understand where You are refactoring raw Tailwind color classes to shadcn/ui semantic tokens in a Next.js 16 + Tailwind v4 project at D:\\ruangtato.\n\nThe semantic tokens are ALREADY defined in src/app/globals.css (DO NOT touch globals.css). Available tokens you can use as Tailwind utilities: bg-background, bg-card, b should be implemented. Identify relevant files, patterns, and integration points.",
+          "context": [
+            {
+              "id": "fact-1781379294342-1qarcx",
+              "key": "build.typecheck",
+              "value": "tsc",
+              "source": "tool",
+              "confidence": 0.9,
+              "discoveredAt": "2026-06-13T19:34:54.339Z"
+            },
+            {
+              "id": "fact-1781379294343-ikg782",
+              "key": "last.error.type",
+              "value": "typescript",
+              "source": "tool",
+              "confidence": 0.9,
+              "discoveredAt": "2026-06-13T19:34:54.343Z"
+            }
+          ],
+          "constraints": [
+            {
+              "id": "con-1781364481089-56em00",
+              "description": "Do NOT change the data model (keep all writes to payments + studios + subscriptions tab",
+              "origin": "user",
+              "active": true,
+              "createdAt": "2026-06-13T15:28:01.089Z"
+            },
+            {
+              "id": "con-1781367551670-2244v3",
+              "description": "must NOT change — these are mostly working UI components with NO tests, so be conservativ",
+              "origin": "user",
+              "active": true,
+              "createdAt": "2026-06-13T16:19:11.670Z"
+            },
+            {
+              "id": "con-1781466241679-5ks05v",
+              "description": "Do NOT write any code. This is research only. Be thorough.",
+              "origin": "user",
+              "active": true,
+              "createdAt": "2026-06-14T19:44:01.678Z"
+            },
+            {
+              "id": "con-1781467482478-pjaxvm",
+              "description": "don't reinvent.** Settings page = Tabs + Card + form controls. Dashboard = Sidebar + C",
+              "origin": "user",
+              "active": true,
+              "createdAt": "2026-06-14T20:04:42.478Z"
+            },
+            {
+              "id": "con-1781468288673-fkbuzi",
+              "description": "DO NOT touch globals.css). Available tokens you can use as Tailwind utilities: bg-backg",
+              "origin": "user",
+              "active": true,
+              "createdAt": "2026-06-14T20:18:08.672Z"
+            }
+          ],
+          "skills": [
+            "codebase-intelligence"
+          ]
+        },
+        "evidence": [],
+        "retryPolicy": {
+          "maxRetries": 2,
+          "strategy": [
+            "same",
+            "different_approach",
+            "escalate_user"
+          ],
+          "currentRetry": 0
+        },
+        "priority": 10,
+        "createdAt": "2026-06-14T20:18:08.776Z",
+        "transitionHistory": [],
+        "metadata": {
+          "plannerMode": "fast",
+          "plannerReason": "Speed-weighted objective dominates",
+          "parallelization": "linear-fallback",
+          "parallelFallbackReason": "No strong implementation split verb detected."
+        }
+      },
+      {
+        "id": "node-feature-1-mrh7",
+        "type": "plan",
+        "title": "Design implementation approach",
+        "description": "Design implementation approach for: You are refactoring raw Tailwind color classes to shadcn/ui semantic tokens in a Next.js 16 + Tailwind v4 project at D:\\ruangtato.\n\nThe semantic tokens are ALREADY defined in src/app/globals.css (DO NOT touch globals.css). Available tokens you can use as Tailwind utilities: bg-background, bg-card, b",
+        "agent": "self",
+        "status": "pending",
+        "dependencies": [
+          "node-feature-0-kykt"
+        ],
+        "input": {
+          "prompt": "Design the implementation for: You are refactoring raw Tailwind color classes to shadcn/ui semantic tokens in a Next.js 16 + Tailwind v4 project at D:\\ruangtato.\n\nThe semantic tokens are ALREADY defined in src/app/globals.css (DO NOT touch globals.css). Available tokens you can use as Tailwind utilities: bg-background, bg-card, b. Consider the codebase patterns discovered, define the API surface, and identify edge cases.",
+          "context": [
+            {
+              "id": "fact-1781379294342-1qarcx",
+              "key": "build.typecheck",
+              "value": "tsc",
+              "source": "tool",
+              "confidence": 0.9,
+              "discoveredAt": "2026-06-13T19:34:54.339Z"
+            },
+            {
+              "id": "fact-1781379294343-ikg782",
+              "key": "last.error.type",
+              "value": "typescript",
+              "source": "tool",
+              "confidence": 0.9,
+              "discoveredAt": "2026-06-13T19:34:54.343Z"
+            }
+          ],
+          "constraints": [
+            {
+              "id": "con-1781364481089-56em00",
+              "description": "Do NOT change the data model (keep all writes to payments + studios + subscriptions tab",
+              "origin": "user",
+              "active": true,
+              "createdAt": "2026-06-13T15:28:01.089Z"
+            },
+            {
+              "id": "con-1781367551670-2244v3",
+              "description": "must NOT change — these are mostly working UI components with NO tests, so be conservativ",
+              "origin": "user",
+              "active": true,
+              "createdAt": "2026-06-13T16:19:11.670Z"
+            },
+            {
+              "id": "con-1781466241679-5ks05v",
+              "description": "Do NOT write any code. This is research only. Be thorough.",
+              "origin": "user",
+              "active": true,
+              "createdAt": "2026-06-14T19:44:01.678Z"
+            },
+            {
+              "id": "con-1781467482478-pjaxvm",
+              "description": "don't reinvent.** Settings page = Tabs + Card + form controls. Dashboard = Sidebar + C",
+              "origin": "user",
+              "active": true,
+              "createdAt": "2026-06-14T20:04:42.478Z"
+            },
+            {
+              "id": "con-1781468288673-fkbuzi",
+              "description": "DO NOT touch globals.css). Available tokens you can use as Tailwind utilities: bg-backg",
+              "origin": "user",
+              "active": true,
+              "createdAt": "2026-06-14T20:18:08.672Z"
+            }
+          ],
+          "skills": [
+            "software-engineering",
+            "codebase-intelligence",
+            "nextjs",
+            "react"
+          ]
+        },
+        "evidence": [],
+        "retryPolicy": {
+          "maxRetries": 2,
+          "strategy": [
+            "same",
+            "different_approach",
+            "escalate_user"
+          ],
+          "currentRetry": 0
+        },
+        "priority": 9,
+        "createdAt": "2026-06-14T20:18:08.777Z",
+        "transitionHistory": [],
+        "metadata": {
+          "plannerMode": "fast",
+          "plannerReason": "Speed-weighted objective dominates",
+          "parallelization": "linear-fallback",
+          "parallelFallbackReason": "No strong implementation split verb detected."
+        }
+      },
+      {
+        "id": "node-feature-2-hiaa",
+        "type": "code",
+        "title": "Implement feature",
+        "description": "Implement feature for: You are refactoring raw Tailwind color classes to shadcn/ui semantic tokens in a Next.js 16 + Tailwind v4 project at D:\\ruangtato.\n\nThe semantic tokens are ALREADY defined in src/app/globals.css (DO NOT touch globals.css). Available tokens you can use as Tailwind utilities: bg-background, bg-card, b",
+        "agent": "self",
+        "status": "pending",
+        "dependencies": [
+          "node-feature-1-mrh7"
+        ],
+        "input": {
+          "prompt": "Implement: You are refactoring raw Tailwind color classes to shadcn/ui semantic tokens in a Next.js 16 + Tailwind v4 project at D:\\ruangtato.\n\nThe semantic tokens are ALREADY defined in src/app/globals.css (DO NOT touch globals.css). Available tokens you can use as Tailwind utilities: bg-background, bg-card, b. Follow the design from the planning step. Write clean, tested code.",
+          "context": [
+            {
+              "id": "fact-1781379294342-1qarcx",
+              "key": "build.typecheck",
+              "value": "tsc",
+              "source": "tool",
+              "confidence": 0.9,
+              "discoveredAt": "2026-06-13T19:34:54.339Z"
+            },
+            {
+              "id": "fact-1781379294343-ikg782",
+              "key": "last.error.type",
+              "value": "typescript",
+              "source": "tool",
+              "confidence": 0.9,
+              "discoveredAt": "2026-06-13T19:34:54.343Z"
+            }
+          ],
+          "constraints": [
+            {
+              "id": "con-1781364481089-56em00",
+              "description": "Do NOT change the data model (keep all writes to payments + studios + subscriptions tab",
+              "origin": "user",
+              "active": true,
+              "createdAt": "2026-06-13T15:28:01.089Z"
+            },
+            {
+              "id": "con-1781367551670-2244v3",
+              "description": "must NOT change — these are mostly working UI components with NO tests, so be conservativ",
+              "origin": "user",
+              "active": true,
+              "createdAt": "2026-06-13T16:19:11.670Z"
+            },
+            {
+              "id": "con-1781466241679-5ks05v",
+              "description": "Do NOT write any code. This is research only. Be thorough.",
+              "origin": "user",
+              "active": true,
+              "createdAt": "2026-06-14T19:44:01.678Z"
+            },
+            {
+              "id": "con-1781467482478-pjaxvm",
+              "description": "don't reinvent.** Settings page = Tabs + Card + form controls. Dashboard = Sidebar + C",
+              "origin": "user",
+              "active": true,
+              "createdAt": "2026-06-14T20:04:42.478Z"
+            },
+            {
+              "id": "con-1781468288673-fkbuzi",
+              "description": "DO NOT touch globals.css). Available tokens you can use as Tailwind utilities: bg-backg",
+              "origin": "user",
+              "active": true,
+              "createdAt": "2026-06-14T20:18:08.672Z"
+            }
+          ],
+          "skills": [
+            "software-engineering"
+          ]
+        },
+        "evidence": [],
+        "retryPolicy": {
+          "maxRetries": 2,
+          "strategy": [
+            "same",
+            "different_approach",
+            "escalate_user"
+          ],
+          "currentRetry": 0
+        },
+        "priority": 8,
+        "createdAt": "2026-06-14T20:18:08.777Z",
+        "transitionHistory": [],
+        "metadata": {
+          "plannerMode": "fast",
+          "plannerReason": "Speed-weighted objective dominates",
+          "parallelization": "linear-fallback",
+          "parallelFallbackReason": "No strong implementation split verb detected."
+        }
+      },
+      {
+        "id": "node-feature-3-9y2r",
+        "type": "code",
+        "title": "Write tests",
+        "description": "Write tests for: You are refactoring raw Tailwind color classes to shadcn/ui semantic tokens in a Next.js 16 + Tailwind v4 project at D:\\ruangtato.\n\nThe semantic tokens are ALREADY defined in src/app/globals.css (DO NOT touch globals.css). Available tokens you can use as Tailwind utilities: bg-background, bg-card, b",
+        "agent": "self",
+        "status": "pending",
+        "dependencies": [
+          "node-feature-2-hiaa"
+        ],
+        "input": {
+          "prompt": "Write comprehensive tests for: You are refactoring raw Tailwind color classes to shadcn/ui semantic tokens in a Next.js 16 + Tailwind v4 project at D:\\ruangtato.\n\nThe semantic tokens are ALREADY defined in src/app/globals.css (DO NOT touch globals.css). Available tokens you can use as Tailwind utilities: bg-background, bg-card, b. Cover happy path, edge cases, and error scenarios.",
+          "context": [
+            {
+              "id": "fact-1781379294342-1qarcx",
+              "key": "build.typecheck",
+              "value": "tsc",
+              "source": "tool",
+              "confidence": 0.9,
+              "discoveredAt": "2026-06-13T19:34:54.339Z"
+            },
+            {
+              "id": "fact-1781379294343-ikg782",
+              "key": "last.error.type",
+              "value": "typescript",
+              "source": "tool",
+              "confidence": 0.9,
+              "discoveredAt": "2026-06-13T19:34:54.343Z"
+            }
+          ],
+          "constraints": [
+            {
+              "id": "con-1781364481089-56em00",
+              "description": "Do NOT change the data model (keep all writes to payments + studios + subscriptions tab",
+              "origin": "user",
+              "active": true,
+              "createdAt": "2026-06-13T15:28:01.089Z"
+            },
+            {
+              "id": "con-1781367551670-2244v3",
+              "description": "must NOT change — these are mostly working UI components with NO tests, so be conservativ",
+              "origin": "user",
+              "active": true,
+              "createdAt": "2026-06-13T16:19:11.670Z"
+            },
+            {
+              "id": "con-1781466241679-5ks05v",
+              "description": "Do NOT write any code. This is research only. Be thorough.",
+              "origin": "user",
+              "active": true,
+              "createdAt": "2026-06-14T19:44:01.678Z"
+            },
+            {
+              "id": "con-1781467482478-pjaxvm",
+              "description": "don't reinvent.** Settings page = Tabs + Card + form controls. Dashboard = Sidebar + C",
+              "origin": "user",
+              "active": true,
+              "createdAt": "2026-06-14T20:04:42.478Z"
+            },
+            {
+              "id": "con-1781468288673-fkbuzi",
+              "description": "DO NOT touch globals.css). Available tokens you can use as Tailwind utilities: bg-backg",
+              "origin": "user",
+              "active": true,
+              "createdAt": "2026-06-14T20:18:08.672Z"
+            }
+          ],
+          "skills": [
+            "software-engineering"
+          ]
+        },
+        "evidence": [],
+        "retryPolicy": {
+          "maxRetries": 2,
+          "strategy": [
+            "same",
+            "different_approach",
+            "escalate_user"
+          ],
+          "currentRetry": 0
+        },
+        "priority": 7,
+        "createdAt": "2026-06-14T20:18:08.777Z",
+        "transitionHistory": [],
+        "metadata": {
+          "plannerMode": "fast",
+          "plannerReason": "Speed-weighted objective dominates",
+          "parallelization": "linear-fallback",
+          "parallelFallbackReason": "No strong implementation split verb detected."
+        }
+      },
+      {
+        "id": "node-feature-4-j01c",
+        "type": "verify",
+        "title": "Verify implementation",
+        "description": "Verify implementation for: You are refactoring raw Tailwind color classes to shadcn/ui semantic tokens in a Next.js 16 + Tailwind v4 project at D:\\ruangtato.\n\nThe semantic tokens are ALREADY defined in src/app/globals.css (DO NOT touch globals.css). Available tokens you can use as Tailwind utilities: bg-background, bg-card, b",
+        "agent": "self",
+        "status": "pending",
+        "dependencies": [
+          "node-feature-3-9y2r"
+        ],
+        "input": {
+          "prompt": "Run tests, type checker, and linter. Verify the feature works end-to-end.",
+          "context": [
+            {
+              "id": "fact-1781379294342-1qarcx",
+              "key": "build.typecheck",
+              "value": "tsc",
+              "source": "tool",
+              "confidence": 0.9,
+              "discoveredAt": "2026-06-13T19:34:54.339Z"
+            },
+            {
+              "id": "fact-1781379294343-ikg782",
+              "key": "last.error.type",
+              "value": "typescript",
+              "source": "tool",
+              "confidence": 0.9,
+              "discoveredAt": "2026-06-13T19:34:54.343Z"
+            }
+          ],
+          "constraints": [
+            {
+              "id": "con-1781364481089-56em00",
+              "description": "Do NOT change the data model (keep all writes to payments + studios + subscriptions tab",
+              "origin": "user",
+              "active": true,
+              "createdAt": "2026-06-13T15:28:01.089Z"
+            },
+            {
+              "id": "con-1781367551670-2244v3",
+              "description": "must NOT change — these are mostly working UI components with NO tests, so be conservativ",
+              "origin": "user",
+              "active": true,
+              "createdAt": "2026-06-13T16:19:11.670Z"
+            },
+            {
+              "id": "con-1781466241679-5ks05v",
+              "description": "Do NOT write any code. This is research only. Be thorough.",
+              "origin": "user",
+              "active": true,
+              "createdAt": "2026-06-14T19:44:01.678Z"
+            },
+            {
+              "id": "con-1781467482478-pjaxvm",
+              "description": "don't reinvent.** Settings page = Tabs + Card + form controls. Dashboard = Sidebar + C",
+              "origin": "user",
+              "active": true,
+              "createdAt": "2026-06-14T20:04:42.478Z"
+            },
+            {
+              "id": "con-1781468288673-fkbuzi",
+              "description": "DO NOT touch globals.css). Available tokens you can use as Tailwind utilities: bg-backg",
+              "origin": "user",
+              "active": true,
+              "createdAt": "2026-06-14T20:18:08.672Z"
+            }
+          ],
+          "skills": [
+            "software-engineering",
+            "codebase-intelligence",
+            "nextjs",
+            "react"
+          ]
+        },
+        "evidence": [],
+        "retryPolicy": {
+          "maxRetries": 2,
+          "strategy": [
+            "same",
+            "different_approach",
+            "escalate_user"
+          ],
+          "currentRetry": 0
+        },
+        "priority": 6,
+        "createdAt": "2026-06-14T20:18:08.777Z",
+        "transitionHistory": [],
+        "metadata": {
+          "plannerMode": "fast",
+          "plannerReason": "Speed-weighted objective dominates",
+          "parallelization": "linear-fallback",
+          "parallelFallbackReason": "No strong implementation split verb detected."
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "node-feature-0-kykt",
+        "to": "node-feature-1-mrh7",
+        "type": "blocks"
+      },
+      {
+        "from": "node-feature-1-mrh7",
+        "to": "node-feature-2-hiaa",
+        "type": "blocks"
+      },
+      {
+        "from": "node-feature-2-hiaa",
+        "to": "node-feature-3-9y2r",
+        "type": "blocks"
+      },
+      {
+        "from": "node-feature-3-9y2r",
+        "to": "node-feature-4-j01c",
+        "type": "blocks"
+      }
+    ],
+    "createdAt": "2026-06-14T20:18:08.770Z",
+    "updatedAt": "2026-06-14T20:18:08.778Z",
+    "metadata": {
+      "executionStrategy": "plan-then-exec",
+      "strategySource": "rule",
+      "plannedIntent": "feature"
+    }
+  }
+}
