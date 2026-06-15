@@ -19,15 +19,15 @@ export function PageHeading({
 }: PageHeadingProps) {
   const titleClass =
     size === "sm"
-      ? "text-xl font-semibold tracking-tight text-foreground"
-      : "text-2xl font-semibold tracking-tight text-foreground"
+      ? "text-pretty text-lg font-semibold tracking-tight text-foreground md:text-xl"
+      : "text-pretty text-xl font-semibold tracking-tight text-foreground md:text-2xl"
 
   if (align === "center") {
     return (
       <div className={cn("text-center", className)}>
         <h1 className={titleClass}>{title}</h1>
         {description && (
-          <p className="mt-2 text-sm text-muted-foreground">{description}</p>
+          <p className="mt-2 text-pretty text-sm text-muted-foreground">{description}</p>
         )}
       </div>
     )
@@ -40,10 +40,10 @@ export function PageHeading({
         className
       )}
     >
-      <div>
+      <div className="min-w-0">
         <h1 className={titleClass}>{title}</h1>
         {description && (
-          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+          <p className="mt-1 text-pretty text-sm text-muted-foreground">{description}</p>
         )}
       </div>
       {actions && <div className="flex shrink-0 items-center gap-2">{actions}</div>}

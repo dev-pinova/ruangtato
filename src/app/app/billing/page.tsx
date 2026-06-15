@@ -9,7 +9,7 @@ import { getServerSession } from "@/lib/auth/session"
 import { getStudioForUser } from "@/lib/studio/studio-service"
 import { getSubscriptionPlanLabel } from "@/lib/billing/billing-plans"
 
-import { PageHeading } from "@/components/design"
+import { PageHeading, EmptyState } from "@/components/design"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -28,6 +28,8 @@ import {
   TableCell,
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
+
+const SUCCESS_BADGE = "bg-success/15 text-success hover:bg-success/25"
 
 function formatDate(date: Date | null) {
   if (!date) return "—"
@@ -109,11 +111,7 @@ export default async function BillingPage() {
                   </span>
                   <Badge
                     variant={isActive ? "default" : "destructive"}
-                    className={
-                      isActive
-                                ? "bg-success/15 text-success hover:bg-success/25"
-                        : ""
-                    }
+                    className={isActive ? SUCCESS_BADGE : ""}
                   >
                     {isActive ? "Aktif" : "Tidak Aktif"}
                   </Badge>
@@ -130,13 +128,11 @@ export default async function BillingPage() {
                 )}
               </>
             ) : (
-              <div className="flex flex-col items-center justify-center py-6 text-center">
-                <AlertCircle className="h-8 w-8 text-muted-foreground mb-3" />
-                <p className="text-sm font-medium">Belum ada paket langganan</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Anda belum pernah berlangganan paket apapun.
-                </p>
-              </div>
+              <EmptyState
+                icon={AlertCircle}
+                title="Belum ada paket langganan"
+                description="Anda belum pernah berlangganan paket apapun. Pilih paket di bawah untuk mulai menggunakan semua fitur studio."
+              />
             )}
           </CardContent>
           <CardFooter>
@@ -159,11 +155,12 @@ export default async function BillingPage() {
         </CardHeader>
         <CardContent>
           {studioPayments.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-8 text-center border rounded-lg border-dashed">
-              <p className="text-sm font-medium text-muted-foreground">
-                Belum ada transaksi
-              </p>
-            </div>
+            <EmptyState
+              bordered
+              icon={CreditCard}
+              title="Belum ada transaksi"
+              description="Riwayat pembayaran Anda akan muncul di sini setelah transaksi pertama berhasil diproses."
+            />
           ) : (
             <div className="overflow-x-auto">
               <Table>
@@ -207,11 +204,7 @@ export default async function BillingPage() {
                                 ? "secondary"
                                 : "destructive"
                             }
-                            className={
-                              isSuccess
-                        ? "bg-success/15 text-success hover:bg-success/25"
-                                : ""
-                            }
+                            className={isSuccess ? SUCCESS_BADGE : ""}
                           >
                             {isSuccess ? "Berhasil" : isPending ? "Pending" : "Gagal"}
                           </Badge>

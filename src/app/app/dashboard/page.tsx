@@ -6,8 +6,9 @@ import {
   MousePointerClick,
   Users,
   Percent,
+  Inbox,
 } from "lucide-react"
-import { MetricCard, PageHeading } from "@/components/design"
+import { EmptyState, MetricCard, PageHeading } from "@/components/design"
 import {
   Card,
   CardHeader,
@@ -168,9 +169,12 @@ export default function DashboardPage() {
         </CardHeader>
         <CardContent>
           {leads.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              Belum ada lead. Lead dari form appointment akan muncul di sini.
-            </p>
+            <EmptyState
+              icon={Inbox}
+              title="Belum ada lead"
+              description="Lead dari form appointment di landing page studio Anda akan muncul di sini."
+              bordered
+            />
           ) : (
             <Table>
               <TableHeader>
