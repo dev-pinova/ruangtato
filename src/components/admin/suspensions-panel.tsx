@@ -122,7 +122,7 @@ export function SuspensionsPanel() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-8">
+    <div className="mx-auto max-w-7xl space-y-6">
       <AdminPageHeaderV2
         title="Suspensions"
         description="Studio yang dinonaktifkan dan riwayat suspend/reactivate."

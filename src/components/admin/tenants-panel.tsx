@@ -43,6 +43,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import type { AdminTenantDetail, AdminTenantRow } from "@/lib/admin/admin-service"
+import { ADMIN_PAGE_SIZE } from "@/lib/admin/admin-constants"
 import { getSubscriptionPlanLabel } from "@/lib/billing/billing-plans"
 import {
   SUSPENSION_REASON_CATEGORIES,
@@ -87,7 +88,7 @@ export function TenantsPanel({ canSuspend = false }: { canSuspend?: boolean }) {
   const [city, setCity] = useState("")
   const [sort, setSort] = useState("newest")
 
-  const totalPages = useMemo(() => Math.max(1, Math.ceil(total / 20)), [total])
+  const totalPages = useMemo(() => Math.max(1, Math.ceil(total / ADMIN_PAGE_SIZE)), [total])
 
   const statusCounts = useMemo(() => {
     const active = rows.filter((r) => r.status === "active").length
@@ -99,7 +100,7 @@ export function TenantsPanel({ canSuspend = false }: { canSuspend?: boolean }) {
     setLoading(true)
     const params = new URLSearchParams({
       page: String(page),
-      limit: "20",
+      limit: String(ADMIN_PAGE_SIZE),
       sort,
       includeCities: page === 1 ? "1" : "0",
     })

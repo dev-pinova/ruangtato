@@ -7,21 +7,22 @@ import { getDb } from "@/db"
 import { payments, studios, subscriptions } from "@/db/schema"
 import { requirePlatformSession } from "@/lib/admin/admin-auth"
 import { getSubscriptionPlanLabel } from "@/lib/billing/billing-plans"
-import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
+import {
+  AdminPageHeaderV2,
+  AdminPanel,
+  AdminPanelInset,
+  AdminSectionCard,
+  AdminStatusBadge,
+} from "@/components/admin/ui"
 import { Button } from "@/components/ui/button"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 export const dynamic = "force-dynamic"
 
+// Matches the shared admin currency convention used across the admin panels
+// (see src/components/admin/payments-panel.tsx).
 function formatIDR(amount: number) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount)
+  return `Rp ${amount.toLocaleString("id-ID")}`
 }
 
 function formatDateTime(date: Date | null) {
@@ -85,165 +86,164 @@ export default async function TransactionDetailPage({
     payment.transactionStatus === "capture"
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6 px-4 py-8">
-      {/* Page Header & Back Button */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">Detail Transaksi</h1>
-          <p className="text-sm text-muted-foreground font-mono mt-1">ID: {payment.id}</p>
-        </div>
-        <Link href="/admin/payments" passHref legacyBehavior>
-          <Button className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2 rounded-md transition-colors self-start sm:self-center">
-            <ArrowLeft className="size-4" />
+    <div className="mx-auto max-w-7xl space-y-6">
+      <AdminPageHeaderV2
+        title="Detail Transaksi"
+        description={`ID transaksi: ${payment.id}`}
+        actions={
+          <Button
+            variant="outline"
+            size="sm"
+            nativeButton={false}
+            className="min-h-11 sm:min-h-0"
+            render={<Link href="/admin/payments" />}
+          >
+            <ArrowLeft className="size-4" aria-hidden />
             Kembali ke Daftar Transaksi
           </Button>
-        </Link>
-      </div>
+        }
+      />
 
       <div className="grid gap-6 md:grid-cols-3">
-        {/* Main transaction details card */}
-        <Card className="md:col-span-2 border-border bg-card">
-          <CardHeader className="border-b border-border/50 pb-4">
+        {/* Main transaction details panel */}
+        <AdminPanel className="md:col-span-2">
+          <AdminPanelInset>
             <div className="flex items-center justify-between gap-4">
-              <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                <CreditCard className="size-5 text-primary" />
-                Informasi Pembayaran
-              </CardTitle>
+              <div className="flex items-center gap-2">
+                <CreditCard className="size-5 text-muted-foreground" aria-hidden />
+                <h2 className="text-lg font-semibold">Informasi Pembayaran</h2>
+              </div>
               <AdminStatusBadge
                 status={payment.transactionStatus}
                 label={payment.transactionStatus.toUpperCase()}
               />
             </div>
-          </CardHeader>
-          <CardContent className="pt-6 space-y-6">
+          </AdminPanelInset>
+
+          <div className="space-y-6 p-4 md:p-5">
             {/* Amount & Plan Section */}
             <div className="flex flex-col gap-1">
-              <span className="text-xs text-muted-foreground uppercase tracking-wider">Nominal Transaksi</span>
-              <span className="text-3xl font-bold text-foreground tabular-nums">{formatIDR(payment.amount)}</span>
+              <span className="text-xs uppercase tracking-wider text-muted-foreground">Nominal Transaksi</span>
+              <span className="text-3xl font-bold tabular-nums text-foreground">{formatIDR(payment.amount)}</span>
             </div>
 
-            <Separator className="bg-border/50" />
-
             {/* Financial Auditing Grid */}
-            <div className="grid gap-4 sm:grid-cols-2 text-sm">
+            <div className="grid gap-4 border-t border-border pt-6 text-sm sm:grid-cols-2">
               <div className="flex flex-col gap-1">
-                <span className="text-muted-foreground flex items-center gap-1.5">
-                  <Key className="size-4 text-muted-foreground/70" />
+                <span className="flex items-center gap-1.5 text-muted-foreground">
+                  <Key className="size-4 text-muted-foreground/70" aria-hidden />
                   Order ID
                 </span>
                 <span className="font-mono font-medium text-foreground">{payment.orderId}</span>
               </div>
               <div className="flex flex-col gap-1">
-                <span className="text-muted-foreground flex items-center gap-1.5">
-                  <Hash className="size-4 text-muted-foreground/70" />
+                <span className="flex items-center gap-1.5 text-muted-foreground">
+                  <Hash className="size-4 text-muted-foreground/70" aria-hidden />
                   Midtrans Transaction ID
                 </span>
                 <span className="font-mono font-medium text-foreground">{payment.transactionId ?? "—"}</span>
               </div>
               <div className="flex flex-col gap-1">
-                <span className="text-muted-foreground flex items-center gap-1.5">
-                  <CreditCard className="size-4 text-muted-foreground/70" />
+                <span className="flex items-center gap-1.5 text-muted-foreground">
+                  <CreditCard className="size-4 text-muted-foreground/70" aria-hidden />
                   Metode Pembayaran
                 </span>
-                <span className="font-medium text-foreground capitalize">{payment.paymentMethod ?? "—"}</span>
+                <span className="font-medium capitalize text-foreground">{payment.paymentMethod ?? "—"}</span>
               </div>
               <div className="flex flex-col gap-1">
-                <span className="text-muted-foreground flex items-center gap-1.5">
-                  <Shield className="size-4 text-muted-foreground/70" />
+                <span className="flex items-center gap-1.5 text-muted-foreground">
+                  <Shield className="size-4 text-muted-foreground/70" aria-hidden />
                   Fraud Status
                 </span>
-                <span className="font-medium text-foreground uppercase">{payment.fraudStatus ?? "—"}</span>
+                <span className="font-medium uppercase text-foreground">{payment.fraudStatus ?? "—"}</span>
               </div>
             </div>
 
-            <Separator className="bg-border/50" />
-
             {/* Dates & Timestamps */}
-            <div className="grid gap-4 sm:grid-cols-2 text-sm">
+            <div className="grid gap-4 border-t border-border pt-6 text-sm sm:grid-cols-2">
               <div className="flex flex-col gap-1">
-                <span className="text-muted-foreground flex items-center gap-1.5">
-                  <Calendar className="size-4 text-muted-foreground/70" />
+                <span className="flex items-center gap-1.5 text-muted-foreground">
+                  <Calendar className="size-4 text-muted-foreground/70" aria-hidden />
                   Waktu Order
                 </span>
                 <span className="font-medium text-foreground">{formatDateTime(payment.createdAt)}</span>
               </div>
               {isSuccess && payment.paidAt && (
                 <div className="flex flex-col gap-1">
-                  <span className="text-muted-foreground flex items-center gap-1.5">
-                    <Calendar className="size-4 text-muted-foreground/70" />
+                  <span className="flex items-center gap-1.5 text-muted-foreground">
+                    <Calendar className="size-4 text-muted-foreground/70" aria-hidden />
                     Waktu Lunas
                   </span>
                   <span className="font-medium text-foreground">{formatDateTime(payment.paidAt)}</span>
                 </div>
               )}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </AdminPanel>
 
-        {/* Tenant/Studio information card */}
-        <Card className="border-border bg-card">
-          <CardHeader className="border-b border-border/50 pb-4">
-            <CardTitle className="text-lg font-semibold flex items-center gap-2">
-              <User className="size-5 text-primary" />
-              Detail Pelanggan
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-6 space-y-6 text-sm">
+        {/* Tenant/Studio information panel */}
+        <AdminPanel>
+          <AdminPanelInset>
+            <div className="flex items-center gap-2">
+              <User className="size-5 text-muted-foreground" aria-hidden />
+              <h2 className="text-lg font-semibold">Detail Pelanggan</h2>
+            </div>
+          </AdminPanelInset>
+
+          <div className="space-y-6 p-4 text-sm md:p-5">
             {/* Studio Name */}
             <div className="flex flex-col gap-1">
               <span className="text-muted-foreground">Nama Studio</span>
-              <span className="font-semibold text-foreground text-base">{studioName}</span>
+              <span className="text-base font-semibold text-foreground">{studioName}</span>
             </div>
 
             {/* Studio Slug */}
             <div className="flex flex-col gap-1">
-              <span className="text-muted-foreground flex items-center gap-1.5">
-                <Globe className="size-4 text-muted-foreground/70" />
+              <span className="flex items-center gap-1.5 text-muted-foreground">
+                <Globe className="size-4 text-muted-foreground/70" aria-hidden />
                 Slug Studio
               </span>
               <span className="font-mono text-muted-foreground">
                 <Link
                   href={`/app/studio/${studioSlug}`}
                   target="_blank"
-                  className="hover:underline text-primary hover:text-primary/80"
+                  className="text-primary hover:text-primary/80 hover:underline"
                 >
                   {studioSlug}
                 </Link>
               </span>
             </div>
 
-            <Separator className="bg-border/50" />
-
             {/* Subscription Package */}
-            <div className="flex flex-col gap-1">
-              <span className="text-muted-foreground flex items-center gap-1.5">
-                <FileText className="size-4 text-muted-foreground/70" />
+            <div className="flex flex-col gap-1 border-t border-border pt-6">
+              <span className="flex items-center gap-1.5 text-muted-foreground">
+                <FileText className="size-4 text-muted-foreground/70" aria-hidden />
                 Paket Langganan
               </span>
               <span className="font-medium text-foreground">{planLabel}</span>
               {planType && (
-                <span className="text-xs text-muted-foreground font-mono">({planType})</span>
+                <span className="font-mono text-xs text-muted-foreground">({planType})</span>
               )}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </AdminPanel>
       </div>
 
       {/* JSONB Raw Payload Viewer Accordion */}
-      <Card className="border-border bg-card overflow-hidden">
+      <AdminSectionCard className="p-0">
         <Accordion className="w-full">
           <AccordionItem value="raw-payload" className="border-0">
-            <AccordionTrigger className="px-6 py-4 hover:no-underline text-foreground font-semibold text-sm">
+            <AccordionTrigger className="px-4 py-4 text-sm font-semibold text-foreground hover:no-underline md:px-5">
               Lihat Payload API Mentah (Developer Only)
             </AccordionTrigger>
-            <AccordionContent className="px-6 pb-6 pt-2">
-              <pre className="max-h-96 overflow-auto rounded-md border border-border bg-background p-4 text-xs font-mono text-muted-foreground scrollbar-thin scrollbar-thumb-accent">
+            <AccordionContent className="px-4 pb-6 pt-2 md:px-5">
+              <pre className="max-h-96 overflow-auto rounded-md border border-border bg-background p-4 font-mono text-xs text-muted-foreground">
                 <code>{JSON.stringify(payment.rawPayload, null, 2)}</code>
               </pre>
             </AccordionContent>
           </AccordionItem>
         </Accordion>
-      </Card>
+      </AdminSectionCard>
     </div>
   )
 }

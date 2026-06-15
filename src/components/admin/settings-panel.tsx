@@ -9,8 +9,8 @@ import {
   AdminPageHeaderV2,
   AdminPanel,
   AdminPanelInset,
+  AdminRoleBadge,
 } from "@/components/admin/ui"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -32,21 +32,6 @@ type StudioSearchRow = {
   slug: string
   name: string
   isTrusted: boolean
-}
-
-function roleBadge(role: PlatformRole) {
-  const styles: Record<PlatformRole, string> = {
-    super_admin: "admin-status-info",
-    admin: "admin-status-info",
-    support: "admin-status-success",
-    finance: "admin-status-warning",
-  }
-
-  return (
-    <Badge variant="outline" className={styles[role]}>
-      {role}
-    </Badge>
-  )
 }
 
 export function SettingsPanel() {
@@ -174,7 +159,7 @@ export function SettingsPanel() {
         <AdminPanelInset>
           <div className="flex items-center gap-2">
             <UserCog className="size-5 text-muted-foreground" aria-hidden />
-            <h2 className="text-lg font-semibold">Staff internal</h2>
+            <h2 className="text-sm font-medium">Staff internal</h2>
           </div>
         </AdminPanelInset>
 
@@ -232,7 +217,7 @@ export function SettingsPanel() {
               {
                 key: "role",
                 header: "Role",
-                cell: (row) => roleBadge(row.platformRole),
+                cell: (row) => <AdminRoleBadge role={row.platformRole} />,
               },
               { key: "status", header: "Status", cell: (row) => row.status },
               {
@@ -266,7 +251,7 @@ export function SettingsPanel() {
                   <p className="text-sm text-muted-foreground">{row.email}</p>
                 </div>
                 <div className="flex items-center justify-between">
-                  {roleBadge(row.platformRole)}
+                  <AdminRoleBadge role={row.platformRole} />
                   <Button
                     variant="outline"
                     size="sm"
@@ -286,7 +271,7 @@ export function SettingsPanel() {
         <AdminPanelInset>
           <div className="flex items-center gap-2">
             <ShieldCheck className="size-5 text-muted-foreground" aria-hidden />
-            <h2 className="text-lg font-semibold">Trusted badge studio</h2>
+            <h2 className="text-sm font-medium">Trusted badge studio</h2>
           </div>
           <p className="mt-1 text-sm text-muted-foreground">
             Cari studio lalu toggle trusted badge untuk verifikasi di showcase.

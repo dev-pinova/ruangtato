@@ -12,10 +12,10 @@ import {
   AdminPageToolbar,
   AdminPagination,
   AdminPanel,
+  AdminRoleBadge,
   AdminStatusBadge,
 } from "@/components/admin/ui"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   Select,
@@ -35,6 +35,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import type { AdminUserRow } from "@/lib/admin/admin-service"
+import { ADMIN_PAGE_SIZE } from "@/lib/admin/admin-constants"
 
 type UsersResponse = {
   data: AdminUserRow[]
@@ -85,13 +86,13 @@ export function UsersPanel({
   const [selectedUser, setSelectedUser] = useState<AdminUserRow | null>(null)
   const [actionLoading, setActionLoading] = useState(false)
 
-  const totalPages = useMemo(() => Math.max(1, Math.ceil(total / 20)), [total])
+  const totalPages = useMemo(() => Math.max(1, Math.ceil(total / ADMIN_PAGE_SIZE)), [total])
 
   const loadUsers = useCallback(async () => {
     setLoading(true)
     const params = new URLSearchParams({
       page: String(page),
-      limit: "20",
+      limit: String(ADMIN_PAGE_SIZE),
     })
 
     if (q.trim()) params.set("q", q.trim())
@@ -184,36 +185,6 @@ export function UsersPanel({
       toast.error(err instanceof Error ? err.message : "Terjadi kesalahan.")
     } finally {
       setActionLoading(false)
-    }
-  }
-
-  const getRoleBadgeVariant = (role: string | null) => {
-    switch (role) {
-      case "super_admin":
-        return "bg-destructive/10 text-destructive border-destructive/20"
-      case "admin":
-        return "bg-warning/10 text-warning border-warning/20"
-      case "support":
-        return "bg-info/10 text-info border-info/20"
-      case "finance":
-        return "bg-success/10 text-success border-success/20"
-      default:
-        return "bg-muted text-muted-foreground border-border"
-    }
-  }
-
-  const getRoleLabel = (role: string | null) => {
-    switch (role) {
-      case "super_admin":
-        return "Super Admin"
-      case "admin":
-        return "Admin"
-      case "support":
-        return "Support"
-      case "finance":
-        return "Finance"
-      default:
-        return "Regular User"
     }
   }
 
@@ -323,11 +294,7 @@ export function UsersPanel({
             {
               key: "role",
               header: "Platform Role",
-              cell: (row) => (
-                <Badge variant="outline" className={`font-medium ${getRoleBadgeVariant(row.platformRole)}`}>
-                  {getRoleLabel(row.platformRole)}
-                </Badge>
-              ),
+              cell: (row) => <AdminRoleBadge role={row.platformRole} />,
             },
             {
               key: "manage_role",

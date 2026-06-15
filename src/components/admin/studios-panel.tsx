@@ -36,6 +36,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import type { AdminStudioRow } from "@/lib/admin/admin-service"
+import { ADMIN_PAGE_SIZE } from "@/lib/admin/admin-constants"
 import {
   SUSPENSION_REASON_CATEGORIES,
   type SuspensionReasonCategory,
@@ -82,13 +83,13 @@ export function StudiosPanel({
   const [actionLoading, setActionLoading] = useState(false)
   const [actionError, setActionError] = useState<string | null>(null)
 
-  const totalPages = useMemo(() => Math.max(1, Math.ceil(total / 20)), [total])
+  const totalPages = useMemo(() => Math.max(1, Math.ceil(total / ADMIN_PAGE_SIZE)), [total])
 
   const loadStudios = useCallback(async () => {
     setLoading(true)
     const params = new URLSearchParams({
       page: String(page),
-      limit: "20",
+      limit: String(ADMIN_PAGE_SIZE),
       sort,
     })
 
