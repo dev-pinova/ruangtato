@@ -77,8 +77,16 @@ async function main() {
   console.log(`Old DB: ${oldDbUrl.replace(/:[^:@\n]+@/, ":****@")}`) // Hide password in logs
   console.log(`New DB: ${newDbUrl.replace(/:[^:@\n]+@/, ":****@")}`)
   
-  const oldClient = new pg.Client({ connectionString: oldDbUrl })
-  const newClient = new pg.Client({ connectionString: newDbUrl })
+  const oldClient = new pg.Client({
+    connectionString: oldDbUrl,
+    ssl: { rejectUnauthorized: false }
+  })
+  const newClient = new pg.Client({
+    connectionString: newDbUrl,
+    ssl: !newDbUrl.includes("localhost") && !newDbUrl.includes("127.0.0.1") && !newDbUrl.includes("l609nx6j7iy0xp1zbrj1c9t9")
+      ? { rejectUnauthorized: false }
+      : undefined
+  })
   
   try {
     await oldClient.connect()
