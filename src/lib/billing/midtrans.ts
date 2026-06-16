@@ -22,16 +22,16 @@ export type MidtransNotificationPayload = {
 }
 
 export function isMidtransConfigured(): boolean {
-  return Boolean(
-    process.env.MIDTRANS_SERVER_KEY && process.env.MIDTRANS_CLIENT_KEY
-  )
+  const serverKey = process.env.MIDTRANS_SERVER_KEY?.replace(/^["']|["']$/g, "")
+  const clientKey = process.env.MIDTRANS_CLIENT_KEY?.replace(/^["']|["']$/g, "")
+  return Boolean(serverKey && clientKey)
 }
 
 export function getMidtransClientKey(): string | undefined {
-  return (
+  const key =
     process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY ??
     process.env.MIDTRANS_CLIENT_KEY
-  )
+  return key?.replace(/^["']|["']$/g, "")
 }
 
 export function isMidtransProduction(): boolean {
@@ -39,8 +39,8 @@ export function isMidtransProduction(): boolean {
 }
 
 function getMidtransCredentials() {
-  const serverKey = process.env.MIDTRANS_SERVER_KEY
-  const clientKey = process.env.MIDTRANS_CLIENT_KEY
+  const serverKey = process.env.MIDTRANS_SERVER_KEY?.replace(/^["']|["']$/g, "")
+  const clientKey = process.env.MIDTRANS_CLIENT_KEY?.replace(/^["']|["']$/g, "")
 
   if (!serverKey || !clientKey) {
     throw new Error("Midtrans credentials are not configured")
@@ -119,7 +119,7 @@ export function amountsMatchPlan(
 export function verifyNotificationSignature(
   payload: MidtransNotificationPayload
 ): boolean {
-  const serverKey = process.env.MIDTRANS_SERVER_KEY
+  const serverKey = process.env.MIDTRANS_SERVER_KEY?.replace(/^["']|["']$/g, "")
   const { order_id, status_code, gross_amount, signature_key } = payload
 
   if (!serverKey || !order_id || !status_code || !gross_amount || !signature_key) {
