@@ -26,6 +26,10 @@ RUN adduser --system --uid 1001 nextjs
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder /app/scripts ./scripts
+COPY --from=builder /app/drizzle ./drizzle
+COPY --from=builder /app/package.json ./package.json
+RUN npm install --omit=dev --ignore-scripts tsx 2>/dev/null || true
 
 USER nextjs
 EXPOSE 3000
