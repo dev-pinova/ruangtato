@@ -8,13 +8,13 @@
    MagicUI Animation Keyframes
    ============================================================ */
 @keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(calc(-100% - var(--gap))); }
+  from { transform: translateX(0) translateZ(0); }
+  to { transform: translateX(calc(-100% - var(--gap))) translateZ(0); }
 }
 
 @keyframes marquee-vertical {
-  from { transform: translateY(0); }
-  to { transform: translateY(calc(-100% - var(--gap))); }
+  from { transform: translateY(0) translateZ(0); }
+  to { transform: translateY(calc(-100% - var(--gap))) translateZ(0); }
 }
 
 @keyframes shiny-text {
@@ -449,8 +449,6 @@
   }
 
   /* Magic UI / decorative continuous effects: stop entirely. */
-  .animate-marquee,
-  .animate-marquee-vertical,
   .animate-shiny-text,
   .animate-ripple,
   .animate-gradient,
