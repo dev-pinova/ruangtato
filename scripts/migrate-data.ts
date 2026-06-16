@@ -46,7 +46,13 @@ async function migrateTable(oldClient: pg.Client, newClient: pg.Client, tableNam
   
   for (const row of rows) {
     const columns = Object.keys(row)
-    const values = Object.values(row)
+    // Convert objects/arrays to JSON strings, but leave Date objects and nulls alone
+    const values = Object.values(row).map(val => {
+      if (val !== null && typeof val === 'object' && !(val instanceof Date)) {
+        return JSON.stringify(val)
+      }
+      return val
+    })
     
     // Generate parameterized insert query:
     // INSERT INTO table (col1, col2) VALUES ($1, $2) ON CONFLICT DO NOTHING
@@ -72,6 +78,33 @@ async function migrateTable(oldClient: pg.Client, newClient: pg.Client, tableNam
   }
   
   console.log(`Finished ${tableName}: ${successCount} inserted, ${skipCount} skipped (already existed).`)
+}
+
+async function wipeNewDatabase(newClient: pg.Client) {
+  console.log("Wiping existing data in the new database to prevent foreign key conflicts...")
+  const tablesInReverse = [
+    "session",
+    "account",
+    "verification",
+    "leads",
+    "payments",
+    "invoices",
+    "subscriptions",
+    "studio_memberships",
+    "studios",
+    "roles",
+    '"user"'
+  ]
+  
+  for (const table of tablesInReverse) {
+    try {
+      await newClient.query(`TRUNCATE TABLE public.${table} CASCADE`)
+      console.log(`Truncated table: ${table}`)
+    } catch (err: any) {
+      console.warn(`Warning: Failed to truncate ${table} (it might not exist yet):`, err.message || err)
+    }
+  }
+  console.log("Wipe completed.\n")
 }
 
 async function main() {
@@ -108,6 +141,8 @@ async function main() {
   }
   
   try {
+    await wipeNewDatabase(newClient)
+    
     // Disable triggers temporarily if needed, but since we are inserting in order
     // and using ON CONFLICT DO NOTHING, standard constraints should pass.
     for (const table of TABLES) {
