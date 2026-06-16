@@ -114,7 +114,7 @@ export function BlockAppointmentForm({
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-white/60 md:text-base">
             {data?.subheadline ||
-              "Isi formulir di bawah untuk konsultasi dan penjadwalan sesi tattoo."}
+              "Isi formulir di bawah untuk konsultasi dan penjadwalan sesi tato."}
           </p>
         </div>
 
@@ -148,7 +148,7 @@ export function BlockAppointmentForm({
             </div>
 
             <FieldTextarea
-              label="Tell Us About Your Tattoo Idea"
+              label="Tell Us About Your Tato Idea"
               value={message}
               onChange={setMessage}
               required

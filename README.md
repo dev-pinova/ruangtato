@@ -1,6 +1,6 @@
 # Ruang Tato
 
-Platform SaaS landing page untuk studio tato di Indonesia. Section-based template builder (ala Webflow tattoo-128), PostgreSQL `page_config` JSONB, Better Auth, Midtrans (stub), Coolify deploy.
+Platform SaaS landing page untuk studio tato di Indonesia. Section-based template builder (ala Webflow tato-128), PostgreSQL `page_config` JSONB, Better Auth, Midtrans (stub), Coolify deploy.
 
 ## Quick start (local)
 

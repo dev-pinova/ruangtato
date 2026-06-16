@@ -82,7 +82,7 @@ function MarketingFooter() {
           <div className="md:col-span-1">
             <PlatformLogo variant="footer" />
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
-              Platform landing page eksklusif untuk studio tattoo profesional di
+              Platform landing page eksklusif untuk studio tato profesional di
               Indonesia.{" "}
               <a
                 href={SITE_URL}

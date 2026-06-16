@@ -4,7 +4,7 @@ import type { LatestNewsData } from "@/lib/types"
 
 const DEFAULT_ARTICLES = [
   {
-    title: "How To Care Your New Tattoo",
+    title: "How To Care Your New Tato",
     category: "Aftercare",
     date: "12 Jun 2025",
     image:
@@ -12,7 +12,7 @@ const DEFAULT_ARTICLES = [
     href: "#",
   },
   {
-    title: "Choosing The Right Tattoo Style",
+    title: "Choosing The Right Tato Style",
     category: "Style",
     date: "04 Jun 2025",
     image:
@@ -28,7 +28,7 @@ const DEFAULT_ARTICLES = [
     href: "#",
   },
   {
-    title: "Fine Line Tattoo: Less Is More",
+    title: "Fine Line Tato: Less Is More",
     category: "Style",
     date: "10 Mei 2025",
     image:

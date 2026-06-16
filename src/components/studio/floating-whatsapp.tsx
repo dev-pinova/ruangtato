@@ -3,7 +3,7 @@ import { MessageCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const DEFAULT_MESSAGE =
-  "Halo,%20saya%20tertarik%20untuk%20konsultasi%20tattoo"
+  "Halo,%20saya%20tertarik%20untuk%20konsultasi%20tato"
 
 function normalizeWaNumber(waNumber: string) {
   return waNumber.replace(/[^\d]/g, "")

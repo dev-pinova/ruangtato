@@ -3,7 +3,7 @@ import type { ArtistsGridData } from "@/lib/types"
 const DEFAULT_ARTISTS = [
   {
     name: "Charly Moon",
-    role: "Tattooist",
+    role: "Tatoist",
     image:
       "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=600&auto=format&fit=crop",
   },

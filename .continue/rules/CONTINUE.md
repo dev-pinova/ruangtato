@@ -4,7 +4,7 @@ Project guide for developers working on the Ruang Tato platform. Review and adju
 
 ## 1. Project Overview
 
-Ruang Tato is a SaaS platform that lets tattoo studios in Indonesia build and publish marketing landing pages. Studio owners assemble pages from reusable content blocks (Webflow-style), publish them at a public slug, capture leads, and pay via subscription. A separate platform admin panel lets staff manage tenants, payments, suspensions, and analytics.
+Ruang Tato is a SaaS platform that lets tato studios in Indonesia build and publish marketing landing pages. Studio owners assemble pages from reusable content blocks (Webflow-style), publish them at a public slug, capture leads, and pay via subscription. A separate platform admin panel lets staff manage tenants, payments, suspensions, and analytics.
 
 Key technologies:
 

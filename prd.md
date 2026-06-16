@@ -112,7 +112,7 @@ Halaman di-render cepat via Next.js SSR dengan menyusun urutan komponen berdasar
 6. **How it Works:** Panduan alur proses bertato di studio dalam 3-4 tahapan berurutan.
 
 
-7. **Creator Bio:** Kredibilitas seniman tato (*tattoo artist credentials*) dan bukti sosial (*social proof*).
+7. **Creator Bio:** Kredibilitas seniman tato (*tato artist credentials*) dan bukti sosial (*social proof*).
 
 
 8. **Testimonials:** Komponen slider atau grid yang memuat 6-12 kutipan ulasan pelanggan.

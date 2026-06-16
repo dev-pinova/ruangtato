@@ -8,15 +8,15 @@ import {
 } from "@/lib/site"
 
 export const DEFAULT_DESCRIPTION =
-  "Temukan studio tattoo terpercaya di Indonesia. Ruang Tato menyediakan direktori studio dan landing page profesional untuk booking konsultasi via WhatsApp."
+  "Temukan studio tato terpercaya di Indonesia. Ruang Tato menyediakan direktori studio dan landing page profesional untuk booking konsultasi via WhatsApp."
 
 export const DEFAULT_KEYWORDS = [
-  "studio tattoo",
-  "tattoo Indonesia",
-  "direktori studio tattoo",
-  "landing page studio tattoo",
-  "booking tattoo",
-  "portofolio tattoo",
+  "studio tato",
+  "tato Indonesia",
+  "direktori studio tato",
+  "landing page studio tato",
+  "booking tato",
+  "portofolio tato",
   "Ruang Tato",
 ]
 
@@ -96,7 +96,7 @@ export function createPageMetadata({
 export const rootMetadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${SITE_NAME} — Direktori & Landing Page Studio Tattoo`,
+    default: `${SITE_NAME} — Direktori & Landing Page Studio Tato`,
     template: `%s | ${SITE_NAME}`,
   },
   description: DEFAULT_DESCRIPTION,
@@ -118,7 +118,7 @@ export const rootMetadata: Metadata = {
     locale: "id_ID",
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: `${SITE_NAME} — Direktori & Landing Page Studio Tattoo`,
+    title: `${SITE_NAME} — Direktori & Landing Page Studio Tato`,
     description: DEFAULT_DESCRIPTION,
     images: [
       {
@@ -131,7 +131,7 @@ export const rootMetadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: `${SITE_NAME} — Direktori Studio Tattoo Indonesia`,
+    title: `${SITE_NAME} — Direktori Studio Tato Indonesia`,
     description: DEFAULT_DESCRIPTION,
     images: [DEFAULT_OG_IMAGE_URL],
   },
@@ -239,14 +239,14 @@ export const PUBLIC_STATIC_PATHS = [
 
 export const STATIC_PAGE_SEO = {
   "/": {
-    title: "Direktori Studio Tattoo Indonesia",
+    title: "Direktori Studio Tato Indonesia",
     description:
-      "Temukan studio tattoo terpercaya di Indonesia. Jelajahi portofolio artist, filter berdasarkan kota dan gaya, lalu booking konsultasi lewat WhatsApp.",
+      "Temukan studio tato terpercaya di Indonesia. Jelajahi portofolio artist, filter berdasarkan kota dan gaya, lalu booking konsultasi lewat WhatsApp.",
   },
   "/pricing": {
     title: "Harga & Paket Langganan",
     description:
-      "Pilih paket langganan Ruang Tato untuk studio tattoo Anda. Landing page profesional mulai Rp 99.000/bulan dengan builder drag-and-drop.",
+      "Pilih paket langganan Ruang Tato untuk studio tato Anda. Landing page profesional mulai Rp 99.000/bulan dengan builder drag-and-drop.",
   },
   "/help": {
     title: "Pusat Bantuan",
@@ -261,12 +261,12 @@ export const STATIC_PAGE_SEO = {
   "/terms": {
     title: "Syarat & Ketentuan",
     description:
-      "Syarat dan ketentuan penggunaan platform Ruang Tato untuk studio tattoo di Indonesia.",
+      "Syarat dan ketentuan penggunaan platform Ruang Tato untuk studio tato di Indonesia.",
   },
   "/subscription": {
     title: "Kebijakan Langganan",
     description:
-      "Kebijakan langganan dan pembayaran Ruang Tato untuk studio tattoo yang menggunakan platform landing page berbayar.",
+      "Kebijakan langganan dan pembayaran Ruang Tato untuk studio tato yang menggunakan platform landing page berbayar.",
   },
   "/cookies": {
     title: "Kebijakan Cookie",

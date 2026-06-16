@@ -118,7 +118,7 @@ export function ShowcasePage({
                   <Store className="size-5" />
                 </div>
                 <h2 className="text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
-                  Punya studio tattoo?
+                  Punya studio tato?
                 </h2>
                 <p className="mt-3 text-base leading-relaxed text-muted-foreground">
                   Tampilkan portofoliomu di RuangTato, bangun halaman studio sendiri, dan terima calon klien langsung lewat WhatsApp — tanpa perantara.

@@ -200,7 +200,7 @@ export function HeaderOverlayPanel({ data, onChange }: PanelProps<HeaderOverlayD
       </div>
       <div className="flex flex-col gap-2">
         <FieldLabel htmlFor={taglineId}>Tagline (opsional)</FieldLabel>
-        <Input id={taglineId} className={inputClass} value={data.tagline || ''} onChange={(e) => onChange('tagline', e.target.value)} placeholder="Tattoo • Piercing • Art" />
+        <Input id={taglineId} className={inputClass} value={data.tagline || ''} onChange={(e) => onChange('tagline', e.target.value)} placeholder="Tato • Piercing • Art" />
       </div>
       <label htmlFor={showCenterLogoId} className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
         <input
@@ -498,7 +498,7 @@ export function TestimonialsPanel({ data, onChange }: PanelProps<TestimonialsDat
             </div>
             <div className="flex flex-col gap-1">
               <FieldLabel htmlFor={reviewTypeId}>Tipe</FieldLabel>
-              <Input id={reviewTypeId} className={inputClass} placeholder="Tipe (e.g. First Tattoo)" value={review.type} onChange={(e) => { const updated = [...reviews]; updated[i] = { ...updated[i], type: e.target.value }; onChange('reviews', updated) }} />
+              <Input id={reviewTypeId} className={inputClass} placeholder="Tipe (e.g. First Tato)" value={review.type} onChange={(e) => { const updated = [...reviews]; updated[i] = { ...updated[i], type: e.target.value }; onChange('reviews', updated) }} />
             </div>
           </div>
         )

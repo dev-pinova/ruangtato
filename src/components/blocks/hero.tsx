@@ -17,7 +17,7 @@ export function BlockHero({
 }) {
   const ctaText = data?.ctaText || "Konsultasi Sekarang"
   const waUrl = waNumber
-    ? `https://wa.me/${waNumber}?text=Halo,%20saya%20tertarik%20untuk%20konsultasi%20tattoo`
+    ? `https://wa.me/${waNumber}?text=Halo,%20saya%20tertarik%20untuk%20konsultasi%20tato`
     : undefined
   const headline =
     data?.headline ||

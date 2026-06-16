@@ -13,7 +13,7 @@ const NAV_LINKS = [
   {
     href: "/",
     label: "Kembali ke Beranda",
-    description: "Temukan studio tattoo di beranda",
+    description: "Temukan studio tato di beranda",
     icon: Home,
     variant: "default" as const,
     primary: true,
@@ -47,7 +47,7 @@ const NAV_LINKS = [
 export const metadata: Metadata = {
   ...createPageMetadata({
     title: "Halaman Tidak Ditemukan",
-    description: `Halaman yang Anda cari tidak ada atau sudah dipindahkan. Kembali ke beranda ${SITE_NAME} atau jelajahi studio tattoo di Indonesia.`,
+    description: `Halaman yang Anda cari tidak ada atau sudah dipindahkan. Kembali ke beranda ${SITE_NAME} atau jelajahi studio tato di Indonesia.`,
     noIndex: true,
   }),
   alternates: {},
@@ -82,7 +82,7 @@ export default function NotFound() {
             description={
               <>
                 Halaman yang Anda cari tidak ada, sudah dipindahkan, atau tautannya
-                sudah tidak aktif. Tenang — studio tattoo terpercaya masih menunggu
+                sudah tidak aktif. Tenang — studio tato terpercaya masih menunggu
                 di beranda {SITE_NAME}.
               </>
             }

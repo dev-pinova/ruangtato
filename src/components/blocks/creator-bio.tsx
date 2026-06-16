@@ -24,7 +24,7 @@ export function BlockCreatorBio({ data }: { data: any }) {
               {data?.role || "Lead Artist & Founder"}
             </p>
             <h2 className="mt-2 text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
-              {data?.name || "Budi Tattooer"}
+              {data?.name || "Budi Tatoer"}
             </h2>
             <blockquote className="mt-6 border-l-2 border-primary pl-4 text-base leading-relaxed text-muted-foreground md:text-lg">
               {data?.bio ||

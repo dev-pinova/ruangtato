@@ -4,27 +4,27 @@ import { BlurFade } from "@/components/ui/blur-fade"
 const DEFAULT_IMAGES: { src: string; alt?: string }[] = [
   {
     src: "https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?q=80&w=900&auto=format&fit=crop",
-    alt: "Tattoo work 1",
+    alt: "Tato work 1",
   },
   {
     src: "https://images.unsplash.com/photo-1598371839696-5c5bb00bdc28?q=80&w=900&auto=format&fit=crop",
-    alt: "Tattoo work 2",
+    alt: "Tato work 2",
   },
   {
     src: "https://images.unsplash.com/photo-1568515045052-f9a854d70bfd?q=80&w=900&auto=format&fit=crop",
-    alt: "Tattoo work 3",
+    alt: "Tato work 3",
   },
   {
     src: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=900&auto=format&fit=crop",
-    alt: "Tattoo work 4",
+    alt: "Tato work 4",
   },
   {
     src: "https://images.unsplash.com/photo-1565058379802-bbe93b2f703a?q=80&w=900&auto=format&fit=crop",
-    alt: "Tattoo work 5",
+    alt: "Tato work 5",
   },
   {
     src: "https://images.unsplash.com/photo-1565058379802-bbe93b2f703a?q=80&w=900&auto=format&fit=crop",
-    alt: "Tattoo work 6",
+    alt: "Tato work 6",
   },
 ]
 

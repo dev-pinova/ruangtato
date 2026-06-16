@@ -4,7 +4,7 @@ import { createPageMetadata } from "@/lib/seo"
 
 export const metadata: Metadata = createPageMetadata({
   title: "Daftar Studio",
-  description: "Buat akun studio dan mulai landing page tattoo Anda di Ruang Tato.",
+  description: "Buat akun studio dan mulai landing page tato Anda di Ruang Tato.",
   path: "/register",
   noIndex: true,
 })

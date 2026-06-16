@@ -16,7 +16,7 @@ export function BlockFinalCTA({
 }) {
   const ctaText = data?.ctaText || "Booking via WhatsApp"
   const waUrl = waNumber
-    ? `https://wa.me/${waNumber}?text=Halo,%20saya%20tertarik%20untuk%20konsultasi%20tattoo`
+    ? `https://wa.me/${waNumber}?text=Halo,%20saya%20tertarik%20untuk%20konsultasi%20tato`
     : undefined
 
   return (

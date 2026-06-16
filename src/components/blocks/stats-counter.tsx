@@ -2,7 +2,7 @@ import type { StatsCounterData } from "@/lib/types"
 import { NumberTicker } from "@/components/ui/number-ticker"
 
 const DEFAULT_STATS = [
-  { value: "2,500", label: "Tattoos Done" },
+  { value: "2,500", label: "Tatos Done" },
   { value: "1,800", label: "Happy Clients" },
   { value: "15", label: "Years Experience" },
   { value: "50", label: "Custom Designs" },

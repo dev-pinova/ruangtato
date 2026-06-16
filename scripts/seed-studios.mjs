@@ -30,8 +30,8 @@ const DEFAULT_BLOCKS = [
       slides: [
         {
           headline: "Eyes Wide Open",
-          subheadline: "Studio tattoo profesional dengan desain unik.",
-          ctaText: "Get a Tattoo",
+          subheadline: "Studio tato profesional dengan desain unik.",
+          ctaText: "Get a Tato",
           image:
             "https://images.unsplash.com/photo-1565058379802-bbe93b2f703a?q=80&w=1200&auto=format&fit=crop",
         },

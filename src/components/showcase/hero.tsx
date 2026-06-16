@@ -55,7 +55,7 @@ export function ShowcaseHero({
 }) {
   return (
     <section
-      aria-label="Cari studio tattoo"
+      aria-label="Cari studio tato"
       className="relative isolate overflow-hidden border-b border-border"
     >
       {/* Background image */}
@@ -80,7 +80,7 @@ export function ShowcaseHero({
           <div className="group relative flex items-center gap-1.5 rounded-full border border-white/20 bg-black/30 px-4 py-1.5 text-sm text-white/80 backdrop-blur-sm transition-all duration-300 hover:border-white/30 hover:bg-black/40">
             <Sparkles className="size-3.5 text-brand-scarlet" />
             <AnimatedShinyText className="text-xs font-medium text-white/80" shimmerWidth={80}>
-              DIREKTORI STUDIO TATTOO PROFESIONAL
+              DIREKTORI STUDIO TATO PROFESIONAL
             </AnimatedShinyText>
             <ArrowRight className="size-3 text-white/50" />
           </div>
@@ -91,7 +91,7 @@ export function ShowcaseHero({
           <span className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
             <GradualSpacing text="Bandingkan" />
             <AnimatedGradientText className="[--bg-size:200%] font-semibold leading-tight tracking-tight">
-              Studio Tattoo
+              Studio Tato
             </AnimatedGradientText>
           </span>
           <GradualSpacing text="Lihat Portofolio." />
@@ -106,8 +106,8 @@ export function ShowcaseHero({
           <div className="relative flex items-center bg-black/50 rounded-full">
             <Search className="pointer-events-none absolute left-4 size-4 text-muted-foreground" />
             <Input
-              aria-label="Cari studio tattoo"
-              placeholder="Cari studio, kota, gaya tattoo, atau artist..."
+              aria-label="Cari studio tato"
+              placeholder="Cari studio, kota, gaya tato, atau artist..."
               className="h-12 w-full rounded-full border-0 bg-transparent pl-11 text-sm text-white placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none"
               value={searchQuery}
               onChange={(e) => onSearch(e.target.value)}
@@ -161,7 +161,7 @@ export function ShowcaseHero({
       {/* Bottom tagline */}
       <div className="relative z-10 border-t border-white/10 bg-black/40 px-4 py-3 text-center">
         <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-white/50">
-          STANDAR KEAMANAN & ESTETIKA TATTOO INDONESIA
+          STANDAR KEAMANAN & ESTETIKA TATO INDONESIA
         </p>
       </div>
     </section>

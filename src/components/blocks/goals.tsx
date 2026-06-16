@@ -6,7 +6,7 @@ import { Play, X } from "lucide-react"
 import type { GoalsData } from "@/lib/types"
 
 const DEFAULT_FEATURES = [
-  { title: "Unique Tattoos", desc: "Desain custom dibuat khusus untuk Anda." },
+  { title: "Unique Tatos", desc: "Desain custom dibuat khusus untuk Anda." },
   { title: "Piercing & Art", desc: "Piercing aman dan koleksi karya seni studio." },
   { title: "Trusted Studio", desc: "Standar sterilisasi tinggi dan aftercare lengkap." },
 ]
@@ -16,10 +16,10 @@ export function BlockGoals({ data }: { data: GoalsData }) {
 
   const features = data?.features?.length ? data.features : DEFAULT_FEATURES
   const eyebrow = data?.eyebrow ?? "About Us"
-  const headline = data?.headline ?? "Tattoo Like Art"
+  const headline = data?.headline ?? "Tato Like Art"
   const description =
     data?.description ??
-    "Setiap tattoo lahir dari percakapan panjang dengan klien, kemudian kami terjemahkan menjadi karya yang personal, presisi, dan tahan waktu."
+    "Setiap tato lahir dari percakapan panjang dengan klien, kemudian kami terjemahkan menjadi karya yang personal, presisi, dan tahan waktu."
   const image =
     data?.image ||
     "https://images.unsplash.com/photo-1568515045052-f9a854d70bfd?q=80&w=1600&auto=format&fit=crop"
