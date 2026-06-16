@@ -24,10 +24,13 @@ function LoginForm() {
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
+  const [resending, setResending] = useState(false)
+  const [resendStatus, setResendStatus] = useState<string | null>(null)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
+    setResendStatus(null)
     setLoading(true)
 
     const { error: signInError } = await authClient.signIn.email({
@@ -47,6 +50,33 @@ function LoginForm() {
     router.push(nextPath)
     router.refresh()
   }
+
+  async function handleResendVerification() {
+    if (!email) {
+      setError("Masukkan email Anda terlebih dahulu untuk mengirim ulang verifikasi.")
+      return
+    }
+    setResending(true)
+    setError(null)
+    setResendStatus(null)
+
+    const { error: resendError } = await authClient.sendVerificationEmail({
+      email,
+      callbackURL: window.location.origin + "/login",
+    })
+
+    setResending(false)
+    if (resendError) {
+      setError(resendError.message ?? "Gagal mengirim ulang email verifikasi.")
+    } else {
+      setResendStatus("Email verifikasi telah dikirim ulang. Silakan periksa inbox Anda.")
+    }
+  }
+
+  const isUnverifiedError =
+    error?.toLowerCase().includes("verified") ||
+    error?.toLowerCase().includes("verifikasi")
+
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4">
@@ -120,9 +150,23 @@ function LoginForm() {
             {error && (
               <p className="text-sm text-destructive">{error}</p>
             )}
+            {resendStatus && (
+              <p className="text-sm text-emerald-500 font-medium">{resendStatus}</p>
+            )}
             <Button type="submit" className="mt-2 w-full" disabled={loading}>
               {loading ? "Memproses..." : "Masuk"}
             </Button>
+            {isUnverifiedError && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleResendVerification}
+                disabled={resending}
+                className="w-full"
+              >
+                {resending ? "Mengirim ulang..." : "Kirim Ulang Email Verifikasi"}
+              </Button>
+            )}
           </form>
         </div>
 
