@@ -4,10 +4,10 @@ import type { ServicesCardsData } from "@/lib/types"
 
 const DEFAULT_CARDS = [
   {
-    title: "Specific Style Tattoos",
+    title: "Specific Style Tatos",
     desc: "Custom, blackwork, fine line, Japanese, dan realism.",
     ctaText: "Read More",
-    ctaHref: "#tattoo",
+    ctaHref: "#tato",
     image:
       "https://images.unsplash.com/photo-1598371839696-5c5bb00bdc28?q=80&w=900&auto=format&fit=crop",
   },

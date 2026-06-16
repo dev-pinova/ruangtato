@@ -106,7 +106,7 @@ const AVAILABLE_BLOCKS: { type: BlockType; name: string; desc: string }[] = [
   { type: 'ServicesCards', name: 'Services Cards', desc: 'Kartu layanan 3 kolom' },
   { type: 'StatsCounter', name: 'Stats Counter', desc: 'Angka pencapaian' },
   { type: 'Overview', name: 'Overview', desc: 'Deskripsi dan foto' },
-  { type: 'Features', name: 'Features', desc: 'Grid gaya tattoo' },
+  { type: 'Features', name: 'Features', desc: 'Grid gaya tato' },
   { type: 'HowItWorks', name: 'How It Works', desc: 'Langkah kerja' },
   { type: 'CreatorBio', name: 'Creator Bio', desc: 'Profil artist tunggal' },
   { type: 'Testimonials', name: 'Testimonials', desc: 'Review klien dgn quote' },

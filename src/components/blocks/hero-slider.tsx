@@ -10,8 +10,8 @@ import { trackStudioClick } from "@/components/studio/studio-tracker"
 const DEFAULT_SLIDES = [
   {
     headline: "Art Studio",
-    subheadline: "Unique Tattoos",
-    ctaText: "Get a Tattoo",
+    subheadline: "Unique Tatos",
+    ctaText: "Get a Tato",
     image:
       "https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?q=80&w=1600&auto=format&fit=crop",
   },
@@ -31,7 +31,7 @@ export function BlockHeroSlider({
   const [active, setActive] = useState(0)
   const slide = slides[active]
   const waUrl = waNumber
-    ? `https://wa.me/${waNumber}?text=Halo,%20saya%20tertarik%20untuk%20konsultasi%20tattoo`
+    ? `https://wa.me/${waNumber}?text=Halo,%20saya%20tertarik%20untuk%20konsultasi%20tato`
     : undefined
 
   function prev() {
@@ -83,7 +83,7 @@ export function BlockHeroSlider({
           >
             [&nbsp; {slide.ctaText || "Buy Template"} &nbsp;]
           </a>
-          {/* Text-only CTA — "Get A Tattoo" style */}
+          {/* Text-only CTA — "Get A Tato" style */}
           {waUrl ? (
             <a
               href={waUrl}
@@ -92,14 +92,14 @@ export function BlockHeroSlider({
               onClick={() => slug && trackStudioClick(slug)}
               className="font-display text-[11px] uppercase tracking-[0.4em] text-white/90 underline-offset-8 transition-colors hover:text-white hover:underline"
             >
-              Get a Tattoo
+              Get a Tato
             </a>
           ) : (
             <a
               href="#appointment"
               className="font-display text-[11px] uppercase tracking-[0.4em] text-white/90 underline-offset-8 transition-colors hover:text-white hover:underline"
             >
-              Get a Tattoo
+              Get a Tato
             </a>
           )}
         </div>

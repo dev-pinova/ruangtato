@@ -4,7 +4,7 @@ export const DEFAULT_BLOCK_DATA: Record<BlockType, BlockData> = {
   Header: { title: "Studio Name", ctaText: "Book Now" },
   HeaderOverlay: {
     logoText: "Studio Name",
-    tagline: "Tattoo • Piercing • Art",
+    tagline: "Tato • Piercing • Art",
     showCenterLogo: true,
     leftLinks: [
       { label: "Home", href: "#home" },
@@ -20,8 +20,8 @@ export const DEFAULT_BLOCK_DATA: Record<BlockType, BlockData> = {
   Hero: {
     headline: "Eyes Wide Open",
     subheadline:
-      "Studio tattoo profesional dengan fokus desain unik, konsultasi mendalam, dan standar keamanan tinggi.",
-    ctaText: "Get a Tattoo",
+      "Studio tato profesional dengan fokus desain unik, konsultasi mendalam, dan standar keamanan tinggi.",
+    ctaText: "Get a Tato",
     benefits: [
       "Konsultasi desain personal",
       "Standar sterilisasi ketat",
@@ -35,13 +35,13 @@ export const DEFAULT_BLOCK_DATA: Record<BlockType, BlockData> = {
     slides: [
       {
         headline: "Art Studio",
-        subheadline: "Unique Tattoos",
-        ctaText: "Get a Tattoo",
+        subheadline: "Unique Tatos",
+        ctaText: "Get a Tato",
         image:
           "https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?q=80&w=1600&auto=format&fit=crop",
       },
       {
-        headline: "Tattoo Like Art",
+        headline: "Tato Like Art",
         subheadline: "Custom Pieces",
         ctaText: "Book Consultation",
         image:
@@ -58,9 +58,9 @@ export const DEFAULT_BLOCK_DATA: Record<BlockType, BlockData> = {
   },
   Goals: {
     eyebrow: "About Us",
-    headline: "Tattoo Like Art",
+    headline: "Tato Like Art",
     description:
-      "Setiap karya lahir dari konsultasi mendalam dengan klien, kemudian diwujudkan jadi tattoo yang personal dan tahan waktu.",
+      "Setiap karya lahir dari konsultasi mendalam dengan klien, kemudian diwujudkan jadi tato yang personal dan tahan waktu.",
     features: [
       { title: "Custom Design", desc: "Desain dibuat khusus untuk setiap klien." },
       { title: "Trusted Studio", desc: "Standar sterilisasi tinggi & aftercare lengkap." },
@@ -75,43 +75,43 @@ export const DEFAULT_BLOCK_DATA: Record<BlockType, BlockData> = {
     images: [
       {
         src: "https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?q=80&w=900&auto=format&fit=crop",
-        alt: "Tattoo work 1",
+        alt: "Tato work 1",
       },
       {
         src: "https://images.unsplash.com/photo-1598371839696-5c5bb00bdc28?q=80&w=900&auto=format&fit=crop",
-        alt: "Tattoo work 2",
+        alt: "Tato work 2",
       },
       {
         src: "https://images.unsplash.com/photo-1568515045052-f9a854d70bfd?q=80&w=900&auto=format&fit=crop",
-        alt: "Tattoo work 3",
+        alt: "Tato work 3",
       },
       {
         src: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=900&auto=format&fit=crop",
-        alt: "Tattoo work 4",
+        alt: "Tato work 4",
       },
       {
         src: "https://images.unsplash.com/photo-1565058379802-bbe93b2f703a?q=80&w=900&auto=format&fit=crop",
-        alt: "Tattoo work 5",
+        alt: "Tato work 5",
       },
       {
         src: "https://images.unsplash.com/photo-1565058379802-bbe93b2f703a?q=80&w=900&auto=format&fit=crop",
-        alt: "Tattoo work 6",
+        alt: "Tato work 6",
       },
     ],
   },
   Overview: {
-    headline: "Tattoo Like Art",
+    headline: "Tato Like Art",
     content1:
       "Kami menghadirkan pengalaman studio yang mengutamakan kenyamanan, keamanan, dan ekspresi artistik.",
     content2:
-      "Dari konsep awal hingga aftercare, tim kami mendampingi setiap langkah perjalanan tattoo Anda.",
+      "Dari konsep awal hingga aftercare, tim kami mendampingi setiap langkah perjalanan tato Anda.",
     image1:
       "https://images.unsplash.com/photo-1598371839696-5c5bb00bdc28?q=80&w=900&auto=format&fit=crop",
     image2:
       "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=900&auto=format&fit=crop",
   },
   Features: {
-    title: "Specific Style Tattoos",
+    title: "Specific Style Tatos",
     items: [
       { title: "Pinup", desc: "Gaya klasik dan bold." },
       { title: "Japanese", desc: "Motif tradisional dan modern." },
@@ -126,7 +126,7 @@ export const DEFAULT_BLOCK_DATA: Record<BlockType, BlockData> = {
     headline: "Our Services",
     cards: [
       {
-        title: "Tattoo",
+        title: "Tato",
         desc: "Custom design, blackwork, fine line, Japanese, hingga realism — dikerjakan oleh artist spesialis.",
         ctaText: "Learn More",
         ctaHref: "#contact",
@@ -155,13 +155,13 @@ export const DEFAULT_BLOCK_DATA: Record<BlockType, BlockData> = {
     steps: [
       { title: "Konsultasi", desc: "Diskusikan ide, ukuran, dan penempatan." },
       { title: "Desain", desc: "Review sketsa hingga Anda puas." },
-      { title: "Sesi Tattoo", desc: "Proses dengan standar keamanan tinggi." },
+      { title: "Sesi Tato", desc: "Proses dengan standar keamanan tinggi." },
       { title: "Aftercare", desc: "Panduan perawatan pasca sesi." },
     ],
   },
   CreatorBio: {
     name: "Charly Moon",
-    role: "Tattooist",
+    role: "Tatoist",
     bio: "Spesialis blackwork dan custom piece dengan pengalaman lebih dari 8 tahun.",
     image:
       "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop",
@@ -172,7 +172,7 @@ export const DEFAULT_BLOCK_DATA: Record<BlockType, BlockData> = {
     artists: [
       {
         name: "Charly Moon",
-        role: "Tattooist",
+        role: "Tatoist",
         image:
           "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=600&auto=format&fit=crop",
       },
@@ -199,7 +199,7 @@ export const DEFAULT_BLOCK_DATA: Record<BlockType, BlockData> = {
   StatsCounter: {
     headline: "",
     stats: [
-      { value: "2,500", label: "Tattoos Done" },
+      { value: "2,500", label: "Tatos Done" },
       { value: "1,800", label: "Happy Clients" },
       { value: "15", label: "Years Experience" },
       { value: "50", label: "Custom Designs" },
@@ -210,14 +210,14 @@ export const DEFAULT_BLOCK_DATA: Record<BlockType, BlockData> = {
     headline: "What Clients Say",
     reviews: [
       {
-        text: "Pengalaman tattoo terbaik yang pernah saya punya. Artist sangat profesional dan studionya nyaman.",
+        text: "Pengalaman tato terbaik yang pernah saya punya. Artist sangat profesional dan studionya nyaman.",
         name: "Luis Rent",
         type: "Cover-up",
       },
       {
         text: "Studio bersih, suasana tenang, dan hasil akhirnya melebihi ekspektasi saya.",
         name: "Christa Falcon",
-        type: "First Tattoo",
+        type: "First Tato",
       },
       {
         text: "Konsultasi mendalam, desainnya benar-benar personal — saya akan kembali untuk piece berikutnya.",
@@ -233,7 +233,7 @@ export const DEFAULT_BLOCK_DATA: Record<BlockType, BlockData> = {
     ctaHref: "#news",
     articles: [
       {
-        title: "How To Care Your New Tattoo",
+        title: "How To Care Your New Tato",
         category: "Aftercare",
         date: "12 Jun 2025",
         image:
@@ -241,7 +241,7 @@ export const DEFAULT_BLOCK_DATA: Record<BlockType, BlockData> = {
         href: "#",
       },
       {
-        title: "Choosing The Right Tattoo Style",
+        title: "Choosing The Right Tato Style",
         category: "Style",
         date: "04 Jun 2025",
         image:
@@ -261,7 +261,7 @@ export const DEFAULT_BLOCK_DATA: Record<BlockType, BlockData> = {
   Newsletter: {
     eyebrow: "Newsletter",
     headline: "Subscribe to our newsletter",
-    description: "Dapatkan info promo, event, dan inspirasi tattoo terbaru langsung ke email Anda.",
+    description: "Dapatkan info promo, event, dan inspirasi tato terbaru langsung ke email Anda.",
     placeholder: "Enter your email",
     ctaText: "Subscribe",
   },
@@ -287,11 +287,11 @@ export const DEFAULT_BLOCK_DATA: Record<BlockType, BlockData> = {
   },
   FinalCTA: {
     headline: "Contact Us To Get A Quote",
-    subheadline: "Buat janji konsultasi dan wujudkan desain tattoo impian Anda.",
+    subheadline: "Buat janji konsultasi dan wujudkan desain tato impian Anda.",
     ctaText: "Get a Quote via WA",
   },
   Footer: {
-    title: "Tattoo Studio",
+    title: "Tato Studio",
     address: "Jakarta, Indonesia",
     instagram: "@studiott",
     whatsapp: "WhatsApp",
@@ -304,7 +304,7 @@ export const DEFAULT_BLOCK_DATA: Record<BlockType, BlockData> = {
   },
 }
 
-/** Tattoo Studio 128 single-page preset — inspired by tattoo-128.webflow.io.
+/** Tato Studio 128 single-page preset — inspired by tato-128.webflow.io.
  *  Setiap block punya anchor target sesuai menu HeaderOverlay
  *  (Home / About / Gallery / Services / News / Contact). */
 const SECTION_ORDER: BlockType[] = [

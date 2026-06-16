@@ -65,8 +65,8 @@ export function ShowcaseValueProps() {
         <SectionHeading
           align="center"
           tagline="Kenapa RuangTato"
-          title="Cara terbaik menemukan studio tattoo."
-          description="Satu tempat untuk menjelajah, membandingkan, dan menghubungi studio tattoo profesional di Indonesia."
+          title="Cara terbaik menemukan studio tato."
+          description="Satu tempat untuk menjelajah, membandingkan, dan menghubungi studio tato profesional di Indonesia."
         />
 
         {/* Bento value props — 3 equal square (1:1) cards, min-height safe */}

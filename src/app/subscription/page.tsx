@@ -36,7 +36,7 @@ export default function SubscriptionPage() {
             {SITE_DOMAIN}
           </a>
           ) adalah platform SaaS (Landing Page as a Service) untuk pemilik
-          studio tattoo di Indonesia. Melalui langganan berbayar, studio
+          studio tato di Indonesia. Melalui langganan berbayar, studio
           mendapatkan akses ke builder drag-and-drop, halaman studio publik,
           penangkapan lead, dan penayangan di direktori showcase platform.
         </p>
@@ -52,7 +52,7 @@ export default function SubscriptionPage() {
 
       <LegalSection title="2. Siapa yang Dapat Berlangganan">
         <p>
-          Layanan langganan ditujukan untuk pemilik atau pengelola studio tattoo
+          Layanan langganan ditujukan untuk pemilik atau pengelola studio tato
           yang berusia minimal 18 tahun dan secara hukum berwenang menjalankan
           usaha. Satu akun studio dapat dikaitkan dengan satu landing page
           utama, dengan opsi manajemen tim internal (owner, admin, member)

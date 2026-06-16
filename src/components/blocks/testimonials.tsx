@@ -4,14 +4,14 @@ import type { TestimonialsData } from "@/lib/types"
 
 const DEFAULT_REVIEWS = [
   {
-    text: "Pengalaman tattoo terbaik yang pernah saya punya. Artist sangat profesional dan studionya nyaman.",
+    text: "Pengalaman tato terbaik yang pernah saya punya. Artist sangat profesional dan studionya nyaman.",
     name: "Luis Rent",
     type: "Cover-up",
   },
   {
     text: "Studio bersih, suasana tenang, dan hasil akhirnya melebihi ekspektasi saya.",
     name: "Christa Falcon",
-    type: "First Tattoo",
+    type: "First Tato",
   },
   {
     text: "Konsultasi mendalam, desainnya benar-benar personal — saya akan kembali untuk piece berikutnya.",

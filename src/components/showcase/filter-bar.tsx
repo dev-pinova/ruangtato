@@ -53,7 +53,7 @@ export function FilterBar({
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div className="space-y-1.5">
             <h2 className="text-lg font-semibold tracking-tight text-foreground">
-              Katalog Studio Tattoo
+              Katalog Studio Tato
             </h2>
             <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
               Semua studio dikurasi dan dicek standarnya. Pakai filter wilayah dan status terverifikasi untuk menemukan yang paling pas buatmu.

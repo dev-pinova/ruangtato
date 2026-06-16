@@ -66,10 +66,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const description =
     studio.description ||
-    `Studio tattoo ${studio.name} di ${studio.city}. Lihat portofolio dan booking konsultasi lewat WhatsApp.`
+    `Studio tato ${studio.name} di ${studio.city}. Lihat portofolio dan booking konsultasi lewat WhatsApp.`
 
   return createPageMetadata({
-    title: `${studio.name} — Studio Tattoo ${studio.city}`,
+    title: `${studio.name} — Studio Tato ${studio.city}`,
     description,
     path: `/app/studio/${slug}`,
     image: studio.image,
@@ -78,8 +78,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       studio.city,
       studio.artist,
       ...studio.tags,
-      "studio tattoo",
-      "booking tattoo",
+      "studio tato",
+      "booking tato",
     ],
   })
 }

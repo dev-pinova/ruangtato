@@ -9,7 +9,7 @@ import {
 } from "@/lib/brand"
 import { SITE_NAME } from "@/lib/site"
 
-export const alt = `${SITE_NAME} — Direktori & Landing Page Studio Tattoo`
+export const alt = `${SITE_NAME} — Direktori & Landing Page Studio Tato`
 export const size = { width: 1200, height: 630 }
 export const contentType = "image/png"
 
@@ -54,7 +54,7 @@ export default function OpenGraphImage() {
             maxWidth: 900,
           }}
         >
-          Direktori & Landing Page Studio Tattoo Indonesia
+          Direktori & Landing Page Studio Tato Indonesia
         </p>
         <div
           style={{
