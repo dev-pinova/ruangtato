@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { UserPlus } from "lucide-react"
+import { UserPlus, Upload } from "lucide-react"
 
 import { STUDIO_URL_DISPLAY_PREFIX } from "@/lib/site"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
@@ -62,6 +62,7 @@ function ProfilStudioTab({
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [uploadingImage, setUploadingImage] = useState(false)
 
   useEffect(() => {
     if (!studio) return
@@ -184,12 +185,61 @@ function ProfilStudioTab({
           </div>
           <div className="grid gap-2">
             <Label htmlFor="cover-image">Foto Cover Studio</Label>
-            <Input
-              id="cover-image"
-              value={coverImage}
-              onChange={(e) => setCoverImage(e.target.value)}
-              placeholder="https://..."
-            />
+            <div className="flex items-center gap-3">
+              <Input
+                id="cover-image"
+                value={coverImage}
+                onChange={(e) => setCoverImage(e.target.value)}
+                placeholder="https://..."
+                className="flex-1"
+              />
+              <Button
+                type="button"
+                variant="secondary"
+                disabled={uploadingImage}
+                onClick={() => document.getElementById("cover-image-upload")?.click()}
+                className="shrink-0 gap-2"
+              >
+                <Upload className="size-4" />
+                {uploadingImage ? "Mengunggah..." : "Upload"}
+              </Button>
+              <input
+                id="cover-image-upload"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0]
+                  if (!file) return
+                  
+                  setUploadingImage(true)
+                  try {
+                    const fd = new FormData()
+                    fd.append("file", file)
+                    const res = await fetch("/api/upload", {
+                      method: "POST",
+                      body: fd,
+                    })
+                    
+                    if (!res.ok) {
+                      const data = await res.json().catch(() => ({}))
+                      throw new Error(data.error || "Gagal upload")
+                    }
+                    
+                    const data = await res.json()
+                    if (data.url) {
+                      setCoverImage(data.url)
+                    }
+                  } catch (err: any) {
+                    alert(err.message || "Terjadi kesalahan saat mengunggah gambar.")
+                  } finally {
+                    setUploadingImage(false)
+                    // reset input
+                    e.target.value = ""
+                  }
+                }}
+              />
+            </div>
             <p className="text-xs text-muted-foreground">
               Digunakan di direktori studio. Kosongkan untuk otomatis dari gambar Hero di builder.
             </p>
