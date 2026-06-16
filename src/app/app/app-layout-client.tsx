@@ -27,6 +27,17 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
 import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+  AlertDialogMedia,
+} from "@/components/ui/alert-dialog"
+import {
   Sheet,
   SheetTrigger,
   SheetContent,
@@ -106,6 +117,8 @@ export default function AppLayoutClient({ children }: { children: React.ReactNod
   const [studio, setStudio] = useState<StudioSummary | null>(null)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false)
+  const [isSigningOut, setIsSigningOut] = useState(false)
   const collapsed = useSyncExternalStore(
     subscribeCollapsed,
     getCollapsedSnapshot,
@@ -169,9 +182,15 @@ export default function AppLayoutClient({ children }: { children: React.ReactNod
   }, [router])
 
   async function handleSignOut() {
-    await authClient.signOut()
-    router.push("/login")
-    router.refresh()
+    setIsSigningOut(true)
+    try {
+      await authClient.signOut()
+      router.push("/login")
+      router.refresh()
+    } finally {
+      setIsSigningOut(false)
+      setShowLogoutDialog(false)
+    }
   }
 
   const userName = user?.name ?? "Memuat…"
@@ -464,7 +483,7 @@ export default function AppLayoutClient({ children }: { children: React.ReactNod
                 Pengaturan
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem variant="destructive" onClick={handleSignOut}>
+              <DropdownMenuItem variant="destructive" onClick={() => setShowLogoutDialog(true)}>
                 <LogOut className="size-4" />
                 Keluar
               </DropdownMenuItem>
@@ -474,6 +493,40 @@ export default function AppLayoutClient({ children }: { children: React.ReactNod
 
         <main className="flex-1 overflow-y-auto">{children}</main>
       </div>
+
+      {/* Logout confirmation dialog */}
+      <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogMedia>
+              <LogOut className="size-5 text-muted-foreground" />
+            </AlertDialogMedia>
+            <AlertDialogTitle>Keluar dari akun?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Anda akan keluar dari sesi ini. Pastikan semua perubahan sudah tersimpan sebelum melanjutkan.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isSigningOut}>
+              Batal
+            </AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              disabled={isSigningOut}
+              onClick={handleSignOut}
+            >
+              {isSigningOut ? (
+                <>
+                  <span className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                  Keluar…
+                </>
+              ) : (
+                "Ya, Keluar"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
