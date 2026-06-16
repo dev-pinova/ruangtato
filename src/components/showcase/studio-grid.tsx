@@ -6,6 +6,7 @@ import { ArrowRight, BadgeCheck, Store, SlidersHorizontal } from "lucide-react"
 
 import { BlurFade } from "@/components/ui/blur-fade"
 import { MagicSpotlight } from "@/components/ui/magic-spotlight"
+import { LaurelWreath } from "@/components/showcase/laurel-wreath"
 import { VerifiedCheck } from "@/components/showcase/verified-check"
 import { Button } from "@/components/ui/button"
 import { SITE_NAME } from "@/lib/site"
@@ -180,7 +181,7 @@ function StudioCard({ studio }: { studio: Studio }) {
           />
         )}
 
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 to-transparent transition-opacity duration-300 opacity-0 group-hover:opacity-100" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent transition-opacity duration-300 group-hover:from-black/90" />
 
         {studio.isTrusted && (
           <div className="absolute left-3 top-3">
@@ -190,15 +191,26 @@ function StudioCard({ studio }: { studio: Studio }) {
             </span>
           </div>
         )}
+
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 px-4 pb-4 pt-10 text-center">
+          <div className="flex items-center justify-center gap-2">
+            <LaurelWreath side="left" className="h-5 w-auto shrink-0 text-white/60" />
+            <div className="min-w-0">
+              <p className="line-clamp-2 text-sm font-bold leading-snug tracking-tight text-white md:text-base">
+                {studio.name}
+              </p>
+              <p className="mt-1 text-[10px] leading-none text-white/55 md:text-[11px]">
+                Built with{" "}
+                <span className="font-medium text-white/90">{SITE_NAME}</span>
+              </p>
+            </div>
+            <LaurelWreath side="right" className="h-5 w-auto shrink-0 text-white/60" />
+          </div>
+        </div>
       </div>
 
       <div className="relative z-10 flex flex-col justify-between p-5 w-full flex-1">
         <div className="flex flex-col gap-3">
-          <div className="flex items-start justify-between gap-3">
-            <h3 className="font-semibold text-base leading-tight text-foreground line-clamp-2">
-              {studio.name}
-            </h3>
-          </div>
 
           <div className="flex items-center gap-2">
             {avatarSrc && (
