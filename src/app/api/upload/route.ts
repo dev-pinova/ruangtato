@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 
 import { auth } from "@/lib/auth/auth"
+import { isLocalUploadConfigured, uploadLocally } from "@/lib/local-upload"
 import { isR2Configured, uploadToR2 } from "@/lib/r2"
 import { getStudioSuspendedFlagForUser } from "@/lib/studio/studio-service"
 import { validateUploadedFile } from "@/lib/upload"
@@ -15,11 +16,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Account suspended", suspended: true }, { status: 403 })
   }
 
-  if (!isR2Configured()) {
+  // Require at least one storage backend to be configured.
+  // Priority: R2 (cloud CDN) → local filesystem (self-hosted fallback)
+  if (!isR2Configured() && !isLocalUploadConfigured()) {
     return NextResponse.json(
       {
-        error: "R2 not configured",
-        message: "Set S3_BUCKET, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY, S3_ENDPOINT in env",
+        error: "Upload storage not configured",
+        message:
+          "Set R2 env vars (S3_BUCKET, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY, S3_ENDPOINT) " +
+          "or set UPLOAD_DIR for local storage.",
       },
       { status: 503 },
     )
@@ -42,10 +47,19 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = await uploadToR2(file)
-    return NextResponse.json({ url: result?.url })
+    // R2 takes priority; fall back to local disk when not configured.
+    const result = isR2Configured()
+      ? await uploadToR2(file)
+      : await uploadLocally(file)
+
+    if (!result?.url) {
+      return NextResponse.json({ error: "Upload failed: no URL returned" }, { status: 500 })
+    }
+
+    return NextResponse.json({ url: result.url })
   } catch (error) {
     console.error("Upload failed:", error)
     return NextResponse.json({ error: "Upload failed" }, { status: 500 })
   }
 }
+
