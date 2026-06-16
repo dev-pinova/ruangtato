@@ -6,7 +6,6 @@ import { ArrowRight, BadgeCheck, Store, SlidersHorizontal } from "lucide-react"
 
 import { BlurFade } from "@/components/ui/blur-fade"
 import { MagicSpotlight } from "@/components/ui/magic-spotlight"
-import { LaurelWreath } from "@/components/showcase/laurel-wreath"
 import { VerifiedCheck } from "@/components/showcase/verified-check"
 import { Button } from "@/components/ui/button"
 import { SITE_NAME } from "@/lib/site"
@@ -168,20 +167,20 @@ function StudioCard({ studio }: { studio: Studio }) {
       href={`/app/studio/${studio.slug}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="group relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-border bg-card transition-shadow duration-300 hover:shadow-md"
+      className="group relative flex h-full w-full flex-col overflow-hidden rounded-xl border border-border bg-card transition-shadow duration-300 hover:shadow-md"
     >
       <MagicSpotlight size={260} />
-      <div className="relative overflow-hidden bg-muted w-full aspect-square">
+      <div className="relative overflow-hidden bg-muted w-full aspect-[4/3]">
         {studio.image && (
           /* eslint-disable-next-line @next/next/no-img-element */
           <img
             src={studio.image}
             alt={studio.name}
-            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
           />
         )}
 
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent transition-opacity duration-300 group-hover:from-black/90" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 to-transparent transition-opacity duration-300 opacity-0 group-hover:opacity-100" />
 
         {studio.isTrusted && (
           <div className="absolute left-3 top-3">
@@ -191,38 +190,28 @@ function StudioCard({ studio }: { studio: Studio }) {
             </span>
           </div>
         )}
-
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 px-4 pb-4 pt-10 text-center">
-          <div className="flex items-center justify-center gap-2">
-            <LaurelWreath side="left" className="h-5 w-auto shrink-0 text-white/60" />
-            <div className="min-w-0">
-              <p className="line-clamp-2 text-sm font-bold leading-snug tracking-tight text-white md:text-base">
-                {studio.name}
-              </p>
-              <p className="mt-1 text-[10px] leading-none text-white/55 md:text-[11px]">
-                Built with{" "}
-                <span className="font-medium text-white/90">{SITE_NAME}</span>
-              </p>
-            </div>
-            <LaurelWreath side="right" className="h-5 w-auto shrink-0 text-white/60" />
-          </div>
-        </div>
       </div>
 
-      <div className="relative z-10 flex flex-col justify-between p-6 w-full flex-1">
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-2.5">
+      <div className="relative z-10 flex flex-col justify-between p-5 w-full flex-1">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-start justify-between gap-3">
+            <h3 className="font-semibold text-base leading-tight text-foreground line-clamp-2">
+              {studio.name}
+            </h3>
+          </div>
+
+          <div className="flex items-center gap-2">
             {avatarSrc && (
               /* eslint-disable-next-line @next/next/no-img-element */
               <img
                 src={avatarSrc}
                 alt={studio.artist}
-                className="size-9 shrink-0 rounded-full object-cover ring-1 ring-border"
+                className="size-6 shrink-0 rounded-full object-cover ring-1 ring-border"
               />
             )}
-            <p className="min-w-0 text-sm text-foreground">
+            <p className="min-w-0 text-xs text-muted-foreground">
               By{" "}
-              <span className="font-medium underline decoration-foreground/30 underline-offset-2">
+              <span className="font-medium text-foreground">
                 {studio.artist}
               </span>
               {studio.isVerified && (
@@ -231,7 +220,7 @@ function StudioCard({ studio }: { studio: Studio }) {
             </p>
           </div>
 
-          <p className="line-clamp-4 text-sm leading-relaxed text-muted-foreground">
+          <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">
             {studio.description}
           </p>
         </div>
@@ -241,7 +230,7 @@ function StudioCard({ studio }: { studio: Studio }) {
             {displayTags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-full border border-border px-2.5 py-0.5 text-xs text-muted-foreground bg-muted/40"
+                className="rounded-full border border-border px-2 py-0.5 text-[11px] font-medium text-muted-foreground bg-muted/30"
               >
                 {tag}
               </span>
