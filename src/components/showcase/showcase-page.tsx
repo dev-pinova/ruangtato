@@ -6,7 +6,6 @@ import { ArrowRight, Store } from "lucide-react"
 
 import { MarketingShell } from "@/components/marketing/marketing-shell"
 import { ShowcaseHero } from "@/components/showcase/hero"
-import { ShowcaseValueProps } from "@/components/showcase/value-props"
 import { SidebarFilter } from "@/components/showcase/sidebar-filter"
 import { GridHeader } from "@/components/showcase/grid-header"
 import { StudioGrid } from "@/components/showcase/studio-grid"
@@ -81,7 +80,6 @@ export function ShowcasePage({
         featuredStudios={featuredStudios}
         popularTags={popularTags}
       />
-      <ShowcaseValueProps />
       <section className="mx-auto max-w-[1400px] px-4 py-12 md:px-6 lg:px-8 lg:py-16">
         <div className="flex flex-col md:flex-row gap-8 lg:gap-12 md:items-start">
           <aside className="w-full shrink-0 md:w-56 lg:w-64">
