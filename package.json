@@ -10,6 +10,7 @@
     "db:push": "node --env-file=.env ./node_modules/drizzle-kit/bin.cjs push",
     "db:generate": "node --env-file=.env ./node_modules/drizzle-kit/bin.cjs generate",
     "db:migrate": "node --env-file=.env --import tsx scripts/migrate.ts",
+    "db:migrate:ci": "node --import tsx scripts/migrate.ts",
     "db:baseline": "node --env-file=.env --import tsx scripts/baseline-migrations.ts",
     "db:rls": "node --env-file=.env --import tsx scripts/enable-rls.ts",
     "db:check": "node --env-file=.env --import tsx scripts/check-db.ts",
