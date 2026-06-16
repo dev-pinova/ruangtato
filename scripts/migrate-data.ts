@@ -1,13 +1,13 @@
 import pg from "pg"
 
-const oldDbUrl = process.argv[2]
+const oldDbUrl = process.argv[2] || ""
 if (!oldDbUrl) {
   console.error("Error: Please provide the old database URL.")
   console.error("Usage: npx tsx scripts/migrate-data.ts <OLD_DATABASE_URL>")
   process.exit(1)
 }
 
-const newDbUrl = process.env.DATABASE_URL
+const newDbUrl = process.env.DATABASE_URL || ""
 if (!newDbUrl) {
   console.error("Error: DATABASE_URL is not set in environment.")
   process.exit(1)
