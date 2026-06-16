@@ -225,16 +225,16 @@ export function AppShell({
                 whileHover={{ x: 2 }}
                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
                 className="w-full"
-              >
-                <LinkComponent
-                  {...(linkProps as any)}
-                  aria-current={isActive ? "page" : undefined}
-                  className={linkClassName}
-                />
-              </motion.div>
+              />
             }
           >
-            {linkContent}
+            <LinkComponent
+              {...(linkProps as any)}
+              aria-current={isActive ? "page" : undefined}
+              className={linkClassName}
+            >
+              {linkContent}
+            </LinkComponent>
           </TooltipTrigger>
           <TooltipContent side="right">{item.label}</TooltipContent>
         </Tooltip>
