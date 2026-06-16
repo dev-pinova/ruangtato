@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { ArrowRight, ChevronRight, Search, Sparkles } from "lucide-react"
 
 import { AnimatedGradientText } from "@/components/ui/animated-gradient-text"
@@ -60,11 +61,14 @@ export function ShowcaseHero({
     >
       {/* Background image */}
       <div className="absolute inset-0 -z-10">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src={HERO_BACKGROUND_IMAGE}
           alt=""
-          className="h-full w-full object-cover object-[65%_center] md:object-[70%_center]"
+          fill
+          priority
+          quality={85}
+          sizes="100vw"
+          className="object-cover object-[65%_center] md:object-[70%_center]"
         />
         <div className="absolute inset-0 bg-black/40" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/30 to-transparent" />
