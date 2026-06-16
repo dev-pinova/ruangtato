@@ -16,7 +16,9 @@ const DEFAULT_FROM = "Ruang Tato <onboarding@resend.dev>"
  */
 export async function sendEmail({ to, subject, html, text }: SendEmailParams) {
   const apiKey = process.env.RESEND_API_KEY
-  const from = process.env.EMAIL_FROM || DEFAULT_FROM
+  // Strip surrounding quotes if accidentally included in .env
+  let from = process.env.EMAIL_FROM || DEFAULT_FROM
+  from = from.replace(/^["']|["']$/g, "")
 
   if (!apiKey) {
     console.warn(
