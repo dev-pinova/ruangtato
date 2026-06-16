@@ -5,12 +5,29 @@ type RateLimitEntry = {
 
 const buckets = new Map<string, RateLimitEntry>()
 
+/**
+ * Hapus semua entries yang sudah expired untuk mencegah memory leak
+ * pada instance yang berjalan lama (uptime berminggu-minggu/bulan).
+ */
+function evictExpiredBuckets(now: number) {
+  for (const [key, entry] of buckets) {
+    if (now >= entry.resetAt) buckets.delete(key)
+  }
+}
+
 export function checkRateLimit(
   key: string,
   limit: number,
   windowMs: number,
 ): { allowed: boolean; retryAfterSec: number } {
   const now = Date.now()
+
+  // Cleanup periodik: jalankan eviction setiap kali Map melebihi 5.000 entries.
+  // Threshold ini lebih dari cukup untuk traffic admin panel normal.
+  if (buckets.size > 5_000) {
+    evictExpiredBuckets(now)
+  }
+
   const entry = buckets.get(key)
 
   if (!entry || now >= entry.resetAt) {
