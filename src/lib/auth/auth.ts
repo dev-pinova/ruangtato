@@ -102,7 +102,9 @@ export const auth = betterAuth({
   rateLimit: {
     enabled: true,
     window: 60,
-    max: 100,
+    // 20 req/min: aman untuk user normal, jauh lebih tahan brute force
+    // dibanding default 100. Turunkan lagi ke 10 jika ada indikasi serangan.
+    max: 20,
   },
   emailVerification: {
     sendOnSignUp: true,

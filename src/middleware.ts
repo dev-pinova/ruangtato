@@ -5,6 +5,21 @@ import type { NextRequest } from "next/server"
 const PUBLIC_APP_PREFIXES = ["/app/studio/"]
 const PUBLIC_ADMIN_PATHS = ["/admin/login"]
 
+/**
+ * Returns a 503 response when a protected route is accessed but the database
+ * is not configured. Fail-closed: better to show an error than to silently
+ * allow unauthenticated access.
+ */
+function databaseNotConfiguredResponse() {
+  return new NextResponse(
+    JSON.stringify({ error: "Service unavailable: database not configured" }),
+    {
+      status: 503,
+      headers: { "Content-Type": "application/json" },
+    },
+  )
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   const requestHeaders = new Headers(request.headers)
@@ -15,8 +30,9 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next({ request: { headers: requestHeaders } })
     }
 
+    // Fail-closed: do NOT let unauthenticated requests through when DB is absent.
     if (!process.env.DATABASE_URL) {
-      return NextResponse.next({ request: { headers: requestHeaders } })
+      return databaseNotConfiguredResponse()
     }
 
     const sessionCookie = getSessionCookie(request)
@@ -37,8 +53,9 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next({ request: { headers: requestHeaders } })
   }
 
+  // Fail-closed: do NOT let unauthenticated requests through when DB is absent.
   if (!process.env.DATABASE_URL) {
-    return NextResponse.next({ request: { headers: requestHeaders } })
+    return databaseNotConfiguredResponse()
   }
 
   const sessionCookie = getSessionCookie(request)
