@@ -155,7 +155,22 @@ export async function confirmOrderPayment(input: {
   }
 
   const subscription = await getSubscriptionForStudio(input.studioId)
-  const activated = subscription ? isActivePaidSubscription(subscription) : false
+  let activated = subscription ? isActivePaidSubscription(subscription) : false
+
+  // Fallback activation: If Midtrans confirms the transaction is successful
+  // but the subscription isn't marked as active yet (e.g. webhook failed/delayed),
+  // activate it right now to prevent user lock-out.
+  if (isSuccessfulPayment(status) && !activated) {
+    console.info(`[billing:confirm] Fallback activation triggered for order ${input.orderId}`)
+    await activatePaidOrder({
+      orderId: input.orderId,
+      grossAmount: status.gross_amount,
+      customField1: status.custom_field1,
+      paymentStatus: status,
+      expectedStudioId: input.studioId,
+    })
+    activated = true
+  }
 
   return {
     studioId: input.studioId,
