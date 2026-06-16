@@ -80,7 +80,7 @@ export function ShowcasePage({
         featuredStudios={featuredStudios}
         popularTags={popularTags}
       />
-      <section className="mx-auto max-w-[1400px] px-4 py-12 md:px-6 lg:px-8 lg:py-16">
+      <section className="mx-auto max-w-6xl px-4 py-12 md:px-6 md:py-16">
         <div className="flex flex-col md:flex-row gap-8 lg:gap-12 md:items-start">
           <aside className="w-full shrink-0 md:w-56 lg:w-64">
             <SidebarFilter
