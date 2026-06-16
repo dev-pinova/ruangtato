@@ -10,6 +10,7 @@ import {
 import { listPublishedStudios } from "@/lib/studio/studio-service"
 import { getCitiesFromStudios } from "@/lib/studio/studio-utils"
 
+export const dynamic = 'force-dynamic'
 export const revalidate = 300
 
 export const metadata: Metadata = staticPageMetadata("/")
