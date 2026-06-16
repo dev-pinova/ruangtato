@@ -1,5 +1,7 @@
 import pg from "pg"
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
+
 const oldDbUrl = process.argv[2] || ""
 if (!oldDbUrl) {
   console.error("Error: Please provide the old database URL.")
