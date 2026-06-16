@@ -71,11 +71,7 @@ export function StudioGrid({
     const hasActiveFilters = Boolean(query || selectedCity || trustedOnly)
 
     return (
-      <section
-        id="browse"
-        className="mx-auto max-w-6xl scroll-mt-16 px-4 py-16 md:px-6"
-      >
-        <div className="flex flex-col items-center rounded-2xl border border-border bg-card px-8 py-16 text-center">
+      <div className="flex flex-col items-center rounded-2xl border border-border bg-card px-8 py-16 text-center">
           {hasActiveFilters ? (
             <>
               <div className="mb-4 inline-flex size-11 items-center justify-center rounded-lg border border-border bg-background text-muted-foreground">
@@ -121,16 +117,12 @@ export function StudioGrid({
             </>
           )}
         </div>
-      </section>
     )
   }
 
   return (
-    <section
-      id="browse"
-      className="mx-auto max-w-6xl scroll-mt-16 px-4 py-10 md:px-6 md:py-14"
-    >
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+    <div id="browse" className="scroll-mt-16">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
         {visibleStudios.map((studio, index) => {
           return (
             <BlurFade
@@ -160,7 +152,7 @@ export function StudioGrid({
           </Button>
         </div>
       )}
-    </section>
+    </div>
   )
 }
 

@@ -7,7 +7,8 @@ import { ArrowRight, Store } from "lucide-react"
 import { MarketingShell } from "@/components/marketing/marketing-shell"
 import { ShowcaseHero } from "@/components/showcase/hero"
 import { ShowcaseValueProps } from "@/components/showcase/value-props"
-import { FilterBar } from "@/components/showcase/filter-bar"
+import { SidebarFilter } from "@/components/showcase/sidebar-filter"
+import { GridHeader } from "@/components/showcase/grid-header"
 import { StudioGrid } from "@/components/showcase/studio-grid"
 import { Button } from "@/components/ui/button"
 import { getCityCounts } from "@/lib/studio/studio-utils"
@@ -81,32 +82,41 @@ export function ShowcasePage({
         popularTags={popularTags}
       />
       <ShowcaseValueProps />
-      <FilterBar
-        cities={cities}
-        cityCounts={cityCounts}
-        sortBy={sortBy}
-        onSortChange={setSortBy}
-        trustedOnly={trustedOnly}
-        onTrustedToggle={() => setTrustedOnly((prev) => !prev)}
-        selectedCity={selectedCity}
-        onCityChange={setSelectedCity}
-        searchQuery={searchQuery}
-        onClearSearch={() => setSearchQuery("")}
-        resultCount={resultCount}
-        verifiedCount={verifiedCount}
-      />
-      <StudioGrid
-        studios={studios}
-        searchQuery={searchQuery}
-        sortBy={sortBy}
-        trustedOnly={trustedOnly}
-        selectedCity={selectedCity}
-        onResetFilters={() => {
-          setSearchQuery("")
-          setSelectedCity("")
-          setTrustedOnly(false)
-        }}
-      />
+      <section className="mx-auto max-w-[1400px] px-4 py-12 md:px-6 lg:px-8 lg:py-16">
+        <div className="flex flex-col md:flex-row gap-8 lg:gap-12 md:items-start">
+          <aside className="w-full shrink-0 md:w-56 lg:w-64">
+            <SidebarFilter
+              cities={cities}
+              cityCounts={cityCounts}
+              selectedCity={selectedCity}
+              onCityChange={setSelectedCity}
+            />
+          </aside>
+          
+          <main className="flex-1 min-w-0">
+            <GridHeader
+              sortBy={sortBy}
+              onSortChange={setSortBy}
+              trustedOnly={trustedOnly}
+              onTrustedToggle={() => setTrustedOnly((prev) => !prev)}
+              resultCount={resultCount}
+              verifiedCount={verifiedCount}
+            />
+            <StudioGrid
+              studios={studios}
+              searchQuery={searchQuery}
+              sortBy={sortBy}
+              trustedOnly={trustedOnly}
+              selectedCity={selectedCity}
+              onResetFilters={() => {
+                setSearchQuery("")
+                setSelectedCity("")
+                setTrustedOnly(false)
+              }}
+            />
+          </main>
+        </div>
+      </section>
 
       {/* Studio-owner conversion path */}
       <section className="border-t border-border bg-background">
