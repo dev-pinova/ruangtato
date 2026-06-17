@@ -126,9 +126,8 @@ export const auth = betterAuth({
       try {
         await sendEmail({ to: user.email, subject, html, text })
       } catch (err) {
-        console.error("[auth] Failed to send verification email to", user.email)
-        console.error("[auth] Verification URL (for manual testing):", url)
-        // Jangan throw err agar tidak crash saat demo dengan Resend sandbox
+        console.error("[auth] Failed to send verification email", err)
+        throw err
       }
     },
   },
@@ -149,9 +148,8 @@ export const auth = betterAuth({
       try {
         await sendEmail({ to: user.email, subject, html, text })
       } catch (err) {
-        console.error("[auth] Failed to send reset password email to", user.email)
-        console.error("[auth] Reset Password URL (for manual testing):", url)
-        // Jangan throw err agar tidak crash saat demo dengan Resend sandbox
+        console.error("[auth] Failed to send reset password email", err)
+        throw err
       }
     },
   },
