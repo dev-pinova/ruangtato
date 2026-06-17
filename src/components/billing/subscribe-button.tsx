@@ -88,13 +88,13 @@ export function SubscribeButton({
   popular,
   label = "Pilih Plan",
   snapReady = false,
-  onPaymentComplete,
   onMessage,
 }: {
   months: number
   popular?: boolean
   label?: string
   snapReady?: boolean
+  /** @deprecated — navigasi kini ditangani oleh redirect ke /checkout/success */
   onPaymentComplete?: () => void
   onMessage?: (msg: string | null) => void
 }) {
@@ -171,32 +171,27 @@ export function SubscribeButton({
       storePendingOrder(data.orderId, data.planType)
 
       window.snap.pay(data.snapToken, {
-        onSuccess: async () => {
-          onMessage?.("Pembayaran berhasil. Mengaktifkan langganan...")
-          try {
-            await confirmPayment(data.orderId!, data.planType!)
-            sessionStorage.removeItem(PENDING_ORDER_STORAGE_KEY)
-            onMessage?.("Langganan berhasil diaktifkan.")
-          } catch (error) {
-            onMessage?.(
-              error instanceof Error
-                ? error.message
-                : "Gagal memverifikasi pembayaran. Muat ulang halaman.",
-            )
-          }
-          onPaymentComplete?.()
-          setLoading(false)
+        onSuccess: (result: SnapResult) => {
+          sessionStorage.removeItem(PENDING_ORDER_STORAGE_KEY)
+          const params = new URLSearchParams({
+            order_id: result.order_id ?? data.orderId ?? "",
+            transaction_status: result.transaction_status ?? "settlement",
+          })
+          window.location.href = `/checkout/success?${params.toString()}`
         },
-        onPending: () => {
-          onMessage?.(
-            "Pembayaran menunggu konfirmasi. Status akan diperbarui otomatis.",
-          )
-          onPaymentComplete?.()
-          setLoading(false)
+        onPending: (result: SnapResult) => {
+          const params = new URLSearchParams({
+            order_id: result.order_id ?? data.orderId ?? "",
+            transaction_status: result.transaction_status ?? "pending",
+          })
+          window.location.href = `/checkout/success?${params.toString()}`
         },
-        onError: () => {
-          onMessage?.("Pembayaran gagal atau dibatalkan.")
-          setLoading(false)
+        onError: (result: SnapResult) => {
+          const params = new URLSearchParams({
+            order_id: result.order_id ?? data.orderId ?? "",
+            transaction_status: result.transaction_status ?? "deny",
+          })
+          window.location.href = `/checkout/success?${params.toString()}`
         },
         onClose: () => {
           setLoading(false)
@@ -206,7 +201,7 @@ export function SubscribeButton({
       setLoading(false)
       onMessage?.("Terjadi kesalahan. Coba lagi.")
     }
-  }, [months, onMessage, onPaymentComplete, clientKey])
+  }, [months, onMessage, clientKey])
 
   const isPreparing = Boolean(clientKey) && !snapReady
   const buttonLabel = !clientKey

@@ -24,6 +24,7 @@ import {
   TableRow,
   TableCell,
 } from "@/components/ui/table"
+import { PendingPaymentBanner } from "@/components/billing/pending-payment-banner"
 
 type LeadRow = {
   id: string
@@ -117,6 +118,9 @@ export default function DashboardPage() {
         title="Dashboard"
         description="Pantau performa studio Anda secara real-time."
       />
+
+      {/* Banner pembayaran pending */}
+      <PendingPaymentBanner />
 
       {loading ? (
         <p className="text-sm text-muted-foreground">Memuat data...</p>

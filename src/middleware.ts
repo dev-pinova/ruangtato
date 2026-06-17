@@ -4,6 +4,7 @@ import type { NextRequest } from "next/server"
 
 const PUBLIC_APP_PREFIXES = ["/app/studio/"]
 const PUBLIC_ADMIN_PATHS = ["/admin/login"]
+const AUTH_REQUIRED_PATHS = ["/checkout"]
 
 /**
  * Returns a 503 response when a protected route is accessed but the database
@@ -46,6 +47,20 @@ export async function middleware(request: NextRequest) {
   }
 
   if (!pathname.startsWith("/app")) {
+    // Checkout & halaman success memerlukan sesi — redirect ke login jika belum
+    if (AUTH_REQUIRED_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`))) {
+      if (!process.env.DATABASE_URL) {
+        return databaseNotConfiguredResponse()
+      }
+
+      const sessionCookie = getSessionCookie(request)
+      if (!sessionCookie) {
+        const loginUrl = new URL("/login", request.url)
+        loginUrl.searchParams.set("next", pathname)
+        return NextResponse.redirect(loginUrl)
+      }
+    }
+
     return NextResponse.next({ request: { headers: requestHeaders } })
   }
 
@@ -70,5 +85,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/app/:path*", "/admin/:path*"],
+  matcher: ["/app/:path*", "/admin/:path*", "/checkout/:path*", "/checkout"],
 }

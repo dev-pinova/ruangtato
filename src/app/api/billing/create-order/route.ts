@@ -61,7 +61,9 @@ export async function POST(request: Request) {
         email: session.user.email,
       },
       callbacks: {
-        finish: `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/app/billing?payment=finish`,
+        // Midtrans akan append ?order_id=...&transaction_status=...&status_code=...
+        // ke URL ini saat user klik "Selesai" di halaman hosted Midtrans.
+        finish: `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/checkout/success`,
       },
     })
 

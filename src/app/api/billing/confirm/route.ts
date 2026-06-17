@@ -6,7 +6,11 @@ import {
 } from "@/lib/billing/billing-activation"
 import { isMidtransConfigured } from "@/lib/billing/midtrans"
 import { auth } from "@/lib/auth/auth"
-import { getStudioForUser, getStudioSuspendedFlagForUser } from "@/lib/studio/studio-service"
+import {
+  getStudioForUser,
+  getStudioSuspendedFlagForUser,
+  getSubscriptionForStudio,
+} from "@/lib/studio/studio-service"
 import { parseJsonBody, z } from "@/lib/validation"
 
 const ConfirmSchema = z.object({
@@ -49,11 +53,17 @@ export async function POST(request: Request) {
       studioId: studio.id,
     })
 
+    // Fetch current subscription to include expiresAt in the response
+    const subscription = await getSubscriptionForStudio(studio.id)
+
     return NextResponse.json({
       message: result.activated
         ? "Langganan aktif."
         : "Pembayaran sedang diverifikasi. Status akan diperbarui otomatis.",
-      status: result,
+      status: {
+        ...result,
+        subscriptionExpiresAt: subscription?.expiresAt?.toISOString() ?? null,
+      },
     })
   } catch (error) {
     if (error instanceof BillingActivationError) {

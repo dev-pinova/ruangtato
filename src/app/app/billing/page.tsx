@@ -4,7 +4,7 @@ import { eq, desc } from "drizzle-orm"
 import { CreditCard, AlertCircle } from "lucide-react"
 
 import { db } from "@/db"
-import { payments, subscriptions } from "@/db/schema"
+import { payments, subscriptions, invoices } from "@/db/schema"
 import { getServerSession } from "@/lib/auth/session"
 import { getStudioForUser } from "@/lib/studio/studio-service"
 import { getSubscriptionPlanLabel } from "@/lib/billing/billing-plans"
@@ -28,6 +28,7 @@ import {
   TableCell,
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
+import { PendingPaymentBanner } from "@/components/billing/pending-payment-banner"
 
 function formatDate(date: Date | null) {
   if (!date) return "—"
@@ -72,6 +73,16 @@ export default async function BillingPage() {
     .where(eq(payments.studioId, studio.id))
     .orderBy(desc(payments.createdAt))
 
+  // Map orderId → invoiceId untuk link ke halaman detail
+  const studioInvoices = await db
+    .select({ id: invoices.id, midtransOrderId: invoices.midtransOrderId })
+    .from(invoices)
+    .where(eq(invoices.studioId, studio.id))
+
+  const invoiceByOrderId = new Map(
+    studioInvoices.map((inv) => [inv.midtransOrderId, inv.id])
+  )
+
   const isActive = subscription?.status === "active"
   const isTrial = subscription?.planType === "trial"
   const planInfo = subscription
@@ -84,6 +95,9 @@ export default async function BillingPage() {
         title="Billing & Langganan"
         description="Kelola paket langganan studio Anda dan lihat riwayat pembayaran."
       />
+
+      {/* Banner jika ada pembayaran pending */}
+      <PendingPaymentBanner />
 
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
@@ -174,6 +188,7 @@ export default async function BillingPage() {
                     <TableHead>Metode</TableHead>
                     <TableHead>Jumlah</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Invoice</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -215,6 +230,18 @@ export default async function BillingPage() {
                           >
                             {isSuccess ? "Berhasil" : isPending ? "Pending" : "Gagal"}
                           </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {invoiceByOrderId.has(payment.orderId) ? (
+                            <Link
+                              href={`/app/billing/invoices/${invoiceByOrderId.get(payment.orderId)}`}
+                              className="text-xs text-primary hover:underline underline-offset-4 font-medium"
+                            >
+                              Lihat Invoice
+                            </Link>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">—</span>
+                          )}
                         </TableCell>
                       </TableRow>
                     )

@@ -1,4 +1,7 @@
+import { eq } from "drizzle-orm"
 import { getDb } from "@/db"
+import { user } from "@/db/auth-schema"
+import { studios, studioMemberships } from "@/db/schema"
 import {
   amountsMatchPlan,
   fetchTransactionStatus,
@@ -16,6 +19,7 @@ import {
   recordInvoice,
   setStudioActiveIfNotSuspended,
 } from "@/lib/studio/studio-service"
+import { getPlanByType } from "@/lib/billing/billing-plans"
 
 export class BillingActivationError extends Error {
   constructor(
@@ -83,6 +87,8 @@ export function validatePaidOrder(input: ActivatePaidOrderInput): {
 export async function activatePaidOrder(input: ActivatePaidOrderInput) {
   const { studioId, planType, months, amount } = validatePaidOrder(input)
 
+  let activatedSubscription: Awaited<ReturnType<typeof activateSubscription>> | null = null
+
   await getDb().transaction(async (tx) => {
     await recordPaymentEvent(input.paymentStatus, tx)
 
@@ -98,7 +104,7 @@ export async function activatePaidOrder(input: ActivatePaidOrderInput) {
       tx,
     )
 
-    await activateSubscription(
+    activatedSubscription = await activateSubscription(
       {
         studioId,
         planType,
@@ -111,8 +117,82 @@ export async function activatePaidOrder(input: ActivatePaidOrderInput) {
     await setStudioActiveIfNotSuspended(studioId, tx)
   })
 
+  // Kirim email konfirmasi — fire-and-forget, tidak blocking aktivasi
+  sendPaymentConfirmationEmail({
+    studioId,
+    planType,
+    amount,
+    orderId: input.orderId,
+    subscription: activatedSubscription,
+  }).catch((err) => {
+    console.error("[billing:email] Failed to send payment confirmation:", err)
+  })
+
   return { studioId, planType }
 }
+
+/**
+ * Kirim email konfirmasi pembayaran ke owner studio.
+ * Gagal secara diam-diam (hanya log) agar tidak membatalkan aktivasi.
+ */
+async function sendPaymentConfirmationEmail(input: {
+  studioId: string
+  planType: string
+  amount: number
+  orderId: string
+  subscription: { startsAt?: Date | null; expiresAt?: Date | null } | null
+}) {
+  const db = getDb()
+
+  // Ambil data studio
+  const [studioRow] = await db
+    .select({ name: studios.name })
+    .from(studios)
+    .where(eq(studios.id, input.studioId))
+    .limit(1)
+  if (!studioRow) return
+
+  // Ambil email owner (primary owner membership)
+  const [memberRow] = await db
+    .select({ name: user.name, email: user.email })
+    .from(studioMemberships)
+    .innerJoin(user, eq(studioMemberships.userId, user.id))
+    .where(eq(studioMemberships.studioId, input.studioId))
+    .orderBy(studioMemberships.createdAt)
+    .limit(1)
+  if (!memberRow?.email) return
+
+  const plan = getPlanByType(input.planType)
+  if (!plan) return
+
+  const now = new Date()
+  const startsAt = input.subscription?.startsAt ?? now
+  const expiresAt = input.subscription?.expiresAt ?? (() => {
+    const d = new Date(now)
+    d.setMonth(d.getMonth() + plan.months)
+    return d
+  })()
+
+  // Import dinamis agar server-only tidak masuk ke client bundle
+  const [{ sendEmail }, { buildPaymentSuccessEmail }] = await Promise.all([
+    import("@/lib/email"),
+    import("@/lib/email/templates/payment-success"),
+  ])
+
+  const { subject, html, text } = buildPaymentSuccessEmail({
+    studioName: studioRow.name,
+    ownerName: memberRow.name,
+    planName: plan.name,
+    planDuration: plan.duration,
+    amount: input.amount,
+    orderId: input.orderId,
+    startsAt,
+    expiresAt,
+  })
+
+  await sendEmail({ to: memberRow.email, subject, html, text })
+}
+
 
 /**
  * Verification-only status check for the client (post-Snap polling).
