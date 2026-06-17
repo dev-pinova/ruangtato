@@ -18,7 +18,7 @@ import { RetroGrid } from "@/components/ui/retro-grid"
 
 const POPULAR_TAGS = ["Fine Line", "Blackwork", "Japanese", "Realism", "Jakarta", "Bali"]
 
-const HERO_BACKGROUND_IMAGE = "/ruang-tato/ruang-tato.jpg"
+const HERO_BACKGROUND_IMAGE = "/image/ruang-tato.jpg"
 
 function StudioChip({ studio }: { studio: Studio }) {
   return (

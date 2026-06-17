@@ -1,7 +1,7 @@
 export const SITE_NAME = "Ruang Tato"
 
 /** Logo mark SVG — monogram RT (design system). */
-export const PLATFORM_LOGO_PATH = "/brand/logo-mark.svg"
+export const PLATFORM_LOGO_PATH = "/image/logo-mark.svg"
 
 /** Domain utama platform */
 export const SITE_URL = "https://www.ruangtato.com"

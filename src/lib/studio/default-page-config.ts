@@ -28,8 +28,7 @@ export const DEFAULT_BLOCK_DATA: Record<BlockType, BlockData> = {
       "Artist berpengalaman",
     ],
     creator: "Lead Artist",
-    image:
-      "https://images.unsplash.com/photo-1565058379802-bbe93b2f703a?q=80&w=1200&auto=format&fit=crop",
+    image: "/image/studio-workspace-chair.jpg",
   },
   HeroSlider: {
     slides: [
@@ -37,22 +36,19 @@ export const DEFAULT_BLOCK_DATA: Record<BlockType, BlockData> = {
         headline: "Art Studio",
         subheadline: "Unique Tatos",
         ctaText: "Get a Tato",
-        image:
-          "https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?q=80&w=1600&auto=format&fit=crop",
+        image: "/image/tattoo-process-inking.jpg",
       },
       {
         headline: "Tato Like Art",
         subheadline: "Custom Pieces",
         ctaText: "Book Consultation",
-        image:
-          "https://images.unsplash.com/photo-1598371839696-5c5bb00bdc28?q=80&w=1600&auto=format&fit=crop",
+        image: "/image/studio-interior-reception.jpg",
       },
       {
         headline: "Trusted Studio",
         subheadline: "Safe & Sterile",
         ctaText: "Contact Us",
-        image:
-          "https://images.unsplash.com/photo-1568515045052-f9a854d70bfd?q=80&w=1600&auto=format&fit=crop",
+        image: "/image/studio-interior-gallery.jpg",
       },
     ],
   },
@@ -66,35 +62,34 @@ export const DEFAULT_BLOCK_DATA: Record<BlockType, BlockData> = {
       { title: "Trusted Studio", desc: "Standar sterilisasi tinggi & aftercare lengkap." },
       { title: "Artist Berpengalaman", desc: "Tim spesialis dengan portofolio nyata." },
     ],
-    image:
-      "https://images.unsplash.com/photo-1568515045052-f9a854d70bfd?q=80&w=1600&auto=format&fit=crop",
+    image: "/image/studio-workspace-minimalist.jpg",
   },
   Gallery: {
     eyebrow: "Portfolio",
     headline: "Our Gallery",
     images: [
       {
-        src: "https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?q=80&w=900&auto=format&fit=crop",
+        src: "/image/tattoo-work-blackwork.jpg",
         alt: "Tato work 1",
       },
       {
-        src: "https://images.unsplash.com/photo-1598371839696-5c5bb00bdc28?q=80&w=900&auto=format&fit=crop",
+        src: "/image/tattoo-work-floral-leg.jpg",
         alt: "Tato work 2",
       },
       {
-        src: "https://images.unsplash.com/photo-1568515045052-f9a854d70bfd?q=80&w=900&auto=format&fit=crop",
+        src: "/image/tattoo-work-color-arm.jpg",
         alt: "Tato work 3",
       },
       {
-        src: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=900&auto=format&fit=crop",
+        src: "/image/tattoo-work-fineline-wrist.jpg",
         alt: "Tato work 4",
       },
       {
-        src: "https://images.unsplash.com/photo-1565058379802-bbe93b2f703a?q=80&w=900&auto=format&fit=crop",
+        src: "/image/tattoo-work-realism.jpg",
         alt: "Tato work 5",
       },
       {
-        src: "https://images.unsplash.com/photo-1565058379802-bbe93b2f703a?q=80&w=900&auto=format&fit=crop",
+        src: "/image/tattoo-process-leg.jpg",
         alt: "Tato work 6",
       },
     ],
@@ -105,10 +100,8 @@ export const DEFAULT_BLOCK_DATA: Record<BlockType, BlockData> = {
       "Kami menghadirkan pengalaman studio yang mengutamakan kenyamanan, keamanan, dan ekspresi artistik.",
     content2:
       "Dari konsep awal hingga aftercare, tim kami mendampingi setiap langkah perjalanan tato Anda.",
-    image1:
-      "https://images.unsplash.com/photo-1598371839696-5c5bb00bdc28?q=80&w=900&auto=format&fit=crop",
-    image2:
-      "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=900&auto=format&fit=crop",
+    image1: "/image/studio-interior-reception.jpg",
+    image2: "/image/studio-interior-waiting.jpg",
   },
   Features: {
     title: "Specific Style Tatos",
@@ -130,24 +123,21 @@ export const DEFAULT_BLOCK_DATA: Record<BlockType, BlockData> = {
         desc: "Custom design, blackwork, fine line, Japanese, hingga realism — dikerjakan oleh artist spesialis.",
         ctaText: "Learn More",
         ctaHref: "#contact",
-        image:
-          "https://images.unsplash.com/photo-1598371839696-5c5bb00bdc28?q=80&w=900&auto=format&fit=crop",
+        image: "/image/tattoo-process-inking.jpg",
       },
       {
         title: "Piercing",
         desc: "Piercing profesional dengan peralatan steril dan jewellery berkualitas.",
         ctaText: "Learn More",
         ctaHref: "#contact",
-        image:
-          "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=900&auto=format&fit=crop",
+        image: "/image/tattoo-tools-machine.jpg",
       },
       {
         title: "Custom Design",
         desc: "Konsultasi desain personal dari konsep hingga sketsa final sebelum eksekusi.",
         ctaText: "Learn More",
         ctaHref: "#contact",
-        image:
-          "https://images.unsplash.com/photo-1565058379802-bbe93b2f703a?q=80&w=900&auto=format&fit=crop",
+        image: "/image/artist-process-sketching.jpg",
       },
     ],
   },
@@ -163,8 +153,7 @@ export const DEFAULT_BLOCK_DATA: Record<BlockType, BlockData> = {
     name: "Charly Moon",
     role: "Tatoist",
     bio: "Spesialis blackwork dan custom piece dengan pengalaman lebih dari 8 tahun.",
-    image:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop",
+    image: "/image/artist-portrait-c.jpg",
   },
   ArtistsGrid: {
     headline: "Meet Our Artists",
@@ -173,26 +162,22 @@ export const DEFAULT_BLOCK_DATA: Record<BlockType, BlockData> = {
       {
         name: "Charly Moon",
         role: "Tatoist",
-        image:
-          "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=600&auto=format&fit=crop",
+        image: "/image/artist-portrait-c.jpg",
       },
       {
         name: "Alex Rivera",
         role: "Piercing Artist",
-        image:
-          "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=600&auto=format&fit=crop",
+        image: "/image/artist-portrait-b.jpg",
       },
       {
         name: "Maya Chen",
         role: "Fine Line Specialist",
-        image:
-          "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=600&auto=format&fit=crop",
+        image: "/image/artist-portrait-a.jpg",
       },
       {
         name: "Rio Pradana",
         role: "Black & Grey Artist",
-        image:
-          "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?q=80&w=600&auto=format&fit=crop",
+        image: "/image/artist-process-sketching.jpg",
       },
     ],
   },
@@ -236,24 +221,21 @@ export const DEFAULT_BLOCK_DATA: Record<BlockType, BlockData> = {
         title: "How To Care Your New Tato",
         category: "Aftercare",
         date: "12 Jun 2025",
-        image:
-          "https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?q=80&w=900&auto=format&fit=crop",
+        image: "/image/tattoo-process-stencil.jpg",
         href: "#",
       },
       {
         title: "Choosing The Right Tato Style",
         category: "Style",
         date: "04 Jun 2025",
-        image:
-          "https://images.unsplash.com/photo-1598371839696-5c5bb00bdc28?q=80&w=900&auto=format&fit=crop",
+        image: "/image/tattoo-sketch-skull.jpg",
         href: "#",
       },
       {
         title: "Behind The Ink: Studio Tour",
         category: "Studio",
         date: "21 Mei 2025",
-        image:
-          "https://images.unsplash.com/photo-1568515045052-f9a854d70bfd?q=80&w=900&auto=format&fit=crop",
+        image: "/image/studio-interior-gallery.jpg",
         href: "#",
       },
     ],
