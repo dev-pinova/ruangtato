@@ -41,6 +41,10 @@ function buildTrustedOrigins(): string[] {
   const origins = [
     authBaseURL,
     process.env.NEXT_PUBLIC_APP_URL,
+    // Production domains — pastikan www dan non-www keduanya di-trust
+    "https://ruangtato.com",
+    "https://www.ruangtato.com",
+    // Vercel preview deployments
     "https://ruangtato.vercel.app",
     "https://studiotato.vercel.app",
     ...(process.env.NODE_ENV !== "production" ? buildLocalDevOrigins() : []),
