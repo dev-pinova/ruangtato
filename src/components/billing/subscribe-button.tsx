@@ -6,6 +6,7 @@ import { Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ShimmerButton } from "@/components/ui/shimmer-button"
 import { loadMidtransSnap } from "@/lib/billing/midtrans-snap"
+import { useLanguage } from "@/lib/i18n/language-provider"
 
 const PLAN_TYPE_MAP: Record<number, string> = {
   1: "1month",
@@ -24,7 +25,7 @@ type CreateOrderResponse = {
   error?: string
 }
 
-async function confirmPayment(orderId: string, planType: string) {
+async function confirmPayment(orderId: string, planType: string, errorFallback: string) {
   const res = await fetch("/api/billing/confirm", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -36,7 +37,7 @@ async function confirmPayment(orderId: string, planType: string) {
     throw new Error(
       typeof data.error === "string"
         ? data.error
-        : "Gagal mengaktifkan langganan setelah pembayaran.",
+        : errorFallback,
     )
   }
 }
@@ -98,6 +99,7 @@ export function SubscribeButton({
   onPaymentComplete?: () => void
   onMessage?: (msg: string | null) => void
 }) {
+  const { locale, t } = useLanguage()
   const [loading, setLoading] = useState(false)
   const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY ?? ""
 
@@ -107,7 +109,7 @@ export function SubscribeButton({
 
     if (!clientKey) {
       setLoading(false)
-      onMessage?.("Midtrans belum dikonfigurasi.")
+      onMessage?.(locale === "en" ? "Midtrans not configured." : "Midtrans belum dikonfigurasi.")
       return
     }
 
@@ -129,7 +131,7 @@ export function SubscribeButton({
         onMessage?.(
           snapResult.reason instanceof Error
             ? snapResult.reason.message
-            : "Midtrans Snap belum siap. Muat ulang halaman.",
+            : (locale === "en" ? "Midtrans Snap not ready. Reload the page." : "Midtrans Snap belum siap. Muat ulang halaman."),
         )
         return
       }
@@ -141,8 +143,8 @@ export function SubscribeButton({
           orderResult.reason.name === "AbortError"
         onMessage?.(
           isTimeout
-            ? "Membuat order terlalu lama. Periksa koneksi internet lalu coba lagi."
-            : "Gagal membuat order. Coba lagi.",
+            ? (locale === "en" ? "Order creation timed out. Check your internet connection and try again." : "Membuat order terlalu lama. Periksa koneksi internet lalu coba lagi.")
+            : (locale === "en" ? "Failed to create order. Please try again." : "Gagal membuat order. Coba lagi."),
         )
         return
       }
@@ -152,19 +154,19 @@ export function SubscribeButton({
 
       if (!res.ok) {
         setLoading(false)
-        onMessage?.(data.error ?? "Gagal membuat order.")
+        onMessage?.(data.error ?? (locale === "en" ? "Failed to create order." : "Gagal membuat order."))
         return
       }
 
       if (!data.snapToken || !data.orderId || !data.planType) {
         setLoading(false)
-        onMessage?.("Snap token tidak tersedia.")
+        onMessage?.(locale === "en" ? "Snap token not available." : "Snap token tidak tersedia.")
         return
       }
 
       if (!window.snap?.pay) {
         setLoading(false)
-        onMessage?.("Midtrans Snap belum siap. Muat ulang halaman.")
+        onMessage?.(locale === "en" ? "Midtrans Snap not ready. Reload the page." : "Midtrans Snap belum siap. Muat ulang halaman.")
         return
       }
 
@@ -199,17 +201,17 @@ export function SubscribeButton({
       })
     } catch {
       setLoading(false)
-      onMessage?.("Terjadi kesalahan. Coba lagi.")
+      onMessage?.(locale === "en" ? "An error occurred. Please try again." : "Terjadi kesalahan. Coba lagi.")
     }
-  }, [months, onMessage, clientKey])
+  }, [months, onMessage, clientKey, locale])
 
   const isPreparing = Boolean(clientKey) && !snapReady
   const buttonLabel = !clientKey
-    ? "Midtrans belum dikonfigurasi"
+    ? (locale === "en" ? "Midtrans not configured" : "Midtrans belum dikonfigurasi")
     : loading
-      ? "Memproses..."
+      ? t.auth.processing
       : isPreparing
-        ? "Menyiapkan pembayaran..."
+        ? (locale === "en" ? "Preparing payment..." : "Menyiapkan pembayaran...")
         : label
 
   if (popular) {
@@ -244,3 +246,4 @@ export function SubscribeButton({
     </Button>
   )
 }
+

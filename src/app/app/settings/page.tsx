@@ -40,6 +40,7 @@ import {
 } from "@/components/ui/select"
 import { PageHeading } from "@/components/design"
 import type { Studio } from "@/lib/types"
+import { useLanguage } from "@/lib/i18n/language-provider"
 
 type MeUser = {
   name: string
@@ -53,6 +54,7 @@ function ProfilStudioTab({
   studio: Studio | null
   onStudioUpdated: (studio: Studio) => void
 }) {
+  const { t } = useLanguage()
   const [name, setName] = useState("")
   const [slug, setSlug] = useState("")
   const [city, setCity] = useState("")
@@ -66,7 +68,6 @@ function ProfilStudioTab({
 
   useEffect(() => {
     if (!studio) return
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- sync editable form fields when the studio prop loads/changes
     setName(studio.name)
     setSlug(studio.slug)
     setCity(studio.city)
@@ -95,7 +96,7 @@ function ProfilStudioTab({
       setError(
         typeof data.error === "string"
           ? data.error
-          : "Gagal menyimpan perubahan. Coba lagi.",
+          : t.settings.profile.errorMsg,
       )
       return
     }
@@ -121,13 +122,13 @@ function ProfilStudioTab({
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Profil Studio</CardTitle>
+          <CardTitle>{t.settings.profile.title}</CardTitle>
           <CardDescription>
-            Informasi dasar studio yang ditampilkan di halaman landing
+            {t.settings.profile.desc}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">Memuat profil studio…</p>
+          <p className="text-sm text-muted-foreground">{t.settings.profile.loading}</p>
         </CardContent>
       </Card>
     )
@@ -136,15 +137,15 @@ function ProfilStudioTab({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Profil Studio</CardTitle>
+        <CardTitle>{t.settings.profile.title}</CardTitle>
         <CardDescription>
-          Informasi dasar studio yang ditampilkan di halaman landing
+          {t.settings.profile.desc}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSave} className="grid gap-5 max-w-xl">
           <div className="grid gap-2">
-            <Label htmlFor="studio-name">Nama Studio</Label>
+            <Label htmlFor="studio-name">{t.settings.profile.nameLabel}</Label>
             <Input
               id="studio-name"
               value={name}
@@ -153,7 +154,7 @@ function ProfilStudioTab({
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="slug">Slug URL</Label>
+            <Label htmlFor="slug">{t.settings.profile.slugLabel}</Label>
             <div className="flex items-center gap-0">
               <span className="flex h-9 items-center rounded-l-md border border-r-0 border-input bg-muted/40 px-3 text-sm text-muted-foreground">
                 {STUDIO_URL_DISPLAY_PREFIX}
@@ -167,7 +168,7 @@ function ProfilStudioTab({
             </div>
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="city">Kota</Label>
+            <Label htmlFor="city">{t.settings.profile.cityLabel}</Label>
             <Input
               id="city"
               value={city}
@@ -175,7 +176,7 @@ function ProfilStudioTab({
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="whatsapp">Nomor WhatsApp</Label>
+            <Label htmlFor="whatsapp">{t.settings.profile.waLabel}</Label>
             <Input
               id="whatsapp"
               value={waNumber}
@@ -184,7 +185,7 @@ function ProfilStudioTab({
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="cover-image">Foto Cover Studio</Label>
+            <Label htmlFor="cover-image">{t.settings.profile.coverLabel}</Label>
             <div className="flex items-center gap-3">
               <Input
                 id="cover-image"
@@ -201,7 +202,7 @@ function ProfilStudioTab({
                 className="shrink-0 gap-2"
               >
                 <Upload className="size-4" />
-                {uploadingImage ? "Mengunggah..." : "Upload"}
+                {uploadingImage ? t.settings.profile.uploading : t.settings.profile.uploadBtn}
               </Button>
               <input
                 id="cover-image-upload"
@@ -223,7 +224,7 @@ function ProfilStudioTab({
                     
                     if (!res.ok) {
                       const data = await res.json().catch(() => ({}))
-                      throw new Error(data.error || "Gagal upload")
+                      throw new Error(data.error || t.settings.profile.imageUploadError)
                     }
                     
                     const data = await res.json()
@@ -231,7 +232,7 @@ function ProfilStudioTab({
                       setCoverImage(data.url)
                     }
                   } catch (err: any) {
-                    alert(err.message || "Terjadi kesalahan saat mengunggah gambar.")
+                    alert(err.message || t.settings.profile.imageUploadError)
                   } finally {
                     setUploadingImage(false)
                     // reset input
@@ -241,21 +242,21 @@ function ProfilStudioTab({
               />
             </div>
             <p className="text-xs text-muted-foreground">
-              Digunakan di direktori studio. Kosongkan untuk otomatis dari gambar Hero di builder.
+              {t.settings.profile.coverNote}
             </p>
             {coverImage ? (
               <div className="overflow-hidden rounded-md border border-border bg-muted/30">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={coverImage}
-                  alt="Preview cover studio"
+                  alt={t.settings.profile.coverPreviewAlt}
                   className="aspect-video w-full max-w-sm object-cover"
                 />
               </div>
             ) : null}
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="description">Deskripsi</Label>
+            <Label htmlFor="description">{t.settings.profile.descLabel}</Label>
             <Textarea
               id="description"
               value={description}
@@ -268,13 +269,13 @@ function ProfilStudioTab({
           ) : null}
           {success ? (
             <p className="text-sm text-success">
-              Profil studio berhasil disimpan.
+              {t.settings.profile.successMsg}
             </p>
           ) : null}
           <Separator />
           <div className="flex justify-end">
             <Button type="submit" disabled={saving}>
-              {saving ? "Menyimpan…" : "Simpan Perubahan"}
+              {saving ? t.settings.profile.saving : t.settings.profile.saveBtn}
             </Button>
           </div>
         </form>
@@ -284,12 +285,14 @@ function ProfilStudioTab({
 }
 
 function TimTab() {
+  const { t } = useLanguage()
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Anggota Tim</CardTitle>
+        <CardTitle>{t.settings.team.title}</CardTitle>
         <CardDescription>
-          Kelola siapa saja yang memiliki akses ke studio ini
+          {t.settings.team.desc}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -299,18 +302,18 @@ function TimTab() {
               render={<Button size="sm" />}
             >
               <UserPlus className="size-4" data-icon="inline-start" />
-              Undang Anggota
+              {t.settings.team.inviteBtn}
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Undang Anggota Baru</DialogTitle>
+                <DialogTitle>{t.settings.team.inviteTitle}</DialogTitle>
                 <DialogDescription>
-                  Kirim undangan melalui email untuk bergabung ke studio ini
+                  {t.settings.team.inviteDesc}
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-2">
                 <div className="grid gap-2">
-                  <Label htmlFor="invite-email">Email</Label>
+                  <Label htmlFor="invite-email">{t.settings.team.emailLabel}</Label>
                   <Input
                     id="invite-email"
                     type="email"
@@ -318,7 +321,7 @@ function TimTab() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label>Role</Label>
+                  <Label>{t.settings.team.roleLabel}</Label>
                   <Select defaultValue="member">
                     <SelectTrigger className="w-full">
                       <SelectValue />
@@ -331,15 +334,14 @@ function TimTab() {
                 </div>
               </div>
               <DialogFooter>
-                <Button className="w-full sm:w-auto">Kirim Undangan</Button>
+                <Button className="w-full sm:w-auto">{t.settings.team.sendInviteBtn}</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
         </div>
 
         <p className="rounded-md border border-border bg-muted/40 p-4 text-sm text-muted-foreground">
-          Manajemen tim multi-user segera hadir. Saat ini hanya owner utama
-          yang memiliki akses ke studio.
+          {t.settings.team.comingSoon}
         </p>
       </CardContent>
     </Card>
@@ -347,17 +349,19 @@ function TimTab() {
 }
 
 function AkunTab({ user }: { user: MeUser | null }) {
+  const { t } = useLanguage()
+
   if (!user) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Pengaturan Akun</CardTitle>
+          <CardTitle>{t.settings.account.title}</CardTitle>
           <CardDescription>
-            Ubah email dan kata sandi akun Anda
+            {t.settings.account.desc}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">Memuat data akun…</p>
+          <p className="text-sm text-muted-foreground">{t.settings.account.loading}</p>
         </CardContent>
       </Card>
     )
@@ -366,15 +370,15 @@ function AkunTab({ user }: { user: MeUser | null }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Pengaturan Akun</CardTitle>
+        <CardTitle>{t.settings.account.title}</CardTitle>
         <CardDescription>
-          Ubah email dan kata sandi akun Anda
+          {t.settings.account.desc}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid gap-5 max-w-xl">
           <div className="grid gap-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t.settings.account.emailLabel}</Label>
             <Input
               id="email"
               type="email"
@@ -384,20 +388,20 @@ function AkunTab({ user }: { user: MeUser | null }) {
           </div>
           <Separator />
           <div className="grid gap-2">
-            <Label htmlFor="current-password">Kata Sandi Saat Ini</Label>
+            <Label htmlFor="current-password">{t.settings.account.currentPassword}</Label>
             <Input id="current-password" type="password" />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="new-password">Kata Sandi Baru</Label>
+            <Label htmlFor="new-password">{t.settings.account.newPassword}</Label>
             <Input id="new-password" type="password" />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="confirm-password">Konfirmasi Kata Sandi</Label>
+            <Label htmlFor="confirm-password">{t.settings.account.confirmPassword}</Label>
             <Input id="confirm-password" type="password" />
           </div>
           <Separator />
           <div className="flex justify-end">
-            <Button>Simpan Perubahan</Button>
+            <Button>{t.settings.account.saveBtn}</Button>
           </div>
         </div>
       </CardContent>
@@ -406,34 +410,32 @@ function AkunTab({ user }: { user: MeUser | null }) {
 }
 
 function BahayaTab() {
+  const { t } = useLanguage()
+
   return (
     <Card className="border-destructive/30">
       <CardHeader>
-        <CardTitle className="text-destructive">Hapus Studio</CardTitle>
+        <CardTitle className="text-destructive">{t.settings.danger.title}</CardTitle>
         <CardDescription>
-          Setelah studio dihapus, semua data termasuk landing page, lead, dan
-          statistik akan hilang secara permanen. Tindakan ini tidak dapat
-          dibatalkan.
+          {t.settings.danger.desc}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <AlertDialog>
           <AlertDialogTrigger render={<Button variant="destructive" />}>
-            Hapus Studio
+            {t.settings.danger.deleteBtn}
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Apakah Anda yakin?</AlertDialogTitle>
+              <AlertDialogTitle>{t.settings.danger.confirmTitle}</AlertDialogTitle>
               <AlertDialogDescription>
-                Tindakan ini tidak dapat dibatalkan. Semua data studio
-                termasuk landing page, lead, dan statistik akan dihapus secara
-                permanen.
+                {t.settings.danger.confirmDesc}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Batal</AlertDialogCancel>
+              <AlertDialogCancel>{t.settings.danger.cancelBtn}</AlertDialogCancel>
               <AlertDialogAction variant="destructive">
-                Ya, Hapus Studio
+                {t.settings.danger.confirmBtn}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -444,6 +446,7 @@ function BahayaTab() {
 }
 
 export default function SettingsPage() {
+  const { t } = useLanguage()
   const [studio, setStudio] = useState<Studio | null>(null)
   const [user, setUser] = useState<MeUser | null>(null)
 
@@ -465,16 +468,16 @@ export default function SettingsPage() {
   return (
     <div className="mx-auto max-w-5xl space-y-6 p-4 md:p-6 lg:p-8">
       <PageHeading
-        title="Pengaturan"
-        description="Kelola profil studio, tim, dan akun Anda."
+        title={t.settings.title}
+        description={t.settings.description}
       />
 
       <Tabs defaultValue={0}>
         <TabsList variant="line">
-          <TabsTrigger value={0}>Profil Studio</TabsTrigger>
-          <TabsTrigger value={1}>Tim</TabsTrigger>
-          <TabsTrigger value={2}>Akun</TabsTrigger>
-          <TabsTrigger value={3}>Bahaya</TabsTrigger>
+          <TabsTrigger value={0}>{t.settings.tabs.profile}</TabsTrigger>
+          <TabsTrigger value={1}>{t.settings.tabs.team}</TabsTrigger>
+          <TabsTrigger value={2}>{t.settings.tabs.account}</TabsTrigger>
+          <TabsTrigger value={3}>{t.settings.tabs.danger}</TabsTrigger>
         </TabsList>
 
         <TabsContent value={0}>

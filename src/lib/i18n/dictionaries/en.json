@@ -9,7 +9,8 @@
     "terms": "Terms",
     "privacy": "Privacy",
     "subscription": "Subscription Policy",
-    "cookies": "Cookie Policy"
+    "cookies": "Cookie Policy",
+    "shortcuts": "Mobile navigation"
   },
   "hero": {
     "badge": "PROFESSIONAL TATTOO STUDIO DIRECTORY",
@@ -71,7 +72,13 @@
     "myStudio": "My Studio",
     "settings": "Settings",
     "billing": "Billing",
-    "support": "Help & Support"
+    "support": "Help & Support",
+    "logoutConfirmTitle": "Confirm Logout",
+    "logoutConfirmDesc": "Are you sure you want to sign out of this account?",
+    "logoutCancel": "Cancel",
+    "logoutConfirmBtn": "Yes, Sign Out",
+    "loggingOut": "Signing out...",
+    "logout": "Sign Out"
   },
   "auth": {
     "loginTitle": "Sign in to your account",
@@ -95,12 +102,295 @@
     "registerDesc": "Create an account to get started",
     "name": "Full Name",
     "registerBtn": "Sign Up Now",
-    "hasAccount": "Already have an account?"
+    "hasAccount": "Already have an account?",
+    "forgotPasswordTitle": "Forgot password?",
+    "forgotPasswordDesc": "Enter your account email and we will send a password reset link.",
+    "forgotSuccessMsg": "If the email {email} is registered in our system, we have sent a password reset link. Please check your inbox (and spam folder) in a few minutes.",
+    "resendToOtherEmail": "Resend to another email",
+    "sendResetLink": "Send reset link",
+    "sending": "Sending...",
+    "rememberPassword": "Remember your password?",
+    "backToLogin": "Back to login",
+    "errorForgot": "Failed to send password reset email. Please try again in a moment.",
+    "resetInvalidToken": "Invalid Link",
+    "resetInvalidTokenDesc": "The password reset link is invalid or has expired. Please request a new link.",
+    "requestNewLink": "Request new link",
+    "resetSuccessTitle": "Password Reset Successfully",
+    "resetSuccessDesc": "Your password has been updated. Please sign in with your new password.",
+    "resetTitle": "Create new password",
+    "resetDesc": "Enter a new password for your account.",
+    "newPassword": "New password",
+    "newPasswordPlaceholder": "Minimum 8 characters",
+    "confirmNewPassword": "Confirm password",
+    "confirmNewPasswordPlaceholder": "Repeat new password",
+    "saveNewPassword": "Save new password",
+    "errorPasswordLength": "Password must be at least 8 characters.",
+    "errorPasswordMismatch": "Confirm password does not match.",
+    "errorResetPassword": "Failed to reset password. The link may have expired."
   },
   "footer": {
     "desc": "Exclusive landing page platform for professional tattoo studios in Indonesia.",
     "copyright": "All rights reserved.",
     "madeWith": "Made with",
     "forArtists": "for Indonesian tattoo artists."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "description": "Monitor your studio performance in real-time.",
+    "loading": "Loading data...",
+    "views": "Total Views",
+    "clicks": "Total Clicks",
+    "conversionRate": "Conversion Rate",
+    "leads": "Total Leads",
+    "dailyStatsTitle": "Daily Statistics",
+    "dailyStatsDesc": "Daily data will be available after advanced analytics features are released.",
+    "dailyStatsNote": "Currently, please refer to the total views, clicks, and leads summary above.",
+    "latestLeadsTitle": "Recent Leads",
+    "leadsCount": "{count} leads received",
+    "noLeads": "No leads yet. Leads from the appointment form will appear here.",
+    "table": {
+      "name": "Name",
+      "email": "Email",
+      "message": "Message",
+      "status": "Status",
+      "date": "Date"
+    },
+    "status": {
+      "new": "New",
+      "read": "Read",
+      "replied": "Replied"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "description": "Manage your studio profile, team, and account.",
+    "tabs": {
+      "profile": "Studio Profile",
+      "team": "Team",
+      "account": "Account",
+      "danger": "Danger Zone"
+    },
+    "profile": {
+      "title": "Studio Profile",
+      "desc": "Basic studio information displayed on the landing page",
+      "loading": "Loading studio profile…",
+      "nameLabel": "Studio Name",
+      "slugLabel": "Slug URL",
+      "cityLabel": "City",
+      "waLabel": "WhatsApp Number",
+      "coverLabel": "Studio Cover Photo",
+      "uploading": "Uploading...",
+      "uploadBtn": "Upload",
+      "coverNote": "Used in the studio directory. Leave blank to automatically use the Hero image from the builder.",
+      "coverPreviewAlt": "Studio cover preview",
+      "descLabel": "Description",
+      "saveBtn": "Save Changes",
+      "saving": "Saving…",
+      "successMsg": "Studio profile saved successfully.",
+      "errorMsg": "Failed to save changes. Please try again.",
+      "imageUploadError": "An error occurred while uploading the image."
+    },
+    "team": {
+      "title": "Team Members",
+      "desc": "Manage who has access to this studio",
+      "inviteBtn": "Invite Member",
+      "inviteTitle": "Invite New Member",
+      "inviteDesc": "Send an email invitation to join this studio",
+      "emailLabel": "Email",
+      "roleLabel": "Role",
+      "sendInviteBtn": "Send Invitation",
+      "comingSoon": "Multi-user team management is coming soon. Currently, only the primary owner has access to the studio."
+    },
+    "account": {
+      "title": "Account Settings",
+      "desc": "Change your account email and password",
+      "loading": "Loading account data…",
+      "emailLabel": "Email",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm Password",
+      "saveBtn": "Save Changes"
+    },
+    "danger": {
+      "title": "Delete Studio",
+      "desc": "Once the studio is deleted, all data including landing pages, leads, and statistics will be permanently lost. This action cannot be undone.",
+      "deleteBtn": "Delete Studio",
+      "confirmTitle": "Are you sure?",
+      "confirmDesc": "This action cannot be undone. All studio data including landing pages, leads, and statistics will be deleted permanently.",
+      "cancelBtn": "Cancel",
+      "confirmBtn": "Yes, Delete Studio"
+    }
+  },
+  "billing": {
+    "title": "Billing & Subscriptions",
+    "description": "Manage your studio subscription plans and view transaction history.",
+    "currentPlan": {
+      "title": "Current Plan",
+      "desc": "Your studio's subscription status",
+      "nameLabel": "Plan Name",
+      "statusLabel": "Status",
+      "statusActive": "Active",
+      "statusInactive": "Inactive",
+      "expiresLabel": "Expires On",
+      "noPlanTitle": "No subscription plan",
+      "noPlanDesc": "You have not subscribed to any plans yet.",
+      "btnSubscribe": "Subscribe Now",
+      "btnManage": "Renew / Manage Plan"
+    },
+    "history": {
+      "title": "Transaction History",
+      "desc": "Billing payment history from Midtrans.",
+      "noTransactions": "No transactions yet",
+      "table": {
+        "orderId": "Order ID",
+        "date": "Date",
+        "method": "Method",
+        "amount": "Amount",
+        "status": "Status",
+        "invoice": "Invoice"
+      },
+      "statusSuccess": "Successful",
+      "statusPending": "Pending",
+      "statusFailed": "Failed",
+      "viewInvoice": "View Invoice"
+    }
+  },
+  "invoice": {
+    "backBtn": "Back to Billing",
+    "printBtn": "Print / Save PDF",
+    "title": "Invoice",
+    "issuedLabel": "Issued",
+    "paidLabel": "Paid",
+    "fromLabel": "From",
+    "toLabel": "Bill To",
+    "table": {
+      "desc": "Description",
+      "amount": "Amount",
+      "total": "Total",
+      "subscription": "{name} Subscription",
+      "duration": "Duration: {duration}"
+    },
+    "meta": {
+      "orderId": "Midtrans Order ID",
+      "method": "Payment Method",
+      "currency": "Currency",
+      "currencyVal": "IDR (Indonesian Rupiah)"
+    },
+    "status": {
+      "paid": "Paid",
+      "pending": "Pending",
+      "failed": "Failed"
+    },
+    "footer": "This invoice is a valid digital transaction proof. Keep this document for your administrative records. Questions? Contact {email}"
+  },
+  "checkout": {
+    "restrictedTitle": "Restricted Access",
+    "restrictedDesc": "Please complete your payment first to activate the Page Builder features.",
+    "registerSuccess": "Registration Successful!",
+    "registerSuccessDesc": "Your studio has been registered. As a final step, activate your subscription to start designing your landing page.",
+    "secureCheckout": "Secure checkout",
+    "activateBuilder": "Activate Your Builder",
+    "activateBuilderDesc": "Start building a high-converting professional landing page for your tattoo studio.",
+    "planDuration": "{duration}",
+    "popularBadge": "Most Popular",
+    "whatYouGet": "What You Get ({name}):",
+    "paymentSecureNote": "Payments are securely processed by Midtrans",
+    "needHelp": "Need help? Contact our billing support at {email}",
+    "loading": "Loading checkout page...",
+    "errorGateway": "Failed to load payment gateway. Please reload the page.",
+    "btnPay": "Pay Rp {price}"
+  },
+  "checkoutSuccess": {
+    "loading": "Verifying Payment...",
+    "success": "Payment Successful! 🎉",
+    "pending": "Waiting for Payment Confirmation",
+    "failed": "Payment Unsuccessful",
+    "loadingDesc": "Checking your payment status with Midtrans...",
+    "successDesc": "Your studio subscription is now active. Welcome to Ruang Tato!",
+    "pendingDesc": "Your payment is currently being processed. We will activate your subscription as soon as payment is confirmed.",
+    "failedDesc": "Your payment could not be processed successfully. Please try again or contact support.",
+    "statusLabel": {
+      "success": "Payment Success",
+      "pending": "Waiting Confirmation",
+      "failed": "Payment Failed"
+    },
+    "table": {
+      "orderId": "Order ID",
+      "statusCode": "Status Code",
+      "plan": "Plan",
+      "amount": "Total Paid",
+      "expiresAt": "Valid Until",
+      "pendingNote": "If you have transferred, the subscription will activate automatically in a few minutes. This page will refresh automatically."
+    },
+    "polling": "Checking status automatically...",
+    "btnStartDesign": "Start Designing Studio",
+    "btnDashboard": "Go to Dashboard",
+    "btnCheckStatus": "Check Payment Status",
+    "btnTempDashboard": "Go to Temporary Dashboard",
+    "btnVerifying": "Verifying...",
+    "btnTryAgain": "Try Again",
+    "btnViewHistory": "View Payment History",
+    "supportNote": "Any issues? Contact billing support"
+  },
+  "builder": {
+    "headerBack": "Back to dashboard",
+    "restrictedTitle": "Restricted Access: Complete Payment",
+    "restrictedDesc": "The Page Builder feature is exclusive to subscribed users. Please complete the payment to use this feature.",
+    "restrictedBtnPay": "Complete Payment",
+    "restrictedBtnBack": "Back",
+    "emptyPreviewTitle": "Empty Preview",
+    "emptyPreviewDesc": "Add blocks from the left panel to start designing",
+    "emptyPropertiesDesc": "Select a block in the Layers panel or Canvas to edit its properties.",
+    "propertiesTitle": "Properties",
+    "discardTitle": "Discard Changes?",
+    "discardDesc": "All unsaved changes will be lost. This action cannot be undone.",
+    "discardCancel": "Cancel",
+    "discardConfirm": "Yes, Discard",
+    "publishTitle": "Publish Landing Page?",
+    "publishDesc": "Your landing page will go live and be publicly accessible.",
+    "publishSuccess": "Successfully published!",
+    "publishBtnCancel": "Cancel",
+    "publishBtnConfirm": "Publish",
+    "publishBtnPublishing": "Publishing...",
+    "publishBtnSavePublish": "Save & Publish",
+    "toastSaving": "Saving draft...",
+    "toastSaved": "Draft saved successfully!",
+    "toastSaveError": "Failed to save draft.",
+    "toastPublishing": "Publishing page...",
+    "toastPublishSavedError": "Failed to save changes before publishing.",
+    "toastPublishError": "Failed to publish page.",
+    "toastPublishSuccess": "Page published successfully!",
+    "btnSave": "Save",
+    "btnSaving": "Saving..."
+  },
+  "pendingPayment": {
+    "title": "Payment Awaiting Confirmation",
+    "desc": "The {plan} plan (order {orderId}) is awaiting confirmation from Midtrans. Your subscription will activate automatically once the payment succeeds.",
+    "checkStatus": "Check Payment Status",
+    "closeAlert": "Close banner",
+    "durationLabel": "{duration} Month(s)",
+    "starter": "Starter ({duration})",
+    "growth": "Growth ({duration})",
+    "pro": "Pro ({duration})",
+    "enterprise": "Enterprise ({duration})",
+    "defaultPlan": "Subscription",
+    "relativeTime": {
+      "minutes": "{count} min ago",
+      "hours": "{count} hour(s) ago"
+    }
+  },
+  "unauthorized": {
+    "title": "Access Denied",
+    "description": "You do not have permission to access this page.",
+    "btnStudio": "Studio Login",
+    "btnAdmin": "Admin Login"
+  },
+  "suspended": {
+    "title": "Studio Inactive",
+    "description": "This studio page is currently inactive. Contact Ruang Tato if you are the studio owner."
+  },
+  "notFoundStudio": {
+    "title": "Studio Not Found",
+    "description": "The studio page you are looking for is unavailable or has not been published yet."
   }
 }

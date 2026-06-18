@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Clock, X, ArrowRight } from "lucide-react"
+import { useLanguage } from "@/lib/i18n/language-provider"
 
 type PendingStatus = {
   hasPending: boolean
@@ -11,27 +12,38 @@ type PendingStatus = {
   createdAt?: string
 }
 
-function formatRelativeTime(isoString: string): string {
+function formatRelativeTime(isoString: string, t: any, locale: string): string {
   const diff = Date.now() - new Date(isoString).getTime()
   const minutes = Math.floor(diff / 60_000)
   const hours = Math.floor(diff / 3_600_000)
 
-  if (minutes < 60) return `${minutes} menit lalu`
-  if (hours < 24) return `${hours} jam lalu`
-  return new Date(isoString).toLocaleDateString("id-ID", {
+  if (minutes < 60) {
+    return t.pendingPayment.relativeTime.minutes.replace("{count}", String(minutes))
+  }
+  if (hours < 24) {
+    return t.pendingPayment.relativeTime.hours.replace("{count}", String(hours))
+  }
+  return new Date(isoString).toLocaleDateString(locale === "en" ? "en-US" : "id-ID", {
     day: "numeric",
     month: "short",
   })
 }
 
-function getPlanLabel(planType: string | undefined): string {
+function getPlanLabel(planType: string | undefined, t: any): string {
+  if (!planType) return t.pendingPayment.defaultPlan
+
+  const duration1 = t.pendingPayment.durationLabel.replace("{duration}", "1")
+  const duration3 = t.pendingPayment.durationLabel.replace("{duration}", "3")
+  const duration6 = t.pendingPayment.durationLabel.replace("{duration}", "6")
+  const duration12 = t.pendingPayment.durationLabel.replace("{duration}", "12")
+
   const labels: Record<string, string> = {
-    "1month": "Starter (1 Bulan)",
-    "3months": "Growth (3 Bulan)",
-    "6months": "Pro (6 Bulan)",
-    "12months": "Enterprise (12 Bulan)",
+    "1month": t.pendingPayment.starter.replace("{duration}", duration1),
+    "3months": t.pendingPayment.growth.replace("{duration}", duration3),
+    "6months": t.pendingPayment.pro.replace("{duration}", duration6),
+    "12months": t.pendingPayment.enterprise.replace("{duration}", duration12),
   }
-  return planType ? (labels[planType] ?? planType) : "Langganan"
+  return labels[planType] ?? planType
 }
 
 /**
@@ -39,6 +51,7 @@ function getPlanLabel(planType: string | undefined): string {
  * untuk studio yang sedang login. Dapat di-dismiss (hanya untuk sesi ini).
  */
 export function PendingPaymentBanner() {
+  const { locale, t } = useLanguage()
   const [status, setStatus] = useState<PendingStatus | null>(null)
   const [dismissed, setDismissed] = useState(false)
 
@@ -53,6 +66,24 @@ export function PendingPaymentBanner() {
 
   if (!status?.hasPending || dismissed) return null
 
+  const displayPlan = getPlanLabel(status.planType, t)
+  const displayOrderId = status.orderId?.slice(0, 16) ?? ""
+  const displayRelative = status.createdAt ? ` — ${formatRelativeTime(status.createdAt, t, locale)}` : ""
+
+  const descText = t.pendingPayment.desc
+    .replace("{plan}", displayPlan)
+    .replace("{orderId}", displayOrderId + "…")
+    .split(")")
+  
+  // Custom format description to preserve time and orderId truncation structure
+  const formattedDesc = (
+    <>
+      {t.pendingPayment.desc
+        .replace("{plan}", displayPlan)
+        .replace("{orderId}", `${displayOrderId}…${displayRelative}`)}
+    </>
+  )
+
   return (
     <div
       role="alert"
@@ -61,28 +92,22 @@ export function PendingPaymentBanner() {
       <Clock className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" aria-hidden />
       <div className="flex-1 min-w-0">
         <p className="font-medium text-amber-600 dark:text-amber-400">
-          Pembayaran Menunggu Konfirmasi
+          {t.pendingPayment.title}
         </p>
         <p className="mt-0.5 text-amber-700/80 dark:text-amber-300/80 leading-relaxed">
-          Paket{" "}
-          <span className="font-semibold">{getPlanLabel(status.planType)}</span>{" "}
-          (order{" "}
-          <span className="font-mono text-xs">{status.orderId?.slice(0, 16)}…</span>
-          {status.createdAt && ` — ${formatRelativeTime(status.createdAt)}`}
-          ) sedang menunggu konfirmasi dari Midtrans. Langganan akan aktif
-          otomatis setelah pembayaran berhasil.
+          {formattedDesc}
         </p>
         <Link
           href={`/checkout/success?order_id=${status.orderId}&transaction_status=pending`}
           className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-amber-700 dark:text-amber-300 hover:underline underline-offset-4"
         >
-          Cek Status Pembayaran
+          {t.pendingPayment.checkStatus}
           <ArrowRight className="h-3 w-3" />
         </Link>
       </div>
       <button
         type="button"
-        aria-label="Tutup banner"
+        aria-label={t.pendingPayment.closeAlert}
         onClick={() => setDismissed(true)}
         className="shrink-0 rounded-md p-0.5 text-amber-500/70 hover:text-amber-500 hover:bg-amber-500/10 transition-colors"
       >
@@ -91,3 +116,4 @@ export function PendingPaymentBanner() {
     </div>
   )
 }
+

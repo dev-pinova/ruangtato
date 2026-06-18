@@ -2,8 +2,11 @@
 
 import { Printer } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useLanguage } from "@/lib/i18n/language-provider"
 
 export function PrintButton() {
+  const { t } = useLanguage()
+
   return (
     <Button
       variant="outline"
@@ -12,7 +15,8 @@ export function PrintButton() {
       onClick={() => window.print()}
     >
       <Printer className="h-4 w-4" />
-      Cetak / Simpan PDF
+      {t.invoice.printBtn}
     </Button>
   )
 }
+

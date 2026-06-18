@@ -11,13 +11,17 @@ import { getServerSession } from "@/lib/auth/session"
 import { getStudioForUser, studioHasActiveSubscription } from "@/lib/studio/studio-service"
 import { db } from "@/db"
 import { payments } from "@/db/schema"
+import { getLocale } from "@/lib/i18n/actions"
+import { getDictionary } from "@/lib/i18n/get-dictionary"
 
 function BuilderHeader({
   subtitle,
   badge,
+  backLabel,
 }: {
   subtitle: string
   badge: ReactNode
+  backLabel: string
 }) {
   return (
     <header className="relative z-10 flex h-14 shrink-0 items-center justify-between border-b border-white/5 bg-zinc-950 px-3 sm:h-16 sm:px-6">
@@ -27,7 +31,7 @@ function BuilderHeader({
           variant="ghost"
           size="icon"
           className="h-8 w-8 shrink-0 text-muted-foreground hover:text-foreground"
-          render={<Link href="/app/dashboard" aria-label="Kembali ke dashboard" />}
+          render={<Link href="/app/dashboard" aria-label={backLabel} />}
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
@@ -57,6 +61,9 @@ export default async function BuilderPage() {
     redirect("/register")
   }
 
+  const locale = await getLocale()
+  const t = await getDictionary(locale)
+
   const studioPayments = await db.query.payments.findMany({
     where: eq(payments.studioId, studio.id),
   })
@@ -78,6 +85,7 @@ export default async function BuilderPage() {
     <div className="flex h-dvh flex-col overflow-hidden bg-background selection:bg-primary selection:text-primary-foreground">
       <BuilderHeader
         subtitle="Landing Page Builder"
+        backLabel={t.builder.headerBack}
         badge={
           <div className="max-w-[10rem] truncate rounded-full border border-primary/20 bg-primary/10 px-2 py-1 font-mono text-[10px] font-semibold text-primary sm:max-w-none sm:px-3 sm:text-xs">
             {studio.name}
@@ -90,23 +98,23 @@ export default async function BuilderPage() {
           <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-zinc-950/80 backdrop-blur-sm p-4">
             <div className="max-w-md w-full rounded-xl border border-red-900/50 bg-red-950/20 p-6 text-center shadow-2xl backdrop-blur-md">
               <ShieldAlert className="mx-auto h-12 w-12 text-red-500 mb-4" />
-              <h2 className="text-xl font-semibold text-red-400 mb-2">Akses Terbatas: Selesaikan Pembayaran</h2>
+              <h2 className="text-xl font-semibold text-red-400 mb-2">{t.builder.restrictedTitle}</h2>
               <p className="text-sm text-zinc-300 mb-6">
-                Fitur Builder Halaman eksklusif untuk pengguna berlangganan. Silakan selesaikan pembayaran untuk menggunakan fitur ini.
+                {t.builder.restrictedDesc}
               </p>
               <div className="flex justify-center gap-4">
                 <Button
                   render={<Link href="/checkout" />}
                   className="bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-900/20"
                 >
-                  Selesaikan Pembayaran
+                  {t.builder.restrictedBtnPay}
                 </Button>
                 <Button
                   render={<Link href="/app/dashboard" />}
                   variant="outline"
                   className="border-white/10 hover:bg-white/5"
                 >
-                  Kembali
+                  {t.builder.restrictedBtnBack}
                 </Button>
               </div>
             </div>
@@ -125,3 +133,4 @@ export default async function BuilderPage() {
     </div>
   )
 }
+

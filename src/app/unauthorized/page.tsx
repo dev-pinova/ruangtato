@@ -3,8 +3,13 @@ import { ShieldX } from "lucide-react"
 
 import { PageHeading } from "@/components/design"
 import { Button } from "@/components/ui/button"
+import { getLocale } from "@/lib/i18n/actions"
+import { getDictionary } from "@/lib/i18n/get-dictionary"
 
-export default function UnauthorizedPage() {
+export default async function UnauthorizedPage() {
+  const locale = await getLocale()
+  const t = await getDictionary(locale)
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-md text-center">
@@ -14,17 +19,18 @@ export default function UnauthorizedPage() {
         <PageHeading
           size="sm"
           align="center"
-          title="Akses ditolak"
-          description="Anda tidak memiliki izin untuk membuka halaman ini."
+          title={t.unauthorized.title}
+          description={t.unauthorized.description}
           className="mb-6"
         />
         <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-          <Button render={<Link href="/login" />}>Login Studio</Button>
+          <Button render={<Link href="/login" />}>{t.unauthorized.btnStudio}</Button>
           <Button variant="outline" render={<Link href="/admin/login" />}>
-            Login Admin
+            {t.unauthorized.btnAdmin}
           </Button>
         </div>
       </div>
     </div>
   )
 }
+

@@ -9,7 +9,8 @@
     "terms": "Syarat & Ketentuan",
     "privacy": "Privasi",
     "subscription": "Kebijakan Langganan",
-    "cookies": "Kebijakan Cookie"
+    "cookies": "Kebijakan Cookie",
+    "shortcuts": "Navigasi mobile"
   },
   "hero": {
     "badge": "DIREKTORI STUDIO TATO PROFESIONAL",
@@ -71,7 +72,13 @@
     "myStudio": "Studio Saya",
     "settings": "Pengaturan",
     "billing": "Langganan & Tagihan",
-    "support": "Bantuan"
+    "support": "Bantuan",
+    "logoutConfirmTitle": "Konfirmasi Keluar",
+    "logoutConfirmDesc": "Apakah Anda yakin ingin keluar dari akun ini?",
+    "logoutCancel": "Batal",
+    "logoutConfirmBtn": "Ya, Keluar",
+    "loggingOut": "Mengeluarkan...",
+    "logout": "Keluar"
   },
   "auth": {
     "loginTitle": "Masuk ke akun Anda",
@@ -95,12 +102,295 @@
     "registerDesc": "Buat akun untuk memulai",
     "name": "Nama Lengkap",
     "registerBtn": "Daftar Sekarang",
-    "hasAccount": "Sudah punya akun?"
+    "hasAccount": "Sudah punya akun?",
+    "forgotPasswordTitle": "Lupa password?",
+    "forgotPasswordDesc": "Masukkan email akun Anda dan kami akan mengirimkan tautan untuk mereset password.",
+    "forgotSuccessMsg": "Jika email {email} terdaftar di sistem kami, kami sudah mengirimkan tautan reset password. Periksa kotak masuk Anda (dan folder spam) dalam beberapa menit ke depan.",
+    "resendToOtherEmail": "Kirim ulang ke email lain",
+    "sendResetLink": "Kirim tautan reset",
+    "sending": "Mengirim...",
+    "rememberPassword": "Ingat password Anda?",
+    "backToLogin": "Kembali ke login",
+    "errorForgot": "Gagal mengirim email reset password. Coba lagi sebentar.",
+    "resetInvalidToken": "Tautan tidak valid",
+    "resetInvalidTokenDesc": "Tautan reset password sudah tidak berlaku atau pernah digunakan. Silakan minta tautan baru.",
+    "requestNewLink": "Minta tautan baru",
+    "resetSuccessTitle": "Password berhasil direset",
+    "resetSuccessDesc": "Password Anda sudah diperbarui. Silakan masuk dengan password baru Anda.",
+    "resetTitle": "Buat password baru",
+    "resetDesc": "Masukkan password baru untuk akun Anda.",
+    "newPassword": "Password baru",
+    "newPasswordPlaceholder": "Minimal 8 karakter",
+    "confirmNewPassword": "Konfirmasi password",
+    "confirmNewPasswordPlaceholder": "Ulangi password baru",
+    "saveNewPassword": "Simpan password baru",
+    "errorPasswordLength": "Password minimal 8 karakter.",
+    "errorPasswordMismatch": "Konfirmasi password tidak cocok.",
+    "errorResetPassword": "Gagal mereset password. Tautan mungkin sudah kedaluwarsa."
   },
   "footer": {
     "desc": "Platform landing page eksklusif untuk studio tato profesional di Indonesia.",
     "copyright": "Hak cipta dilindungi.",
     "madeWith": "Dibuat dengan",
     "forArtists": "untuk artist tato Indonesia."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "description": "Pantau performa studio Anda secara real-time.",
+    "loading": "Memuat data...",
+    "views": "Total Views",
+    "clicks": "Total Clicks",
+    "conversionRate": "Conversion Rate",
+    "leads": "Total Leads",
+    "dailyStatsTitle": "Statistik Harian",
+    "dailyStatsDesc": "Data harian akan tersedia setelah fitur analytics lanjutan dirilis.",
+    "dailyStatsNote": "Saat ini gunakan ringkasan total views, clicks, dan leads di atas.",
+    "latestLeadsTitle": "Lead Terbaru",
+    "leadsCount": "{count} lead masuk",
+    "noLeads": "Belum ada lead. Lead dari form appointment akan muncul di sini.",
+    "table": {
+      "name": "Nama",
+      "email": "Email",
+      "message": "Pesan",
+      "status": "Status",
+      "date": "Tanggal"
+    },
+    "status": {
+      "new": "Baru",
+      "read": "Dibaca",
+      "replied": "Dibalas"
+    }
+  },
+  "settings": {
+    "title": "Pengaturan",
+    "description": "Kelola profil studio, tim, dan akun Anda.",
+    "tabs": {
+      "profile": "Profil Studio",
+      "team": "Tim",
+      "account": "Akun",
+      "danger": "Bahaya"
+    },
+    "profile": {
+      "title": "Profil Studio",
+      "desc": "Informasi dasar studio yang ditampilkan di halaman landing",
+      "loading": "Memuat profil studio…",
+      "nameLabel": "Nama Studio",
+      "slugLabel": "Slug URL",
+      "cityLabel": "Kota",
+      "waLabel": "Nomor WhatsApp",
+      "coverLabel": "Foto Cover Studio",
+      "uploading": "Mengunggah...",
+      "uploadBtn": "Upload",
+      "coverNote": "Digunakan di direktori studio. Kosongkan untuk otomatis dari gambar Hero di builder.",
+      "coverPreviewAlt": "Preview cover studio",
+      "descLabel": "Deskripsi",
+      "saveBtn": "Simpan Perubahan",
+      "saving": "Menyimpan…",
+      "successMsg": "Profil studio berhasil disimpan.",
+      "errorMsg": "Gagal menyimpan perubahan. Coba lagi.",
+      "imageUploadError": "Terjadi kesalahan saat mengunggah gambar."
+    },
+    "team": {
+      "title": "Anggota Tim",
+      "desc": "Kelola siapa saja yang memiliki akses ke studio ini",
+      "inviteBtn": "Undang Anggota",
+      "inviteTitle": "Undang Anggota Baru",
+      "inviteDesc": "Kirim undangan melalui email untuk bergabung ke studio ini",
+      "emailLabel": "Email",
+      "roleLabel": "Role",
+      "sendInviteBtn": "Kirim Undangan",
+      "comingSoon": "Manajemen tim multi-user segera hadir. Saat ini hanya owner utama yang memiliki akses ke studio."
+    },
+    "account": {
+      "title": "Pengaturan Akun",
+      "desc": "Ubah email dan kata sandi akun Anda",
+      "loading": "Memuat data akun…",
+      "emailLabel": "Email",
+      "currentPassword": "Kata Sandi Saat Ini",
+      "newPassword": "Kata Sandi Baru",
+      "confirmPassword": "Konfirmasi Kata Sandi",
+      "saveBtn": "Simpan Perubahan"
+    },
+    "danger": {
+      "title": "Hapus Studio",
+      "desc": "Setelah studio dihapus, semua data termasuk landing page, lead, dan statistik akan hilang secara permanen. Tindakan ini tidak dapat dibatalkan.",
+      "deleteBtn": "Hapus Studio",
+      "confirmTitle": "Apakah Anda yakin?",
+      "confirmDesc": "Tindakan ini tidak dapat dibatalkan. Semua data studio termasuk landing page, lead, dan statistik akan dihapus secara permanen.",
+      "cancelBtn": "Batal",
+      "confirmBtn": "Ya, Hapus Studio"
+    }
+  },
+  "billing": {
+    "title": "Billing & Langganan",
+    "description": "Kelola paket langganan studio Anda dan lihat riwayat pembayaran.",
+    "currentPlan": {
+      "title": "Paket Saat Ini",
+      "desc": "Status langganan studio Anda",
+      "nameLabel": "Nama Paket",
+      "statusLabel": "Status",
+      "statusActive": "Aktif",
+      "statusInactive": "Tidak Aktif",
+      "expiresLabel": "Berakhir Pada",
+      "noPlanTitle": "Belum ada paket langganan",
+      "noPlanDesc": "Anda belum pernah berlangganan paket apapun.",
+      "btnSubscribe": "Berlangganan Sekarang",
+      "btnManage": "Perpanjang / Kelola Paket"
+    },
+    "history": {
+      "title": "Riwayat Transaksi",
+      "desc": "Riwayat pembayaran tagihan dari Midtrans.",
+      "noTransactions": "Belum ada transaksi",
+      "table": {
+        "orderId": "Order ID",
+        "date": "Tanggal",
+        "method": "Metode",
+        "amount": "Jumlah",
+        "status": "Status",
+        "invoice": "Invoice"
+      },
+      "statusSuccess": "Berhasil",
+      "statusPending": "Pending",
+      "statusFailed": "Gagal",
+      "viewInvoice": "Lihat Invoice"
+    }
+  },
+  "invoice": {
+    "backBtn": "Kembali ke Billing",
+    "printBtn": "Cetak / Simpan PDF",
+    "title": "Invoice",
+    "issuedLabel": "Diterbitkan",
+    "paidLabel": "Dibayar",
+    "fromLabel": "Dari",
+    "toLabel": "Tagihan Untuk",
+    "table": {
+      "desc": "Deskripsi",
+      "amount": "Jumlah",
+      "total": "Total",
+      "subscription": "Langganan {name}",
+      "duration": "Durasi: {duration}"
+    },
+    "meta": {
+      "orderId": "Midtrans Order ID",
+      "method": "Metode Pembayaran",
+      "currency": "Mata Uang",
+      "currencyVal": "IDR (Rupiah Indonesia)"
+    },
+    "status": {
+      "paid": "Lunas",
+      "pending": "Menunggu",
+      "failed": "Gagal"
+    },
+    "footer": "Invoice ini merupakan bukti transaksi digital yang sah. Simpan dokumen ini untuk keperluan administrasi Anda. Pertanyaan? Hubungi {email}"
+  },
+  "checkout": {
+    "restrictedTitle": "Akses Dibatasi",
+    "restrictedDesc": "Selesaikan pembayaran terlebih dahulu untuk mengaktifkan fitur Builder.",
+    "registerSuccess": "Pendaftaran Berhasil!",
+    "registerSuccessDesc": "Studio Anda telah terdaftar. Langkah terakhir, aktifkan langganan Anda untuk mulai mendesain landing page.",
+    "secureCheckout": "Secure checkout",
+    "activateBuilder": "Aktifkan Builder Anda",
+    "activateBuilderDesc": "Mulai buat landing page profesional berkonversi tinggi untuk studio tato Anda.",
+    "planDuration": "{duration}",
+    "popularBadge": "Paling Populer",
+    "whatYouGet": "Yang Anda Dapatkan ({name}):",
+    "paymentSecureNote": "Pembayaran diproses secara aman oleh Midtrans",
+    "needHelp": "Butuh bantuan? Hubungi billing support kami di {email}",
+    "loading": "Memuat halaman checkout...",
+    "errorGateway": "Gagal memuat gateway pembayaran. Muat ulang halaman.",
+    "btnPay": "Bayar Rp {price}"
+  },
+  "checkoutSuccess": {
+    "loading": "Memverifikasi Pembayaran...",
+    "success": "Pembayaran Berhasil! 🎉",
+    "pending": "Menunggu Konfirmasi Pembayaran",
+    "failed": "Pembayaran Tidak Berhasil",
+    "loadingDesc": "Sedang mengecek status pembayaran Anda ke Midtrans...",
+    "successDesc": "Langganan studio Anda telah aktif. Selamat datang di Ruang Tato!",
+    "pendingDesc": "Pembayaran Anda sedang diproses. Kami akan mengaktifkan langganan segera setelah pembayaran dikonfirmasi.",
+    "failedDesc": "Pembayaran Anda tidak berhasil diproses. Silakan coba lagi atau hubungi support kami.",
+    "statusLabel": {
+      "success": "Pembayaran Sukses",
+      "pending": "Menunggu Konfirmasi",
+      "failed": "Pembayaran Gagal"
+    },
+    "table": {
+      "orderId": "Order ID",
+      "statusCode": "Kode Status",
+      "plan": "Paket",
+      "amount": "Total Bayar",
+      "expiresAt": "Berlaku Hingga",
+      "pendingNote": "Jika sudah transfer, langganan akan aktif otomatis dalam beberapa menit. Halaman ini akan refresh secara otomatis."
+    },
+    "polling": "Mengecek status otomatis...",
+    "btnStartDesign": "Mulai Desain Studio",
+    "btnDashboard": "Ke Dashboard",
+    "btnCheckStatus": "Cek Status Pembayaran",
+    "btnTempDashboard": "Ke Dashboard Sementara",
+    "btnVerifying": "Memverifikasi...",
+    "btnTryAgain": "Coba Lagi",
+    "btnViewHistory": "Lihat Riwayat Pembayaran",
+    "supportNote": "Ada kendala? Hubungi billing support"
+  },
+  "builder": {
+    "headerBack": "Kembali ke dashboard",
+    "restrictedTitle": "Akses Terbatas: Selesaikan Pembayaran",
+    "restrictedDesc": "Fitur Builder Halaman eksklusif untuk pengguna berlangganan. Silakan selesaikan pembayaran untuk menggunakan fitur ini.",
+    "restrictedBtnPay": "Selesaikan Pembayaran",
+    "restrictedBtnBack": "Kembali",
+    "emptyPreviewTitle": "Preview Kosong",
+    "emptyPreviewDesc": "Tambahkan blok dari panel kiri untuk mulai mendesain",
+    "emptyPropertiesDesc": "Pilih blok di panel Layers atau Canvas untuk mengedit propertinya.",
+    "propertiesTitle": "Properties",
+    "discardTitle": "Buang Perubahan?",
+    "discardDesc": "Semua perubahan yang belum disimpan akan hilang. Tindakan ini tidak dapat dibatalkan.",
+    "discardCancel": "Batal",
+    "discardConfirm": "Ya, Buang",
+    "publishTitle": "Publikasikan Landing Page?",
+    "publishDesc": "Landing page Anda akan aktif dan dapat diakses publik.",
+    "publishSuccess": "Berhasil dipublikasikan!",
+    "publishBtnCancel": "Batal",
+    "publishBtnConfirm": "Publikasikan",
+    "publishBtnPublishing": "Mempublikasikan...",
+    "publishBtnSavePublish": "Save & Publish",
+    "toastSaving": "Menyimpan draft...",
+    "toastSaved": "Draft berhasil disimpan!",
+    "toastSaveError": "Gagal menyimpan draft.",
+    "toastPublishing": "Mempublikasikan halaman...",
+    "toastPublishSavedError": "Gagal menyimpan perubahan sebelum publikasi.",
+    "toastPublishError": "Gagal mempublikasikan halaman.",
+    "toastPublishSuccess": "Halaman berhasil dipublikasikan!",
+    "btnSave": "Simpan",
+    "btnSaving": "Menyimpan..."
+  },
+  "pendingPayment": {
+    "title": "Pembayaran Menunggu Konfirmasi",
+    "desc": "Paket {plan} (order {orderId}) sedang menunggu konfirmasi dari Midtrans. Langganan akan aktif otomatis setelah pembayaran berhasil.",
+    "checkStatus": "Cek Status Pembayaran",
+    "closeAlert": "Tutup banner",
+    "durationLabel": "{duration} Bulan",
+    "starter": "Starter ({duration})",
+    "growth": "Growth ({duration})",
+    "pro": "Pro ({duration})",
+    "enterprise": "Enterprise ({duration})",
+    "defaultPlan": "Langganan",
+    "relativeTime": {
+      "minutes": "{count} menit lalu",
+      "hours": "{count} jam lalu"
+    }
+  },
+  "unauthorized": {
+    "title": "Akses ditolak",
+    "description": "Anda tidak memiliki izin untuk membuka halaman ini.",
+    "btnStudio": "Login Studio",
+    "btnAdmin": "Login Admin"
+  },
+  "suspended": {
+    "title": "Studio Tidak Aktif",
+    "description": "Halaman studio ini sedang tidak aktif. Hubungi Ruang Tato jika Anda pemilik studio."
+  },
+  "notFoundStudio": {
+    "title": "Studio Tidak Ditemukan",
+    "description": "Halaman studio yang Anda cari tidak tersedia atau belum dipublikasikan."
   }
 }

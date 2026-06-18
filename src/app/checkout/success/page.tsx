@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { PlatformLogo } from "@/components/brand/platform-logo"
 import { SUBSCRIPTION_PLANS } from "@/lib/billing/billing-plans"
+import { useLanguage } from "@/lib/i18n/language-provider"
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -42,7 +43,14 @@ function isPendingStatus(status: string | null): boolean {
   return status === "pending"
 }
 
-function formatIDR(amount: number) {
+function formatIDR(amount: number, locale: string) {
+  if (locale === "en") {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+    }).format(amount)
+  }
   return new Intl.NumberFormat("id-ID", {
     style: "currency",
     currency: "IDR",
@@ -50,9 +58,9 @@ function formatIDR(amount: number) {
   }).format(amount)
 }
 
-function formatDate(iso: string | null | undefined): string {
+function formatDate(iso: string | null | undefined, locale: string): string {
   if (!iso) return "—"
-  return new Intl.DateTimeFormat("id-ID", {
+  return new Intl.DateTimeFormat(locale === "en" ? "en-US" : "id-ID", {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -72,6 +80,7 @@ function getPlanByType(planType: string | undefined) {
 async function confirmPaymentServer(
   orderId: string,
   planType: string,
+  errorFallback: string
 ): Promise<ConfirmResult> {
   const res = await fetch("/api/billing/confirm", {
     method: "POST",
@@ -80,7 +89,7 @@ async function confirmPaymentServer(
   })
   const data = await res.json().catch(() => ({}))
   if (!res.ok) {
-    return { activated: false, message: data.error ?? "Gagal memverifikasi pembayaran." }
+    return { activated: false, message: data.error ?? errorFallback }
   }
   return {
     activated: data.status?.activated ?? false,
@@ -95,6 +104,7 @@ async function confirmPaymentServer(
 // ── Komponen utama ─────────────────────────────────────────────────────────────
 
 function CheckoutSuccessContent() {
+  const { locale, t } = useLanguage()
   const searchParams = useSearchParams()
 
   const orderId = searchParams.get("order_id") ?? ""
@@ -137,7 +147,8 @@ function CheckoutSuccessContent() {
     if (!orderId || !planType) return
     setConfirmLoading(true)
     try {
-      const result = await confirmPaymentServer(orderId, planType)
+      const errorFallback = locale === "en" ? "Failed to verify payment." : "Gagal memverifikasi pembayaran."
+      const result = await confirmPaymentServer(orderId, planType, errorFallback)
       setConfirmResult(result)
       if (result.activated || result.paid) {
         setState("success")
@@ -158,7 +169,7 @@ function CheckoutSuccessContent() {
     } finally {
       setConfirmLoading(false)
     }
-  }, [orderId, planType])
+  }, [orderId, planType, locale])
 
   // Run server confirm on mount when status is "loading" or "success"
   useEffect(() => {
@@ -216,18 +227,22 @@ function CheckoutSuccessContent() {
   }
 
   const title = (() => {
-    if (state === "loading") return "Memverifikasi Pembayaran..."
-    if (state === "success") return "Pembayaran Berhasil! 🎉"
-    if (state === "pending") return "Menunggu Konfirmasi Pembayaran"
-    return "Pembayaran Tidak Berhasil"
+    if (state === "loading") return t.checkoutSuccess.loading
+    if (state === "success") return t.checkoutSuccess.success
+    if (state === "pending") return t.checkoutSuccess.pending
+    return t.checkoutSuccess.failed
   })()
 
   const description = (() => {
-    if (state === "loading") return "Sedang mengecek status pembayaran Anda ke Midtrans..."
-    if (state === "success") return "Langganan studio Anda telah aktif. Selamat datang di Ruang Tato!"
-    if (state === "pending") return "Pembayaran Anda sedang diproses. Kami akan mengaktifkan langganan segera setelah pembayaran dikonfirmasi."
-    return "Pembayaran Anda tidak berhasil diproses. Silakan coba lagi atau hubungi support kami."
+    if (state === "loading") return t.checkoutSuccess.loadingDesc
+    if (state === "success") return t.checkoutSuccess.successDesc
+    if (state === "pending") return t.checkoutSuccess.pendingDesc
+    return t.checkoutSuccess.failedDesc
   })()
+
+  const getPlanDurationLabel = (plan: any) => {
+    return t.pendingPayment.durationLabel.replace("{duration}", String(plan.months))
+  }
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center bg-background px-4 py-16 selection:bg-primary selection:text-primary-foreground">
@@ -268,7 +283,7 @@ function CheckoutSuccessContent() {
                 variant={state === "success" ? "default" : state === "pending" ? "secondary" : "destructive"}
                 className={state === "success" ? "bg-success/15 text-success hover:bg-success/25" : ""}
               >
-                {state === "success" ? "Pembayaran Sukses" : state === "pending" ? "Menunggu Konfirmasi" : "Pembayaran Gagal"}
+                {state === "success" ? t.checkoutSuccess.statusLabel.success : state === "pending" ? t.checkoutSuccess.statusLabel.pending : t.checkoutSuccess.statusLabel.failed}
               </Badge>
             )}
           </div>
@@ -278,39 +293,38 @@ function CheckoutSuccessContent() {
             <div className="mx-6 mb-6 rounded-xl border border-white/5 bg-background/40 divide-y divide-white/5">
               {orderId && (
                 <div className="flex items-center justify-between px-4 py-3">
-                  <span className="text-xs font-medium text-muted-foreground">Order ID</span>
+                  <span className="text-xs font-medium text-muted-foreground">{t.checkoutSuccess.table.orderId}</span>
                   <span className="text-xs font-mono text-foreground truncate max-w-[180px]">{orderId}</span>
                 </div>
               )}
               {statusCode && (
                 <div className="flex items-center justify-between px-4 py-3">
-                  <span className="text-xs font-medium text-muted-foreground">Kode Status</span>
+                  <span className="text-xs font-medium text-muted-foreground">{t.checkoutSuccess.table.statusCode}</span>
                   <span className="text-xs font-mono text-foreground">{statusCode}</span>
                 </div>
               )}
               {plan && (
                 <>
                   <div className="flex items-center justify-between px-4 py-3">
-                    <span className="text-xs font-medium text-muted-foreground">Paket</span>
-                    <span className="text-xs font-semibold text-foreground">{plan.name} — {plan.duration}</span>
+                    <span className="text-xs font-medium text-muted-foreground">{t.checkoutSuccess.table.plan}</span>
+                    <span className="text-xs font-semibold text-foreground">{plan.name} — {getPlanDurationLabel(plan)}</span>
                   </div>
                   <div className="flex items-center justify-between px-4 py-3">
-                    <span className="text-xs font-medium text-muted-foreground">Total Bayar</span>
-                    <span className="text-xs font-semibold text-foreground">{formatIDR(plan.price)}</span>
+                    <span className="text-xs font-medium text-muted-foreground">{t.checkoutSuccess.table.amount}</span>
+                    <span className="text-xs font-semibold text-foreground">{formatIDR(plan.price, locale)}</span>
                   </div>
                 </>
               )}
               {state === "success" && expiresAt && (
                 <div className="flex items-center justify-between px-4 py-3">
-                  <span className="text-xs font-medium text-muted-foreground">Berlaku Hingga</span>
-                  <span className="text-xs font-semibold text-foreground">{formatDate(expiresAt)}</span>
+                  <span className="text-xs font-medium text-muted-foreground">{t.checkoutSuccess.table.expiresAt}</span>
+                  <span className="text-xs font-semibold text-foreground">{formatDate(expiresAt, locale)}</span>
                 </div>
               )}
               {state === "pending" && (
                 <div className="px-4 py-3">
                   <p className="text-xs text-amber-500/90 leading-relaxed">
-                    Jika sudah transfer, langganan akan aktif otomatis dalam beberapa menit.{" "}
-                    {pollingCount < 5 && "Halaman ini akan refresh secara otomatis."}
+                    {t.checkoutSuccess.table.pendingNote}
                   </p>
                 </div>
               )}
@@ -321,7 +335,7 @@ function CheckoutSuccessContent() {
           {state === "pending" && pollingCount < 5 && (
             <div className="mx-6 mb-4 flex items-center gap-2 text-xs text-muted-foreground">
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              <span>Mengecek status otomatis...</span>
+              <span>{t.checkoutSuccess.polling}</span>
             </div>
           )}
 
@@ -334,7 +348,7 @@ function CheckoutSuccessContent() {
                   className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-[var(--radius)] border border-white/10 bg-[var(--brand-scarlet)] px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:scale-[1.01] hover:shadow-[0_0_24px_oklch(0.62_0.21_25/0.4)] active:scale-[0.99]"
                 >
                   <span className="relative z-10 flex items-center gap-2">
-                    Mulai Desain Studio
+                    {t.checkoutSuccess.btnStartDesign}
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                   </span>
                   {/* shimmer overlay */}
@@ -346,7 +360,7 @@ function CheckoutSuccessContent() {
                   render={<Link href="/app/dashboard" />}
                 >
                   <LayoutDashboard className="mr-2 h-4 w-4" />
-                  Ke Dashboard
+                  {t.checkoutSuccess.btnDashboard}
                 </Button>
               </>
             )}
@@ -364,7 +378,7 @@ function CheckoutSuccessContent() {
                   ) : (
                     <RefreshCw className="mr-2 h-4 w-4" />
                   )}
-                  Cek Status Pembayaran
+                  {t.checkoutSuccess.btnCheckStatus}
                 </Button>
                 <Button
                   variant="ghost"
@@ -372,7 +386,7 @@ function CheckoutSuccessContent() {
                   render={<Link href="/app/dashboard" />}
                 >
                   <LayoutDashboard className="mr-2 h-4 w-4" />
-                  Ke Dashboard Sementara
+                  {t.checkoutSuccess.btnTempDashboard}
                 </Button>
               </>
             )}
@@ -380,7 +394,7 @@ function CheckoutSuccessContent() {
             {state === "loading" && (
               <Button variant="outline" className="w-full" disabled>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Memverifikasi...
+                {t.checkoutSuccess.btnVerifying}
               </Button>
             )}
 
@@ -390,7 +404,7 @@ function CheckoutSuccessContent() {
                   className="w-full"
                   render={<Link href="/checkout" />}
                 >
-                  Coba Lagi
+                  {t.checkoutSuccess.btnTryAgain}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
                 <Button
@@ -399,7 +413,7 @@ function CheckoutSuccessContent() {
                   render={<Link href="/app/billing" />}
                 >
                   <ReceiptText className="mr-2 h-4 w-4" />
-                  Lihat Riwayat Pembayaran
+                  {t.checkoutSuccess.btnViewHistory}
                 </Button>
               </>
             )}
@@ -408,13 +422,27 @@ function CheckoutSuccessContent() {
           {/* Footer */}
           <div className="border-t border-white/5 px-6 py-4 text-center">
             <p className="text-xs text-muted-foreground">
-              Ada kendala?{" "}
-              <a
-                href="mailto:billing@ruangtato.com"
-                className="text-primary hover:underline underline-offset-4"
-              >
-                Hubungi billing support
-              </a>
+              {locale === "en" ? (
+                <>
+                  Any issues?{" "}
+                  <a
+                    href="mailto:billing@ruangtato.com"
+                    className="text-primary hover:underline underline-offset-4"
+                  >
+                    Contact billing support
+                  </a>
+                </>
+              ) : (
+                <>
+                  Ada kendala?{" "}
+                  <a
+                    href="mailto:billing@ruangtato.com"
+                    className="text-primary hover:underline underline-offset-4"
+                  >
+                    Hubungi billing support
+                  </a>
+                </>
+              )}
             </p>
           </div>
         </div>

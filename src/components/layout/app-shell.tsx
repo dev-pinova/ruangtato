@@ -4,6 +4,7 @@ import { useEffect, useState, useSyncExternalStore, useMemo } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { motion } from "framer-motion"
+import { useLanguage } from "@/lib/i18n/language-provider"
 import {
   Menu,
   ChevronRight,
@@ -130,6 +131,7 @@ export function AppShell({
   childrenWrapperClassName?: string
   isLoadingUser?: boolean
 }) {
+  const { t } = useLanguage()
   const pathname = usePathname()
   const router = useRouter()
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -493,7 +495,7 @@ export function AppShell({
                       onClick={() => setLogoutDialogOpen(true)}
                     >
                       <LogOut className="mr-2 size-4" />
-                      <span>Keluar</span>
+                      <span>{t.appShell.logout}</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -510,7 +512,7 @@ export function AppShell({
 
           {mobileShortcuts.length > 0 && (
             <nav
-              aria-label="Shortcut navigasi"
+              aria-label={t.navigation.shortcuts}
               className="fixed inset-x-0 bottom-0 z-40 flex border-t border-border bg-background/95 backdrop-blur md:hidden"
             >
               {mobileShortcuts.map((item) => {
@@ -539,13 +541,13 @@ export function AppShell({
       <AlertDialog open={logoutDialogOpen} onOpenChange={setLogoutDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Konfirmasi Keluar</AlertDialogTitle>
+            <AlertDialogTitle>{t.appShell.logoutConfirmTitle}</AlertDialogTitle>
             <AlertDialogDescription>
-              Apakah Anda yakin ingin keluar dari akun ini?
+              {t.appShell.logoutConfirmDesc}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogCancel>{t.appShell.logoutCancel}</AlertDialogCancel>
             <AlertDialogAction
               variant="destructive"
               onClick={() => void handleSignOut()}
@@ -554,10 +556,10 @@ export function AppShell({
               {signingOut ? (
                 <>
                   <Loader2 className="mr-2 size-4 animate-spin" />
-                  Mengeluarkan...
+                  {t.appShell.loggingOut}
                 </>
               ) : (
-                "Ya, Keluar"
+                t.appShell.logoutConfirmBtn
               )}
             </AlertDialogAction>
           </AlertDialogFooter>

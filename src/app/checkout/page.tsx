@@ -9,8 +9,43 @@ import { SubscribeButton } from "@/components/billing/subscribe-button"
 import { loadMidtransSnap } from "@/lib/billing/midtrans-snap"
 import { PlatformLogo } from "@/components/brand/platform-logo"
 import { SUBSCRIPTION_PLANS } from "@/lib/billing/billing-plans"
+import { useLanguage } from "@/lib/i18n/language-provider"
+
+const PLAN_FEATURES_EN: Record<string, string[]> = {
+  "plan-1": [
+    "1 Official Studio Landing Page",
+    "15+ Premium Block Components (Hero, Gallery, FAQ)",
+    "Direct WhatsApp Booking Integration",
+    "Lead Consultation Form (Lead Capture)",
+    "Basic Visitor Analytics"
+  ],
+  "plan-2": [
+    "All Starter Features",
+    "'Trusted Studio' Verification Badge",
+    "Visitor & Conversion Click Analytics",
+    "Priority WhatsApp Support",
+    "Save 16% compared to Monthly"
+  ],
+  "plan-3": [
+    "All Growth Features",
+    "Export Customer Leads (CSV/Excel)",
+    "Team Member Management (Up to 3 Artists)",
+    "Custom Domain Name (Coming Soon)",
+    "Review Filtering & Custom FAQ",
+    "Save 24% compared to Monthly"
+  ],
+  "plan-4": [
+    "All Pro Features",
+    "Unlimited Artist Management",
+    "Automated Monthly Performance Reports",
+    "Dedicated Account Manager (Dedicated Support)",
+    "Developer API Access (Coming Soon)",
+    "Save 33% compared to Monthly"
+  ]
+}
 
 function CheckoutContent() {
+  const { locale, t } = useLanguage()
   const searchParams = useSearchParams()
   const isUnpaid = searchParams.get("status") === "unpaid"
   const isWelcome = searchParams.get("welcome") === "1"
@@ -38,14 +73,29 @@ function CheckoutContent() {
         setOrderMessage(
           err instanceof Error
             ? err.message
-            : "Gagal memuat gateway pembayaran. Muat ulang halaman.",
+            : t.checkout.errorGateway,
         )
       })
 
     return () => {
       cancelled = true
     }
-  }, [clientKey])
+  }, [clientKey, t.checkout.errorGateway])
+
+  const formatPrice = (amount: number) => {
+    if (locale === "en") {
+      return `IDR ${amount.toLocaleString("en-US")}`
+    }
+    return `Rp ${amount.toLocaleString("id-ID")}`
+  }
+
+  const getPlanDurationLabel = (plan: typeof SUBSCRIPTION_PLANS[0]) => {
+    return t.pendingPayment.durationLabel.replace("{duration}", String(plan.months))
+  }
+
+  const selectedPlanFeatures = locale === "en" 
+    ? PLAN_FEATURES_EN[selectedPlan.id] || selectedPlan.features
+    : selectedPlan.features
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center bg-background px-4 py-16 selection:bg-primary selection:text-primary-foreground">
@@ -66,8 +116,8 @@ function CheckoutContent() {
           <div className="mb-6 flex items-start gap-3 rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive backdrop-blur-md animate-in fade-in slide-in-from-top-4 duration-300">
             <AlertCircle className="h-5 w-5 shrink-0 text-destructive" />
             <div className="space-y-1">
-              <p className="font-semibold text-destructive">Akses Dibatasi</p>
-              <p>Selesaikan pembayaran terlebih dahulu untuk mengaktifkan fitur Builder.</p>
+              <p className="font-semibold text-destructive">{t.checkout.restrictedTitle}</p>
+              <p>{t.checkout.restrictedDesc}</p>
             </div>
           </div>
         )}
@@ -77,8 +127,8 @@ function CheckoutContent() {
           <div className="mb-6 flex items-start gap-3 rounded-lg border border-success/30 bg-success/10 p-4 text-sm text-success backdrop-blur-md animate-in fade-in slide-in-from-top-4 duration-300">
             <CheckCircle2 className="h-5 w-5 shrink-0 text-success" />
             <div className="space-y-1">
-              <p className="font-semibold text-success">Pendaftaran Berhasil!</p>
-              <p>Studio Anda telah terdaftar. Langkah terakhir, aktifkan langganan Anda untuk mulai mendesain landing page.</p>
+              <p className="font-semibold text-success">{t.checkout.registerSuccess}</p>
+              <p>{t.checkout.registerSuccessDesc}</p>
             </div>
           </div>
         )}
@@ -87,13 +137,13 @@ function CheckoutContent() {
         <Card className="border border-white/5 bg-card/40 shadow-2xl backdrop-blur-xl">
           <CardHeader className="border-b border-white/5 pb-6">
             <div className="flex items-center gap-2 text-primary text-xs font-semibold uppercase tracking-wider mb-2">
-              <ShieldCheck className="h-4 w-4" /> Secure checkout
+              <ShieldCheck className="h-4 w-4" /> {t.checkout.secureCheckout}
             </div>
             <CardTitle className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-              Aktifkan Builder Anda
+              {t.checkout.activateBuilder}
             </CardTitle>
             <CardDescription className="text-muted-foreground">
-              Mulai buat landing page profesional berkonversi tinggi untuk studio tato Anda.
+              {t.checkout.activateBuilderDesc}
             </CardDescription>
           </CardHeader>
 
@@ -115,14 +165,14 @@ function CheckoutContent() {
                       {plan.name}
                     </span>
                     <span className="font-bold text-foreground">
-                      Rp {plan.price.toLocaleString("id-ID")}
+                      {formatPrice(plan.price)}
                     </span>
                   </div>
                   <div className="mt-1 flex w-full items-center justify-between text-xs text-muted-foreground">
-                    <span>{plan.duration}</span>
+                    <span>{getPlanDurationLabel(plan)}</span>
                     {plan.popular && (
                       <span className="rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-medium text-primary">
-                        Paling Populer
+                        {t.checkout.popularBadge}
                       </span>
                     )}
                   </div>
@@ -133,10 +183,10 @@ function CheckoutContent() {
             {/* Feature list */}
             <div className="space-y-3">
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                Yang Anda Dapatkan ({selectedPlan.name}):
+                {t.checkout.whatYouGet.replace("{name}", selectedPlan.name)}
               </p>
               <ul className="space-y-2.5">
-                {selectedPlan.features.map((feature) => (
+                {selectedPlanFeatures.map((feature) => (
                   <li key={feature} className="flex items-start gap-2.5 text-sm text-muted-foreground">
                     <CheckCircle2 className="h-4.5 w-4.5 mt-0.5 shrink-0 text-primary" />
                     <span>{feature}</span>
@@ -157,7 +207,11 @@ function CheckoutContent() {
             <SubscribeButton
               months={selectedMonths}
               popular={selectedPlan.popular ?? false}
-              label={`Bayar Rp ${selectedPlan.price.toLocaleString("id-ID")}`}
+              label={
+                t.checkout.btnPay.includes("Rp")
+                  ? t.checkout.btnPay.replace("Rp {price}", formatPrice(selectedPlan.price))
+                  : t.checkout.btnPay.replace("{price}", formatPrice(selectedPlan.price))
+              }
               snapReady={snapReady}
               onMessage={setOrderMessage}
               onPaymentComplete={() => {
@@ -168,31 +222,38 @@ function CheckoutContent() {
 
             <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
               <Lock className="h-3.5 w-3.5" />
-              <span>Pembayaran diproses secara aman oleh Midtrans</span>
+              <span>{t.checkout.paymentSecureNote}</span>
             </div>
           </CardFooter>
         </Card>
 
         {/* Support links */}
         <p className="mt-8 text-center text-xs text-muted-foreground">
-          Butuh bantuan? Hubungi billing support kami di{" "}
+          {t.checkout.needHelp.split("{email}")[0]}
           <a href="mailto:billing@ruangtato.com" className="text-muted-foreground hover:text-primary hover:underline">
             billing@ruangtato.com
           </a>
+          {t.checkout.needHelp.split("{email}")[1] || ""}
         </p>
       </div>
     </div>
   )
 }
 
+function CheckoutLoading() {
+  const { t } = useLanguage()
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-background">
+      <p className="text-sm text-muted-foreground">{t.checkout.loading}</p>
+    </div>
+  )
+}
+
 export default function CheckoutPage() {
   return (
-    <Suspense fallback={
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <p className="text-sm text-muted-foreground">Memuat halaman checkout...</p>
-      </div>
-    }>
+    <Suspense fallback={<CheckoutLoading />}>
       <CheckoutContent />
     </Suspense>
   )
 }
+

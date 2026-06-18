@@ -4,6 +4,7 @@ import { useState, useRef, type DragEvent, type ChangeEvent } from "react"
 import { Upload, Trash2, Loader2, Link as LinkIcon, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useLanguage } from "@/lib/i18n/language-provider"
 
 interface ImageUploadProps {
   value: string
@@ -12,6 +13,7 @@ interface ImageUploadProps {
 }
 
 export function ImageUpload({ value, onChange, label }: ImageUploadProps) {
+  const { locale, t } = useLanguage()
   const [isDragActive, setIsDragActive] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -61,23 +63,23 @@ export function ImageUpload({ value, onChange, label }: ImageUploadProps) {
 
       if (!res.ok) {
         if (res.status === 503) {
-          throw new Error("Storage R2 belum aktif/dikonfigurasi di environment.")
+          throw new Error(locale === "en" ? "R2 Storage is not active/configured in the environment." : "Storage R2 belum aktif/dikonfigurasi di environment.")
         }
         if (data.details && Array.isArray(data.details)) {
           throw new Error(data.details.join(", "))
         }
-        throw new Error(data.error ?? "Gagal mengunggah gambar.")
+        throw new Error(data.error ?? (locale === "en" ? "Failed to upload image." : "Gagal mengunggah gambar."))
       }
 
       if (data.url) {
         onChange(data.url)
         setError(null)
       } else {
-        throw new Error("URL gambar tidak ditemukan pada respon server.")
+        throw new Error(locale === "en" ? "Image URL not found in server response." : "URL gambar tidak ditemukan pada respon server.")
       }
     } catch (err: unknown) {
       console.error("Upload error:", err)
-      setError(err instanceof Error ? err.message : "Terjadi kesalahan saat mengunggah.")
+      setError(err instanceof Error ? err.message : (locale === "en" ? "An error occurred during upload." : "Terjadi kesalahan saat mengunggah."))
     } finally {
       setIsUploading(false)
     }
@@ -98,7 +100,7 @@ export function ImageUpload({ value, onChange, label }: ImageUploadProps) {
   return (
     <div className="flex flex-col gap-2 rounded-md border border-border/80 bg-muted/20 p-3">
       <div className="flex items-center justify-between">
-        <label className="text-xs font-semibold text-foreground/80">{label || "Gambar"}</label>
+        <label className="text-xs font-semibold text-foreground/80">{label || (locale === "en" ? "Image" : "Gambar")}</label>
         <div className="flex gap-1.5">
           <Button
             type="button"
@@ -132,7 +134,7 @@ export function ImageUpload({ value, onChange, label }: ImageUploadProps) {
                   src={value}
                   alt="Preview"
                   className="h-full w-full object-contain"
-                  onError={() => setError("Gambar gagal dimuat. Periksa URL atau koneksi.")}
+                  onError={() => setError(locale === "en" ? "Failed to load image. Check the URL or connection." : "Gambar gagal dimuat. Periksa URL atau koneksi.")}
                 />
               </div>
               <div className="mt-2 flex items-center justify-between px-1.5 py-1">
@@ -173,15 +175,15 @@ export function ImageUpload({ value, onChange, label }: ImageUploadProps) {
               {isUploading ? (
                 <div className="flex flex-col items-center gap-2 py-2">
                   <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                  <p className="text-xs text-muted-foreground">Mengunggah...</p>
+                  <p className="text-xs text-muted-foreground">{locale === "en" ? "Uploading..." : "Mengunggah..."}</p>
                 </div>
               ) : (
                 <div className="flex flex-col items-center gap-1.5">
                   <div className="rounded-full bg-muted/60 p-1.5 text-muted-foreground">
                     <Upload className="size-4" />
                   </div>
-                  <p className="text-xs font-medium text-foreground/80">Pilih atau Drag & Drop gambar</p>
-                  <p className="text-[10px] text-muted-foreground">Maksimal 5MB (Format: JPG, PNG, WEBP)</p>
+                  <p className="text-xs font-medium text-foreground/80">{locale === "en" ? "Select or Drag & Drop image" : "Pilih atau Drag & Drop gambar"}</p>
+                  <p className="text-[10px] text-muted-foreground">{locale === "en" ? "Maximum 5MB (Format: JPG, PNG, WEBP)" : "Maksimal 5MB (Format: JPG, PNG, WEBP)"}</p>
                 </div>
               )}
             </div>
@@ -206,7 +208,7 @@ export function ImageUpload({ value, onChange, label }: ImageUploadProps) {
                 src={value}
                 alt="Preview"
                 className="h-full w-full object-contain"
-                onError={() => setError("Gambar gagal dimuat. Periksa URL.")}
+                onError={() => setError(locale === "en" ? "Failed to load image. Check the URL." : "Gambar gagal dimuat. Periksa URL.")}
               />
             </div>
           )}
@@ -222,3 +224,4 @@ export function ImageUpload({ value, onChange, label }: ImageUploadProps) {
     </div>
   )
 }
+

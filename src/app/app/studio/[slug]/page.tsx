@@ -34,6 +34,8 @@ import { BlockLeadForm } from "@/components/blocks/lead-form"
 import { StudioTracker } from "@/components/studio/studio-tracker"
 import { FloatingWhatsAppButton } from "@/components/studio/floating-whatsapp"
 import type { AppointmentFormData, BlockType } from "@/lib/types"
+import { getLocale } from "@/lib/i18n/actions"
+import { getDictionary } from "@/lib/i18n/get-dictionary"
 
 export const dynamic = "force-dynamic"
 
@@ -52,13 +54,14 @@ type PageProps = { params: Promise<{ slug: string }> }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
-  const studio =
-    await getPublishedStudioBySlug(slug)
+  const locale = await getLocale()
+  const t = await getDictionary(locale)
+  const studio = await getPublishedStudioBySlug(slug)
 
   if (!studio) {
     return createPageMetadata({
-      title: "Studio Tidak Ditemukan",
-      description: "Halaman studio yang Anda cari tidak tersedia atau belum dipublikasikan.",
+      title: t.notFoundStudio.title,
+      description: t.notFoundStudio.description,
       path: `/app/studio/${slug}`,
       noIndex: true,
     })
@@ -66,10 +69,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const description =
     studio.description ||
-    `Studio tato ${studio.name} di ${studio.city}. Lihat portofolio dan booking konsultasi lewat WhatsApp.`
+    (locale === "en"
+      ? `${studio.name} tattoo studio in ${studio.city}. View portfolio and book consultation via WhatsApp.`
+      : `Studio tato ${studio.name} di ${studio.city}. Lihat portofolio dan booking konsultasi lewat WhatsApp.`)
+
+  const titleFormat = locale === "en"
+    ? `${studio.name} — Tattoo Studio in ${studio.city}`
+    : `${studio.name} — Studio Tato ${studio.city}`
 
   return createPageMetadata({
-    title: `${studio.name} — Studio Tato ${studio.city}`,
+    title: titleFormat,
     description,
     path: `/app/studio/${slug}`,
     image: studio.image,
@@ -78,8 +87,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       studio.city,
       studio.artist,
       ...studio.tags,
-      "studio tato",
-      "booking tato",
+      locale === "en" ? "tattoo studio" : "studio tato",
+      locale === "en" ? "tattoo booking" : "booking tato",
     ],
   })
 }
@@ -128,6 +137,8 @@ const BLOCK_ANCHOR_IDS: Partial<Record<BlockType, string>> = {
 
 export default async function StudioRendererPage({ params }: PageProps) {
   const { slug } = await params
+  const locale = await getLocale()
+  const t = await getDictionary(locale)
 
   const suspended = await getSuspendedStudioBySlug(slug)
   if (suspended) {
@@ -136,8 +147,7 @@ export default async function StudioRendererPage({ params }: PageProps) {
         <div className="max-w-md text-center">
           <h1 className="text-2xl font-semibold">{suspended.name}</h1>
           <p className="mt-3 text-sm text-white/70">
-            Halaman studio ini sedang tidak aktif. Hubungi Ruang Tato jika Anda pemilik
-            studio.
+            {t.suspended.description}
           </p>
         </div>
       </main>
@@ -203,12 +213,12 @@ export default async function StudioRendererPage({ params }: PageProps) {
                 <div className="mx-auto flex max-w-6xl items-center justify-center gap-6 px-4 py-2.5 text-[10px] uppercase tracking-[0.32em] text-white/50 md:px-6">
                   <span className="inline-flex items-center gap-1.5">
                     <Eye className="size-3" />
-                    {studio.viewCount.toLocaleString("id-ID")} views
+                    {studio.viewCount.toLocaleString(locale === "en" ? "en-US" : "id-ID")} views
                   </span>
                   <span className="text-white/20">•</span>
                   <span className="inline-flex items-center gap-1.5">
                     <MousePointerClick className="size-3" />
-                    {studio.clickCount.toLocaleString("id-ID")} clicks
+                    {studio.clickCount.toLocaleString(locale === "en" ? "en-US" : "id-ID")} clicks
                   </span>
                 </div>
               </div>
@@ -223,3 +233,4 @@ export default async function StudioRendererPage({ params }: PageProps) {
     </main>
   )
 }
+

@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { STUDIO_URL_DISPLAY_PREFIX, studioPublicPath } from "@/lib/site"
 import { H2, P, Small } from "@/components/ui/typography"
+import { useLanguage } from "@/lib/i18n/language-provider"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -124,6 +125,7 @@ interface BuilderUIProps {
 }
 
 export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
+  const { t } = useLanguage()
   const [blocks, setBlocks] = useState<Block[]>(initialStudio.blocks)
   const [activeBlockId, setActiveBlockId] = useState<string | null>(initialStudio.blocks[0]?.id ?? null)
   const [slug, setSlug] = useState(initialStudio.slug)
@@ -209,26 +211,26 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
   }
 
   const handleSaveDraft = async () => {
-    const toastId = toast.loading("Menyimpan draft...")
+    const toastId = toast.loading(t.builder.toastSaving)
     const success = await saveConfig()
     toast.dismiss(toastId)
     if (success) {
-      toast.success("Draft berhasil disimpan!")
+      toast.success(t.builder.toastSaved)
     } else {
-      toast.error("Gagal menyimpan draft.")
+      toast.error(t.builder.toastSaveError)
     }
   }
 
   const handlePublish = async () => {
     setIsPublishing(true)
     setSaveError(null)
-    const toastId = toast.loading("Mempublikasikan halaman...")
+    const toastId = toast.loading(t.builder.toastPublishing)
 
     const saved = await saveConfig({ showSavingState: false })
     if (!saved) {
       setIsPublishing(false)
       toast.dismiss(toastId)
-      toast.error("Gagal menyimpan perubahan sebelum publikasi.")
+      toast.error(t.builder.toastPublishSavedError)
       return
     }
 
@@ -241,12 +243,12 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
 
     if (!res.ok) {
       const data = await res.json().catch(() => ({}))
-      setSaveError(data.error ?? "Gagal mempublikasikan halaman.")
-      toast.error(data.error ?? "Gagal mempublikasikan halaman.")
+      setSaveError(data.error ?? t.builder.toastPublishError)
+      toast.error(data.error ?? t.builder.toastPublishError)
       return
     }
 
-    toast.success("Halaman berhasil dipublikasikan!")
+    toast.success(t.builder.toastPublishSuccess)
     setPublishSuccess(true)
     setTimeout(() => {
       setPublishSuccess(false)
@@ -350,7 +352,7 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
             disabled={isSaving || isPublishing}
           >
             <Save className="h-4 w-4 sm:hidden" />
-            <span className="hidden sm:inline">{isSaving ? "Menyimpan..." : "Simpan"}</span>
+            <span className="hidden sm:inline">{isSaving ? t.builder.btnSaving : t.builder.btnSave}</span>
           </Button>
 
           <AlertDialog open={discardDialogOpen} onOpenChange={setDiscardDialogOpen}>
@@ -363,15 +365,15 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
             />
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Buang Perubahan?</AlertDialogTitle>
+                <AlertDialogTitle>{t.builder.discardTitle}</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Semua perubahan yang belum disimpan akan hilang. Tindakan ini tidak dapat dibatalkan.
+                  {t.builder.discardDesc}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Batal</AlertDialogCancel>
+                <AlertDialogCancel>{t.builder.discardCancel}</AlertDialogCancel>
                 <AlertDialogAction className="bg-destructive hover:bg-destructive/90 text-white" onClick={handleDiscard}>
-                  Ya, Buang
+                  {t.builder.discardConfirm}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -395,7 +397,7 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
           <Dialog open={publishDialogOpen} onOpenChange={setPublishDialogOpen}>
             <Button size="sm" className="flex items-center gap-2 text-xs max-sm:px-2" onClick={() => setPublishDialogOpen(true)}>
               <Save className="h-4 w-4" />
-              <span className="hidden sm:inline">Save & Publish</span>
+              <span className="hidden sm:inline">{t.builder.publishBtnSavePublish}</span>
             </Button>
             <DialogContent>
               {publishSuccess ? (
@@ -403,15 +405,15 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
                   <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
                     <Check className="w-6 h-6 text-green-500" />
                   </div>
-                  <P className="text-sm font-semibold text-center">Berhasil dipublikasikan!</P>
+                  <P className="text-sm font-semibold text-center">{t.builder.publishSuccess}</P>
                   <P className="text-xs text-muted-foreground text-center">{publishUrl}</P>
                 </div>
               ) : (
                 <>
                   <DialogHeader>
-                    <DialogTitle>Publikasikan Landing Page?</DialogTitle>
+                    <DialogTitle>{t.builder.publishTitle}</DialogTitle>
                     <DialogDescription>
-                      Landing page Anda akan aktif dan dapat diakses publik.
+                      {t.builder.publishDesc}
                     </DialogDescription>
                   </DialogHeader>
                   <div className="rounded-md bg-muted/50 border border-border p-3 text-xs text-muted-foreground flex items-center gap-2">
@@ -419,7 +421,7 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
                     <span className="truncate">{publishUrl}</span>
                   </div>
                   <DialogFooter>
-                    <DialogClose render={<Button variant="outline">Batal</Button>} />
+                    <DialogClose render={<Button variant="outline">{t.builder.publishBtnCancel}</Button>} />
                     {saveError && (
                       <p className="text-sm text-destructive">{saveError}</p>
                     )}
@@ -428,7 +430,7 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
                       onClick={handlePublish}
                       disabled={isPublishing || isSaving}
                     >
-                      {isPublishing ? "Mempublikasikan..." : "Publikasikan"}
+                      {isPublishing ? t.builder.publishBtnPublishing : t.builder.publishBtnConfirm}
                     </Button>
                   </DialogFooter>
                 </>
@@ -517,8 +519,8 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
               {blocks.filter(b => b.visible).length === 0 && (
                 <div className="flex min-h-[24rem] items-center justify-center text-muted-foreground/30 bg-black">
                   <div className="text-center p-6">
-                    <H2 className="font-sans tracking-tight text-zinc-600">Preview Kosong</H2>
-                    <P className="text-zinc-700 text-xs font-sans">Tambahkan blok dari panel kiri untuk mulai mendesain</P>
+                    <H2 className="font-sans tracking-tight text-zinc-600">{t.builder.emptyPreviewTitle}</H2>
+                    <P className="text-zinc-700 text-xs font-sans">{t.builder.emptyPreviewDesc}</P>
                   </div>
                 </div>
               )}
@@ -575,7 +577,7 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
         showMobileRight ? "max-md:translate-x-0" : "max-md:translate-x-full"
       )}>
         <div className="flex h-12 shrink-0 items-center border-b border-border px-4 text-sm font-semibold tracking-wide text-foreground">
-          Properties
+          {t.builder.propertiesTitle}
         </div>
         <ScrollArea className="min-h-0 flex-1">
           <div className="p-4 pb-6">
@@ -590,7 +592,7 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
             ) : (
               <div className="flex min-h-[12rem] flex-col items-center justify-center p-4 text-center text-muted-foreground">
                 <MousePointerClick className="mb-4 h-8 w-8 opacity-20" />
-                <P className="text-sm">Pilih blok di panel Layers atau Canvas untuk mengedit propertinya.</P>
+                <P className="text-sm">{t.builder.emptyPropertiesDesc}</P>
               </div>
             )}
           </div>

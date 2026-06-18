@@ -9,8 +9,10 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { authClient } from "@/lib/auth/auth-client"
+import { useLanguage } from "@/lib/i18n/language-provider"
 
 export default function ForgotPasswordPage() {
+  const { t } = useLanguage()
   const [email, setEmail] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
@@ -31,7 +33,7 @@ export default function ForgotPasswordPage() {
     if (requestError) {
       setError(
         requestError.message ??
-          "Gagal mengirim email reset password. Coba lagi sebentar.",
+          t.auth.errorForgot,
       )
       return
     }
@@ -50,18 +52,15 @@ export default function ForgotPasswordPage() {
           <PageHeading
             size="sm"
             align="center"
-            title="Lupa password?"
-            description="Masukkan email akun Anda dan kami akan mengirimkan tautan untuk mereset password."
+            title={t.auth.forgotPasswordTitle}
+            description={t.auth.forgotPasswordDesc}
             className="mb-6"
           />
 
           {submitted ? (
             <div className="flex flex-col gap-4">
               <div className="rounded-lg border border-border bg-muted/40 p-4 text-sm text-foreground">
-                Jika email <span className="font-medium">{email}</span>{" "}
-                terdaftar di sistem kami, kami sudah mengirimkan tautan reset
-                password. Periksa kotak masuk Anda (dan folder spam) dalam
-                beberapa menit ke depan.
+                {t.auth.forgotSuccessMsg.replace("{email}", email)}
               </div>
               <Button
                 type="button"
@@ -72,13 +71,13 @@ export default function ForgotPasswordPage() {
                   setEmail("")
                 }}
               >
-                Kirim ulang ke email lain
+                {t.auth.resendToOtherEmail}
               </Button>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
-                <Label htmlFor="forgot-email">Email</Label>
+                <Label htmlFor="forgot-email">{t.auth.email}</Label>
                 <Input
                   id="forgot-email"
                   type="email"
@@ -91,19 +90,19 @@ export default function ForgotPasswordPage() {
               </div>
               {error && <p className="text-sm text-destructive">{error}</p>}
               <Button type="submit" className="mt-2 w-full" disabled={loading}>
-                {loading ? "Mengirim..." : "Kirim tautan reset"}
+                {loading ? t.auth.sending : t.auth.sendResetLink}
               </Button>
             </form>
           )}
         </div>
 
         <p className="mt-6 text-center text-sm text-muted-foreground">
-          Ingat password Anda?{" "}
+          {t.auth.rememberPassword}{" "}
           <Link
             href="/login"
             className="font-medium text-foreground hover:underline"
           >
-            Kembali ke login
+            {t.auth.backToLogin}
           </Link>
         </p>
       </div>

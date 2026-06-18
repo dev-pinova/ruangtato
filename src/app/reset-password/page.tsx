@@ -10,16 +10,19 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { authClient } from "@/lib/auth/auth-client"
+import { useLanguage } from "@/lib/i18n/language-provider"
 
 export default function ResetPasswordPage() {
+  const { t } = useLanguage()
   return (
-    <Suspense fallback={<ResetShell>Memuat...</ResetShell>}>
+    <Suspense fallback={<ResetShell>{t.auth.loading}</ResetShell>}>
       <ResetPasswordContent />
     </Suspense>
   )
 }
 
 function ResetPasswordContent() {
+  const { t } = useLanguage()
   const router = useRouter()
   const searchParams = useSearchParams()
   const token = searchParams.get("token")
@@ -33,17 +36,16 @@ function ResetPasswordContent() {
 
   if (tokenError === "INVALID_TOKEN" || !token) {
     return (
-      <ResetShell title="Tautan tidak valid">
+      <ResetShell title={t.auth.resetInvalidToken}>
         <p className="text-sm text-muted-foreground">
-          Tautan reset password sudah tidak berlaku atau pernah digunakan.
-          Silakan minta tautan baru.
+          {t.auth.resetInvalidTokenDesc}
         </p>
         <Button
           nativeButton={false}
           className="mt-2 w-full"
           render={<Link href="/forgot-password" />}
         >
-          Minta tautan baru
+          {t.auth.requestNewLink}
         </Button>
       </ResetShell>
     )
@@ -51,17 +53,16 @@ function ResetPasswordContent() {
 
   if (success) {
     return (
-      <ResetShell title="Password berhasil direset">
+      <ResetShell title={t.auth.resetSuccessTitle}>
         <p className="text-sm text-muted-foreground">
-          Password Anda sudah diperbarui. Silakan masuk dengan password baru
-          Anda.
+          {t.auth.resetSuccessDesc}
         </p>
         <Button
           type="button"
           className="mt-2 w-full"
           onClick={() => router.push("/login")}
         >
-          Masuk
+          {t.auth.loginBtn}
         </Button>
       </ResetShell>
     )
@@ -72,11 +73,11 @@ function ResetPasswordContent() {
     setError(null)
 
     if (password.length < 8) {
-      setError("Password minimal 8 karakter.")
+      setError(t.auth.errorPasswordLength)
       return
     }
     if (password !== confirm) {
-      setError("Konfirmasi password tidak cocok.")
+      setError(t.auth.errorPasswordMismatch)
       return
     }
 
@@ -90,7 +91,7 @@ function ResetPasswordContent() {
     if (resetError) {
       setError(
         resetError.message ??
-          "Gagal mereset password. Tautan mungkin sudah kedaluwarsa.",
+          t.auth.errorResetPassword,
       )
       return
     }
@@ -99,14 +100,14 @@ function ResetPasswordContent() {
   }
 
   return (
-    <ResetShell title="Buat password baru" subtitle="Masukkan password baru untuk akun Anda.">
+    <ResetShell title={t.auth.resetTitle} subtitle={t.auth.resetDesc}>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
-          <Label htmlFor="reset-password">Password baru</Label>
+          <Label htmlFor="reset-password">{t.auth.newPassword}</Label>
           <Input
             id="reset-password"
             type="password"
-            placeholder="Minimal 8 karakter"
+            placeholder={t.auth.newPasswordPlaceholder}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -115,11 +116,11 @@ function ResetPasswordContent() {
           />
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="reset-confirm">Konfirmasi password</Label>
+          <Label htmlFor="reset-confirm">{t.auth.confirmNewPassword}</Label>
           <Input
             id="reset-confirm"
             type="password"
-            placeholder="Ulangi password baru"
+            placeholder={t.auth.confirmNewPasswordPlaceholder}
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
             required
@@ -129,7 +130,7 @@ function ResetPasswordContent() {
         </div>
         {error && <p className="text-sm text-destructive">{error}</p>}
         <Button type="submit" className="mt-2 w-full" disabled={loading}>
-          {loading ? "Memproses..." : "Simpan password baru"}
+          {loading ? t.auth.processing : t.auth.saveNewPassword}
         </Button>
       </form>
     </ResetShell>
@@ -145,6 +146,7 @@ function ResetShell({
   title?: string
   subtitle?: string
 }) {
+  const { t } = useLanguage()
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm">
@@ -168,7 +170,7 @@ function ResetShell({
             href="/login"
             className="font-medium text-foreground hover:underline"
           >
-            Kembali ke login
+            {t.auth.backToLogin}
           </Link>
         </p>
       </div>

@@ -25,6 +25,7 @@ import {
   TableCell,
 } from "@/components/ui/table"
 import { PendingPaymentBanner } from "@/components/billing/pending-payment-banner"
+import { useLanguage } from "@/lib/i18n/language-provider"
 
 type LeadRow = {
   id: string
@@ -45,24 +46,17 @@ type DashboardData = {
   leads: LeadRow[]
 }
 
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("id-ID", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  })
-}
-
 const STATUS_CONFIG: Record<
   string,
-  { label: string; variant: "default" | "secondary" | "outline" }
+  { labelKey: "new" | "read" | "replied"; variant: "default" | "secondary" | "outline" }
 > = {
-  new: { label: "Baru", variant: "default" },
-  read: { label: "Dibaca", variant: "secondary" },
-  replied: { label: "Dibalas", variant: "outline" },
+  new: { labelKey: "new", variant: "default" },
+  read: { labelKey: "read", variant: "secondary" },
+  replied: { labelKey: "replied", variant: "outline" },
 }
 
 export default function DashboardPage() {
+  const { t, locale } = useLanguage()
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -78,6 +72,14 @@ export default function DashboardPage() {
       .finally(() => setLoading(false))
   }, [])
 
+  const formatDate = (iso: string) => {
+    return new Date(iso).toLocaleDateString(locale === "en" ? "en-US" : "id-ID", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    })
+  }
+
   const summaryCards = useMemo(() => {
     const stats = data?.stats ?? {
       totalViews: 0,
@@ -86,44 +88,46 @@ export default function DashboardPage() {
       conversionRate: 0,
     }
 
+    const numLocale = locale === "en" ? "en-US" : "id-ID"
+
     return [
       {
-        label: "Total Views",
-        value: stats.totalViews.toLocaleString("id-ID"),
+        label: t.dashboard.views,
+        value: stats.totalViews.toLocaleString(numLocale),
         icon: Eye,
       },
       {
-        label: "Total Clicks",
-        value: stats.totalClicks.toLocaleString("id-ID"),
+        label: t.dashboard.clicks,
+        value: stats.totalClicks.toLocaleString(numLocale),
         icon: MousePointerClick,
       },
       {
-        label: "Conversion Rate",
+        label: t.dashboard.conversionRate,
         value: `${stats.conversionRate}%`,
         icon: Percent,
       },
       {
-        label: "Total Leads",
-        value: stats.totalLeads.toLocaleString("id-ID"),
+        label: t.dashboard.leads,
+        value: stats.totalLeads.toLocaleString(numLocale),
         icon: Users,
       },
     ]
-  }, [data])
+  }, [data, locale, t])
 
   const leads = data?.leads ?? []
 
   return (
     <div className="mx-auto max-w-7xl space-y-6 p-4 md:p-6 lg:p-8">
       <PageHeading
-        title="Dashboard"
-        description="Pantau performa studio Anda secara real-time."
+        title={t.dashboard.title}
+        description={t.dashboard.description}
       />
 
       {/* Banner pembayaran pending */}
       <PendingPaymentBanner />
 
       {loading ? (
-        <p className="text-sm text-muted-foreground">Memuat data...</p>
+        <p className="text-sm text-muted-foreground">{t.dashboard.loading}</p>
       ) : null}
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-12">
@@ -151,44 +155,45 @@ export default function DashboardPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Statistik Harian</CardTitle>
+          <CardTitle>{t.dashboard.dailyStatsTitle}</CardTitle>
           <CardDescription>
-            Data harian akan tersedia setelah fitur analytics lanjutan dirilis.
+            {t.dashboard.dailyStatsDesc}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
-            Saat ini gunakan ringkasan total views, clicks, dan leads di atas.
+            {t.dashboard.dailyStatsNote}
           </p>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>Lead Terbaru</CardTitle>
+          <CardTitle>{t.dashboard.latestLeadsTitle}</CardTitle>
           <CardDescription>
-            {leads.length} lead masuk
+            {t.dashboard.leadsCount.replace("{count}", String(leads.length))}
           </CardDescription>
         </CardHeader>
         <CardContent>
           {leads.length === 0 ? (
             <p className="text-sm text-muted-foreground">
-              Belum ada lead. Lead dari form appointment akan muncul di sini.
+              {t.dashboard.noLeads}
             </p>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Nama</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead className="hidden md:table-cell">Pesan</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Tanggal</TableHead>
+                  <TableHead>{t.dashboard.table.name}</TableHead>
+                  <TableHead>{t.dashboard.table.email}</TableHead>
+                  <TableHead className="hidden md:table-cell">{t.dashboard.table.message}</TableHead>
+                  <TableHead>{t.dashboard.table.status}</TableHead>
+                  <TableHead>{t.dashboard.table.date}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {leads.slice(0, 7).map((lead) => {
-                  const status = STATUS_CONFIG[lead.status] ?? STATUS_CONFIG.new
+                  const statusConfig = STATUS_CONFIG[lead.status] ?? STATUS_CONFIG.new
+                  const statusLabel = t.dashboard.status[statusConfig.labelKey]
                   return (
                     <TableRow key={lead.id}>
                       <TableCell className="font-medium">{lead.name}</TableCell>
@@ -199,7 +204,7 @@ export default function DashboardPage() {
                         {lead.message}
                       </TableCell>
                       <TableCell>
-                        <Badge variant={status.variant}>{status.label}</Badge>
+                        <Badge variant={statusConfig.variant}>{statusLabel}</Badge>
                       </TableCell>
                       <TableCell className="text-muted-foreground">
                         {formatDate(lead.createdAt)}
