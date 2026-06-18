@@ -7,7 +7,9 @@
     "studios": "Studio Tato",
     "help": "Bantuan",
     "terms": "Syarat & Ketentuan",
-    "privacy": "Privasi"
+    "privacy": "Privasi",
+    "subscription": "Kebijakan Langganan",
+    "cookies": "Kebijakan Cookie"
   },
   "hero": {
     "badge": "DIREKTORI STUDIO TATO PROFESIONAL",
@@ -94,5 +96,11 @@
     "name": "Nama Lengkap",
     "registerBtn": "Daftar Sekarang",
     "hasAccount": "Sudah punya akun?"
+  },
+  "footer": {
+    "desc": "Platform landing page eksklusif untuk studio tato profesional di Indonesia.",
+    "copyright": "Hak cipta dilindungi.",
+    "madeWith": "Dibuat dengan",
+    "forArtists": "untuk artist tato Indonesia."
   }
 }

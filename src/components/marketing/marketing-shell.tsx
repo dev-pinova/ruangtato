@@ -72,8 +72,8 @@ function MarketingFooter() {
     legal: [
       { href: "/privacy", label: t.navigation.privacy },
       { href: "/terms", label: t.navigation.terms },
-      { href: "/subscription", label: "Kebijakan Langganan" }, // we can add to dict later
-      { href: "/cookies", label: "Kebijakan Cookie" },
+      { href: "/subscription", label: t.navigation.subscription },
+      { href: "/cookies", label: t.navigation.cookies },
     ],
     social: [
       {
@@ -93,8 +93,7 @@ function MarketingFooter() {
           <div className="md:col-span-1">
             <PlatformLogo variant="footer" />
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
-              Platform landing page eksklusif untuk studio tato profesional di
-              Indonesia.{" "}
+              {t.footer.desc}{" "}
               <a
                 href={SITE_URL}
                 className="font-medium text-foreground/80 underline-offset-4 hover:text-foreground hover:underline"
@@ -164,15 +163,15 @@ function MarketingFooter() {
             >
               {SITE_DOMAIN}
             </a>
-            . Hak cipta dilindungi.
+            . {t.footer.copyright}
           </p>
           <p className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-            Dibuat dengan
+            {t.footer.madeWith}
             <Heart
               className="size-3 fill-red-500 text-red-500"
               aria-hidden
             />
-            untuk artist tato Indonesia.
+            {t.footer.forArtists}
           </p>
         </div>
       </div>

@@ -7,7 +7,9 @@
     "studios": "Tattoo Studios",
     "help": "Help",
     "terms": "Terms",
-    "privacy": "Privacy"
+    "privacy": "Privacy",
+    "subscription": "Subscription Policy",
+    "cookies": "Cookie Policy"
   },
   "hero": {
     "badge": "PROFESSIONAL TATTOO STUDIO DIRECTORY",
@@ -94,5 +96,11 @@
     "name": "Full Name",
     "registerBtn": "Sign Up Now",
     "hasAccount": "Already have an account?"
+  },
+  "footer": {
+    "desc": "Exclusive landing page platform for professional tattoo studios in Indonesia.",
+    "copyright": "All rights reserved.",
+    "madeWith": "Made with",
+    "forArtists": "for Indonesian tattoo artists."
   }
 }
