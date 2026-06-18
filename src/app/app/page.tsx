@@ -16,7 +16,7 @@ export default async function Explore() {
     <>
       <JsonLd data={[buildWebSiteJsonLd(), buildOrganizationJsonLd()]} />
       <Suspense fallback={<div className="min-h-screen bg-white" />}>
-        <ExplorePage studios={studios} cities={cities} />
+        <ExplorePage studios={studios} cities={cities} hideHero={true} hideCta={true} />
       </Suspense>
     </>
   )

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
-import { ArrowRight, Store } from "lucide-react"
+import { ArrowRight, Store, Search } from "lucide-react"
 
 import { MarketingShell } from "@/components/marketing/marketing-shell"
 import { ExploreHero } from "@/components/explore/explore-hero"
@@ -11,6 +11,7 @@ import { ExploreSidebar } from "@/components/explore/explore-sidebar"
 import { ExploreHeader } from "@/components/explore/explore-header"
 import { ExploreGrid } from "@/components/explore/explore-grid"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { getCityCounts } from "@/lib/studio/studio-utils"
 import { useLanguage } from "@/lib/i18n/language-provider"
 import type { Studio } from "@/lib/types"
@@ -28,9 +29,13 @@ function buildPopularTags(studios: Studio[]) {
 export function ExplorePage({
   studios,
   cities,
+  hideHero = false,
+  hideCta = false,
 }: {
   studios: Studio[]
   cities: string[]
+  hideHero?: boolean
+  hideCta?: boolean
 }) {
   const { t } = useLanguage()
   const searchParams = useSearchParams()
@@ -83,12 +88,14 @@ export function ExplorePage({
 
   return (
     <MarketingShell>
-      <ExploreHero
-        searchQuery={searchQuery}
-        onSearch={setSearchQuery}
-        featuredStudios={featuredStudios}
-        popularTags={popularTags}
-      />
+      {!hideHero && (
+        <ExploreHero
+          searchQuery={searchQuery}
+          onSearch={setSearchQuery}
+          featuredStudios={featuredStudios}
+          popularTags={popularTags}
+        />
+      )}
       <section className="bg-white text-neutral-900 border-t border-neutral-200">
         <div className="mx-auto max-w-6xl px-4 py-12 md:px-6 md:py-16">
           <div className="flex flex-col md:flex-row gap-8 lg:gap-12 md:items-start">
@@ -106,6 +113,20 @@ export function ExplorePage({
             </aside>
           
             <main className="flex-1 min-w-0">
+              {hideHero && (
+                <div className="mb-6 max-w-md">
+                  <div className="relative flex items-center bg-white border border-neutral-200 rounded-xl shadow-sm">
+                    <Search className="pointer-events-none absolute left-3.5 size-4 text-neutral-400" />
+                    <Input
+                      aria-label={t.hero.searchPlaceholder}
+                      placeholder={t.hero.searchPlaceholder}
+                      className="h-10 w-full rounded-xl border-0 bg-transparent pl-10 pr-8 text-sm text-neutral-900 placeholder:text-neutral-400 focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </div>
+                </div>
+              )}
               <ExploreHeader
                 resultCount={resultCount}
                 verifiedCount={verifiedCount}
@@ -128,34 +149,36 @@ export function ExplorePage({
       </section>
 
       {/* Studio-owner conversion path */}
-      <section className="border-t border-border bg-background">
-        <div className="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-20">
-          <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-8 md:p-12">
-            <div className="flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
-              <div className="max-w-xl">
-                <div className="mb-4 inline-flex size-11 items-center justify-center rounded-lg border border-border bg-background text-foreground">
-                  <Store className="size-5" />
+      {!hideCta && (
+        <section className="border-t border-border bg-background">
+          <div className="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-20">
+            <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-8 md:p-12">
+              <div className="flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
+                <div className="max-w-xl">
+                  <div className="mb-4 inline-flex size-11 items-center justify-center rounded-lg border border-border bg-background text-foreground">
+                    <Store className="size-5" />
+                  </div>
+                  <h2 className="text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
+                    {t.cta.title}
+                  </h2>
+                  <p className="mt-3 text-base leading-relaxed text-muted-foreground">
+                    {t.cta.subtitle}
+                  </p>
                 </div>
-                <h2 className="text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
-                  {t.cta.title}
-                </h2>
-                <p className="mt-3 text-base leading-relaxed text-muted-foreground">
-                  {t.cta.subtitle}
-                </p>
+                <Button
+                  size="lg"
+                  nativeButton={false}
+                  className="shrink-0 gap-2"
+                  render={<Link href="/register" />}
+                >
+                  {t.cta.button}
+                  <ArrowRight className="size-4" />
+                </Button>
               </div>
-              <Button
-                size="lg"
-                nativeButton={false}
-                className="shrink-0 gap-2"
-                render={<Link href="/register" />}
-              >
-                {t.cta.button}
-                <ArrowRight className="size-4" />
-              </Button>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </MarketingShell>
   )
 }

@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 
 import { JsonLd } from "@/components/seo/json-ld"
-import { ShowcasePage } from "@/components/showcase/showcase-page"
+import { ExplorePage } from "@/components/explore/explore-page"
 import {
   buildOrganizationJsonLd,
   buildWebSiteJsonLd,
@@ -22,7 +22,7 @@ export default async function Home() {
   return (
     <>
       <JsonLd data={[buildWebSiteJsonLd(), buildOrganizationJsonLd()]} />
-      <ShowcasePage studios={studios} cities={cities} />
+      <ExplorePage studios={studios} cities={cities} />
     </>
   )
 }
