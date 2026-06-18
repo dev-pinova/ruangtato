@@ -26,6 +26,8 @@ export function LanguageSwitcher({ defaultLocale = "id" }: { defaultLocale?: Loc
   const handleSwitch = async (newLocale: Locale) => {
     if (newLocale === locale) return
     setLocaleState(newLocale)
+    // Set cookie client-side instantly to prevent reload race conditions
+    document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax`
     await setLocale(newLocale)
     window.location.reload() // Reload to apply new language across server components
   }
