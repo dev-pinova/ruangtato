@@ -82,16 +82,17 @@ export function ShowcasePage({
         featuredStudios={featuredStudios}
         popularTags={popularTags}
       />
-      <section className="mx-auto max-w-6xl px-4 py-12 md:px-6 md:py-16">
-        <div className="flex flex-col md:flex-row gap-8 lg:gap-12 md:items-start">
-          <aside className="w-full shrink-0 md:w-56 lg:w-64">
-            <SidebarFilter
-              cities={cities}
-              cityCounts={cityCounts}
-              selectedCity={selectedCity}
-              onCityChange={setSelectedCity}
-            />
-          </aside>
+      <section className="bg-white text-neutral-900 border-t border-neutral-200">
+        <div className="mx-auto max-w-6xl px-4 py-12 md:px-6 md:py-16">
+          <div className="flex flex-col md:flex-row gap-8 lg:gap-12 md:items-start">
+            <aside className="hidden md:block w-full shrink-0 md:w-56 lg:w-64">
+              <SidebarFilter
+                cities={cities}
+                cityCounts={cityCounts}
+                selectedCity={selectedCity}
+                onCityChange={setSelectedCity}
+              />
+            </aside>
           
           <main className="flex-1 min-w-0">
             <GridHeader
@@ -116,7 +117,8 @@ export function ShowcasePage({
             />
           </main>
         </div>
-      </section>
+      </div>
+    </section>
 
       {/* Studio-owner conversion path */}
       <section className="border-t border-border bg-background">

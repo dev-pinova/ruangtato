@@ -1,6 +1,6 @@
 "use client"
 
-import { ArrowUpDown, BadgeCheck, X } from "lucide-react"
+import { ArrowUpDown, BadgeCheck } from "lucide-react"
 
 import { NumberTicker } from "@/components/ui/number-ticker"
 import { Button } from "@/components/ui/button"
@@ -33,20 +33,20 @@ export function GridHeader({
   return (
     <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       <div className="space-y-1">
-        <h2 className="text-xl font-semibold tracking-tight text-foreground">
+        <h2 className="text-xl font-semibold tracking-tight text-neutral-900">
           Katalog Studio Tato
         </h2>
-        <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
+        <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-neutral-500">
           <span>
             <NumberTicker
               value={resultCount}
-              className="font-medium text-foreground"
+              className="font-medium text-neutral-900"
             />{" "}
             studio terdaftar
           </span>
           {typeof verifiedCount === "number" && verifiedCount > 0 && (
-            <span className="inline-flex items-center gap-1 text-foreground/70">
-              <BadgeCheck className="size-3.5 text-primary" />
+            <span className="inline-flex items-center gap-1 text-neutral-600">
+              <BadgeCheck className="size-3.5 text-neutral-900" />
               {verifiedCount} terverifikasi
             </span>
           )}
@@ -55,8 +55,8 @@ export function GridHeader({
 
       <div className="flex flex-row flex-wrap items-center gap-2">
         <Select value={sortBy} onValueChange={(v: string | null) => { if (v) onSortChange(v as SortBy) }}>
-          <SelectTrigger className="h-9 min-w-[150px] bg-background">
-            <ArrowUpDown className="size-3.5 text-muted-foreground" />
+          <SelectTrigger className="h-9 min-w-[150px] bg-white border border-neutral-200 text-neutral-800">
+            <ArrowUpDown className="size-3.5 text-neutral-400" />
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -71,9 +71,9 @@ export function GridHeader({
           size="sm"
           onClick={onTrustedToggle}
           className={cn(
-            "h-9",
+            "h-9 bg-white border border-neutral-200 text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900",
             trustedOnly &&
-              "border-primary/40 bg-primary/10 text-primary hover:bg-primary/10 hover:text-primary"
+              "border-neutral-900 bg-neutral-900 text-white hover:bg-neutral-900/90 hover:text-white"
           )}
         >
           <BadgeCheck className="size-3.5" />

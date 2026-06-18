@@ -13,7 +13,6 @@ import { cn } from "@/lib/utils"
 import type { Studio } from "@/lib/types"
 import { VerifiedCheck } from "@/components/showcase/verified-check"
 import { GradualSpacing } from "@/components/ui/gradual-spacing"
-import { BorderBeam } from "@/components/ui/border-beam"
 import { RetroGrid } from "@/components/ui/retro-grid"
 import { useLanguage } from "@/lib/i18n/language-provider"
 
@@ -109,18 +108,18 @@ export function ShowcaseHero({
         </p>
 
         {/* Search bar */}
-        <div className="relative mx-auto mt-10 max-w-2xl rounded-full p-[1px] overflow-hidden bg-white/5 backdrop-blur-sm shadow-2xl">
-          <div className="relative flex items-center bg-black/50 rounded-full">
-            <Search className="pointer-events-none absolute left-4 size-4 text-muted-foreground" />
+        <div className="relative mx-auto mt-10 max-w-2xl rounded-2xl bg-white shadow-xl">
+          <div className="relative flex items-center bg-white rounded-2xl">
+            <Search className="pointer-events-none absolute left-4 size-5 text-neutral-400" />
             <Input
               aria-label={t.hero.searchPlaceholder}
               placeholder={t.hero.searchPlaceholder}
-              className="h-12 w-full rounded-full border-0 bg-transparent pl-11 text-sm text-white placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none"
+              className="h-14 w-full rounded-2xl border-0 bg-transparent pl-12 pr-10 text-sm text-neutral-900 placeholder:text-neutral-400 focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none"
               value={searchQuery}
               onChange={(e) => onSearch(e.target.value)}
             />
+            <ChevronRight className="pointer-events-none absolute right-4 size-4 text-neutral-400" />
           </div>
-          <BorderBeam size={160} duration={8} borderWidth={1.5} />
         </div>
 
         {/* Studio Marquee */}

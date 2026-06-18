@@ -19,7 +19,7 @@ export function SidebarFilter({
   return (
     <div className="flex flex-col space-y-6">
       <div>
-        <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-neutral-400">
           Filter By City
         </h3>
         <div className="flex flex-col space-y-2">
@@ -46,7 +46,7 @@ export function SidebarFilter({
 
 function FilterRadio({
   label,
-  count,
+  count: _count,
   isActive,
   onClick,
 }: {
@@ -60,19 +60,21 @@ function FilterRadio({
       type="button"
       onClick={onClick}
       className={cn(
-        "group flex w-full items-center justify-between rounded-lg px-2 py-2 text-sm transition-colors hover:bg-muted/50",
-        isActive ? "text-foreground font-medium" : "text-muted-foreground"
+        "group flex w-full items-center justify-between rounded-lg px-2 py-2 text-sm transition-colors",
+        isActive
+          ? "text-neutral-900 font-semibold bg-neutral-100"
+          : "text-neutral-500 hover:bg-neutral-100/50 hover:text-neutral-900"
       )}
     >
       <span className="flex items-center gap-3">
         {isActive ? (
-          <CheckCircle2 className="size-4 shrink-0 text-primary" />
+          <CheckCircle2 className="size-4 shrink-0 text-neutral-900" />
         ) : (
-          <Circle className="size-4 shrink-0 text-muted-foreground/40 transition-colors group-hover:text-muted-foreground/60" />
+          <Circle className="size-4 shrink-0 text-neutral-300 transition-colors group-hover:text-neutral-400" />
         )}
         <span className="truncate">{label}</span>
       </span>
-      {/* <span className="text-xs text-muted-foreground/60">{count}</span> */}
+      {/* <span className="text-xs text-neutral-500/60">{count}</span> */}
     </button>
   )
 }
