@@ -64,7 +64,12 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next({ request: { headers: requestHeaders } })
   }
 
-  if (PUBLIC_APP_PREFIXES.some((prefix) => pathname.startsWith(prefix))) {
+  const isPublicAppPath =
+    PUBLIC_APP_PREFIXES.some((prefix) => pathname.startsWith(prefix)) ||
+    pathname === "/app" ||
+    pathname === "/app/"
+
+  if (isPublicAppPath) {
     return NextResponse.next({ request: { headers: requestHeaders } })
   }
 
@@ -85,5 +90,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/app/:path*", "/admin/:path*", "/checkout/:path*", "/checkout"],
+  matcher: ["/app", "/app/:path*", "/admin/:path*", "/checkout/:path*", "/checkout"],
 }

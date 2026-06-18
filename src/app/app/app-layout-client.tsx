@@ -97,7 +97,7 @@ export default function AppLayoutClient({ children }: { children: React.ReactNod
   }, [router])
 
   // Public path exception
-  if (pathname.startsWith("/app/studio/") || pathname === "/app/builder") {
+  if (pathname.startsWith("/app/studio/") || pathname === "/app" || pathname === "/app/" || pathname === "/app/builder") {
     return <>{children}</>
   }
 
