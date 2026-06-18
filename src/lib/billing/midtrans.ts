@@ -5,10 +5,10 @@ export const PLAN_CATALOG: Record<
   string,
   { amount: number; months: number }
 > = {
-  "1month": { amount: 99_000, months: 1 },
-  "3months": { amount: 249_000, months: 3 },
-  "6months": { amount: 449_000, months: 6 },
-  "12months": { amount: 799_000, months: 12 },
+  "1month": { amount: 149_000, months: 1 },
+  "3months": { amount: 399_000, months: 3 },
+  "6months": { amount: 749_000, months: 6 },
+  "12months": { amount: 1_299_000, months: 12 },
 }
 
 export type MidtransNotificationPayload = {

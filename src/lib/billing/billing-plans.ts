@@ -7,8 +7,8 @@ export const SUBSCRIPTION_PLANS: Plan[] = [
     name: "Starter",
     duration: "1 Bulan",
     months: 1,
-    price: 99_000,
-    pricePerMonth: 99_000,
+    price: 149_000,
+    pricePerMonth: 149_000,
     features: [
       "1 Landing Page Studio Resmi",
       "15+ Blok Komponen Premium (Hero, Galeri, FAQ)",
@@ -22,8 +22,8 @@ export const SUBSCRIPTION_PLANS: Plan[] = [
     name: "Growth",
     duration: "3 Bulan",
     months: 3,
-    price: 249_000,
-    pricePerMonth: 83_000,
+    price: 399_000,
+    pricePerMonth: 133_000,
     features: [
       "Semua Fitur Starter",
       "Lencana Verifikasi 'Trusted Studio'",
@@ -37,8 +37,8 @@ export const SUBSCRIPTION_PLANS: Plan[] = [
     name: "Pro",
     duration: "6 Bulan",
     months: 6,
-    price: 449_000,
-    pricePerMonth: 74_833,
+    price: 749_000,
+    pricePerMonth: 124_833,
     popular: true,
     features: [
       "Semua Fitur Growth",
@@ -54,8 +54,8 @@ export const SUBSCRIPTION_PLANS: Plan[] = [
     name: "Enterprise",
     duration: "12 Bulan",
     months: 12,
-    price: 799_000,
-    pricePerMonth: 66_583,
+    price: 1_299_000,
+    pricePerMonth: 108_250,
     features: [
       "Semua Fitur Pro",
       "Manajemen Artist Tanpa Batas",
