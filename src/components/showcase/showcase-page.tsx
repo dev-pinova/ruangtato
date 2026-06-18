@@ -91,15 +91,15 @@ export function ShowcasePage({
                 cityCounts={cityCounts}
                 selectedCity={selectedCity}
                 onCityChange={setSelectedCity}
+                sortBy={sortBy}
+                onSortChange={setSortBy}
+                trustedOnly={trustedOnly}
+                onTrustedToggle={() => setTrustedOnly((prev) => !prev)}
               />
             </aside>
           
           <main className="flex-1 min-w-0">
             <GridHeader
-              sortBy={sortBy}
-              onSortChange={setSortBy}
-              trustedOnly={trustedOnly}
-              onTrustedToggle={() => setTrustedOnly((prev) => !prev)}
               resultCount={resultCount}
               verifiedCount={verifiedCount}
             />
