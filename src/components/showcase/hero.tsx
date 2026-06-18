@@ -15,6 +15,7 @@ import { VerifiedCheck } from "@/components/showcase/verified-check"
 import { GradualSpacing } from "@/components/ui/gradual-spacing"
 import { BorderBeam } from "@/components/ui/border-beam"
 import { RetroGrid } from "@/components/ui/retro-grid"
+import { useLanguage } from "@/lib/i18n/language-provider"
 
 const POPULAR_TAGS = ["Fine Line", "Blackwork", "Japanese", "Realism", "Jakarta", "Bali"]
 
@@ -54,6 +55,8 @@ export function ShowcaseHero({
   featuredStudios?: Studio[]
   popularTags?: string[]
 }) {
+  const { t } = useLanguage()
+
   return (
     <section
       aria-label="Cari studio tato"
@@ -84,7 +87,7 @@ export function ShowcaseHero({
           <div className="group relative flex items-center gap-1.5 rounded-full border border-white/20 bg-black/30 px-4 py-1.5 text-sm text-white/80 backdrop-blur-sm transition-all duration-300 hover:border-white/30 hover:bg-black/40">
             <Sparkles className="size-3.5 text-brand-scarlet" />
             <AnimatedShinyText className="text-xs font-medium text-white/80" shimmerWidth={80}>
-              DIREKTORI STUDIO TATO PROFESIONAL
+              {t.hero.badge}
             </AnimatedShinyText>
             <ArrowRight className="size-3 text-white/50" />
           </div>
@@ -93,16 +96,16 @@ export function ShowcaseHero({
         {/* Heading */}
         <h1 className="mt-6 text-4xl font-semibold leading-tight tracking-tight text-white md:text-5xl md:leading-tight flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1">
           <span className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
-            <GradualSpacing text="Bandingkan" />
+            <GradualSpacing text={t.hero.title1} />
             <AnimatedGradientText className="[--bg-size:200%] font-semibold leading-tight tracking-tight">
-              Studio Tato
+              {t.hero.title2}
             </AnimatedGradientText>
           </span>
-          <GradualSpacing text="Lihat Portofolio." />
-          <GradualSpacing text="Chat Langsung." />
+          <GradualSpacing text={t.hero.title3} />
+          <GradualSpacing text={t.hero.title4} />
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-white/70 md:text-lg">
-          Jelajahi portofolio, cek studio yang sudah terverifikasi kebersihannya, lalu chat artist pilihanmu langsung lewat WhatsApp.
+          {t.hero.subtitle}
         </p>
 
         {/* Search bar */}
@@ -110,8 +113,8 @@ export function ShowcaseHero({
           <div className="relative flex items-center bg-black/50 rounded-full">
             <Search className="pointer-events-none absolute left-4 size-4 text-muted-foreground" />
             <Input
-              aria-label="Cari studio tato"
-              placeholder="Cari studio, kota, gaya tato, atau artist..."
+              aria-label={t.hero.searchPlaceholder}
+              placeholder={t.hero.searchPlaceholder}
               className="h-12 w-full rounded-full border-0 bg-transparent pl-11 text-sm text-white placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none"
               value={searchQuery}
               onChange={(e) => onSearch(e.target.value)}
@@ -123,7 +126,7 @@ export function ShowcaseHero({
         {/* Studio Marquee */}
         {featuredStudios.length > 0 && (
           <div className="mt-6">
-            <p className="mb-3 text-xs text-white/60">Studio populer:</p>
+            <p className="mb-3 text-xs text-white/60">{t.hero.featured}</p>
             <Marquee
               pauseOnHover
               className="-mx-4 [--duration:35s] [--gap:0.5rem]"
@@ -137,7 +140,7 @@ export function ShowcaseHero({
 
         {/* Popular tags */}
         <div className="mt-5">
-          <p className="mb-3 text-xs text-white/60">Gaya populer:</p>
+          <p className="mb-3 text-xs text-white/60">{t.hero.popularSearch}</p>
           <div
             className={cn(
               "relative -mx-4 px-4 md:mx-0 md:px-0",
@@ -165,7 +168,7 @@ export function ShowcaseHero({
       {/* Bottom tagline */}
       <div className="relative z-10 border-t border-white/10 bg-black/40 px-4 py-3 text-center">
         <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-white/50">
-          STANDAR KEAMANAN & ESTETIKA TATO INDONESIA
+          {t.hero.bottomTagline}
         </p>
       </div>
     </section>

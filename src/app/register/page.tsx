@@ -11,8 +11,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Particles } from "@/components/ui/particles"
 import { BorderBeam } from "@/components/ui/border-beam"
+import { useLanguage } from "@/lib/i18n/language-provider"
 
 export default function RegisterPage() {
+  const { t } = useLanguage()
   const router = useRouter()
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
@@ -42,7 +44,7 @@ export default function RegisterPage() {
       setError(
         typeof data.error === "string"
           ? data.error
-          : "Gagal mendaftar. Coba lagi.",
+          : "Gagal mendaftar. Coba lagi.", // Keep this fallback generic or translate it later
       )
       return
     }
@@ -64,14 +66,14 @@ export default function RegisterPage() {
           <PageHeading
             size="sm"
             align="center"
-            title="Buat akun baru"
-            description="Daftar untuk membuat landing page studio Anda"
+            title={t.auth.registerTitle}
+            description={t.auth.registerDesc}
             className="mb-6"
           />
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="reg-name">Nama Lengkap</Label>
+              <Label htmlFor="reg-name">{t.auth.name}</Label>
               <Input
                 id="reg-name"
                 placeholder="Nama Anda"
@@ -81,7 +83,7 @@ export default function RegisterPage() {
               />
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="reg-email">Email</Label>
+              <Label htmlFor="reg-email">{t.auth.email}</Label>
               <Input
                 id="reg-email"
                 type="email"
@@ -123,7 +125,7 @@ export default function RegisterPage() {
               />
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="reg-password">Password</Label>
+              <Label htmlFor="reg-password">{t.auth.password}</Label>
               <Input
                 id="reg-password"
                 type="password"
@@ -138,18 +140,18 @@ export default function RegisterPage() {
               <p className="text-sm text-destructive">{error}</p>
             )}
             <Button type="submit" className="mt-2 w-full" disabled={loading}>
-              {loading ? "Memproses..." : "Daftar"}
+              {loading ? t.auth.processing : t.auth.registerBtn}
             </Button>
           </form>
         </div>
 
         <p className="mt-6 text-center text-sm text-muted-foreground">
-          Sudah punya akun?{" "}
+          {t.auth.hasAccount}{" "}
           <Link
             href="/login"
             className="font-medium text-foreground hover:underline"
           >
-            Masuk
+            {t.auth.loginBtn}
           </Link>
         </p>
       </div>

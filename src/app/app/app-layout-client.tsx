@@ -10,13 +10,8 @@ import {
   CreditCard,
 } from "lucide-react"
 import { AppShell, type AppShellNavGroup, type AppShellNavItem } from "@/components/layout/app-shell"
-
-const NAV_ITEMS: AppShellNavItem[] = [
-  { href: "/app/builder", label: "Builder Halaman", icon: Paintbrush },
-  { href: "/app/dashboard", label: "Dashboard", icon: BarChart3 },
-  { href: "/app/billing", label: "Billing", icon: CreditCard },
-  { href: "/app/settings", label: "Pengaturan", icon: Settings },
-]
+import { LanguageSwitcher } from "@/components/ui/language-switcher"
+import { useLanguage } from "@/lib/i18n/language-provider"
 
 type StudioSummary = {
   name: string
@@ -42,6 +37,7 @@ function getInitials(name: string | undefined) {
 }
 
 export default function AppLayoutClient({ children }: { children: React.ReactNode }) {
+  const { t } = useLanguage()
   const pathname = usePathname()
   const router = useRouter()
   const [user, setUser] = useState<MeUser | null>(null)
@@ -107,6 +103,13 @@ export default function AppLayoutClient({ children }: { children: React.ReactNod
 
   const initials = getInitials(user?.name)
 
+  const NAV_ITEMS: AppShellNavItem[] = [
+    { href: "/app/builder", label: "Builder Halaman", icon: Paintbrush },
+    { href: "/app/dashboard", label: t.navigation.dashboard, icon: BarChart3 },
+    { href: "/app/billing", label: "Billing", icon: CreditCard },
+    { href: "/app/settings", label: t.appShell.settings, icon: Settings },
+  ]
+
   const navGroups: AppShellNavGroup[] = [
     {
       label: "Studio",
@@ -168,6 +171,7 @@ export default function AppLayoutClient({ children }: { children: React.ReactNod
       logoHref="/app/dashboard"
       signOutRedirect="/login"
       topBarLeft={topBarLeft}
+      topBarRight={<LanguageSwitcher />}
     >
       {children}
     </AppShell>

@@ -14,8 +14,10 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Particles } from "@/components/ui/particles"
 import { BorderBeam } from "@/components/ui/border-beam"
 import { authClient } from "@/lib/auth/auth-client"
+import { useLanguage } from "@/lib/i18n/language-provider"
 
 function LoginForm() {
+  const { t } = useLanguage()
   const router = useRouter()
   const searchParams = useSearchParams()
   const [email, setEmail] = useState("")
@@ -42,7 +44,7 @@ function LoginForm() {
     setLoading(false)
 
     if (signInError) {
-      setError(signInError.message ?? "Gagal masuk. Periksa email dan password.")
+      setError(signInError.message ?? t.auth.errorSignIn)
       return
     }
 
@@ -53,7 +55,7 @@ function LoginForm() {
 
   async function handleResendVerification() {
     if (!email) {
-      setError("Masukkan email Anda terlebih dahulu untuk mengirim ulang verifikasi.")
+      setError(t.auth.errorNoEmail)
       return
     }
     setResending(true)
@@ -67,9 +69,9 @@ function LoginForm() {
 
     setResending(false)
     if (resendError) {
-      setError(resendError.message ?? "Gagal mengirim ulang email verifikasi.")
+      setError(resendError.message ?? t.auth.errorResend)
     } else {
-      setResendStatus("Email verifikasi telah dikirim ulang. Silakan periksa inbox Anda.")
+      setResendStatus(t.auth.successResend)
     }
   }
 
@@ -91,14 +93,14 @@ function LoginForm() {
           <PageHeading
             size="sm"
             align="center"
-            title="Masuk ke akun Anda"
-            description="Masukkan email dan password untuk melanjutkan"
+            title={t.auth.loginTitle}
+            description={t.auth.loginDesc}
             className="mb-6"
           />
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="login-email">Email</Label>
+              <Label htmlFor="login-email">{t.auth.email}</Label>
               <Input
                 id="login-email"
                 type="email"
@@ -110,12 +112,12 @@ function LoginForm() {
             </div>
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="login-password">Password</Label>
+                <Label htmlFor="login-password">{t.auth.password}</Label>
                 <Link
                   href="/forgot-password"
                   className="text-xs text-muted-foreground hover:text-foreground"
                 >
-                  Lupa password?
+                  {t.auth.forgotPassword}
                 </Link>
               </div>
               <div className="relative">
@@ -144,7 +146,7 @@ function LoginForm() {
                 onCheckedChange={(checked) => setRememberMe(checked as boolean)}
               />
               <Label htmlFor="login-remember" className="text-sm font-normal">
-                Ingat sesi saya
+                {t.auth.rememberMe}
               </Label>
             </div>
             {error && (
@@ -154,7 +156,7 @@ function LoginForm() {
               <p className="text-sm text-emerald-500 font-medium">{resendStatus}</p>
             )}
             <Button type="submit" className="mt-2 w-full" disabled={loading}>
-              {loading ? "Memproses..." : "Masuk"}
+              {loading ? t.auth.processing : t.auth.loginBtn}
             </Button>
             {isUnverifiedError && (
               <Button
@@ -164,19 +166,19 @@ function LoginForm() {
                 disabled={resending}
                 className="w-full"
               >
-                {resending ? "Mengirim ulang..." : "Kirim Ulang Email Verifikasi"}
+                {resending ? t.auth.resending : t.auth.resendVerification}
               </Button>
             )}
           </form>
         </div>
 
         <p className="mt-6 text-center text-sm text-muted-foreground">
-          Belum punya akun?{" "}
+          {t.auth.noAccount}{" "}
           <Link
             href="/register"
             className="font-medium text-foreground hover:underline"
           >
-            Daftar
+            {t.auth.register}
           </Link>
         </p>
       </div>
@@ -185,11 +187,13 @@ function LoginForm() {
 }
 
 export default function LoginPage() {
+  const { t } = useLanguage()
+
   return (
     <Suspense
       fallback={
         <div className="flex min-h-screen items-center justify-center bg-background">
-          <p className="text-sm text-muted-foreground">Memuat...</p>
+          <p className="text-sm text-muted-foreground">{t.auth.loading}</p>
         </div>
       }
     >

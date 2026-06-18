@@ -18,6 +18,8 @@ import { SUBSCRIPTION_PLANS } from "@/lib/billing/billing-plans"
 import { staticPageMetadata } from "@/lib/seo"
 import { SUPPORT_EMAIL } from "@/lib/site"
 import { cn } from "@/lib/utils"
+import { getLocale } from "@/lib/i18n/actions"
+import { getDictionary } from "@/lib/i18n/get-dictionary"
 
 export const metadata: Metadata = staticPageMetadata("/pricing")
 
@@ -25,30 +27,10 @@ function formatIDR(amount: number) {
   return `Rp ${amount.toLocaleString("id-ID")}`
 }
 
-const PRICING_FAQ = [
-  {
-    q: "Apakah ada uji coba gratis?",
-    a: "Saat ini kami tidak menyediakan free trial, namun semua plan dapat di-refund dalam 7 hari pertama jika ada kendala teknis dari sisi kami.",
-  },
-  {
-    q: "Apa perbedaan setiap plan?",
-    a: "Plan Starter cocok untuk studio yang baru memulai. Growth dan Pro menambahkan fitur analitik dan badge trusted. Enterprise untuk studio dengan tim besar dan kebutuhan API.",
-  },
-  {
-    q: "Bagaimana cara pembayarannya?",
-    a: "Pembayaran diproses aman melalui Midtrans. Kami menerima kartu kredit/debit, bank transfer, e-wallet (GoPay, OVO, DANA), dan QRIS.",
-  },
-  {
-    q: "Apakah langganan diperpanjang otomatis?",
-    a: "Tidak. Anda perlu memperpanjang secara manual sebelum masa aktif berakhir. Kami akan mengirim pengingat 7 hari sebelum jatuh tempo.",
-  },
-  {
-    q: "Bisakah upgrade atau downgrade di tengah jalan?",
-    a: "Bisa. Upgrade akan langsung aktif dengan perhitungan prorated, sedangkan downgrade berlaku saat siklus berikutnya dimulai.",
-  },
-]
+export default async function PricingPage() {
+  const locale = await getLocale()
+  const t = await getDictionary(locale)
 
-export default function PricingPage() {
   return (
     <MarketingShell>
       <section className="relative border-b border-border bg-background overflow-hidden">
@@ -58,9 +40,9 @@ export default function PricingPage() {
             as="h1"
             size="lg"
             align="center"
-            tagline="Harga transparan"
-            title="Harga sederhana, fitur lengkap."
-            description="Pilih durasi langganan yang paling cocok. Tidak ada biaya tersembunyi, tidak ada vendor lock-in."
+            tagline={t.pricing.headerTagline}
+            title={t.pricing.headerTitle}
+            description={t.pricing.headerDesc}
           />
         </div>
       </section>
@@ -81,7 +63,7 @@ export default function PricingPage() {
                   <>
                     <BorderBeam size={220} duration={12} />
                     <span className="absolute right-4 top-4 inline-flex items-center rounded-full bg-primary px-2.5 py-0.5 text-[10px] font-medium text-primary-foreground">
-                      Populer
+                      {t.pricing.popular}
                     </span>
                   </>
                 )}
@@ -100,7 +82,7 @@ export default function PricingPage() {
                     </span>
                   </div>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    {formatIDR(plan.pricePerMonth)} / bulan
+                    {formatIDR(plan.pricePerMonth)} / {t.pricing.perMonth}
                   </p>
                 </div>
 
@@ -119,7 +101,7 @@ export default function PricingPage() {
                 {plan.popular ? (
                   <ShimmerButton className="mt-6 w-full font-medium" shimmerColor="var(--brand-scarlet)">
                     <Link href="/register" className="flex items-center justify-center gap-2 w-full">
-                      Pilih {plan.name}
+                      {t.pricing.selectPlan} {plan.name}
                       <ArrowRight className="size-3.5" />
                     </Link>
                   </ShimmerButton>
@@ -131,7 +113,7 @@ export default function PricingPage() {
                     className="mt-6 w-full"
                     render={<Link href="/register" />}
                   >
-                    Pilih {plan.name}
+                    {t.pricing.selectPlan} {plan.name}
                     <ArrowRight className="size-3.5" />
                   </Button>
                 )}
@@ -140,7 +122,7 @@ export default function PricingPage() {
           </div>
 
           <p className="mt-10 text-center text-xs text-muted-foreground">
-            Semua harga sudah termasuk PPN. Pembayaran aman via Midtrans.
+            {t.pricing.footerNote}
           </p>
         </div>
       </section>
@@ -149,10 +131,10 @@ export default function PricingPage() {
         <div className="mx-auto max-w-3xl px-4 py-20 md:px-6 md:py-24">
           <SectionHeading
             align="center"
-            title="Pertanyaan tentang harga"
+            title={t.pricing.faqTitle}
             description={
               <>
-                Belum jelas? Tim kami siap membantu via email{" "}
+                {t.pricing.faqDescPrefix}
                 <span className="font-medium text-foreground">
                   {SUPPORT_EMAIL}
                 </span>
@@ -162,7 +144,7 @@ export default function PricingPage() {
           />
 
           <Accordion className="mt-12">
-            {PRICING_FAQ.map((faq, i) => (
+            {t.pricing.faq.map((faq, i) => (
               <AccordionItem
                 key={i}
                 value={`item-${i}`}

@@ -1,0 +1,98 @@
+{
+  "navigation": {
+    "login": "Masuk",
+    "dashboard": "Dashboard",
+    "home": "Beranda",
+    "pricing": "Harga",
+    "studios": "Studio Tato",
+    "help": "Bantuan",
+    "terms": "Syarat & Ketentuan",
+    "privacy": "Privasi"
+  },
+  "hero": {
+    "badge": "DIREKTORI STUDIO TATO PROFESIONAL",
+    "title1": "Bandingkan",
+    "title2": "Studio Tato",
+    "title3": "Lihat Portofolio.",
+    "title4": "Chat Langsung.",
+    "subtitle": "Jelajahi portofolio, cek studio yang sudah terverifikasi kebersihannya, lalu chat artist pilihanmu langsung lewat WhatsApp.",
+    "searchPlaceholder": "Cari studio, kota, gaya tato, atau artist...",
+    "popularSearch": "Gaya populer:",
+    "featured": "Studio populer:",
+    "bottomTagline": "STANDAR KEAMANAN & ESTETIKA TATO INDONESIA"
+  },
+  "cta": {
+    "title": "Punya studio tato?",
+    "subtitle": "Tampilkan portofoliomu di RuangTato, bangun halaman studio sendiri, dan terima calon klien langsung lewat WhatsApp — tanpa perantara.",
+    "button": "Tampilkan Studiomu"
+  },
+  "pricing": {
+    "title": "Pilih Paket Sesuai Kebutuhan",
+    "subtitle": "Transparan, tanpa biaya tersembunyi. Batalkan kapan saja.",
+    "popular": "Populer",
+    "perMonth": "bulan",
+    "equivalentTo": "setara dengan",
+    "selectPlan": "Pilih",
+    "currentPlan": "Paket Saat Ini",
+    "whatYouGet": "Yang Anda Dapatkan:",
+    "headerTagline": "Harga transparan",
+    "headerTitle": "Harga sederhana, fitur lengkap.",
+    "headerDesc": "Pilih durasi langganan yang paling cocok. Tidak ada biaya tersembunyi, tidak ada vendor lock-in.",
+    "footerNote": "Semua harga sudah termasuk PPN. Pembayaran aman via Midtrans.",
+    "faqTitle": "Pertanyaan tentang harga",
+    "faqDescPrefix": "Belum jelas? Tim kami siap membantu via email ",
+    "faq": [
+      {
+        "q": "Apakah ada uji coba gratis?",
+        "a": "Saat ini kami tidak menyediakan free trial, namun semua plan dapat di-refund dalam 7 hari pertama jika ada kendala teknis dari sisi kami."
+      },
+      {
+        "q": "Apa perbedaan setiap plan?",
+        "a": "Plan Starter cocok untuk studio yang baru memulai. Growth dan Pro menambahkan fitur analitik dan badge trusted. Enterprise untuk studio dengan tim besar dan kebutuhan API."
+      },
+      {
+        "q": "Bagaimana cara pembayarannya?",
+        "a": "Pembayaran diproses aman melalui Midtrans. Kami menerima kartu kredit/debit, bank transfer, e-wallet (GoPay, OVO, DANA), dan QRIS."
+      },
+      {
+        "q": "Apakah langganan diperpanjang otomatis?",
+        "a": "Tidak. Anda perlu memperpanjang secara manual sebelum masa aktif berakhir. Kami akan mengirim pengingat 7 hari sebelum jatuh tempo."
+      },
+      {
+        "q": "Bisakah upgrade atau downgrade di tengah jalan?",
+        "a": "Bisa. Upgrade akan langsung aktif dengan perhitungan prorated, sedangkan downgrade berlaku saat siklus berikutnya dimulai."
+      }
+    ]
+  },
+  "appShell": {
+    "overview": "Ringkasan",
+    "myStudio": "Studio Saya",
+    "settings": "Pengaturan",
+    "billing": "Langganan & Tagihan",
+    "support": "Bantuan"
+  },
+  "auth": {
+    "loginTitle": "Masuk ke akun Anda",
+    "loginDesc": "Masukkan email dan password untuk melanjutkan",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Lupa password?",
+    "rememberMe": "Ingat sesi saya",
+    "processing": "Memproses...",
+    "loginBtn": "Masuk",
+    "resendVerification": "Kirim Ulang Email Verifikasi",
+    "resending": "Mengirim ulang...",
+    "noAccount": "Belum punya akun?",
+    "register": "Daftar",
+    "errorSignIn": "Gagal masuk. Periksa email dan password.",
+    "errorNoEmail": "Masukkan email Anda terlebih dahulu untuk mengirim ulang verifikasi.",
+    "errorResend": "Gagal mengirim ulang email verifikasi.",
+    "successResend": "Email verifikasi telah dikirim ulang. Silakan periksa inbox Anda.",
+    "loading": "Memuat...",
+    "registerTitle": "Daftar Studio Tato",
+    "registerDesc": "Buat akun untuk memulai",
+    "name": "Nama Lengkap",
+    "registerBtn": "Daftar Sekarang",
+    "hasAccount": "Sudah punya akun?"
+  }
+}

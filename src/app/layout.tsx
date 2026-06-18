@@ -2,6 +2,9 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Cormorant_Garamond, Inter, Syne } from "next/font/google";
 import "./globals.css";
 import { rootMetadata } from "@/lib/seo";
+import { getLocale } from "@/lib/i18n/actions";
+import { getDictionary } from "@/lib/i18n/get-dictionary";
+import { LanguageProvider } from "@/lib/i18n/language-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,17 +46,24 @@ export const viewport: Viewport = {
   themeColor: "#121212",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+  const dictionary = await getDictionary(locale);
+
   return (
     <html
-      lang="id"
+      lang={locale}
       className={`dark ${geistSans.variable} ${geistMono.variable} ${cormorant.variable} ${inter.variable} ${syne.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground">{children}</body>
+      <body className="min-h-full flex flex-col bg-background text-foreground">
+        <LanguageProvider locale={locale} dictionary={dictionary}>
+          {children}
+        </LanguageProvider>
+      </body>
     </html>
   );
 }

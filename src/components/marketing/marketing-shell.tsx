@@ -4,36 +4,18 @@ import { Heart } from "lucide-react"
 import { PlatformLogo } from "@/components/brand/platform-logo"
 import { Tagline } from "@/components/design"
 import { Button } from "@/components/ui/button"
+import { LanguageSwitcher } from "@/components/ui/language-switcher"
+import { useLanguage } from "@/lib/i18n/language-provider"
 import { SITE_DOMAIN, SITE_URL } from "@/lib/site"
 import { cn } from "@/lib/utils"
 
-const PRIMARY_NAV = [{ href: "/#browse", label: "Browse" }]
 
-const FOOTER_LINKS = {
-  platform: [
-    { href: "/#browse", label: "Browse" },
-    { href: "/pricing", label: "Harga" },
-    { href: "/help", label: "Bantuan" },
-    { href: "/register", label: "Daftar Studio" },
-  ],
-  legal: [
-    { href: "/privacy", label: "Kebijakan Privasi" },
-    { href: "/terms", label: "Syarat & Ketentuan" },
-    { href: "/subscription", label: "Kebijakan Langganan" },
-    { href: "/cookies", label: "Kebijakan Cookie" },
-  ],
-  social: [
-    {
-      href: "https://api.whatsapp.com/send/?phone=628133985462&text&type=phone_number&app_absent=0",
-      label: "WhatsApp",
-    },
-    { href: "https://web.facebook.com/ruangtato", label: "Facebook" },
-    { href: "https://www.instagram.com/ruangtato", label: "Instagram" },
-    { href: "https://www.tiktok.com/@ruangtato", label: "TikTok" },
-  ],
-}
 
 function MarketingHeader() {
+  const { t } = useLanguage()
+  
+  const PRIMARY_NAV = [{ href: "/#browse", label: t.navigation.studios }]
+  
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-black/50 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:px-6">
@@ -52,6 +34,7 @@ function MarketingHeader() {
           </nav>
         </div>
         <div className="flex items-center gap-2">
+          <LanguageSwitcher />
           <Button
             variant="ghost"
             size="sm"
@@ -59,14 +42,14 @@ function MarketingHeader() {
             className="hidden text-white/70 hover:bg-transparent hover:text-white md:inline-flex"
             render={<Link href="/login" />}
           >
-            Masuk
+            {t.navigation.login}
           </Button>
           <Button
             size="sm"
             nativeButton={false}
             render={<Link href="/register" />}
           >
-            Daftar Studio
+            {t.cta.button}
           </Button>
         </div>
       </div>
@@ -75,6 +58,32 @@ function MarketingHeader() {
 }
 
 function MarketingFooter() {
+  const { t } = useLanguage()
+
+  const FOOTER_LINKS = {
+    platform: [
+      { href: "/#browse", label: t.navigation.studios },
+      { href: "/pricing", label: t.navigation.pricing },
+      { href: "/help", label: t.navigation.help },
+      { href: "/register", label: t.cta.button },
+    ],
+    legal: [
+      { href: "/privacy", label: t.navigation.privacy },
+      { href: "/terms", label: t.navigation.terms },
+      { href: "/subscription", label: "Kebijakan Langganan" }, // we can add to dict later
+      { href: "/cookies", label: "Kebijakan Cookie" },
+    ],
+    social: [
+      {
+        href: "https://api.whatsapp.com/send/?phone=628133985462&text&type=phone_number&app_absent=0",
+        label: "WhatsApp",
+      },
+      { href: "https://web.facebook.com/ruangtato", label: "Facebook" },
+      { href: "https://www.instagram.com/ruangtato", label: "Instagram" },
+      { href: "https://www.tiktok.com/@ruangtato", label: "TikTok" },
+    ],
+  }
+
   return (
     <footer className="border-t border-border bg-background">
       <div className="mx-auto max-w-6xl px-4 py-12 md:px-6 md:py-16">

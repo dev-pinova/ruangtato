@@ -1,0 +1,98 @@
+{
+  "navigation": {
+    "login": "Sign In",
+    "dashboard": "Dashboard",
+    "home": "Home",
+    "pricing": "Pricing",
+    "studios": "Tattoo Studios",
+    "help": "Help",
+    "terms": "Terms",
+    "privacy": "Privacy"
+  },
+  "hero": {
+    "badge": "PROFESSIONAL TATTOO STUDIO DIRECTORY",
+    "title1": "Compare",
+    "title2": "Tattoo Studios",
+    "title3": "View Portfolios.",
+    "title4": "Chat Directly.",
+    "subtitle": "Explore portfolios, check verified studios for hygiene, and chat directly with your preferred artist via WhatsApp.",
+    "searchPlaceholder": "Search studio, city, tattoo style, or artist...",
+    "popularSearch": "Popular styles:",
+    "featured": "Popular studios:",
+    "bottomTagline": "SAFETY & AESTHETIC STANDARDS FOR INDONESIAN TATTOOS"
+  },
+  "cta": {
+    "title": "Own a tattoo studio?",
+    "subtitle": "Showcase your portfolio on RuangTato, build your own studio page, and receive potential clients directly via WhatsApp — no middlemen.",
+    "button": "List Your Studio"
+  },
+  "pricing": {
+    "title": "Choose a Plan That Fits Your Needs",
+    "subtitle": "Transparent, with no hidden fees. Cancel anytime.",
+    "popular": "Popular",
+    "perMonth": "month",
+    "equivalentTo": "equivalent to",
+    "selectPlan": "Choose",
+    "currentPlan": "Current Plan",
+    "whatYouGet": "What you get:",
+    "headerTagline": "Transparent pricing",
+    "headerTitle": "Simple pricing, full features.",
+    "headerDesc": "Choose the subscription duration that fits best. No hidden fees, no vendor lock-in.",
+    "footerNote": "All prices include VAT. Secure payment via Midtrans.",
+    "faqTitle": "Questions about pricing",
+    "faqDescPrefix": "Still unclear? Our team is ready to help via email ",
+    "faq": [
+      {
+        "q": "Is there a free trial?",
+        "a": "Currently we do not provide a free trial, but all plans can be refunded within the first 7 days if there are technical issues on our end."
+      },
+      {
+        "q": "What is the difference between plans?",
+        "a": "The Starter plan is great for studios just starting out. Growth and Pro add analytics and trusted badges. Enterprise is for studios with large teams and API needs."
+      },
+      {
+        "q": "How does payment work?",
+        "a": "Payments are securely processed via Midtrans. We accept credit/debit cards, bank transfers, e-wallets (GoPay, OVO, DANA), and QRIS."
+      },
+      {
+        "q": "Are subscriptions auto-renewed?",
+        "a": "No. You need to renew manually before the active period ends. We will send a reminder 7 days before the due date."
+      },
+      {
+        "q": "Can I upgrade or downgrade midway?",
+        "a": "Yes. Upgrades will be active immediately with prorated calculation, while downgrades apply when the next cycle begins."
+      }
+    ]
+  },
+  "appShell": {
+    "overview": "Overview",
+    "myStudio": "My Studio",
+    "settings": "Settings",
+    "billing": "Billing",
+    "support": "Help & Support"
+  },
+  "auth": {
+    "loginTitle": "Sign in to your account",
+    "loginDesc": "Enter your email and password to continue",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot password?",
+    "rememberMe": "Remember my session",
+    "processing": "Processing...",
+    "loginBtn": "Sign In",
+    "resendVerification": "Resend Verification Email",
+    "resending": "Resending...",
+    "noAccount": "Don't have an account?",
+    "register": "Sign Up",
+    "errorSignIn": "Failed to sign in. Check your email and password.",
+    "errorNoEmail": "Enter your email first to resend verification.",
+    "errorResend": "Failed to resend verification email.",
+    "successResend": "Verification email has been resent. Please check your inbox.",
+    "loading": "Loading...",
+    "registerTitle": "Register Tattoo Studio",
+    "registerDesc": "Create an account to get started",
+    "name": "Full Name",
+    "registerBtn": "Sign Up Now",
+    "hasAccount": "Already have an account?"
+  }
+}

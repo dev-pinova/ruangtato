@@ -11,6 +11,7 @@ import { GridHeader } from "@/components/showcase/grid-header"
 import { StudioGrid } from "@/components/showcase/studio-grid"
 import { Button } from "@/components/ui/button"
 import { getCityCounts } from "@/lib/studio/studio-utils"
+import { useLanguage } from "@/lib/i18n/language-provider"
 import type { Studio } from "@/lib/types"
 
 type SortBy = "views" | "clicks" | "name"
@@ -30,6 +31,7 @@ export function ShowcasePage({
   studios: Studio[]
   cities: string[]
 }) {
+  const { t } = useLanguage()
   const [searchQuery, setSearchQuery] = useState("")
   const [sortBy, setSortBy] = useState<SortBy>("views")
   const [trustedOnly, setTrustedOnly] = useState(false)
@@ -126,10 +128,10 @@ export function ShowcasePage({
                   <Store className="size-5" />
                 </div>
                 <h2 className="text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
-                  Punya studio tato?
+                  {t.cta.title}
                 </h2>
                 <p className="mt-3 text-base leading-relaxed text-muted-foreground">
-                  Tampilkan portofoliomu di RuangTato, bangun halaman studio sendiri, dan terima calon klien langsung lewat WhatsApp — tanpa perantara.
+                  {t.cta.subtitle}
                 </p>
               </div>
               <Button
@@ -138,7 +140,7 @@ export function ShowcasePage({
                 className="shrink-0 gap-2"
                 render={<Link href="/register" />}
               >
-                Tampilkan Studiomu
+                {t.cta.button}
                 <ArrowRight className="size-4" />
               </Button>
             </div>
