@@ -5,10 +5,10 @@ import Link from "next/link"
 import { ArrowRight, Store } from "lucide-react"
 
 import { MarketingShell } from "@/components/marketing/marketing-shell"
-import { ShowcaseHero } from "@/components/showcase/hero"
-import { SidebarFilter } from "@/components/showcase/sidebar-filter"
-import { GridHeader } from "@/components/showcase/grid-header"
-import { StudioGrid } from "@/components/showcase/studio-grid"
+import { ExploreHero } from "@/components/explore/explore-hero"
+import { ExploreSidebar } from "@/components/explore/explore-sidebar"
+import { ExploreHeader } from "@/components/explore/explore-header"
+import { ExploreGrid } from "@/components/explore/explore-grid"
 import { Button } from "@/components/ui/button"
 import { getCityCounts } from "@/lib/studio/studio-utils"
 import { useLanguage } from "@/lib/i18n/language-provider"
@@ -24,7 +24,7 @@ function buildPopularTags(studios: Studio[]) {
   return [...new Set(merged.map((tag) => tag.trim()).filter(Boolean))].slice(0, 15)
 }
 
-export function ShowcasePage({
+export function ExplorePage({
   studios,
   cities,
 }: {
@@ -76,45 +76,47 @@ export function ShowcasePage({
 
   return (
     <MarketingShell>
-      <ShowcaseHero
+      <ExploreHero
         searchQuery={searchQuery}
         onSearch={setSearchQuery}
         featuredStudios={featuredStudios}
         popularTags={popularTags}
       />
-      <section className="mx-auto max-w-6xl px-4 py-12 md:px-6 md:py-16">
-        <div className="flex flex-col md:flex-row gap-8 lg:gap-12 md:items-start">
-          <aside className="w-full shrink-0 md:w-56 lg:w-64">
-            <SidebarFilter
-              cities={cities}
-              cityCounts={cityCounts}
-              selectedCity={selectedCity}
-              onCityChange={setSelectedCity}
-            />
-          </aside>
+      <section className="bg-white text-neutral-900 border-t border-neutral-200">
+        <div className="mx-auto max-w-6xl px-4 py-12 md:px-6 md:py-16">
+          <div className="flex flex-col md:flex-row gap-8 lg:gap-12 md:items-start">
+            <aside className="hidden md:block w-full shrink-0 md:w-56 lg:w-64">
+              <ExploreSidebar
+                cities={cities}
+                cityCounts={cityCounts}
+                selectedCity={selectedCity}
+                onCityChange={setSelectedCity}
+                sortBy={sortBy}
+                onSortChange={setSortBy}
+                trustedOnly={trustedOnly}
+                onTrustedToggle={() => setTrustedOnly((prev) => !prev)}
+              />
+            </aside>
           
-          <main className="flex-1 min-w-0">
-            <GridHeader
-              sortBy={sortBy}
-              onSortChange={setSortBy}
-              trustedOnly={trustedOnly}
-              onTrustedToggle={() => setTrustedOnly((prev) => !prev)}
-              resultCount={resultCount}
-              verifiedCount={verifiedCount}
-            />
-            <StudioGrid
-              studios={studios}
-              searchQuery={searchQuery}
-              sortBy={sortBy}
-              trustedOnly={trustedOnly}
-              selectedCity={selectedCity}
-              onResetFilters={() => {
-                setSearchQuery("")
-                setSelectedCity("")
-                setTrustedOnly(false)
-              }}
-            />
-          </main>
+            <main className="flex-1 min-w-0">
+              <ExploreHeader
+                resultCount={resultCount}
+                verifiedCount={verifiedCount}
+              />
+              <ExploreGrid
+                studios={studios}
+                searchQuery={searchQuery}
+                sortBy={sortBy}
+                trustedOnly={trustedOnly}
+                selectedCity={selectedCity}
+                onResetFilters={() => {
+                  setSearchQuery("")
+                  setSelectedCity("")
+                  setTrustedOnly(false)
+                }}
+              />
+            </main>
+          </div>
         </div>
       </section>
 

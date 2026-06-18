@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils"
 function MarketingHeader() {
   const { t } = useLanguage()
   
-  const PRIMARY_NAV = [{ href: "/#browse", label: t.navigation.studios }]
+  const PRIMARY_NAV = [{ href: "/app", label: t.navigation.studios }]
   
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-black/50 backdrop-blur-md">
@@ -64,7 +64,7 @@ function MarketingFooter() {
 
   const FOOTER_LINKS = {
     platform: [
-      { href: "/#browse", label: t.navigation.studios },
+      { href: "/app", label: t.navigation.studios },
       { href: "/pricing", label: t.navigation.pricing },
       { href: "/help", label: t.navigation.help },
       { href: "/register", label: t.cta.button },

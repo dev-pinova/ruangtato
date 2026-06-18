@@ -19,7 +19,7 @@ const NAV_LINKS = [
     primary: true,
   },
   {
-    href: "/#browse",
+    href: "/app",
     label: "Jelajahi Studio",
     description: "Lihat direktori studio terpercaya",
     icon: Compass,

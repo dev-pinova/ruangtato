@@ -14,10 +14,9 @@ import type { Studio } from "@/lib/types"
 
 const GRID_PREVIEW_LIMIT = 8 // 4 kolom × 2 baris
 
-
 type SortBy = "views" | "clicks" | "name"
 
-export function StudioGrid({
+export function ExploreGrid({
   studios,
   searchQuery,
   sortBy,
@@ -67,62 +66,61 @@ export function StudioGrid({
   const visibleStudios = sorted
 
   if (sorted.length === 0) {
-    // Distinguish "filters/search hide everything" from "no studios exist yet".
     const hasActiveFilters = Boolean(query || selectedCity || trustedOnly)
 
     return (
-      <div className="flex flex-col items-center rounded-2xl border border-border bg-card px-8 py-16 text-center">
-          {hasActiveFilters ? (
-            <>
-              <div className="mb-4 inline-flex size-11 items-center justify-center rounded-lg border border-border bg-background text-muted-foreground">
-                <SlidersHorizontal className="size-5" />
-              </div>
-              <p className="text-base font-medium text-foreground">
-                Tidak ada studio yang cocok dengan filtermu
-              </p>
-              <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-                Coba ganti kota, hapus filter terverifikasi, atau ubah kata kunci pencarianmu.
-              </p>
-              {onResetFilters && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={onResetFilters}
-                  className="mt-6"
-                >
-                  Reset filter
-                </Button>
-              )}
-            </>
-          ) : (
-            <>
-              <div className="mb-4 inline-flex size-11 items-center justify-center rounded-lg border border-border bg-background text-muted-foreground">
-                <Store className="size-5" />
-              </div>
-              <p className="text-base font-medium text-foreground">
-                Belum ada studio yang tampil
-              </p>
-              <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-                Direktori sedang bertumbuh. Jadilah studio pertama yang tampil di {SITE_NAME}.
-              </p>
+      <div className="flex flex-col items-center rounded-2xl border border-neutral-200 bg-neutral-50 px-8 py-16 text-center text-neutral-900">
+        {hasActiveFilters ? (
+          <>
+            <div className="mb-4 inline-flex size-11 items-center justify-center rounded-lg border border-neutral-200 bg-white text-neutral-500">
+              <SlidersHorizontal className="size-5" />
+            </div>
+            <p className="text-base font-medium text-neutral-900">
+              Tidak ada studio yang cocok dengan filtermu
+            </p>
+            <p className="mt-1 max-w-sm text-sm text-neutral-500">
+              Coba ganti kota, hapus filter terverifikasi, atau ubah kata kunci pencarianmu.
+            </p>
+            {onResetFilters && (
               <Button
+                variant="outline"
                 size="sm"
-                nativeButton={false}
-                className="mt-6 gap-2"
-                render={<Link href="/register" />}
+                onClick={onResetFilters}
+                className="mt-6 border-neutral-300 text-neutral-700 hover:bg-neutral-100"
               >
-                Tampilkan Studiomu
-                <ArrowRight className="size-3.5" />
+                Reset filter
               </Button>
-            </>
-          )}
-        </div>
+            )}
+          </>
+        ) : (
+          <>
+            <div className="mb-4 inline-flex size-11 items-center justify-center rounded-lg border border-neutral-200 bg-white text-neutral-500">
+              <Store className="size-5" />
+            </div>
+            <p className="text-base font-medium text-neutral-900">
+              Belum ada studio yang tampil
+            </p>
+            <p className="mt-1 max-w-sm text-sm text-neutral-500">
+              Direktori sedang bertumbuh. Jadilah studio pertama yang tampil di {SITE_NAME}.
+            </p>
+            <Button
+              size="sm"
+              nativeButton={false}
+              className="mt-6 gap-2 border-neutral-300 text-neutral-700 bg-white hover:bg-neutral-50"
+              render={<Link href="/register" />}
+            >
+              Tampilkan Studiomu
+              <ArrowRight className="size-3.5" />
+            </Button>
+          </>
+        )}
+      </div>
     )
   }
 
   return (
     <div id="browse" className="scroll-mt-16">
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
+      <div className="grid grid-cols-2 gap-4 md:gap-8">
         {visibleStudios.map((studio, index) => {
           return (
             <BlurFade
@@ -133,7 +131,7 @@ export function StudioGrid({
               blur="8px"
               direction="up"
             >
-              <StudioCard studio={studio} />
+              <ExploreCard studio={studio} />
             </BlurFade>
           )
         })}
@@ -145,7 +143,7 @@ export function StudioGrid({
             variant="outline"
             size="lg"
             onClick={() => setShowAll(true)}
-            className="gap-2"
+            className="gap-2 border-neutral-300 text-neutral-700 hover:bg-neutral-50"
           >
             Lihat Semua Studio
             <ArrowRight className="size-4" />
@@ -156,7 +154,7 @@ export function StudioGrid({
   )
 }
 
-function StudioCard({ studio }: { studio: Studio }) {
+function ExploreCard({ studio }: { studio: Studio }) {
   const avatarSrc = studio.artistImage || studio.image
   const displayTags = [
     ...studio.tags.slice(0, 3),
@@ -168,10 +166,10 @@ function StudioCard({ studio }: { studio: Studio }) {
       href={`/app/studio/${studio.slug}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="group relative flex h-full w-full flex-col overflow-hidden rounded-xl border border-border bg-card transition-shadow duration-300 hover:shadow-md"
+      className="group relative flex h-full w-full flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white transition-shadow duration-300 hover:shadow-md text-neutral-900"
     >
-      <MagicSpotlight size={260} />
-      <div className="relative overflow-hidden bg-muted w-full aspect-[4/3]">
+      <MagicSpotlight size={300} />
+      <div className="relative overflow-hidden bg-neutral-100 w-full aspect-[4/3]">
         {studio.image && (
           /* eslint-disable-next-line @next/next/no-img-element */
           <img
@@ -185,54 +183,54 @@ function StudioCard({ studio }: { studio: Studio }) {
 
         {studio.isTrusted && (
           <div className="absolute left-3 top-3">
-            <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/40 px-2 py-1 text-[10px] font-medium text-white backdrop-blur-sm">
-              <BadgeCheck className="size-3" />
+            <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/40 px-2 py-1 text-[10px] md:text-xs font-medium text-white backdrop-blur-sm">
+              <BadgeCheck className="size-3 md:size-3.5" />
               Trusted
             </span>
           </div>
         )}
 
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 px-4 pb-4 pt-10 text-center">
-          <div className="flex items-center justify-center gap-2">
-            <LaurelWreath side="left" className="h-5 w-auto shrink-0 text-white/60" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 px-4 pb-4 pt-12 md:pb-6 text-center">
+          <div className="flex items-center justify-center gap-2 md:gap-3">
+            <LaurelWreath side="left" className="h-5 md:h-7 w-auto shrink-0 text-white/60" />
             <div className="min-w-0">
-              <p className="line-clamp-2 text-sm font-bold leading-snug tracking-tight text-white md:text-base">
+              <p className="line-clamp-2 text-sm md:text-lg lg:text-xl font-bold leading-snug tracking-tight text-white">
                 {studio.name}
               </p>
-              <p className="mt-1 text-[10px] leading-none text-white/55 md:text-[11px]">
+              <p className="hidden sm:block mt-1 text-[11px] md:text-xs leading-none text-white/55">
                 Built with{" "}
                 <span className="font-medium text-white/90">{SITE_NAME}</span>
               </p>
             </div>
-            <LaurelWreath side="right" className="h-5 w-auto shrink-0 text-white/60" />
+            <LaurelWreath side="right" className="h-5 md:h-7 w-auto shrink-0 text-white/60" />
           </div>
         </div>
       </div>
 
-      <div className="relative z-10 flex flex-col justify-between p-5 w-full flex-1">
-        <div className="flex flex-col gap-3">
+      <div className="relative z-10 flex flex-col justify-between p-4 md:p-6 w-full flex-1">
+        <div className="flex flex-col gap-2 md:gap-3">
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 md:gap-3">
             {avatarSrc && (
               /* eslint-disable-next-line @next/next/no-img-element */
               <img
                 src={avatarSrc}
                 alt={studio.artist}
-                className="size-6 shrink-0 rounded-full object-cover ring-1 ring-border"
+                className="size-6 md:size-8 shrink-0 rounded-full object-cover ring-1 ring-neutral-200"
               />
             )}
-            <p className="min-w-0 text-xs text-muted-foreground">
+            <p className="min-w-0 text-xs md:text-sm text-neutral-500">
               By{" "}
-              <span className="font-medium text-foreground">
+              <span className="font-semibold text-neutral-800">
                 {studio.artist}
               </span>
               {studio.isVerified && (
-                <VerifiedCheck className="ml-1 inline size-3.5 align-[-2px]" />
+                <VerifiedCheck className="ml-1 inline size-3.5 md:size-4 align-[-2px]" />
               )}
             </p>
           </div>
 
-          <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+          <p className="line-clamp-2 text-xs md:text-base leading-normal md:leading-relaxed text-neutral-600">
             {studio.description}
           </p>
         </div>
@@ -242,7 +240,7 @@ function StudioCard({ studio }: { studio: Studio }) {
             {displayTags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-full border border-border px-2 py-0.5 text-[11px] font-medium text-muted-foreground bg-muted/30"
+                className="rounded-full border border-neutral-200 px-2.5 py-0.5 text-xs md:text-sm font-medium text-neutral-600 bg-neutral-50"
               >
                 {tag}
               </span>
