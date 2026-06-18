@@ -5,7 +5,6 @@ import {
   BRAND_SCARLET,
   BRAND_WORDMARK_PREFIX,
   BRAND_WORDMARK_SUFFIX,
-  logoMarkDataUri,
 } from "@/lib/brand"
 import { SITE_NAME } from "@/lib/site"
 
@@ -14,7 +13,7 @@ export const size = { width: 1200, height: 630 }
 export const contentType = "image/png"
 
 export default function OpenGraphImage() {
-  const logoSrc = logoMarkDataUri({ tone: "dark", showFrame: true })
+  const logoUrl = new URL("/image/logo-ruangtato.png", process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000").toString()
 
   return new ImageResponse(
     (
@@ -31,7 +30,7 @@ export default function OpenGraphImage() {
         }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={logoSrc} alt="" width={200} height={200} />
+        <img src={logoUrl} alt="" width={100} height={195} />
         <p
           style={{
             marginTop: 40,

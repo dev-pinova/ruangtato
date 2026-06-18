@@ -2,30 +2,30 @@ import { LogoMark } from "@/components/brand/logo-mark"
 import {
   BRAND_WORDMARK_PREFIX,
   BRAND_WORDMARK_SUFFIX,
-  type LogoTone,
 } from "@/lib/brand"
 import { cn } from "@/lib/utils"
 
 type LogoWordmarkProps = {
-  tone?: LogoTone
   className?: string
   markClassName?: string
   textClassName?: string
   showText?: boolean
+  /** Text color variant: "light" = white text, "dark" = foreground text */
+  textVariant?: "light" | "dark"
 }
 
 export function LogoWordmark({
-  tone = "dark",
   className,
   markClassName,
   textClassName,
   showText = true,
+  textVariant = "light",
 }: LogoWordmarkProps) {
-  const prefixColor = tone === "dark" ? "text-white" : "text-foreground"
+  const prefixColor = textVariant === "light" ? "text-white" : "text-foreground"
 
   return (
     <span className={cn("inline-flex items-center gap-2.5", className)}>
-      <LogoMark tone={tone} className={cn("size-8", markClassName)} />
+      <LogoMark className={cn("h-8 w-auto", markClassName)} />
       {showText ? (
         <span
           aria-hidden

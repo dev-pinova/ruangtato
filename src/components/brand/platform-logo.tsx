@@ -2,7 +2,6 @@ import Link from "next/link"
 
 import { LogoMark } from "@/components/brand/logo-mark"
 import { LogoWordmark } from "@/components/brand/logo-wordmark"
-import type { LogoTone } from "@/lib/brand"
 import { SITE_NAME } from "@/lib/site"
 import { cn } from "@/lib/utils"
 
@@ -14,13 +13,13 @@ type PlatformLogoProps = {
   collapsed?: boolean
 }
 
-const toneByVariant: Record<
+const textVariantByVariant: Record<
   NonNullable<PlatformLogoProps["variant"]>,
-  LogoTone
+  "light" | "dark"
 > = {
-  header: "dark",
+  header: "light",
   footer: "dark",
-  auth: "dark",
+  auth: "light",
   app: "dark",
   builder: "dark",
 }
@@ -31,27 +30,27 @@ export function PlatformLogo({
   variant = "header",
   collapsed = false,
 }: PlatformLogoProps) {
-  const tone = toneByVariant[variant]
+  const textVariant = textVariantByVariant[variant]
 
   const content =
     variant === "app" && collapsed ? (
-      <LogoMark tone={tone} className="size-7" ariaHidden={false} />
+      <LogoMark className="h-7 w-auto" ariaHidden={false} />
     ) : variant === "app" || variant === "builder" ? (
       <LogoWordmark
-        tone={tone}
-        markClassName="size-7"
+        textVariant={textVariant}
+        markClassName="h-7 w-auto"
         textClassName="text-sm"
       />
     ) : variant === "auth" ? (
       <LogoWordmark
-        tone={tone}
-        markClassName="size-10"
+        textVariant={textVariant}
+        markClassName="h-10 w-auto"
         textClassName="text-lg"
       />
     ) : (
       <LogoWordmark
-        tone={tone}
-        markClassName="size-9 md:size-10"
+        textVariant={textVariant}
+        markClassName="h-9 w-auto md:h-10"
         textClassName="text-base md:text-lg"
       />
     )

@@ -1,12 +1,12 @@
 import { ImageResponse } from "next/og"
 
-import { BRAND_INK_BLACK, logoMarkDataUri } from "@/lib/brand"
+import { BRAND_INK_BLACK } from "@/lib/brand"
 
 export const size = { width: 180, height: 180 }
 export const contentType = "image/png"
 
 export default function AppleIcon() {
-  const logoSrc = logoMarkDataUri({ tone: "dark", showFrame: true })
+  const logoUrl = new URL("/image/logo-ruangtato.png", process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000").toString()
 
   return new ImageResponse(
     (
@@ -22,7 +22,7 @@ export default function AppleIcon() {
         }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={logoSrc} alt="" width={140} height={140} />
+        <img src={logoUrl} alt="" width={80} height={156} />
       </div>
     ),
     { ...size },
