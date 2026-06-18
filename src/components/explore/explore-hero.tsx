@@ -117,6 +117,11 @@ export function ExploreHero({
               className="h-14 w-full rounded-2xl border-0 bg-transparent pl-12 pr-10 text-sm text-neutral-900 placeholder:text-neutral-400 focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none"
               value={searchQuery}
               onChange={(e) => onSearch(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault()
+                }
+              }}
             />
             <ChevronRight className="pointer-events-none absolute right-4 size-4 text-neutral-400" />
           </div>

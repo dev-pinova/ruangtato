@@ -47,13 +47,17 @@ function StudioChip({ studio }: { studio: Studio }) {
 export function ShowcaseHero({
   searchQuery,
   onSearch,
+  onTagClick,
   featuredStudios = [],
   popularTags = POPULAR_TAGS,
+  onSubmitSearch,
 }: {
   searchQuery: string
   onSearch: (query: string) => void
+  onTagClick?: (tag: string) => void
   featuredStudios?: Studio[]
   popularTags?: string[]
+  onSubmitSearch?: () => void
 }) {
   const { t } = useLanguage()
 
@@ -109,19 +113,31 @@ export function ShowcaseHero({
         </p>
 
         {/* Search bar */}
-        <div className="relative mx-auto mt-10 max-w-2xl rounded-full p-[1px] overflow-hidden bg-white/5 backdrop-blur-sm shadow-2xl">
-          <div className="relative flex items-center bg-black/50 rounded-full">
-            <Search className="pointer-events-none absolute left-4 size-4 text-muted-foreground" />
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            onSubmitSearch?.()
+          }}
+          className="relative mx-auto mt-10 max-w-2xl rounded-2xl bg-white shadow-xl"
+        >
+          <div className="relative flex items-center bg-white rounded-2xl">
+            <Search className="pointer-events-none absolute left-4 size-5 text-neutral-400" />
             <Input
               aria-label={t.hero.searchPlaceholder}
               placeholder={t.hero.searchPlaceholder}
-              className="h-12 w-full rounded-full border-0 bg-transparent pl-11 text-sm text-white placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none"
+              className="h-14 w-full rounded-2xl border-0 bg-transparent pl-12 pr-12 text-sm text-neutral-900 placeholder:text-neutral-400 focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none"
               value={searchQuery}
               onChange={(e) => onSearch(e.target.value)}
             />
+            <button
+              type="submit"
+              className="absolute right-4 p-1 rounded-full text-neutral-400 hover:text-neutral-600 focus:outline-none transition-colors"
+              aria-label="Cari"
+            >
+              <ChevronRight className="size-4" />
+            </button>
           </div>
-          <BorderBeam size={160} duration={8} borderWidth={1.5} />
-        </div>
+        </form>
 
         {/* Studio Marquee */}
         {featuredStudios.length > 0 && (
@@ -155,7 +171,13 @@ export function ShowcaseHero({
                   variant="inverse"
                   size="xs"
                   className="shrink-0 snap-start rounded-full transition-transform duration-200 hover:scale-105"
-                  onClick={() => onSearch(tag)}
+                  onClick={() => {
+                    if (onTagClick) {
+                      onTagClick(tag)
+                    } else {
+                      onSearch(tag)
+                    }
+                  }}
                 >
                   {tag}
                 </Button>

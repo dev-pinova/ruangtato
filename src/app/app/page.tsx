@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import { listPublishedStudios } from "@/lib/studio/studio-service"
 import { getCitiesFromStudios } from "@/lib/studio/studio-utils"
 import { ExplorePage } from "@/components/explore/explore-page"
@@ -14,7 +15,9 @@ export default async function Explore() {
   return (
     <>
       <JsonLd data={[buildWebSiteJsonLd(), buildOrganizationJsonLd()]} />
-      <ExplorePage studios={studios} cities={cities} />
+      <Suspense fallback={<div className="min-h-screen bg-white" />}>
+        <ExplorePage studios={studios} cities={cities} />
+      </Suspense>
     </>
   )
 }

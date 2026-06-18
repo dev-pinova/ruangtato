@@ -1,6 +1,7 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
+import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { ArrowRight, Store } from "lucide-react"
 
@@ -32,10 +33,16 @@ export function ExplorePage({
   cities: string[]
 }) {
   const { t } = useLanguage()
-  const [searchQuery, setSearchQuery] = useState("")
+  const searchParams = useSearchParams()
+  const urlQuery = searchParams.get("q") || ""
+  const [searchQuery, setSearchQuery] = useState(urlQuery)
   const [sortBy, setSortBy] = useState<SortBy>("views")
   const [trustedOnly, setTrustedOnly] = useState(false)
   const [selectedCity, setSelectedCity] = useState("")
+
+  useEffect(() => {
+    setSearchQuery(urlQuery)
+  }, [urlQuery])
 
   const featuredStudios = useMemo(
     () =>
