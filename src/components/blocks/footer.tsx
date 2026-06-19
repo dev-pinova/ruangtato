@@ -3,25 +3,6 @@
 import { normalizeGoogleMapsEmbedUrl } from "@/lib/google-maps-embed"
 import type { FooterData } from "@/lib/types"
 
-function formatSocialHandle(urlOrHandle: string, fallbackName: string, prefix = "") {
-  if (!urlOrHandle) return ""
-  let handle = urlOrHandle.trim()
-  if (handle.includes("/")) {
-    const parts = handle.replace(/\/$/, "").split("/")
-    handle = parts[parts.length - 1]
-  }
-  handle = handle.replace(/^@/, "")
-  return prefix ? `${prefix}${handle}` : handle
-}
-
-function formatWhatsAppLabel(whatsappValue: string) {
-  if (!whatsappValue) return ""
-  const val = whatsappValue.trim()
-  if (val.startsWith("http")) {
-    return "WhatsApp Chat"
-  }
-  return val.replace(/[^\d+]/g, "")
-}
 
 export function BlockFooter({ data }: { data: FooterData }) {
   const title = data?.title || "Studio Name"
@@ -103,7 +84,7 @@ export function BlockFooter({ data }: { data: FooterData }) {
                     </svg>
                   </span>
                   <span className="font-display text-xs uppercase tracking-[0.16em] group-hover:underline">
-                    {formatSocialHandle(instagram, title, "@")}
+                    {title}
                   </span>
                 </a>
               )}
@@ -125,7 +106,7 @@ export function BlockFooter({ data }: { data: FooterData }) {
                     </svg>
                   </span>
                   <span className="font-display text-xs uppercase tracking-[0.16em] group-hover:underline">
-                    {formatSocialHandle(tiktok, title, "@")}
+                    {title}
                   </span>
                 </a>
               )}
@@ -147,7 +128,7 @@ export function BlockFooter({ data }: { data: FooterData }) {
                     </svg>
                   </span>
                   <span className="font-display text-xs uppercase tracking-[0.16em] group-hover:underline">
-                    {formatSocialHandle(facebook, title, "")}
+                    {title}
                   </span>
                 </a>
               )}
@@ -169,7 +150,7 @@ export function BlockFooter({ data }: { data: FooterData }) {
                     </svg>
                   </span>
                   <span className="font-display text-xs uppercase tracking-[0.16em] group-hover:underline">
-                    {formatWhatsAppLabel(whatsapp)}
+                    {title}
                   </span>
                 </a>
               )}
