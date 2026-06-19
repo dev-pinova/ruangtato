@@ -1,8 +1,5 @@
 "use client"
 
-import Link from "next/link"
-import { ArrowRight, Check } from "lucide-react"
-
 import { trackStudioClick } from "@/components/studio/studio-tracker"
 import type { HeroData } from "@/lib/types"
 
@@ -15,88 +12,72 @@ export function BlockHero({
   waNumber?: string
   slug?: string
 }) {
+  const headline = data?.headline || "Tato yang menceritakan siapa Anda."
+  const subheadline = data?.subheadline || "Studio tato profesional dengan standar sterilisasi tinggi dan desain custom."
   const ctaText = data?.ctaText || "Konsultasi Sekarang"
+  const image = data?.image || "https://images.unsplash.com/photo-1565058379802-bbe93b2f703a?q=80&w=1200&auto=format&fit=crop"
+
   const waUrl = waNumber
     ? `https://wa.me/${waNumber}?text=Halo,%20saya%20tertarik%20untuk%20konsultasi%20tato`
     : undefined
-  const headline =
-    data?.headline ||
-    "Tato yang menceritakan siapa Anda."
-  const subheadline =
-    data?.subheadline ||
-    "Studio tato profesional dengan standar sterilisasi tinggi dan desain custom yang dikerjakan oleh artist berpengalaman."
-
-  const benefits: string[] = data?.benefits || [
-    "Konsultasi konsep 1-on-1",
-    "Standar sterilisasi premium",
-    "Aftercare guidance lengkap",
-  ]
 
   return (
-    <section className="border-b border-border bg-background">
-      <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-20 md:grid-cols-2 md:gap-16 md:px-6 md:py-28">
-        <div>
-          <h1 className="text-4xl font-semibold tracking-tight text-foreground text-pretty md:text-5xl lg:text-6xl">
-            {headline}
-          </h1>
-          <p className="mt-5 text-base leading-relaxed text-muted-foreground md:text-lg">
+    <section className="relative isolate flex min-h-screen flex-col justify-center overflow-hidden bg-black text-white">
+      {/* Background image + dark overlay */}
+      <div className="absolute inset-0 -z-10">
+        {image && (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={image}
+            alt=""
+            width={1600}
+            height={900}
+            fetchPriority="high"
+            className="h-full w-full object-cover"
+          />
+        )}
+        <div className="absolute inset-0 bg-black/55" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />
+      </div>
+
+      {/* Content */}
+      <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center justify-center px-6 pb-24 pt-40 text-center md:pb-32 md:pt-44">
+        <h1 className="font-display text-5xl font-light uppercase tracking-[0.18em] text-white text-pretty md:text-7xl lg:text-8xl">
+          {headline}
+        </h1>
+        {subheadline && (
+          <p className="mt-6 text-xs uppercase tracking-[0.5em] text-white/85 md:text-sm">
             {subheadline}
           </p>
+        )}
 
-          <ul className="mt-7 space-y-2.5">
-            {benefits.map((benefit, i) => (
-              <li
-                key={i}
-                className="flex items-center gap-2.5 text-sm text-foreground/80"
-              >
-                <Check className="size-4 shrink-0 text-primary" />
-                {benefit}
-              </li>
-            ))}
-          </ul>
-
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            {waUrl ? (
-              <a
-                href={waUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => slug && trackStudioClick(slug)}
-                className="inline-flex h-10 items-center justify-center gap-1.5 rounded-md bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-              >
-                {ctaText}
-                <ArrowRight className="size-3.5" />
-              </a>
-            ) : (
-              <button className="inline-flex h-10 items-center justify-center gap-1.5 rounded-md bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
-                {ctaText}
-                <ArrowRight className="size-3.5" />
-              </button>
-            )}
-            <Link
-              href="#gallery"
-              className="inline-flex h-10 items-center justify-center rounded-md border border-border bg-background px-5 text-sm font-medium text-foreground transition-colors hover:bg-muted/60"
+        <div className="mt-12 flex flex-col items-center gap-5 sm:flex-row sm:gap-8">
+          {/* Ghost outline CTA — "Buy Template" style */}
+          {waUrl ? (
+            <a
+              href={waUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => slug && trackStudioClick(slug)}
+              className="inline-flex h-12 items-center justify-center border border-white/40 px-8 font-display text-[11px] uppercase tracking-[0.4em] text-white transition-colors hover:border-white hover:bg-white hover:text-black"
             >
-              Lihat Portofolio
-            </Link>
-          </div>
-        </div>
-
-        <div className="relative">
-          <div className="overflow-hidden rounded-xl border border-border bg-muted">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={
-                data?.image ||
-                "https://images.unsplash.com/photo-1565058379802-bbe93b2f703a?q=80&w=1200&auto=format&fit=crop"
-              }
-              alt="Studio Portfolio"
-              width={1200}
-              height={1500}
-              fetchPriority="high"
-              className="aspect-[4/5] w-full object-cover"
-            />
-          </div>
+              [&nbsp; {ctaText} &nbsp;]
+            </a>
+          ) : (
+            <a
+              href="#appointment"
+              className="inline-flex h-12 items-center justify-center border border-white/40 px-8 font-display text-[11px] uppercase tracking-[0.4em] text-white transition-colors hover:border-white hover:bg-white hover:text-black"
+            >
+              [&nbsp; {ctaText} &nbsp;]
+            </a>
+          )}
+          
+          <a
+            href="#gallery"
+            className="font-display text-[11px] uppercase tracking-[0.4em] text-white/90 underline underline-offset-8 transition-colors hover:text-white hover:underline"
+          >
+            Lihat Portofolio
+          </a>
         </div>
       </div>
     </section>

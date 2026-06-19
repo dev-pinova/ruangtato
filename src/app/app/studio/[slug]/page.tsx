@@ -25,7 +25,7 @@ import { BlockArtistsGrid } from "@/components/blocks/artists-grid"
 import { BlockStatsCounter } from "@/components/blocks/stats-counter"
 import { BlockTestimonials } from "@/components/blocks/testimonials"
 import { BlockLatestNews } from "@/components/blocks/latest-news"
-import { BlockNewsletter } from "@/components/blocks/newsletter"
+
 import { BlockFAQ } from "@/components/blocks/faq"
 import { BlockAppointmentForm } from "@/components/blocks/appointment-form"
 import { BlockFinalCTA } from "@/components/blocks/final-cta"
@@ -33,7 +33,7 @@ import { BlockFooter } from "@/components/blocks/footer"
 import { BlockLeadForm } from "@/components/blocks/lead-form"
 import { StudioTracker } from "@/components/studio/studio-tracker"
 import { FloatingWhatsAppButton } from "@/components/studio/floating-whatsapp"
-import type { AppointmentFormData, BlockType } from "@/lib/types"
+import type { AppointmentFormData, LeadFormData, BlockType } from "@/lib/types"
 import { getLocale } from "@/lib/i18n/actions"
 import { getDictionary } from "@/lib/i18n/get-dictionary"
 
@@ -112,10 +112,11 @@ const BLOCK_COMPONENTS: Partial<Record<BlockType, BlockComponent>> = {
   StatsCounter: BlockStatsCounter,
   Testimonials: BlockTestimonials,
   LatestNews: BlockLatestNews,
-  Newsletter: BlockNewsletter,
+
   FAQ: BlockFAQ,
   FinalCTA: BlockFinalCTA,
   Footer: BlockFooter,
+  LeadForm: BlockLeadForm as any,
 }
 
 /** Map BlockType ke anchor id supaya nav HeaderOverlay (#home, #about, dst)
@@ -133,6 +134,7 @@ const BLOCK_ANCHOR_IDS: Partial<Record<BlockType, string>> = {
   LatestNews: "news",
   AppointmentForm: "contact",
   FinalCTA: "contact",
+  LeadForm: "contact",
 }
 
 export default async function StudioRendererPage({ params }: PageProps) {
@@ -186,6 +188,18 @@ export default async function StudioRendererPage({ params }: PageProps) {
             <div key={block.id} {...wrapperProps}>
               <BlockAppointmentForm
                 data={block.data as AppointmentFormData}
+                studioSlug={slug}
+                studioName={studio.name}
+              />
+            </div>
+          )
+        }
+
+        if (block.type === "LeadForm") {
+          return (
+            <div key={block.id} {...wrapperProps}>
+              <BlockLeadForm
+                data={block.data as LeadFormData}
                 studioSlug={slug}
                 studioName={studio.name}
               />

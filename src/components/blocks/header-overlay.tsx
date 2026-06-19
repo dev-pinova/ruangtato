@@ -82,13 +82,23 @@ export function BlockHeaderOverlay({ data }: { data: HeaderOverlayData }) {
             aria-label={logoText}
             className="hidden shrink-0 flex-col items-center justify-center px-6 md:flex"
           >
-            <span className="font-display text-lg font-semibold uppercase tracking-[0.4em] text-white">
-              {logoText}
-            </span>
-            {tagline && (
-              <span className="mt-1 text-[9px] uppercase tracking-[0.3em] text-white/60">
-                {tagline}
-              </span>
+            {data?.logoImage ? (
+              <img
+                src={data.logoImage}
+                alt={logoText}
+                className="h-10 max-w-[180px] object-contain"
+              />
+            ) : (
+              <>
+                <span className="font-display text-lg font-semibold uppercase tracking-[0.4em] text-white">
+                  {logoText}
+                </span>
+                {tagline && (
+                  <span className="mt-1 text-[9px] uppercase tracking-[0.3em] text-white/60">
+                    {tagline}
+                  </span>
+                )}
+              </>
             )}
           </a>
         ) : (
@@ -107,7 +117,15 @@ export function BlockHeaderOverlay({ data }: { data: HeaderOverlayData }) {
           href="#"
           className="font-display text-base font-semibold uppercase tracking-[0.3em] text-white md:hidden"
         >
-          {logoText}
+          {data?.logoImage ? (
+            <img
+              src={data.logoImage}
+              alt={logoText}
+              className="h-8 max-w-[120px] object-contain"
+            />
+          ) : (
+            logoText
+          )}
         </a>
         <button
           ref={toggleRef}

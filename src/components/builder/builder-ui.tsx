@@ -51,15 +51,16 @@ import { BlockArtistsGrid } from "@/components/blocks/artists-grid"
 import { BlockStatsCounter } from "@/components/blocks/stats-counter"
 import { BlockTestimonials } from "@/components/blocks/testimonials"
 import { BlockLatestNews } from "@/components/blocks/latest-news"
-import { BlockNewsletter } from "@/components/blocks/newsletter"
+
 import { BlockFAQ } from "@/components/blocks/faq"
 import { BlockAppointmentForm } from "@/components/blocks/appointment-form"
 import { BlockFinalCTA } from "@/components/blocks/final-cta"
 import { BlockFooter } from "@/components/blocks/footer"
+import { BlockLeadForm } from "@/components/blocks/lead-form"
 import { FloatingWhatsAppButton } from "@/components/studio/floating-whatsapp"
 
 import { DEFAULT_BLOCK_DATA } from "@/lib/studio/default-page-config"
-import type { AppointmentFormData, Block, BlockType, Studio } from "@/lib/types"
+import type { AppointmentFormData, LeadFormData, Block, BlockType, Studio } from "@/lib/types"
 
 import { LayersList } from "./layers-list"
 import { PropertyPanelContainer as PropertyPanel } from "./property-panel-container"
@@ -73,7 +74,7 @@ const PREVIEW_DEVICE_WIDTH: Record<PreviewDevice, number | null> = {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const BLOCK_COMPONENTS: Record<BlockType, React.ComponentType<{ data: any }>> = {
+const BLOCK_COMPONENTS: Partial<Record<BlockType, React.ComponentType<{ data: any }>>> = {
   Header: BlockHeader,
   HeaderOverlay: BlockHeaderOverlay,
   Hero: BlockHero,
@@ -89,11 +90,13 @@ const BLOCK_COMPONENTS: Record<BlockType, React.ComponentType<{ data: any }>> = 
   StatsCounter: BlockStatsCounter,
   Testimonials: BlockTestimonials,
   LatestNews: BlockLatestNews,
-  Newsletter: BlockNewsletter,
+
   FAQ: BlockFAQ,
   AppointmentForm: BlockAppointmentForm,
   FinalCTA: BlockFinalCTA,
   Footer: BlockFooter,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  LeadForm: BlockLeadForm as any,
 }
 
 const AVAILABLE_BLOCKS: { type: BlockType; name: string; desc: string }[] = [
@@ -112,11 +115,22 @@ const AVAILABLE_BLOCKS: { type: BlockType; name: string; desc: string }[] = [
   { type: 'CreatorBio', name: 'Creator Bio', desc: 'Profil artist tunggal' },
   { type: 'Testimonials', name: 'Testimonials', desc: 'Review klien dgn quote' },
   { type: 'LatestNews', name: 'Latest News', desc: 'Grid artikel/blog' },
-  { type: 'Newsletter', name: 'Newsletter', desc: 'Form subscribe email' },
+
   { type: 'FAQ', name: 'FAQ', desc: 'Tanya jawab' },
   { type: 'AppointmentForm', name: 'Appointment Form', desc: 'Form konsultasi + peta lokasi (opsional)' },
+  { type: 'LeadForm', name: 'Lead Form', desc: 'Form hubungi kami kustom' },
   { type: 'FinalCTA', name: 'Final CTA', desc: 'Tombol kontak akhir' },
   { type: 'Footer', name: 'Footer', desc: 'Bagian bawah' },
+]
+
+const BLOCK_CATEGORIES: { category: string; types: BlockType[] }[] = [
+  { category: "Header & Navigasi", types: ["HeaderOverlay", "Header"] },
+  { category: "Bagian Utama (Hero)", types: ["HeroSlider", "Hero"] },
+  { category: "Tentang & Profil", types: ["Goals", "Overview", "CreatorBio", "ArtistsGrid"] },
+  { category: "Layanan & Galeri", types: ["Gallery", "ServicesCards", "Features", "HowItWorks", "StatsCounter"] },
+  { category: "Ulasan & Berita", types: ["Testimonials", "LatestNews"] },
+  { category: "Form & Hubungi Kami", types: ["AppointmentForm", "LeadForm", "FinalCTA"] },
+  { category: "Bagian Bawah (Footer)", types: ["Footer"] },
 ]
 
 interface BuilderUIProps {
@@ -260,6 +274,7 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
   const [showMobileLeft, setShowMobileLeft] = useState(false)
   const [showMobileRight, setShowMobileRight] = useState(false)
   const [previewDevice, setPreviewDevice] = useState<PreviewDevice>("desktop")
+  const [zoom, setZoom] = useState<number>(1.0)
 
   const previewWidth = PREVIEW_DEVICE_WIDTH[previewDevice]
   const previewStyle: CSSProperties | undefined = previewWidth
@@ -289,31 +304,58 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
           </Button>
         </div>
 
-        <div
-          className="flex items-center gap-1 rounded-md border border-border bg-muted/30 p-0.5"
-          role="group"
-          aria-label="Ukuran preview"
-        >
-          {(
-            [
-              { id: "mobile" as const, label: "Mobile", icon: Smartphone },
-              { id: "tablet" as const, label: "Tablet", icon: Tablet },
-              { id: "desktop" as const, label: "Desktop", icon: Monitor },
-            ] as const
-          ).map(({ id, label, icon: Icon }) => (
-            <Button
-              key={id}
-              type="button"
-              variant={previewDevice === id ? "default" : "ghost"}
-              size="sm"
-              className="h-7 gap-1 px-2 text-[10px] max-sm:px-1.5"
-              onClick={() => setPreviewDevice(id)}
-              title={`${label}${PREVIEW_DEVICE_WIDTH[id] ? ` (${PREVIEW_DEVICE_WIDTH[id]}px)` : ""}`}
-            >
-              <Icon className="size-3.5" />
-              <span className="hidden sm:inline">{label}</span>
-            </Button>
-          ))}
+        <div className="flex items-center gap-4">
+          <div
+            className="flex items-center gap-1 rounded-md border border-border bg-muted/30 p-0.5"
+            role="group"
+            aria-label="Ukuran preview"
+          >
+            {(
+              [
+                { id: "mobile" as const, label: "Mobile", icon: Smartphone },
+                { id: "tablet" as const, label: "Tablet", icon: Tablet },
+                { id: "desktop" as const, label: "Desktop", icon: Monitor },
+              ] as const
+            ).map(({ id, label, icon: Icon }) => (
+              <Button
+                key={id}
+                type="button"
+                variant={previewDevice === id ? "default" : "ghost"}
+                size="sm"
+                className="h-7 gap-1 px-2 text-[10px] max-sm:px-1.5"
+                onClick={() => setPreviewDevice(id)}
+                title={`${label}${PREVIEW_DEVICE_WIDTH[id] ? ` (${PREVIEW_DEVICE_WIDTH[id]}px)` : ""}`}
+              >
+                <Icon className="size-3.5" />
+                <span className="hidden sm:inline">{label}</span>
+              </Button>
+            ))}
+          </div>
+
+          <div
+            className="flex items-center gap-1 rounded-md border border-border bg-muted/30 p-0.5"
+            role="group"
+            aria-label="Zoom level"
+          >
+            {(
+              [
+                { value: 0.5, label: "50%" },
+                { value: 0.75, label: "75%" },
+                { value: 1.0, label: "100%" },
+              ] as const
+            ).map(({ value, label }) => (
+              <Button
+                key={value}
+                type="button"
+                variant={zoom === value ? "default" : "ghost"}
+                size="sm"
+                className="h-7 px-2 text-[10px]"
+                onClick={() => setZoom(value)}
+              >
+                {label}
+              </Button>
+            ))}
+          </div>
         </div>
 
         <div className="flex w-full items-center gap-2 text-xs text-muted-foreground md:hidden">
@@ -482,18 +524,35 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
 
           <TabsContent value="add" className="m-0 min-h-0 flex-1 overflow-hidden">
             <ScrollArea className="h-full min-h-0 p-4">
-              <div className="flex flex-col gap-2">
-                {AVAILABLE_BLOCKS.map(block => (
-                  <div key={block.type} className="bg-card border border-border p-2.5 rounded-md hover:border-foreground/30 transition-colors cursor-pointer group flex items-center justify-between" onClick={() => addBlock(block.type)}>
-                    <div>
-                      <div className="font-semibold text-sm text-foreground">{block.name}</div>
-                      <div className="text-xs text-muted-foreground">{block.desc}</div>
+              <div className="flex flex-col gap-5">
+                {BLOCK_CATEGORIES.map(cat => {
+                  const blocksInCat = AVAILABLE_BLOCKS.filter(b => cat.types.includes(b.type))
+                  if (blocksInCat.length === 0) return null
+                  return (
+                    <div key={cat.category} className="flex flex-col gap-2">
+                      <h4 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80 px-1">
+                        {cat.category}
+                      </h4>
+                      <div className="flex flex-col gap-1.5">
+                        {blocksInCat.map(block => (
+                          <div 
+                            key={block.type} 
+                            className="bg-card border border-border p-2.5 rounded-md hover:border-foreground/30 transition-colors cursor-pointer group flex items-center justify-between" 
+                            onClick={() => addBlock(block.type)}
+                          >
+                            <div>
+                              <div className="font-semibold text-xs text-foreground">{block.name}</div>
+                              <div className="text-[10px] text-muted-foreground mt-0.5">{block.desc}</div>
+                            </div>
+                            <Button variant="ghost" size="icon" className="h-5 w-5 opacity-0 group-hover:opacity-100 text-primary shrink-0">
+                              <Plus className="w-3.5 h-3.5" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                    <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 text-primary">
-                      <Plus className="w-4 h-4" />
-                    </Button>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             </ScrollArea>
           </TabsContent>
@@ -502,70 +561,130 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
 
       {/* Main Canvas (Live Preview) — Static Preview Panel */}
       <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-[#09090b]">
-        <div className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto">
+        <div className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto scrollbar-none">
           <div
             className={cn(
-              "mx-auto w-full",
+              "mx-auto w-full origin-top transition-all duration-200",
               previewDevice !== "desktop" && "flex justify-center p-6 md:p-10"
             )}
+            style={{ transform: `scale(${zoom})`, transformOrigin: "top center" }}
           >
-            <div
-              style={previewStyle}
-              className={cn(
-                "builder-preview studio-template relative bg-black font-body text-white w-full shadow-lg border border-zinc-900/60",
-                previewDevice !== "desktop" ? "shrink-0 rounded-md overflow-hidden" : ""
-              )}
-            >
-              {blocks.filter(b => b.visible).length === 0 && (
-                <div className="flex min-h-[24rem] items-center justify-center text-muted-foreground/30 bg-black">
-                  <div className="text-center p-6">
-                    <H2 className="font-sans tracking-tight text-zinc-600">{t.builder.emptyPreviewTitle}</H2>
-                    <P className="text-zinc-700 text-xs font-sans">{t.builder.emptyPreviewDesc}</P>
-                  </div>
-                </div>
-              )}
-              {blocks.map(b => {
-                if (!b.visible) return null
-                return (
-                  <div
-                    key={b.id}
-                    className={cn(
-                      "relative cursor-pointer transition-all",
-                      activeBlockId === b.id && "ring-2 ring-primary ring-inset"
-                    )}
-                    onClick={() => selectBlock(b.id)}
-                  >
-                    {b.type === "AppointmentForm" ? (
-                      <BlockAppointmentForm
-                        data={b.data as AppointmentFormData}
-                        studioName={initialStudio.name}
-                      />
-                    ) : (
-                      (() => {
-                        const Component = BLOCK_COMPONENTS[b.type]
-                        if (!Component) return null
-                        const usesWaNumber =
-                          b.type === "Hero" ||
-                          b.type === "HeroSlider" ||
-                          b.type === "FinalCTA"
-                        return (
-                          <Component
-                            data={b.data}
-                            {...(usesWaNumber
-                              ? { waNumber: initialStudio.waNumber }
-                              : {})}
+            {(() => {
+              const blocksContent = (
+                <>
+                  {blocks.filter(b => b.visible).length === 0 && (
+                    <div className="flex min-h-[24rem] items-center justify-center text-muted-foreground/30 bg-black">
+                      <div className="text-center p-6">
+                        <H2 className="font-sans tracking-tight text-zinc-600">{t.builder.emptyPreviewTitle}</H2>
+                        <P className="text-zinc-700 text-xs font-sans">{t.builder.emptyPreviewDesc}</P>
+                      </div>
+                    </div>
+                  )}
+                  {blocks.map(b => {
+                    if (!b.visible) return null
+                    return (
+                      <div
+                        key={b.id}
+                        className={cn(
+                          "group relative cursor-pointer transition-all",
+                          activeBlockId === b.id ? "ring-2 ring-primary ring-inset" : "hover:ring-1 hover:ring-primary/40 hover:ring-inset"
+                        )}
+                        onClick={() => selectBlock(b.id)}
+                      >
+                        <div className={cn(
+                          "absolute right-2 top-2 z-30 pointer-events-none rounded bg-primary px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-primary-foreground opacity-0 group-hover:opacity-100 transition-opacity",
+                          activeBlockId === b.id && "opacity-100"
+                        )}>
+                          {AVAILABLE_BLOCKS.find(ab => ab.type === b.type)?.name || b.type}
+                        </div>
+                        {b.type === "AppointmentForm" ? (
+                          <BlockAppointmentForm
+                            data={b.data as AppointmentFormData}
+                            studioName={initialStudio.name}
                           />
-                        )
-                      })()
-                    )}
+                        ) : b.type === "LeadForm" ? (
+                          <BlockLeadForm
+                            data={b.data as LeadFormData}
+                            studioName={initialStudio.name}
+                          />
+                        ) : (
+                          (() => {
+                            const Component = BLOCK_COMPONENTS[b.type]
+                            if (!Component) return null
+                            const usesWaNumber =
+                              b.type === "Hero" ||
+                              b.type === "HeroSlider" ||
+                              b.type === "FinalCTA"
+                            return (
+                              <Component
+                                data={b.data}
+                                {...(usesWaNumber
+                                  ? { waNumber: initialStudio.waNumber }
+                                  : {})}
+                              />
+                            )
+                          })()
+                        )}
+                      </div>
+                    )
+                  })}
+                </>
+              )
+
+              if (previewDevice === "mobile") {
+                return (
+                  <div className="relative mx-auto my-4 border-[12px] border-zinc-800 rounded-[36px] shadow-2xl bg-black w-[395px] h-[780px] flex flex-col overflow-hidden shrink-0">
+                    {/* Status bar notch */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 h-5 w-36 bg-zinc-800 rounded-b-2xl z-40 flex items-center justify-center">
+                      <div className="h-1.5 w-12 bg-zinc-950 rounded-full" />
+                    </div>
+                    {/* Screen Content */}
+                    <div className="flex-1 overflow-y-auto scrollbar-none pt-4 bg-black relative builder-preview studio-template font-body text-white">
+                      {blocksContent}
+                      <FloatingWhatsAppButton
+                        waNumber={initialStudio.waNumber}
+                        position="absolute"
+                      />
+                    </div>
+                    {/* Home indicator bar */}
+                    <div className="h-4 bg-black flex items-center justify-center shrink-0">
+                      <div className="h-1 w-28 bg-zinc-800 rounded-full" />
+                    </div>
                   </div>
                 )
-              })}
-              <FloatingWhatsAppButton
-                waNumber={initialStudio.waNumber}
-                position="absolute"
-              />
-            </div>
+              }
+
+              if (previewDevice === "tablet") {
+                return (
+                  <div className="relative mx-auto my-4 border-[16px] border-zinc-800 rounded-[24px] shadow-2xl bg-black w-[768px] h-[960px] flex flex-col overflow-hidden shrink-0">
+                    {/* Screen Content */}
+                    <div className="flex-1 overflow-y-auto scrollbar-none bg-black relative builder-preview studio-template font-body text-white">
+                      {blocksContent}
+                      <FloatingWhatsAppButton
+                        waNumber={initialStudio.waNumber}
+                        position="absolute"
+                      />
+                    </div>
+                  </div>
+                )
+              }
+
+              // Desktop
+              return (
+                <div
+                  style={previewStyle}
+                  className={cn(
+                    "builder-preview studio-template relative bg-black font-body text-white w-full shadow-lg border border-zinc-900/60"
+                  )}
+                >
+                  {blocksContent}
+                  <FloatingWhatsAppButton
+                    waNumber={initialStudio.waNumber}
+                    position="absolute"
+                  />
+                </div>
+              )
+            })()}
           </div>
         </div>
       </div>

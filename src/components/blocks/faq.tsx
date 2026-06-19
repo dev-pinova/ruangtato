@@ -15,29 +15,29 @@ export function BlockFAQ({ data }: { data: any }) {
   ]
 
   return (
-    <section id="faq" className="border-b border-border bg-background">
-      <div className="mx-auto max-w-3xl px-4 py-20 md:px-6 md:py-28">
+    <section id="faq" className="border-b border-white/10 bg-black text-white">
+      <div className="mx-auto max-w-3xl px-6 py-20 md:py-28">
         <div className="text-center">
-          <h2 className="text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
-            Pertanyaan yang sering diajukan
+          <h2 className="font-display text-4xl font-light uppercase tracking-[0.16em] text-white md:text-5xl">
+            Pertanyaan Umum
           </h2>
-          <p className="mt-4 text-base leading-relaxed text-muted-foreground">
-            Belum menemukan jawabannya? Hubungi kami langsung via WhatsApp.
+          <p className="mt-5 text-sm leading-relaxed text-white/60">
+            Belum menemukan jawabannya? Hubungi kami langsung untuk konsultasi gratis.
           </p>
         </div>
 
-        <Accordion className="mt-12">
+        <Accordion className="mt-12 border border-white/10 bg-zinc-950 px-6 rounded-lg">
           {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           {faqs.map((faq: any, i: number) => (
             <AccordionItem
               key={i}
               value={`item-${i}`}
-              className="border-b border-border last:border-b-0"
+              className="border-b border-white/10 last:border-b-0"
             >
-              <AccordionTrigger className="py-5 text-left text-base font-medium hover:no-underline">
+              <AccordionTrigger className="py-5 text-left text-sm uppercase tracking-wider font-medium text-white hover:text-white/80 hover:no-underline">
                 {faq.q}
               </AccordionTrigger>
-              <AccordionContent className="pb-5 text-sm leading-relaxed text-muted-foreground">
+              <AccordionContent className="pb-5 text-xs tracking-wide leading-relaxed text-white/70">
                 {faq.a}
               </AccordionContent>
             </AccordionItem>

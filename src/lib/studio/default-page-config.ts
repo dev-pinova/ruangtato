@@ -1,9 +1,21 @@
 import type { Block, BlockData, BlockType } from "@/lib/types"
 
 export const DEFAULT_BLOCK_DATA: Record<BlockType, BlockData> = {
-  Header: { title: "Studio Name", ctaText: "Book Now" },
+  Header: {
+    title: "Studio Name",
+    logoImage: "",
+    ctaText: "Book Now",
+    links: [
+      { label: "Tentang", href: "#about" },
+      { label: "Layanan", href: "#services" },
+      { label: "Artist", href: "#artists" },
+      { label: "Klien", href: "#testimonials" },
+      { label: "FAQ", href: "#faq" },
+    ],
+  },
   HeaderOverlay: {
     logoText: "Studio Name",
+    logoImage: "",
     tagline: "Tato • Piercing • Art",
     showCenterLogo: true,
     leftLinks: [
@@ -198,16 +210,22 @@ export const DEFAULT_BLOCK_DATA: Record<BlockType, BlockData> = {
         text: "Pengalaman tato terbaik yang pernah saya punya. Artist sangat profesional dan studionya nyaman.",
         name: "Luis Rent",
         type: "Cover-up",
+        avatar: "/image/artist-portrait-c.jpg",
+        rating: 5,
       },
       {
         text: "Studio bersih, suasana tenang, dan hasil akhirnya melebihi ekspektasi saya.",
         name: "Christa Falcon",
         type: "First Tato",
+        avatar: "/image/artist-portrait-b.jpg",
+        rating: 5,
       },
       {
         text: "Konsultasi mendalam, desainnya benar-benar personal — saya akan kembali untuk piece berikutnya.",
         name: "Rich Damon",
         type: "Sleeve",
+        avatar: "/image/artist-portrait-a.jpg",
+        rating: 5,
       },
     ],
   },
@@ -275,14 +293,19 @@ export const DEFAULT_BLOCK_DATA: Record<BlockType, BlockData> = {
   Footer: {
     title: "Tato Studio",
     address: "Jakarta, Indonesia",
-    instagram: "@studiott",
-    whatsapp: "WhatsApp",
+    instagram: "https://instagram.com",
+    whatsapp: "https://wa.me",
+    facebook: "https://facebook.com",
+    tiktok: "https://tiktok.com",
     email: "hello@studio.com",
-    showNewsletter: true,
-    newsletterEyebrow: "Newsletter",
-    newsletterHeadline: "Subscribe to our newsletter",
-    newsletterPlaceholder: "Enter your email",
-    newsletterCta: "Subscribe",
+    showMap: false,
+    mapEmbedUrl: "",
+    mapHeight: 200,
+  },
+  LeadForm: {
+    title: "Hubungi kami",
+    description: "Punya pertanyaan atau ingin konsultasi? Kirim pesan dan kami akan segera menghubungi Anda.",
+    ctaText: "Kirim Pesan",
   },
 }
 

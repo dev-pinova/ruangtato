@@ -17,11 +17,12 @@ import type {
   StatsCounterData,
   TestimonialsData,
   LatestNewsData,
-  NewsletterData,
+
   FAQData,
   AppointmentFormData,
   FinalCTAData,
   FooterData,
+  LeadFormData,
 } from "@/lib/types"
 import * as Panels from "./property-panels"
 
@@ -68,12 +69,13 @@ export function PropertyPanelContainer({ block, onChange }: PropertyPanelContain
       return <Panels.TestimonialsPanel data={block.data as TestimonialsData} onChange={createHandler<TestimonialsData>()} />
     case 'LatestNews':
       return <Panels.LatestNewsPanel data={block.data as LatestNewsData} onChange={createHandler<LatestNewsData>()} />
-    case 'Newsletter':
-      return <Panels.NewsletterPanel data={block.data as NewsletterData} onChange={createHandler<NewsletterData>()} />
+
     case 'FAQ':
       return <Panels.FAQPanel data={block.data as FAQData} onChange={createHandler<FAQData>()} />
     case 'AppointmentForm':
       return <Panels.AppointmentFormPanel data={block.data as AppointmentFormData} onChange={createHandler<AppointmentFormData>()} />
+    case 'LeadForm':
+      return <Panels.LeadFormPanel data={block.data as LeadFormData} onChange={createHandler<LeadFormData>()} />
     case 'FinalCTA':
       return <Panels.FinalCTAPanel data={block.data as FinalCTAData} onChange={createHandler<FinalCTAData>()} />
     case 'Footer':
