@@ -674,6 +674,7 @@ export function FooterPanel({ data, onChange }: PanelProps<FooterData>) {
         <FieldLabel htmlFor={titleId}>Title / Nama Studio</FieldLabel>
         <Input id={titleId} className={inputClass} value={data.title || ''} onChange={(e) => onChange('title', e.target.value)} />
       </div>
+      <ImageUpload value={data.logoImage || ''} onChange={(url) => onChange('logoImage', url)} label="Logo Gambar Footer (Opsional)" />
       <div className="flex flex-col gap-2">
         <FieldLabel htmlFor={addressId}>Alamat</FieldLabel>
         <Input id={addressId} className={inputClass} value={data.address || ''} onChange={(e) => onChange('address', e.target.value)} />

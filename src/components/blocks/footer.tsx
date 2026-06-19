@@ -33,9 +33,18 @@ export function BlockFooter({ data }: { data: FooterData }) {
               Contact
             </h3>
             <div className="space-y-4 font-sans text-sm text-white/70">
-              <p className="font-display text-lg font-semibold uppercase tracking-[0.2em] text-white">
-                {title}
-              </p>
+              {data?.logoImage ? (
+                <img
+                  // eslint-disable-next-line @next/next/no-img-element
+                  src={data.logoImage}
+                  alt={title}
+                  className="h-10 max-w-[150px] object-contain"
+                />
+              ) : (
+                <p className="font-display text-lg font-semibold uppercase tracking-[0.2em] text-white">
+                  {title}
+                </p>
+              )}
               {address && (
                 <p className="leading-relaxed">
                   {address}
@@ -71,77 +80,83 @@ export function BlockFooter({ data }: { data: FooterData }) {
             </div>
           </div>
 
-          {/* Column 2: Social Media Platforms */}
+          {/* Column 2: Social Media Platforms (Icons instead of text) */}
           <div className="space-y-6">
             <h3 className="font-display text-sm font-semibold uppercase tracking-[0.3em] text-white">
               Social Media
             </h3>
-            <ul className="space-y-3 font-display text-[11px] uppercase tracking-[0.32em] text-white/70">
+            <div className="flex flex-wrap gap-4 items-center">
               {instagram && (
-                <li>
-                  <a
-                    href={
-                      instagram.startsWith("http")
-                        ? instagram
-                        : `https://instagram.com/${instagram.replace(/^@/, "")}`
-                    }
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-white transition-colors"
-                  >
-                    Instagram
-                  </a>
-                </li>
-              )}
-              {facebook && (
-                <li>
-                  <a
-                    href={
-                      facebook.startsWith("http")
-                        ? facebook
-                        : `https://facebook.com/${facebook}`
-                    }
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-white transition-colors"
-                  >
-                    Facebook
-                  </a>
-                </li>
+                <a
+                  href={
+                    instagram.startsWith("http")
+                      ? instagram
+                      : `https://instagram.com/${instagram.replace(/^@/, "")}`
+                  }
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex size-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/70 transition-all hover:bg-white hover:text-black hover:border-white"
+                  aria-label="Instagram"
+                >
+                  <svg className="size-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                    <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+                  </svg>
+                </a>
               )}
               {tiktok && (
-                <li>
-                  <a
-                    href={
-                      tiktok.startsWith("http")
-                        ? tiktok
-                        : `https://tiktok.com/@${tiktok.replace(/^@/, "")}`
-                    }
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-white transition-colors"
-                  >
-                    TikTok
-                  </a>
-                </li>
+                <a
+                  href={
+                    tiktok.startsWith("http")
+                      ? tiktok
+                      : `https://tiktok.com/@${tiktok.replace(/^@/, "")}`
+                  }
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex size-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/70 transition-all hover:bg-white hover:text-black hover:border-white"
+                  aria-label="TikTok"
+                >
+                  <svg className="size-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.17-2.86-.75-3.95-1.72-.07.82-.12 1.64-.17 2.45-.13 2.12-.97 4.22-2.51 5.71-1.61 1.61-3.95 2.51-6.24 2.43-2.67-.03-5.32-1.49-6.64-3.81-1.48-2.51-1.43-5.91.22-8.31 1.41-2.12 3.96-3.41 6.53-3.23.08 1.34.02 2.69.04 4.03-1.12-.08-2.3.36-3.03 1.22-.84.94-1.01 2.33-.56 3.5.47 1.27 1.83 2.13 3.17 2.05 1.4-.02 2.73-.97 3.23-2.28.32-.78.36-1.64.35-2.48V.02z"/>
+                  </svg>
+                </a>
+              )}
+              {facebook && (
+                <a
+                  href={
+                    facebook.startsWith("http")
+                      ? facebook
+                      : `https://facebook.com/${facebook}`
+                  }
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex size-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/70 transition-all hover:bg-white hover:text-black hover:border-white"
+                  aria-label="Facebook"
+                >
+                  <svg className="size-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                  </svg>
+                </a>
               )}
               {whatsapp && (
-                <li>
-                  <a
-                    href={
-                      whatsapp.startsWith("http")
-                        ? whatsapp
-                        : `https://wa.me/${whatsapp.replace(/[^\d]/g, "")}`
-                    }
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-white transition-colors"
-                  >
-                    WhatsApp
-                  </a>
-                </li>
+                <a
+                  href={
+                    whatsapp.startsWith("http")
+                      ? whatsapp
+                      : `https://wa.me/${whatsapp.replace(/[^\d]/g, "")}`
+                  }
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex size-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/70 transition-all hover:bg-white hover:text-black hover:border-white"
+                  aria-label="WhatsApp"
+                >
+                  <svg className="size-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12.012 2.25c-5.38 0-9.75 4.37-9.75 9.75 0 1.9.54 3.67 1.48 5.18L2.5 22.5l5.52-1.44a9.7 9.7 0 0 0 3.99.88c5.38 0 9.75-4.37 9.75-9.75s-4.37-9.75-9.75-9.75zm5.54 12.87c-.24.68-1.22 1.25-1.7 1.29-.44.04-.87.21-2.82-.57-2.35-.94-3.86-3.32-3.98-3.48-.12-.16-.97-1.29-.97-2.47 0-1.18.61-1.76.83-2 .22-.24.48-.3.64-.3.16 0 .32.01.46.01.15 0 .35-.06.55.42.2.49.69 1.68.75 1.8.06.12.1.26.02.42-.08.16-.12.26-.24.4-.12.14-.26.32-.37.43-.12.12-.25.25-.11.49.14.24.62 1.03 1.34 1.67.92.82 1.7 1.07 1.94 1.19.24.12.38.1.52-.06.14-.16.61-.71.77-.95.16-.24.32-.2.54-.12.22.08 1.4.66 1.64.78.24.12.4.18.46.28.06.1.06.57-.18 1.25z"/>
+                  </svg>
+                </a>
               )}
-            </ul>
+            </div>
           </div>
 
           {/* Column 3: Google Maps Snippet */}
