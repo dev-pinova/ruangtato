@@ -11,5 +11,5 @@ export const BRAND_WORDMARK_PREFIX = "RUANG"
 export const BRAND_WORDMARK_SUFFIX = "TATO"
 
 /** Path to the primary logo image in /public */
-export const BRAND_LOGO_SVG = "/image/logo-ruangtato.svg"
+export const BRAND_LOGO_SVG = "/image/ruangtato_nobg.svg"
 export const BRAND_LOGO_PNG = "/image/logo-ruangtato.png"
