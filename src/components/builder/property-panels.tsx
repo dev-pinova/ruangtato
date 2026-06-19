@@ -659,6 +659,7 @@ export function FinalCTAPanel({ data, onChange }: PanelProps<FinalCTAData>) {
 export function FooterPanel({ data, onChange }: PanelProps<FooterData>) {
   const titleId = useId()
   const addressId = useId()
+  const descriptionId = useId()
   const instagramId = useId()
   const whatsappId = useId()
   const facebookId = useId()
@@ -675,6 +676,10 @@ export function FooterPanel({ data, onChange }: PanelProps<FooterData>) {
         <Input id={titleId} className={inputClass} value={data.title || ''} onChange={(e) => onChange('title', e.target.value)} />
       </div>
       <ImageUpload value={data.logoImage || ''} onChange={(url) => onChange('logoImage', url)} label="Logo Gambar Footer (Opsional)" />
+      <div className="flex flex-col gap-2">
+        <FieldLabel htmlFor={descriptionId}>Deskripsi Singkat</FieldLabel>
+        <Textarea id={descriptionId} className={textareaClass} value={data.description || ''} onChange={(e) => onChange('description', e.target.value)} placeholder="Tulis deskripsi singkat studio tato..." />
+      </div>
       <div className="flex flex-col gap-2">
         <FieldLabel htmlFor={addressId}>Alamat</FieldLabel>
         <Input id={addressId} className={inputClass} value={data.address || ''} onChange={(e) => onChange('address', e.target.value)} />

@@ -215,6 +215,7 @@ export interface FinalCTAData {
 export interface FooterData {
   title?: string
   logoImage?: string
+  description?: string
   address?: string
   instagram?: string
   whatsapp?: string

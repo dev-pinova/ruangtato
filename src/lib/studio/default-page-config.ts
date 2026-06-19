@@ -293,6 +293,7 @@ export const DEFAULT_BLOCK_DATA: Record<BlockType, BlockData> = {
   Footer: {
     title: "Tato Studio",
     logoImage: "",
+    description: "Studio tato profesional dengan fokus desain unik, sterilisasi ketat, dan ekspresi artistik personal.",
     address: "Jakarta, Indonesia",
     instagram: "https://instagram.com",
     whatsapp: "https://wa.me",
