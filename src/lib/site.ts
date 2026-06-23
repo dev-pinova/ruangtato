@@ -8,9 +8,9 @@ export const SITE_URL = "https://www.ruangtato.com"
 
 export const SITE_DOMAIN = "www.ruangtato.com"
 
-export const STUDIO_PATH_PREFIX = "/app/studio"
+export const STUDIO_PATH_PREFIX = "/studio"
 
-/** Tampilan URL publik tanpa slug, mis. www.ruangtato.com/app/studio/ */
+/** Tampilan URL publik tanpa slug, mis. www.ruangtato.com/studio/ */
 export const STUDIO_URL_DISPLAY_PREFIX = `${SITE_DOMAIN}${STUDIO_PATH_PREFIX}/`
 
 export function studioPublicUrl(slug: string) {

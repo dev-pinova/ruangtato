@@ -192,6 +192,26 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
     setBlocks(blocks.map(b => b.id === id ? { ...b, visible: !b.visible } : b))
   }
 
+  const moveBlockUp = (id: string) => {
+    setBlocks((items) => {
+      const index = items.findIndex((item) => item.id === id)
+      if (index > 0) {
+        return arrayMove(items, index, index - 1)
+      }
+      return items
+    })
+  }
+
+  const moveBlockDown = (id: string) => {
+    setBlocks((items) => {
+      const index = items.findIndex((item) => item.id === id)
+      if (index !== -1 && index < items.length - 1) {
+        return arrayMove(items, index, index + 1)
+      }
+      return items
+    })
+  }
+
   const handleDiscard = () => {
     setBlocks(initialStudio.blocks)
     setActiveBlockId(initialStudio.blocks[0]?.id ?? null)
@@ -517,6 +537,8 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
                 onSelect={selectBlock}
                 onDelete={deleteBlock}
                 onToggleVisibility={toggleBlockVisibility}
+                onMoveUp={moveBlockUp}
+                onMoveDown={moveBlockDown}
                 onDragEnd={handleDragEnd}
               />
             </ScrollArea>

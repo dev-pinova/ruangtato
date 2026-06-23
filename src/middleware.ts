@@ -2,7 +2,7 @@ import { getSessionCookie } from "better-auth/cookies"
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
-const PUBLIC_APP_PREFIXES = ["/app/studio/"]
+const PUBLIC_APP_PREFIXES: string[] = []
 const PUBLIC_ADMIN_PATHS = ["/admin/login"]
 const AUTH_REQUIRED_PATHS = ["/checkout"]
 
@@ -47,6 +47,13 @@ export async function middleware(request: NextRequest) {
   }
 
   if (!pathname.startsWith("/app")) {
+    if (pathname === "/login" || pathname === "/register") {
+      const sessionCookie = getSessionCookie(request)
+      if (sessionCookie) {
+        return NextResponse.redirect(new URL("/app/dashboard", request.url))
+      }
+    }
+
     // Checkout & halaman success memerlukan sesi — redirect ke login jika belum
     if (AUTH_REQUIRED_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`))) {
       if (!process.env.DATABASE_URL) {
@@ -90,5 +97,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/app", "/app/:path*", "/admin/:path*", "/checkout/:path*", "/checkout"],
+  matcher: ["/app", "/app/:path*", "/admin/:path*", "/checkout/:path*", "/checkout", "/login", "/register"],
 }

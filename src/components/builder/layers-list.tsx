@@ -7,7 +7,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
-import { GripVertical, Trash2 } from "lucide-react"
+import { GripVertical, Trash2, ChevronUp, ChevronDown } from "lucide-react"
 import type { Block, BlockType } from "@/lib/types"
 
 interface LayerRowProps {
@@ -17,6 +17,10 @@ interface LayerRowProps {
   onSelect: () => void
   onDelete: () => void
   onToggleVisibility: () => void
+  onMoveUp?: () => void
+  onMoveDown?: () => void
+  canMoveUp?: boolean
+  canMoveDown?: boolean
   setNodeRef?: (node: HTMLElement | null) => void
   style?: CSSProperties
   dragHandleProps?: {
@@ -32,6 +36,10 @@ function LayerRow({
   onSelect,
   onDelete,
   onToggleVisibility,
+  onMoveUp,
+  onMoveDown,
+  canMoveUp,
+  canMoveDown,
   setNodeRef,
   style,
   dragHandleProps,
@@ -63,6 +71,30 @@ function LayerRow({
       <div className="min-w-0 flex-1 cursor-pointer" onClick={onSelect}>
         <div className="truncate text-sm font-medium">{type}</div>
       </div>
+      <div className="flex items-center">
+        {onMoveUp && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn("h-7 w-7 text-muted-foreground transition-opacity", !canMoveUp ? "opacity-30 pointer-events-none" : "hover:text-foreground opacity-0 group-hover/builder-item:opacity-100")}
+            onClick={(e) => { e.stopPropagation(); onMoveUp(); }}
+            disabled={!canMoveUp}
+          >
+            <ChevronUp className="size-4" />
+          </Button>
+        )}
+        {onMoveDown && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn("h-7 w-7 text-muted-foreground transition-opacity", !canMoveDown ? "opacity-30 pointer-events-none" : "hover:text-foreground opacity-0 group-hover/builder-item:opacity-100")}
+            onClick={(e) => { e.stopPropagation(); onMoveDown(); }}
+            disabled={!canMoveDown}
+          >
+            <ChevronDown className="size-4" />
+          </Button>
+        )}
+      </div>
       <Switch size="sm" checked={visible} onCheckedChange={onToggleVisibility} />
       <Button
         variant="ghost"
@@ -87,6 +119,10 @@ interface SortableLayerItemProps {
   onSelect: () => void
   onDelete: () => void
   onToggleVisibility: () => void
+  onMoveUp: () => void
+  onMoveDown: () => void
+  canMoveUp: boolean
+  canMoveDown: boolean
 }
 
 function SortableLayerItem({
@@ -97,6 +133,10 @@ function SortableLayerItem({
   onSelect,
   onDelete,
   onToggleVisibility,
+  onMoveUp,
+  onMoveDown,
+  canMoveUp,
+  canMoveDown,
 }: SortableLayerItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id })
 
@@ -108,6 +148,10 @@ function SortableLayerItem({
       onSelect={onSelect}
       onDelete={onDelete}
       onToggleVisibility={onToggleVisibility}
+      onMoveUp={onMoveUp}
+      onMoveDown={onMoveDown}
+      canMoveUp={canMoveUp}
+      canMoveDown={canMoveDown}
       setNodeRef={setNodeRef}
       style={{
         transform: CSS.Transform.toString(transform),
@@ -124,6 +168,8 @@ interface LayersListProps {
   onSelect: (id: string) => void
   onDelete: (id: string) => void
   onToggleVisibility: (id: string) => void
+  onMoveUp: (id: string) => void
+  onMoveDown: (id: string) => void
   onDragEnd: (event: DragEndEvent) => void
 }
 
@@ -133,6 +179,8 @@ export function LayersList({
   onSelect,
   onDelete,
   onToggleVisibility,
+  onMoveUp,
+  onMoveDown,
   onDragEnd,
 }: LayersListProps) {
   const [dndReady, setDndReady] = useState(false)
@@ -152,7 +200,7 @@ export function LayersList({
   if (!dndReady) {
     return (
       <>
-        {blocks.map((block) => (
+        {blocks.map((block, i) => (
           <LayerRow
             key={block.id}
             type={block.type}
@@ -161,6 +209,10 @@ export function LayersList({
             onSelect={() => onSelect(block.id)}
             onDelete={() => onDelete(block.id)}
             onToggleVisibility={() => onToggleVisibility(block.id)}
+            onMoveUp={() => onMoveUp(block.id)}
+            onMoveDown={() => onMoveDown(block.id)}
+            canMoveUp={i > 0}
+            canMoveDown={i < blocks.length - 1}
             dragHandleProps={null}
           />
         ))}
@@ -171,7 +223,7 @@ export function LayersList({
   return (
     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
       <SortableContext items={blocks.map((b) => b.id)} strategy={verticalListSortingStrategy}>
-        {blocks.map((block) => (
+        {blocks.map((block, i) => (
           <SortableLayerItem
             key={block.id}
             id={block.id}
@@ -181,6 +233,10 @@ export function LayersList({
             onSelect={() => onSelect(block.id)}
             onDelete={() => onDelete(block.id)}
             onToggleVisibility={() => onToggleVisibility(block.id)}
+            onMoveUp={() => onMoveUp(block.id)}
+            onMoveDown={() => onMoveDown(block.id)}
+            canMoveUp={i > 0}
+            canMoveDown={i < blocks.length - 1}
           />
         ))}
       </SortableContext>
