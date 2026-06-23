@@ -165,7 +165,7 @@ function StudioCard({ studio }: { studio: Studio }) {
 
   return (
     <Link
-      href={`/app/studio/${studio.slug}`}
+      href={`/studio/${studio.slug}`}
       target="_blank"
       rel="noopener noreferrer"
       className="group relative flex h-full w-full flex-col overflow-hidden rounded-xl border border-border bg-card transition-shadow duration-300 hover:shadow-md"

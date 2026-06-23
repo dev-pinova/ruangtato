@@ -62,7 +62,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return createPageMetadata({
       title: t.notFoundStudio.title,
       description: t.notFoundStudio.description,
-      path: `/app/studio/${slug}`,
+      path: `/studio/${slug}`,
       noIndex: true,
     })
   }
@@ -80,7 +80,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return createPageMetadata({
     title: titleFormat,
     description,
-    path: `/app/studio/${slug}`,
+    path: `/studio/${slug}`,
     image: studio.image,
     keywords: [
       studio.name,

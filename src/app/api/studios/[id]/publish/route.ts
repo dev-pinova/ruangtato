@@ -32,7 +32,7 @@ export async function POST(
     // immediately instead of after the revalidate window elapses.
     revalidatePath("/")
     if (studio.slug) {
-      revalidatePath(`/app/studio/${studio.slug}`)
+      revalidatePath(`/studio/${studio.slug}`)
     }
 
     return NextResponse.json({ studio })

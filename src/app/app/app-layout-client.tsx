@@ -97,7 +97,7 @@ export default function AppLayoutClient({ children }: { children: React.ReactNod
   }, [router])
 
   // Public path exception
-  if (pathname.startsWith("/app/studio/") || pathname === "/app" || pathname === "/app/" || pathname === "/app/builder") {
+  if (pathname.startsWith("/studio/") || pathname === "/app" || pathname === "/app/" || pathname === "/app/builder") {
     return <>{children}</>
   }
 
@@ -121,7 +121,7 @@ export default function AppLayoutClient({ children }: { children: React.ReactNod
             label: "Publik",
             items: [
               {
-                href: `/app/studio/${studio.slug}`,
+                href: `/studio/${studio.slug}`,
                 label: "Lihat Studio",
                 icon: ExternalLink,
                 external: true,

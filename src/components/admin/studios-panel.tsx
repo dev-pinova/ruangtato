@@ -333,7 +333,7 @@ export function StudiosPanel({
                     <div className="flex items-center gap-1.5">
                       <span className="font-semibold text-foreground">{row.name}</span>
                       <a
-                        href={`/app/studio/${row.slug}`}
+                        href={`/studio/${row.slug}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-muted-foreground hover:text-primary transition-colors"

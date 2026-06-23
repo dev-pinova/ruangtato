@@ -484,7 +484,7 @@ export function TenantsPanel({ canSuspend = false }: { canSuspend?: boolean }) {
                     size="sm"
                     render={
                       <a
-                        href={`/app/studio/${detail.slug}`}
+                        href={`/studio/${detail.slug}`}
                         target="_blank"
                         rel="noopener noreferrer"
                       />

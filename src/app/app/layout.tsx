@@ -11,9 +11,9 @@ export const revalidate = 0
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const headersList = await headers()
   const pathname = headersList.get("x-pathname") || ""
-  const isPublicPath = pathname.startsWith("/app/studio/") || pathname === "/app" || pathname === "/app/"
+  const isPublicPath = pathname.startsWith("/studio/") || pathname === "/app" || pathname === "/app/"
 
-  // Halaman publik studio (`/app/studio/[slug]`) dan halaman explore (`/app`) bisa diakses guest tanpa login
+  // Halaman publik studio (`/studio/[slug]`) dan halaman explore (`/app`) bisa diakses guest tanpa login
   // — ini target dari kartu showcase di beranda. Auth hanya untuk area dashboard.
   if (isPublicPath) {
     return <AppLayoutClient>{children}</AppLayoutClient>

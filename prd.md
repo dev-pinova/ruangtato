@@ -55,7 +55,7 @@ Ruang Tato hadir sebagai solusi all-in-one yang mengubah paradigma pembuatan web
 * **Desain Antarmuka Modern & Responsif:** Tampilan visual yang bersih, terstruktur, dan berorientasi pada konversi menggunakan Tailwind CSS dan `shadcn/ui`.
 
 
-* **Struktur URL Eksklusif:** Setiap studio yang berlangganan memiliki URL unik yang konsisten: `[ruangtato.com/app/studio/](https://ruangtato.com/app/studio/)[slug]`.
+* **Struktur URL Eksklusif:** Setiap studio yang berlangganan memiliki URL unik yang konsisten: `[ruangtato.com/studio/](https://ruangtato.com/studio/)[slug]`.
 
 
 * **Struktur Landing Page Terkomponen:** Halaman studio dibangun dari 11 blok tetap yang bisa diatur urutannya via drag & drop.
@@ -90,7 +90,7 @@ Ruang Tato hadir sebagai solusi all-in-one yang mengubah paradigma pembuatan web
 
 
 
-### 4.2 Skema 11 Blok Komponen Landing Page Studio (`/app/studio/[slug]`)
+### 4.2 Skema 11 Blok Komponen Landing Page Studio (`/studio/[slug]`)
 
 Halaman di-render cepat via Next.js SSR dengan menyusun urutan komponen berdasarkan array data terstruktur:
 
@@ -176,7 +176,7 @@ Halaman di-render cepat via Next.js SSR dengan menyusun urutan komponen berdasar
 ```mermaid
 flowchart TD
     Guest([Guest/Customer]) -->|Browse Showcase| Home[Home Directory - Showcase]
-    Guest -->|View Detail| LP[Studio Landing Page /app/studio/:slug]
+    Guest -->|View Detail| LP[Studio Landing Page /studio/:slug]
     LP -->|Click WA/Lead| DashData[(Database)]
 
     Owner([Studio Owner]) -->|Register / Login| Auth[Better Auth]
@@ -329,7 +329,7 @@ Dashboard manajemen internal pada rute `/admin/*` yang dilindungi oleh pengeceka
 * **Milestone 2 (Skema Konten & Builder):** Pembuatan API router untuk penanganan mutasi data `page_config` JSONB, fungsi unggah berkas portofolio ke direktori `/public/uploads/`, dan implementasi drag-and-drop visual editor di dashboard studio.
 
 
-* **Milestone 3 (Rendering & Showcase):** Implementasi SSR Next.js untuk halaman dinamis `/app/studio/[slug]`, pembuatan komponen visual untuk 11 blok, serta pengerjaan halaman direktori beranda dengan fungsi filter pencarian kota.
+* **Milestone 3 (Rendering & Showcase):** Implementasi SSR Next.js untuk halaman dinamis `/studio/[slug]`, pembuatan komponen visual untuk 11 blok, serta pengerjaan halaman direktori beranda dengan fungsi filter pencarian kota.
 
 
 * **Milestone 4 (Billing & Admin Panel):** Integrasi sistem payment gateway Midtrans beserta penanganan fungsi keamanan rute halaman `/admin/*` untuk tata kelola admin.

@@ -163,7 +163,7 @@ function ExploreCard({ studio }: { studio: Studio }) {
 
   return (
     <Link
-      href={`/app/studio/${studio.slug}`}
+      href={`/studio/${studio.slug}`}
       target="_blank"
       rel="noopener noreferrer"
       className="group relative flex h-full w-full flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white transition-shadow duration-300 hover:shadow-md text-neutral-900"

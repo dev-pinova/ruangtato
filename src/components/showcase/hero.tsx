@@ -24,7 +24,7 @@ const HERO_BACKGROUND_IMAGE = "/image/ruang-tato.jpg"
 function StudioChip({ studio }: { studio: Studio }) {
   return (
     <Link
-      href={`/app/studio/${studio.slug}`}
+      href={`/studio/${studio.slug}`}
       target="_blank"
       rel="noopener noreferrer"
       className="group/chip flex min-w-[140px] shrink-0 items-center gap-2 rounded-full border border-white/15 bg-black/40 px-3 py-1.5 text-sm text-white backdrop-blur-sm transition-all duration-200 hover:border-white/30 hover:bg-black/60"

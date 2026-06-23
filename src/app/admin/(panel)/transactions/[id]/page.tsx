@@ -205,7 +205,7 @@ export default async function TransactionDetailPage({
               </span>
               <span className="font-mono text-muted-foreground">
                 <Link
-                  href={`/app/studio/${studioSlug}`}
+                  href={`/studio/${studioSlug}`}
                   target="_blank"
                   className="text-primary hover:text-primary/80 hover:underline"
                 >
