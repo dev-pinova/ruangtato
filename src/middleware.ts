@@ -23,6 +23,16 @@ function databaseNotConfiguredResponse() {
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+
+  // Redirect URL lama /studio/[slug] → /[slug] (301 permanent, untuk SEO)
+  if (pathname.startsWith("/studio/")) {
+    const slug = pathname.slice("/studio/".length)
+    if (slug) {
+      const redirectUrl = new URL(`/${slug}`, request.url)
+      return NextResponse.redirect(redirectUrl, 301)
+    }
+  }
+
   const requestHeaders = new Headers(request.headers)
   requestHeaders.set("x-pathname", pathname)
 
@@ -97,5 +107,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/app", "/app/:path*", "/admin/:path*", "/checkout/:path*", "/checkout", "/login", "/register"],
+  matcher: ["/app", "/app/:path*", "/admin/:path*", "/checkout/:path*", "/checkout", "/login", "/register", "/studio/:path*"],
 }
