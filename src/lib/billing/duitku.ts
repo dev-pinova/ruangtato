@@ -87,7 +87,7 @@ export async function createDuitkuInvoice(input: CreateInvoiceInput): Promise<Cr
     additionalParam: input.additionalParam,
   }
 
-  const response = await fetch(`${baseUrl}/v2/inquiry`, {
+  const response = await fetch(`${baseUrl}/createinvoice`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
