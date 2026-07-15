@@ -41,7 +41,7 @@
     "headerTagline": "Transparent pricing",
     "headerTitle": "Simple pricing, full features.",
     "headerDesc": "Choose the subscription duration that fits best. No hidden fees, no vendor lock-in.",
-    "footerNote": "All prices include VAT. Secure payment via Midtrans.",
+    "footerNote": "All prices include VAT. Secure payment via Duitku.",
     "faqTitle": "Questions about pricing",
     "faqDescPrefix": "Still unclear? Our team is ready to help via email ",
     "faq": [
@@ -55,7 +55,7 @@
       },
       {
         "q": "How does payment work?",
-        "a": "Payments are securely processed via Midtrans. We accept credit/debit cards, bank transfers, e-wallets (GoPay, OVO, DANA), and QRIS."
+        "a": "Payments are securely processed via Duitku. We accept credit/debit cards, bank transfers, e-wallets (GoPay, OVO, DANA), and QRIS."
       },
       {
         "q": "Are subscriptions auto-renewed?",
@@ -239,7 +239,7 @@
     },
     "history": {
       "title": "Transaction History",
-      "desc": "Billing payment history from Midtrans.",
+      "desc": "Billing payment history from Duitku.",
       "noTransactions": "No transactions yet",
       "table": {
         "orderId": "Order ID",
@@ -271,7 +271,7 @@
       "duration": "Duration: {duration}"
     },
     "meta": {
-      "orderId": "Midtrans Order ID",
+      "orderId": "Duitku Order ID",
       "method": "Payment Method",
       "currency": "Currency",
       "currencyVal": "IDR (Indonesian Rupiah)"
@@ -294,7 +294,7 @@
     "planDuration": "{duration}",
     "popularBadge": "Most Popular",
     "whatYouGet": "What You Get ({name}):",
-    "paymentSecureNote": "Payments are securely processed by Midtrans",
+    "paymentSecureNote": "Payments are securely processed by Duitku",
     "needHelp": "Need help? Contact our billing support at {email}",
     "loading": "Loading checkout page...",
     "errorGateway": "Failed to load payment gateway. Please reload the page.",
@@ -305,7 +305,7 @@
     "success": "Payment Successful! 🎉",
     "pending": "Waiting for Payment Confirmation",
     "failed": "Payment Unsuccessful",
-    "loadingDesc": "Checking your payment status with Midtrans...",
+    "loadingDesc": "Checking your payment status with Duitku...",
     "successDesc": "Your studio subscription is now active. Welcome to Ruang Tato!",
     "pendingDesc": "Your payment is currently being processed. We will activate your subscription as soon as payment is confirmed.",
     "failedDesc": "Your payment could not be processed successfully. Please try again or contact support.",
@@ -365,7 +365,7 @@
   },
   "pendingPayment": {
     "title": "Payment Awaiting Confirmation",
-    "desc": "The {plan} plan (order {orderId}) is awaiting confirmation from Midtrans. Your subscription will activate automatically once the payment succeeds.",
+    "desc": "The {plan} plan (order {orderId}) is awaiting confirmation from Duitku. Your subscription will activate automatically once the payment succeeds.",
     "checkStatus": "Check Payment Status",
     "closeAlert": "Close banner",
     "durationLabel": "{duration} Month(s)",

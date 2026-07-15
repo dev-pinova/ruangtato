@@ -1,12 +1,11 @@
 "use client"
 
-import { Suspense, useEffect, useState } from "react"
+import { Suspense, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { ShieldCheck, Lock, CheckCircle2, AlertCircle } from "lucide-react"
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 import { SubscribeButton } from "@/components/billing/subscribe-button"
-import { loadMidtransSnap } from "@/lib/billing/midtrans-snap"
 import { PlatformLogo } from "@/components/brand/platform-logo"
 import { SUBSCRIPTION_PLANS } from "@/lib/billing/billing-plans"
 import { useLanguage } from "@/lib/i18n/language-provider"
@@ -50,37 +49,11 @@ function CheckoutContent() {
   const isUnpaid = searchParams.get("status") === "unpaid"
   const isWelcome = searchParams.get("welcome") === "1"
 
-  const [snapReady, setSnapReady] = useState(false)
   const [orderMessage, setOrderMessage] = useState<string | null>(null)
   
   // Default to the popular plan (6 months, Pro)
   const [selectedMonths, setSelectedMonths] = useState<number>(6)
   const selectedPlan = SUBSCRIPTION_PLANS.find(p => p.months === selectedMonths) || SUBSCRIPTION_PLANS[2]
-
-  const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY ?? ""
-
-  useEffect(() => {
-    if (!clientKey) return
-    let cancelled = false
-
-    loadMidtransSnap()
-      .then(() => {
-        if (!cancelled) setSnapReady(true)
-      })
-      .catch((err: unknown) => {
-        if (cancelled) return
-        setSnapReady(false)
-        setOrderMessage(
-          err instanceof Error
-            ? err.message
-            : t.checkout.errorGateway,
-        )
-      })
-
-    return () => {
-      cancelled = true
-    }
-  }, [clientKey, t.checkout.errorGateway])
 
   const formatPrice = (amount: number) => {
     if (locale === "en") {
@@ -212,12 +185,7 @@ function CheckoutContent() {
                   ? t.checkout.btnPay.replace("Rp {price}", formatPrice(selectedPlan.price))
                   : t.checkout.btnPay.replace("{price}", formatPrice(selectedPlan.price))
               }
-              snapReady={snapReady}
               onMessage={setOrderMessage}
-              onPaymentComplete={() => {
-                // When payment is done successfully, redirect user to the app dashboard
-                window.location.href = "/app/dashboard"
-              }}
             />
 
             <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
@@ -256,4 +224,3 @@ export default function CheckoutPage() {
     </Suspense>
   )
 }
-

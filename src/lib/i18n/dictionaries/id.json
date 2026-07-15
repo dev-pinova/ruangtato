@@ -41,7 +41,7 @@
     "headerTagline": "Harga transparan",
     "headerTitle": "Harga sederhana, fitur lengkap.",
     "headerDesc": "Pilih durasi langganan yang paling cocok. Tidak ada biaya tersembunyi, tidak ada vendor lock-in.",
-    "footerNote": "Semua harga sudah termasuk PPN. Pembayaran aman via Midtrans.",
+    "footerNote": "Semua harga sudah termasuk PPN. Pembayaran aman via Duitku.",
     "faqTitle": "Pertanyaan tentang harga",
     "faqDescPrefix": "Belum jelas? Tim kami siap membantu via email ",
     "faq": [
@@ -55,7 +55,7 @@
       },
       {
         "q": "Bagaimana cara pembayarannya?",
-        "a": "Pembayaran diproses aman melalui Midtrans. Kami menerima kartu kredit/debit, bank transfer, e-wallet (GoPay, OVO, DANA), dan QRIS."
+        "a": "Pembayaran diproses aman melalui Duitku. Kami menerima kartu kredit/debit, bank transfer, e-wallet (GoPay, OVO, DANA), dan QRIS."
       },
       {
         "q": "Apakah langganan diperpanjang otomatis?",
@@ -239,7 +239,7 @@
     },
     "history": {
       "title": "Riwayat Transaksi",
-      "desc": "Riwayat pembayaran tagihan dari Midtrans.",
+      "desc": "Riwayat pembayaran tagihan dari Duitku.",
       "noTransactions": "Belum ada transaksi",
       "table": {
         "orderId": "Order ID",
@@ -271,7 +271,7 @@
       "duration": "Durasi: {duration}"
     },
     "meta": {
-      "orderId": "Midtrans Order ID",
+      "orderId": "Duitku Order ID",
       "method": "Metode Pembayaran",
       "currency": "Mata Uang",
       "currencyVal": "IDR (Rupiah Indonesia)"
@@ -294,7 +294,7 @@
     "planDuration": "{duration}",
     "popularBadge": "Paling Populer",
     "whatYouGet": "Yang Anda Dapatkan ({name}):",
-    "paymentSecureNote": "Pembayaran diproses secara aman oleh Midtrans",
+    "paymentSecureNote": "Pembayaran diproses secara aman oleh Duitku",
     "needHelp": "Butuh bantuan? Hubungi billing support kami di {email}",
     "loading": "Memuat halaman checkout...",
     "errorGateway": "Gagal memuat gateway pembayaran. Muat ulang halaman.",
@@ -305,7 +305,7 @@
     "success": "Pembayaran Berhasil! 🎉",
     "pending": "Menunggu Konfirmasi Pembayaran",
     "failed": "Pembayaran Tidak Berhasil",
-    "loadingDesc": "Sedang mengecek status pembayaran Anda ke Midtrans...",
+    "loadingDesc": "Sedang mengecek status pembayaran Anda ke Duitku...",
     "successDesc": "Langganan studio Anda telah aktif. Selamat datang di Ruang Tato!",
     "pendingDesc": "Pembayaran Anda sedang diproses. Kami akan mengaktifkan langganan segera setelah pembayaran dikonfirmasi.",
     "failedDesc": "Pembayaran Anda tidak berhasil diproses. Silakan coba lagi atau hubungi support kami.",
@@ -365,7 +365,7 @@
   },
   "pendingPayment": {
     "title": "Pembayaran Menunggu Konfirmasi",
-    "desc": "Paket {plan} (order {orderId}) sedang menunggu konfirmasi dari Midtrans. Langganan akan aktif otomatis setelah pembayaran berhasil.",
+    "desc": "Paket {plan} (order {orderId}) sedang menunggu konfirmasi dari Duitku. Langganan akan aktif otomatis setelah pembayaran berhasil.",
     "checkStatus": "Cek Status Pembayaran",
     "closeAlert": "Tutup banner",
     "durationLabel": "{duration} Bulan",

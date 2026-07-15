@@ -4,7 +4,7 @@ import {
   BillingActivationError,
   confirmOrderPayment,
 } from "@/lib/billing/billing-activation"
-import { isMidtransConfigured } from "@/lib/billing/midtrans"
+import { isDuitkuConfigured } from "@/lib/billing/duitku"
 import { auth } from "@/lib/auth/auth"
 import {
   getStudioForUser,
@@ -24,9 +24,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  if (!isMidtransConfigured()) {
+  if (!isDuitkuConfigured()) {
     return NextResponse.json(
-      { error: "Midtrans not configured" },
+      { error: "Duitku not configured" },
       { status: 503 },
     )
   }
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
   const { orderId, planType } = parsed.data
 
   try {
-    // Verification only. Activation happens exclusively via the Midtrans
+    // Verification only. Activation happens exclusively via the Duitku
     // webhook; this endpoint just reports the current verified status.
     const result = await confirmOrderPayment({
       orderId,

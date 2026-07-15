@@ -5,7 +5,6 @@ import { Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { ShimmerButton } from "@/components/ui/shimmer-button"
-import { loadMidtransSnap } from "@/lib/billing/midtrans-snap"
 import { useLanguage } from "@/lib/i18n/language-provider"
 
 const PLAN_TYPE_MAP: Record<number, string> = {
@@ -18,55 +17,11 @@ const PLAN_TYPE_MAP: Record<number, string> = {
 const CREATE_ORDER_TIMEOUT_MS = 30_000
 const PENDING_ORDER_STORAGE_KEY = "rt_pending_order"
 
-type CreateOrderResponse = {
-  snapToken?: string
-  orderId?: string
-  planType?: string
-  error?: string
-}
-
-async function confirmPayment(orderId: string, planType: string, errorFallback: string) {
-  const res = await fetch("/api/billing/confirm", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ orderId, planType }),
-  })
-
-  const data = await res.json().catch(() => ({}))
-  if (!res.ok) {
-    throw new Error(
-      typeof data.error === "string"
-        ? data.error
-        : errorFallback,
-    )
-  }
-}
-
 function storePendingOrder(orderId: string, planType: string) {
   sessionStorage.setItem(
     PENDING_ORDER_STORAGE_KEY,
     JSON.stringify({ orderId, planType }),
   )
-}
-
-type SnapResult = {
-  order_id?: string
-  transaction_status?: string
-}
-
-type SnapPayOptions = {
-  onSuccess?: (result: SnapResult) => void
-  onPending?: (result: SnapResult) => void
-  onError?: (result: SnapResult) => void
-  onClose?: () => void
-}
-
-declare global {
-  interface Window {
-    snap?: {
-      pay: (token: string, options?: SnapPayOptions) => void
-    }
-  }
 }
 
 async function fetchWithTimeout(
@@ -88,131 +43,70 @@ export function SubscribeButton({
   months,
   popular,
   label = "Pilih Plan",
-  snapReady = false,
+  snapReady = false, // Kept for backwards compatibility
   onMessage,
 }: {
   months: number
   popular?: boolean
   label?: string
   snapReady?: boolean
-  /** @deprecated — navigasi kini ditangani oleh redirect ke /checkout/success */
   onPaymentComplete?: () => void
   onMessage?: (msg: string | null) => void
 }) {
   const { locale, t } = useLanguage()
   const [loading, setLoading] = useState(false)
-  const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY ?? ""
 
   const handleSubscribe = useCallback(async () => {
     setLoading(true)
     onMessage?.(null)
 
-    if (!clientKey) {
-      setLoading(false)
-      onMessage?.(locale === "en" ? "Midtrans not configured." : "Midtrans belum dikonfigurasi.")
-      return
-    }
-
     const planType = PLAN_TYPE_MAP[months] ?? "1month"
 
     try {
-      const [snapResult, orderResult] = await Promise.allSettled([
-        window.snap?.pay ? Promise.resolve() : loadMidtransSnap(),
-        fetchWithTimeout("/api/billing/create-order", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ planType }),
-          timeoutMs: CREATE_ORDER_TIMEOUT_MS,
-        }),
-      ])
+      const orderResult = await fetchWithTimeout("/api/billing/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ planType }),
+        timeoutMs: CREATE_ORDER_TIMEOUT_MS,
+      })
 
-      if (snapResult.status === "rejected") {
-        setLoading(false)
-        onMessage?.(
-          snapResult.reason instanceof Error
-            ? snapResult.reason.message
-            : (locale === "en" ? "Midtrans Snap not ready. Reload the page." : "Midtrans Snap belum siap. Muat ulang halaman."),
-        )
-        return
+      const data = (await orderResult.json().catch(() => ({}))) as {
+        paymentUrl?: string
+        orderId?: string
+        planType?: string
+        error?: string
       }
 
-      if (orderResult.status === "rejected") {
-        setLoading(false)
-        const isTimeout =
-          orderResult.reason instanceof DOMException &&
-          orderResult.reason.name === "AbortError"
-        onMessage?.(
-          isTimeout
-            ? (locale === "en" ? "Order creation timed out. Check your internet connection and try again." : "Membuat order terlalu lama. Periksa koneksi internet lalu coba lagi.")
-            : (locale === "en" ? "Failed to create order. Please try again." : "Gagal membuat order. Coba lagi."),
-        )
-        return
-      }
-
-      const res = orderResult.value
-      const data = (await res.json().catch(() => ({}))) as CreateOrderResponse
-
-      if (!res.ok) {
+      if (!orderResult.ok) {
         setLoading(false)
         onMessage?.(data.error ?? (locale === "en" ? "Failed to create order." : "Gagal membuat order."))
         return
       }
 
-      if (!data.snapToken || !data.orderId || !data.planType) {
+      if (!data.paymentUrl || !data.orderId || !data.planType) {
         setLoading(false)
-        onMessage?.(locale === "en" ? "Snap token not available." : "Snap token tidak tersedia.")
-        return
-      }
-
-      if (!window.snap?.pay) {
-        setLoading(false)
-        onMessage?.(locale === "en" ? "Midtrans Snap not ready. Reload the page." : "Midtrans Snap belum siap. Muat ulang halaman.")
+        onMessage?.(locale === "en" ? "Payment URL not available." : "URL Pembayaran tidak tersedia.")
         return
       }
 
       storePendingOrder(data.orderId, data.planType)
 
-      window.snap.pay(data.snapToken, {
-        onSuccess: (result: SnapResult) => {
-          sessionStorage.removeItem(PENDING_ORDER_STORAGE_KEY)
-          const params = new URLSearchParams({
-            order_id: result.order_id ?? data.orderId ?? "",
-            transaction_status: result.transaction_status ?? "settlement",
-          })
-          window.location.href = `/checkout/success?${params.toString()}`
-        },
-        onPending: (result: SnapResult) => {
-          const params = new URLSearchParams({
-            order_id: result.order_id ?? data.orderId ?? "",
-            transaction_status: result.transaction_status ?? "pending",
-          })
-          window.location.href = `/checkout/success?${params.toString()}`
-        },
-        onError: (result: SnapResult) => {
-          const params = new URLSearchParams({
-            order_id: result.order_id ?? data.orderId ?? "",
-            transaction_status: result.transaction_status ?? "deny",
-          })
-          window.location.href = `/checkout/success?${params.toString()}`
-        },
-        onClose: () => {
-          setLoading(false)
-        },
-      })
-    } catch {
+      // Redirect directly to Duitku payment page
+      window.location.href = data.paymentUrl
+    } catch (error) {
       setLoading(false)
-      onMessage?.(locale === "en" ? "An error occurred. Please try again." : "Terjadi kesalahan. Coba lagi.")
+      const isTimeout = error instanceof DOMException && error.name === "AbortError"
+      onMessage?.(
+        isTimeout
+          ? (locale === "en" ? "Order creation timed out. Check your internet connection." : "Koneksi terputus. Silakan coba lagi.")
+          : (locale === "en" ? "An error occurred. Please try again." : "Terjadi kesalahan. Coba lagi.")
+      )
     }
-  }, [months, onMessage, clientKey, locale])
+  }, [months, onMessage, locale])
 
-  const isPreparing = Boolean(clientKey) && !snapReady
-  const buttonLabel = !clientKey
-    ? (locale === "en" ? "Midtrans not configured" : "Midtrans belum dikonfigurasi")
-    : loading
-      ? t.auth.processing
-      : isPreparing
-        ? (locale === "en" ? "Preparing payment..." : "Menyiapkan pembayaran...")
-        : label
+  const buttonLabel = loading
+    ? t.auth.processing
+    : label
 
   if (popular) {
     return (
@@ -222,9 +116,9 @@ export function SubscribeButton({
         background="var(--brand-scarlet)"
         shimmerColor="oklch(100% 0 0)"
         onClick={handleSubscribe}
-        disabled={loading || !clientKey || isPreparing}
+        disabled={loading}
       >
-        {(loading || isPreparing) && (
+        {loading && (
           <Loader2 className="animate-spin size-4 shrink-0" aria-hidden="true" />
         )}
         {buttonLabel}
@@ -237,13 +131,12 @@ export function SubscribeButton({
       variant="outline"
       className="w-full"
       onClick={handleSubscribe}
-      disabled={loading || !clientKey || isPreparing}
+      disabled={loading}
     >
-      {(loading || isPreparing) && (
+      {loading && (
         <Loader2 className="animate-spin size-4 shrink-0" aria-hidden="true" />
       )}
       {buttonLabel}
     </Button>
   )
 }
-

@@ -35,33 +35,33 @@ vi.mock("@/db", () => ({
 
 const validInput = {
   orderId: "ORDER-123",
-  grossAmount: "99000",
+  grossAmount: "149000",
   customField1: JSON.stringify({ studioId: "studio-1", planType: "1month" }),
-  paymentStatus: { transaction_status: "settlement" as const },
+  paymentStatus: { resultCode: "00" },
 }
 
 describe("validatePaidOrder", () => {
   it("rejects payments that are not completed", () => {
     expect(() =>
-      validatePaidOrder({ ...validInput, paymentStatus: { transaction_status: "pending" } }),
+      validatePaidOrder({ ...validInput, paymentStatus: { resultCode: "01" } }),
     ).toThrowError(new BillingActivationError("Payment not completed", 400))
   })
 
-  it("rejects a capture that has not passed fraud review", () => {
+  it("rejects a failed result code", () => {
     expect(() =>
       validatePaidOrder({
         ...validInput,
-        paymentStatus: { transaction_status: "capture", fraud_status: "challenge" },
+        paymentStatus: { resultCode: "02" },
       }),
     ).toThrowError(new BillingActivationError("Payment not completed", 400))
   })
 
-  it("accepts a capture that passed fraud review", () => {
+  it("accepts a successful result code", () => {
     const result = validatePaidOrder({
       ...validInput,
-      paymentStatus: { transaction_status: "capture", fraud_status: "accept" },
+      paymentStatus: { resultCode: "00" },
     })
-    expect(result).toEqual({ studioId: "studio-1", planType: "1month", months: 1, amount: 99000 })
+    expect(result).toEqual({ studioId: "studio-1", planType: "1month", months: 1, amount: 149000 })
   })
 
   it("rejects invalid metadata", () => {
@@ -104,7 +104,7 @@ describe("activatePaidOrder", () => {
         studioId: "studio-1",
         midtransOrderId: "ORDER-123",
         planType: "1month",
-        amount: 99000,
+        amount: 149000,
         status: "paid",
       }),
       txStub,

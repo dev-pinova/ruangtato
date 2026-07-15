@@ -2,11 +2,10 @@ import { NextResponse } from "next/server"
 
 import { auth } from "@/lib/auth/auth"
 import {
-  getMidtransClientKey,
-  getSnapClient,
-  isMidtransConfigured,
+  isDuitkuConfigured,
+  createDuitkuInvoice,
   PLAN_CATALOG,
-} from "@/lib/billing/midtrans"
+} from "@/lib/billing/duitku"
 import { recordPendingPayment } from "@/lib/billing/payment-service"
 import { getStudioForUser, getStudioSuspendedFlagForUser } from "@/lib/studio/studio-service"
 import { parseJsonBody, z } from "@/lib/validation"
@@ -21,9 +20,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  if (!isMidtransConfigured()) {
+  if (!isDuitkuConfigured()) {
     return NextResponse.json(
-      { error: "Midtrans belum dikonfigurasi. Set MIDTRANS_SERVER_KEY dan MIDTRANS_CLIENT_KEY." },
+      { error: "Duitku belum dikonfigurasi. Set DUITKU_MERCHANT_CODE dan DUITKU_API_KEY." },
       { status: 503 }
     )
   }
@@ -49,32 +48,19 @@ export async function POST(request: Request) {
   const orderId = `RT-${studio.id.slice(0, 8)}-${Date.now()}`
 
   try {
-    const snap = getSnapClient()
-    const transaction = await snap.createTransaction({
-      transaction_details: {
-        order_id: orderId,
-        gross_amount: plan.amount,
-      },
-      custom_field1: JSON.stringify({ studioId: studio.id, planType }),
-      customer_details: {
-        first_name: session.user.name ?? studio.name,
-        email: session.user.email,
-      },
-      callbacks: {
-        // Midtrans akan append ?order_id=...&transaction_status=...&status_code=...
-        // ke URL ini saat user klik "Selesai" di halaman hosted Midtrans.
-        finish: `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/checkout/success`,
-      },
+    const transaction = await createDuitkuInvoice({
+      paymentAmount: plan.amount,
+      merchantOrderId: orderId,
+      productDetails: `Paket Langganan ${planType}`,
+      email: session.user.email ?? "",
+      additionalParam: JSON.stringify({ studioId: studio.id, planType }),
     })
 
-    const snapToken =
-      typeof transaction === "object" && transaction !== null && "token" in transaction
-        ? String((transaction as { token: string }).token)
-        : null
+    const paymentUrl = transaction.paymentUrl
 
-    if (!snapToken) {
+    if (!paymentUrl) {
       return NextResponse.json(
-        { error: "Gagal membuat Snap token dari Midtrans." },
+        { error: "Gagal membuat invoice dari Duitku. Status: " + (transaction.statusMessage ?? "Unknown") },
         { status: 502 }
       )
     }
@@ -91,15 +77,14 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({
-      snapToken,
+      paymentUrl,
       orderId,
-      clientKey: getMidtransClientKey(),
       amount: plan.amount,
       planType,
       studioId: studio.id,
     })
   } catch (error) {
-    console.error("Midtrans createTransaction failed:", error)
+    console.error("Duitku createInvoice failed:", error)
     return NextResponse.json(
       { error: "Gagal membuat order pembayaran. Coba lagi." },
       { status: 502 }

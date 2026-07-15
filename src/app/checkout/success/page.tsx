@@ -36,11 +36,11 @@ type ConfirmResult = {
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function isSuccessStatus(status: string | null): boolean {
-  return status === "settlement" || status === "capture" || status === "success"
+  return status === "00" || status === "settlement" || status === "capture" || status === "success"
 }
 
 function isPendingStatus(status: string | null): boolean {
-  return status === "pending"
+  return status === "01" || status === "pending"
 }
 
 function formatIDR(amount: number, locale: string) {
@@ -107,16 +107,16 @@ function CheckoutSuccessContent() {
   const { locale, t } = useLanguage()
   const searchParams = useSearchParams()
 
-  const orderId = searchParams.get("order_id") ?? ""
-  const rawStatus = searchParams.get("transaction_status")
+  const orderId = searchParams.get("merchantOrderId") ?? searchParams.get("order_id") ?? ""
+  const rawStatus = searchParams.get("resultCode") ?? searchParams.get("transaction_status")
   const statusCode = searchParams.get("status_code")
 
-  // Derive initial state from URL params (Midtrans Snap / finish URL)
+  // Derive initial state from URL params
   const initialState: TxState = isSuccessStatus(rawStatus)
     ? "success"
     : isPendingStatus(rawStatus)
     ? "pending"
-    : rawStatus === "deny" || rawStatus === "cancel" || rawStatus === "expire" || rawStatus === "failure"
+    : rawStatus && (rawStatus !== "00" && rawStatus !== "01" && rawStatus !== "pending")
     ? "error"
     : orderId
     ? "loading"   // has order_id but no recognisable status → server-confirm
@@ -152,7 +152,6 @@ function CheckoutSuccessContent() {
       setConfirmResult(result)
       if (result.activated || result.paid) {
         setState("success")
-        // Clean up pending order from sessionStorage once confirmed
         sessionStorage.removeItem("rt_pending_order")
       } else if (result.transactionStatus === "pending") {
         setState("pending")
@@ -160,7 +159,8 @@ function CheckoutSuccessContent() {
         result.transactionStatus === "deny" ||
         result.transactionStatus === "cancel" ||
         result.transactionStatus === "expire" ||
-        result.transactionStatus === "failure"
+        result.transactionStatus === "failure" ||
+        result.transactionStatus === "failed"
       ) {
         setState("error")
       }
@@ -207,7 +207,6 @@ function CheckoutSuccessContent() {
       return (
         <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-success/10 ring-4 ring-success/30">
           <CheckCircle2 className="h-10 w-10 text-success" />
-          {/* Pulse ring */}
           <span className="absolute inset-0 rounded-full animate-ping bg-success/20" />
         </div>
       )
@@ -351,7 +350,6 @@ function CheckoutSuccessContent() {
                     {t.checkoutSuccess.btnStartDesign}
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                   </span>
-                  {/* shimmer overlay */}
                   <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent transition-transform duration-700 group-hover:translate-x-full" aria-hidden />
                 </Link>
                 <Button

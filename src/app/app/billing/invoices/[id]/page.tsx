@@ -238,7 +238,7 @@ export default async function InvoiceDetailPage({
           </div>
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">{t.invoice.meta.method}</span>
-            <span className="text-foreground">Midtrans Payment Gateway</span>
+            <span className="text-foreground">Duitku Payment Gateway</span>
           </div>
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">{t.invoice.meta.currency}</span>

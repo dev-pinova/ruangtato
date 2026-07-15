@@ -97,7 +97,7 @@ const CATEGORIES_ID: Category[] = [
     items: [
       {
         q: "Metode pembayaran apa saja yang diterima?",
-        a: "Kami menerima kartu kredit/debit, bank transfer (VA), e-wallet (GoPay, OVO, DANA, ShopeePay), dan QRIS. Semua pembayaran diproses aman melalui Midtrans.",
+        a: "Kami menerima kartu kredit/debit, bank transfer (VA), e-wallet (GoPay, OVO, DANA, ShopeePay), dan QRIS. Semua pembayaran diproses aman melalui Duitku.",
       },
       {
         q: "Bagaimana cara mendapatkan invoice?",
@@ -207,7 +207,7 @@ const CATEGORIES_EN: Category[] = [
     items: [
       {
         q: "What payment methods are accepted?",
-        a: "We accept credit/debit cards, bank transfers (VA), e-wallets (GoPay, OVO, DANA, ShopeePay), and QRIS. All payments are processed securely via Midtrans.",
+        a: "We accept credit/debit cards, bank transfers (VA), e-wallets (GoPay, OVO, DANA, ShopeePay), and QRIS. All payments are processed securely via Duitku.",
       },
       {
         q: "How do I get an invoice?",
