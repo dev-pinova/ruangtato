@@ -97,7 +97,9 @@ export async function createDuitkuInvoice(input: CreateInvoiceInput): Promise<Cr
   })
 
   if (!response.ok) {
-    throw new Error(`Duitku Inquiry failed with status ${response.status}`)
+    const errorBody = await response.text().catch(() => "Unable to read error body")
+    console.error("[Duitku API Error] Status:", response.status, "Body:", errorBody)
+    throw new Error(`Duitku Inquiry failed with status ${response.status}: ${errorBody}`)
   }
 
   return response.json() as Promise<CreateInvoiceResponse>
