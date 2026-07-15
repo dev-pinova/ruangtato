@@ -21,7 +21,11 @@ export function studioPublicPath(slug = "[slug]") {
   return `${SITE_DOMAIN}/${slug}`
 }
 
-export const SUPPORT_EMAIL = "support@ruangtato.com"
-export const PRIVACY_EMAIL = "privacy@ruangtato.com"
-export const LEGAL_EMAIL = "legal@ruangtato.com"
-export const BILLING_EMAIL = "billing@ruangtato.com"
+export const SUPPORT_EMAIL = "Info@ruangtato.com"
+export const PRIVACY_EMAIL = "Info@ruangtato.com"
+export const LEGAL_EMAIL = "Info@ruangtato.com"
+export const BILLING_EMAIL = "Info@ruangtato.com"
+export const SUPPORT_WHATSAPP = "+628133985462"
+export const SUPPORT_WHATSAPP_DISPLAY = "+62 813-3985-462"
+export const OFFICE_ADDRESS = "Jalan Bunisari Nomor 22, Desa Kuta, Kec. Kuta, Kab. Badung, Provinsi Bali"
+

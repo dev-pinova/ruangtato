@@ -101,6 +101,19 @@ function MarketingFooter() {
                 {SITE_DOMAIN}
               </a>
             </p>
+            <div className="mt-6 space-y-2 text-sm text-muted-foreground">
+              <p>Jalan Bunisari Nomor 22, Desa Kuta, Kec. Kuta, Kab. Badung, Provinsi Bali</p>
+              <p>
+                <a href="mailto:Info@ruangtato.com" className="hover:text-foreground hover:underline">
+                  Info@ruangtato.com
+                </a>
+              </p>
+              <p>
+                <a href="https://wa.me/628133985462" className="hover:text-foreground hover:underline">
+                  +62 813-3985-462
+                </a>
+              </p>
+            </div>
           </div>
 
           <div>

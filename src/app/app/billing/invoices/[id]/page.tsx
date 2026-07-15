@@ -182,7 +182,7 @@ export default async function InvoiceDetailPage({
             </p>
             <p className="font-semibold text-foreground">Ruang Tato</p>
             <p className="text-sm text-muted-foreground">{SITE_URL}</p>
-            <p className="text-sm text-muted-foreground">billing@ruangtato.com</p>
+            <p className="text-sm text-muted-foreground">Info@ruangtato.com</p>
           </div>
           <div>
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
@@ -249,7 +249,7 @@ export default async function InvoiceDetailPage({
         {/* Footer */}
         <div className="border-t border-border px-8 py-5 bg-muted/20">
           <p className="text-xs text-muted-foreground text-center leading-relaxed">
-            {t.invoice.footer.replace("{email}", "billing@ruangtato.com")}
+            {t.invoice.footer.replace("{email}", "Info@ruangtato.com")}
           </p>
         </div>
       </div>

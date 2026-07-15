@@ -424,7 +424,7 @@ function CheckoutSuccessContent() {
                 <>
                   Any issues?{" "}
                   <a
-                    href="mailto:billing@ruangtato.com"
+                    href="mailto:Info@ruangtato.com"
                     className="text-primary hover:underline underline-offset-4"
                   >
                     Contact billing support
@@ -434,7 +434,7 @@ function CheckoutSuccessContent() {
                 <>
                   Ada kendala?{" "}
                   <a
-                    href="mailto:billing@ruangtato.com"
+                    href="mailto:Info@ruangtato.com"
                     className="text-primary hover:underline underline-offset-4"
                   >
                     Hubungi billing support

@@ -198,8 +198,8 @@ function CheckoutContent() {
         {/* Support links */}
         <p className="mt-8 text-center text-xs text-muted-foreground">
           {t.checkout.needHelp.split("{email}")[0]}
-          <a href="mailto:billing@ruangtato.com" className="text-muted-foreground hover:text-primary hover:underline">
-            billing@ruangtato.com
+          <a href="mailto:Info@ruangtato.com" className="text-muted-foreground hover:text-primary hover:underline">
+            Info@ruangtato.com
           </a>
           {t.checkout.needHelp.split("{email}")[1] || ""}
         </p>
