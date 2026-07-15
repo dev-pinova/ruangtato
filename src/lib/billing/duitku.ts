@@ -1,4 +1,4 @@
-import { createHash } from "crypto"
+import { createHash, createHmac } from "crypto"
 
 export const PLAN_CATALOG: Record<
   string,
@@ -43,8 +43,9 @@ function getDuitkuCredentials() {
   return { merchantCode, apiKey }
 }
 
-const SANDBOX_BASE_URL = "https://sandbox.duitku.com/webapi/api/merchant"
-const PRODUCTION_BASE_URL = "https://passport.duitku.com/webapi/api/merchant"
+// New POP API endpoints per https://docs.duitku.com/pop/id/
+const SANDBOX_BASE_URL = "https://api-sandbox.duitku.com/api/merchant"
+const PRODUCTION_BASE_URL = "https://api-prod.duitku.com/api/merchant"
 
 function getBaseUrl() {
   return isDuitkuProduction() ? PRODUCTION_BASE_URL : SANDBOX_BASE_URL
@@ -69,37 +70,55 @@ export async function createDuitkuInvoice(input: CreateInvoiceInput): Promise<Cr
   const { merchantCode, apiKey } = getDuitkuCredentials()
   const baseUrl = getBaseUrl()
 
-  const signatureSource = `${merchantCode}${input.merchantOrderId}${input.paymentAmount}${apiKey}`
-  const signature = createHash("md5").update(signatureSource).digest("hex")
+  // POP API uses HMAC-SHA256 signature in headers
+  // Formula: stringToSign = merchantCode + timestamp
+  //          signature = HMAC_SHA256(stringToSign, apiKey)
+  const timestamp = String(Date.now())
+  const stringToSign = merchantCode + timestamp
+  const signature = createHmac("sha256", apiKey).update(stringToSign).digest("hex")
 
   const callbackUrl = process.env.DUITKU_CALLBACK_URL || `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/billing/webhook`
   const returnUrl = process.env.DUITKU_RETURN_URL || `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/checkout/success`
 
   const payload = {
-    merchantCode,
     paymentAmount: input.paymentAmount,
     merchantOrderId: input.merchantOrderId,
     productDetails: input.productDetails,
     email: input.email,
+    additionalParam: input.additionalParam ?? "",
+    merchantUserInfo: "",
+    customerVaName: input.email,
+    phoneNumber: "",
+    itemDetails: [
+      {
+        name: input.productDetails,
+        price: input.paymentAmount,
+        quantity: 1,
+      },
+    ],
     callbackUrl,
     returnUrl,
-    signature,
-    additionalParam: input.additionalParam,
+    expiryPeriod: 60,
   }
 
-  const response = await fetch(`${baseUrl}/createinvoice`, {
+  const body = JSON.stringify(payload)
+
+  const response = await fetch(`${baseUrl}/createInvoice`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Accept": "application/json",
+      "Content-Length": String(Buffer.byteLength(body)),
+      "x-duitku-signature": signature,
+      "x-duitku-timestamp": timestamp,
+      "x-duitku-merchantcode": merchantCode,
     },
-    body: JSON.stringify(payload),
+    body,
   })
 
   if (!response.ok) {
     const errorBody = await response.text().catch(() => "Unable to read error body")
     console.error("[Duitku API Error] Status:", response.status, "Body:", errorBody)
-    throw new Error(`Duitku Inquiry failed with status ${response.status}: ${errorBody}`)
+    throw new Error(`Duitku createInvoice failed with status ${response.status}: ${errorBody}`)
   }
 
   return response.json() as Promise<CreateInvoiceResponse>
