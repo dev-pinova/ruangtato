@@ -205,16 +205,48 @@ export function verifyNotificationSignature(
   const { merchantCode, amount, merchantOrderId, signature } = payload
 
   if (!merchantCode || amount === undefined || !merchantOrderId || !signature) {
+    console.error("[verifyNotificationSignature] Missing payload parameters:", {
+      hasMerchantCode: !!merchantCode,
+      hasAmount: amount !== undefined,
+      hasMerchantOrderId: !!merchantOrderId,
+      hasSignature: !!signature,
+    })
     return false
   }
 
-  const amountStr = String(amount)
-  const expectedSource = `${merchantCode}${amountStr}${merchantOrderId}${apiKey}`
-  const expected = createHash("md5")
-    .update(expectedSource)
+  // Option 1: Raw String(amount) (e.g. "149000.00" or "149000")
+  const amountStrRaw = String(amount)
+  const expectedSourceRaw = `${merchantCode}${amountStrRaw}${merchantOrderId}${apiKey}`
+  const expectedRaw = createHash("md5")
+    .update(expectedSourceRaw)
     .digest("hex")
 
-  return expected.toLowerCase() === signature.toLowerCase()
+  // Option 2: Rounded integer representation (e.g. "149000")
+  const amountStrInt = Math.round(Number(amount)).toString()
+  const expectedSourceInt = `${merchantCode}${amountStrInt}${merchantOrderId}${apiKey}`
+  const expectedInt = createHash("md5")
+    .update(expectedSourceInt)
+    .digest("hex")
+
+  const matchesRaw = expectedRaw.toLowerCase() === signature.toLowerCase()
+  const matchesInt = expectedInt.toLowerCase() === signature.toLowerCase()
+
+  if (!matchesRaw && !matchesInt) {
+    console.error("[verifyNotificationSignature] Signature mismatch detail:", {
+      merchantCode,
+      merchantOrderId,
+      payloadAmount: amount,
+      amountStrRaw,
+      amountStrInt,
+      receivedSignature: signature,
+      expectedRaw,
+      expectedInt,
+      apiKeyLength: apiKey.length,
+      apiKeyStart: apiKey.slice(0, 4) + "...",
+    })
+  }
+
+  return matchesRaw || matchesInt
 }
 
 export function isSuccessfulPayment(payload: DuitkuNotificationPayload | DuitkuTransactionStatus): boolean {
