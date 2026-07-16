@@ -315,6 +315,7 @@ export async function updateStudioProfile(
     waNumber: string
     description: string
     image: string
+    tags?: string[]
   },
 ): Promise<Studio | null> {
   const d = getDb()
@@ -324,17 +325,23 @@ export async function updateStudioProfile(
   const slug = await ensureUniqueSlug(rawSlug, studioId)
   const image = input.image.trim() || DEFAULT_STUDIO_COVER
 
+  const updates: Partial<typeof studios.$inferInsert> = {
+    name,
+    slug,
+    city: input.city.trim(),
+    waNumber: input.waNumber.trim(),
+    description: input.description.trim(),
+    image,
+    updatedAt: new Date(),
+  }
+
+  if (input.tags) {
+    updates.tags = input.tags
+  }
+
   const [updated] = await d
     .update(studios)
-    .set({
-      name,
-      slug,
-      city: input.city.trim(),
-      waNumber: input.waNumber.trim(),
-      description: input.description.trim(),
-      image,
-      updatedAt: new Date(),
-    })
+    .set(updates)
     .where(eq(studios.id, studioId))
     .returning()
 

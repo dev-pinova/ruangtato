@@ -82,6 +82,14 @@ export async function PATCH(request: Request) {
   const description =
     typeof body.description === "string" ? body.description.trim() : ""
   const image = typeof body.image === "string" ? body.image.trim() : ""
+  
+  let tags: string[] | undefined = undefined
+  if ("tags" in body && Array.isArray(body.tags)) {
+    tags = body.tags
+      .map((t: unknown) => (typeof t === "string" ? t.trim() : ""))
+      .filter(Boolean)
+      .slice(0, 15)
+  }
 
   if (!name) {
     return NextResponse.json({ error: "Nama studio wajib diisi" }, { status: 400 })
@@ -95,6 +103,7 @@ export async function PATCH(request: Request) {
       waNumber,
       description,
       image,
+      tags,
     })
 
     if (!updated) {
