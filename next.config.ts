@@ -1,4 +1,6 @@
 import type { NextConfig } from "next"
+import fs from "fs"
+import path from "path"
 
 const remotePatterns = [
   { protocol: "https" as const, hostname: "images.unsplash.com" },
@@ -38,6 +40,17 @@ const securityHeaders = [
   { key: "X-Frame-Options", value: "SAMEORIGIN" },
 ]
 
+// Read package version as a stable fallback build ID
+let packageVersion = "ruangtato-build"
+try {
+  const packageJson = JSON.parse(
+    fs.readFileSync(path.join(process.cwd(), "package.json"), "utf8")
+  )
+  packageVersion = `ruangtato-v${packageJson.version}`
+} catch (e) {
+  // Ignore
+}
+
 const nextConfig: NextConfig = {
   output: "standalone",
   serverExternalPackages: [
@@ -51,6 +64,20 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns,
   },
+  generateBuildId: async () => {
+    // Provide a consistent build ID across multiple server instances / container redeployments
+    return (
+      process.env.COOLIFY_COMMIT ||
+      process.env.COMMIT_SHA ||
+      process.env.GIT_SHA ||
+      packageVersion
+    )
+  },
+  deploymentId:
+    process.env.COOLIFY_COMMIT ||
+    process.env.COMMIT_SHA ||
+    process.env.GIT_SHA ||
+    undefined,
   async headers() {
     return [
       {
