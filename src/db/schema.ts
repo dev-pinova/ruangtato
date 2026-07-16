@@ -30,6 +30,7 @@ export const studios = pgTable(
     description: text("description"),
     image: text("image"),
     artist: text("artist"),
+    artistImage: text("artist_image"),
     tags: jsonb("tags").$type<string[]>().default([]),
     viewCount: integer("view_count").notNull().default(0),
     clickCount: integer("click_count").notNull().default(0),

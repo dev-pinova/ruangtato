@@ -60,6 +60,7 @@ function ProfilStudioTab({
   const [city, setCity] = useState("")
   const [waNumber, setWaNumber] = useState("")
   const [coverImage, setCoverImage] = useState("")
+  const [artistImage, setArtistImage] = useState("")
   const [description, setDescription] = useState("")
   const [tags, setTags] = useState<string[]>([])
   const [tagInput, setTagInput] = useState("")
@@ -67,6 +68,7 @@ function ProfilStudioTab({
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
+  const [uploadingAvatar, setUploadingAvatar] = useState(false)
  
   useEffect(() => {
     if (!studio) return
@@ -75,6 +77,7 @@ function ProfilStudioTab({
     setCity(studio.city)
     setWaNumber(studio.waNumber)
     setCoverImage(studio.image)
+    setArtistImage(studio.artistImage || "")
     setDescription(studio.description)
     setTags(studio.tags || [])
   }, [studio])
@@ -89,7 +92,7 @@ function ProfilStudioTab({
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
-      body: JSON.stringify({ name, slug, city, waNumber, description, image: coverImage, tags }),
+      body: JSON.stringify({ name, slug, city, waNumber, description, image: coverImage, tags, artistImage }),
     })
 
     setSaving(false)
@@ -147,6 +150,82 @@ function ProfilStudioTab({
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSave} className="grid gap-5 max-w-xl">
+          {/* Foto Profil / Logo Studio */}
+          <div className="grid gap-2">
+            <Label htmlFor="avatar-image">{(t.settings.profile as any).avatarLabel || "Foto Profil / Logo Studio"}</Label>
+            <div className="flex items-center gap-4">
+              <div className="relative size-16 shrink-0 overflow-hidden rounded-full border border-border bg-muted/40 flex items-center justify-center">
+                {artistImage ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={artistImage}
+                    alt="Foto Profil Studio"
+                    className="size-full object-cover"
+                  />
+                ) : (
+                  <span className="text-xs text-muted-foreground font-medium">No Logo</span>
+                )}
+              </div>
+              <div className="flex-1 flex items-center gap-3">
+                <Input
+                  id="avatar-image"
+                  value={artistImage}
+                  onChange={(e) => setArtistImage(e.target.value)}
+                  placeholder="https://..."
+                  className="flex-1"
+                />
+                <Button
+                  type="button"
+                  variant="secondary"
+                  disabled={uploadingAvatar}
+                  onClick={() => document.getElementById("avatar-image-upload")?.click()}
+                  className="shrink-0 gap-2"
+                >
+                  <Upload className="size-4" />
+                  {uploadingAvatar ? t.settings.profile.uploading : t.settings.profile.uploadBtn}
+                </Button>
+                <input
+                  id="avatar-image-upload"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0]
+                    if (!file) return
+                    
+                    setUploadingAvatar(true)
+                    try {
+                      const fd = new FormData()
+                      fd.append("file", file)
+                      const res = await fetch("/api/upload", {
+                        method: "POST",
+                        body: fd,
+                      })
+                      
+                      if (!res.ok) {
+                        const data = await res.json().catch(() => ({}))
+                        throw new Error(data.error || t.settings.profile.imageUploadError)
+                      }
+                      
+                      const data = await res.json()
+                      if (data.url) {
+                        setArtistImage(data.url)
+                      }
+                    } catch (err: any) {
+                      alert(err.message || t.settings.profile.imageUploadError)
+                    } finally {
+                      setUploadingAvatar(false)
+                      // reset input
+                      e.target.value = ""
+                    }
+                  }}
+                />
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {(t.settings.profile as any).avatarNote || "Akan ditampilkan sebagai avatar bulat Anda."}
+            </p>
+          </div>
           <div className="grid gap-2">
             <Label htmlFor="studio-name">{t.settings.profile.nameLabel}</Label>
             <Input

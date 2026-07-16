@@ -179,6 +179,8 @@
       "cityLabel": "City",
       "waLabel": "WhatsApp Number",
       "coverLabel": "Studio Cover Photo",
+      "avatarLabel": "Profile Photo / Logo",
+      "avatarNote": "Will be displayed as your circular avatar in the directory and landing page. Leave blank to automatically use the artist photo from the builder.",
       "uploading": "Uploading...",
       "uploadBtn": "Upload",
       "coverNote": "Used in the studio directory. Leave blank to automatically use the Hero image from the builder.",

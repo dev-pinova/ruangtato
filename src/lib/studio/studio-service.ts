@@ -54,7 +54,7 @@ function mapStudioRow(
     isPublished: row.isPublished,
     tags: row.tags ?? [],
     artist: row.artist ?? "",
-    artistImage: getStudioArtistImage(blocks),
+    artistImage: row.artistImage || getStudioArtistImage(blocks),
     blocks,
   }
 }
@@ -316,6 +316,7 @@ export async function updateStudioProfile(
     description: string
     image: string
     tags?: string[]
+    artistImage?: string
   },
 ): Promise<Studio | null> {
   const d = getDb()
@@ -337,6 +338,10 @@ export async function updateStudioProfile(
 
   if (input.tags) {
     updates.tags = input.tags
+  }
+  
+  if (input.artistImage !== undefined) {
+    updates.artistImage = input.artistImage
   }
 
   const [updated] = await d

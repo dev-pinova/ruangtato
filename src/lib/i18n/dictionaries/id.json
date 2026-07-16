@@ -179,6 +179,8 @@
       "cityLabel": "Kota",
       "waLabel": "Nomor WhatsApp",
       "coverLabel": "Foto Cover Studio",
+      "avatarLabel": "Foto Profil / Logo Studio",
+      "avatarNote": "Akan ditampilkan sebagai avatar bulat Anda di direktori dan halaman landing. Kosongkan untuk otomatis menggunakan foto artist dari builder.",
       "uploading": "Mengunggah...",
       "uploadBtn": "Upload",
       "coverNote": "Digunakan di direktori studio. Kosongkan untuk otomatis dari gambar Hero di builder.",

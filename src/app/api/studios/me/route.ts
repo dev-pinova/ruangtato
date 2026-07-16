@@ -82,6 +82,7 @@ export async function PATCH(request: Request) {
   const description =
     typeof body.description === "string" ? body.description.trim() : ""
   const image = typeof body.image === "string" ? body.image.trim() : ""
+  const artistImage = typeof body.artistImage === "string" ? body.artistImage.trim() : undefined
   
   let tags: string[] | undefined = undefined
   if ("tags" in body && Array.isArray(body.tags)) {
@@ -104,6 +105,7 @@ export async function PATCH(request: Request) {
       description,
       image,
       tags,
+      artistImage,
     })
 
     if (!updated) {
