@@ -36,7 +36,7 @@ type ConfirmResult = {
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function isSuccessStatus(status: string | null): boolean {
-  return status === "00" || status === "settlement" || status === "capture" || status === "success"
+  return status === "00" || status === "success"
 }
 
 function isPendingStatus(status: string | null): boolean {
@@ -107,8 +107,8 @@ function CheckoutSuccessContent() {
   const { locale, t } = useLanguage()
   const searchParams = useSearchParams()
 
-  const orderId = searchParams.get("merchantOrderId") ?? searchParams.get("order_id") ?? ""
-  const rawStatus = searchParams.get("resultCode") ?? searchParams.get("transaction_status")
+  const orderId = searchParams.get("merchantOrderId") ?? ""
+  const rawStatus = searchParams.get("resultCode")
   const statusCode = searchParams.get("status_code")
 
   // Derive initial state from URL params

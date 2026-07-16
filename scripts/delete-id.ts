@@ -12,14 +12,14 @@ async function deleteRecords() {
   console.log(`Deleting records matching "${queryStr}"...`)
 
   try {
-    const deletedSubs = await db.delete(subscriptions).where(eq(subscriptions.midtransOrderId, queryStr)).returning()
+    const deletedSubs = await db.delete(subscriptions).where(eq(subscriptions.lastOrderId, queryStr)).returning()
     console.log(`Deleted from subscriptions:`, deletedSubs.length, "rows")
   } catch (e) {
     console.error("Error deleting from subscriptions:", e)
   }
 
   try {
-    const deletedInvs = await db.delete(invoices).where(eq(invoices.midtransOrderId, queryStr)).returning()
+    const deletedInvs = await db.delete(invoices).where(eq(invoices.orderId, queryStr)).returning()
     console.log(`Deleted from invoices:`, deletedInvs.length, "rows")
   } catch (e) {
     console.error("Error deleting from invoices:", e)

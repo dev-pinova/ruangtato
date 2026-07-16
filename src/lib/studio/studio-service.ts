@@ -486,7 +486,7 @@ export async function activateSubscription(
   input: {
     studioId: string
     planType: string
-    midtransOrderId: string
+    orderId: string
     months: number
   },
   executor?: TxOrDb,
@@ -498,7 +498,7 @@ export async function activateSubscription(
   // Idempotent: the same order already activated for the same plan is a no-op.
   if (
     existing &&
-    existing.midtransOrderId === input.midtransOrderId &&
+    existing.lastOrderId === input.orderId &&
     existing.planType === input.planType &&
     existing.status === "active"
   ) {
@@ -520,7 +520,7 @@ export async function activateSubscription(
         status: "active",
         startsAt,
         expiresAt,
-        midtransOrderId: input.midtransOrderId,
+        lastOrderId: input.orderId,
         updatedAt: new Date(),
       })
       .where(eq(subscriptions.studioId, input.studioId))
@@ -536,7 +536,7 @@ export async function activateSubscription(
       status: "active",
       startsAt,
       expiresAt,
-      midtransOrderId: input.midtransOrderId,
+      lastOrderId: input.orderId,
     })
     .returning()
 
@@ -562,7 +562,7 @@ export async function setStudioActiveIfNotSuspended(
 export async function recordInvoice(
   input: {
     studioId: string
-    midtransOrderId: string
+    orderId: string
     planType: string
     amount: number
     status: "paid" | "pending" | "failed"
@@ -579,14 +579,14 @@ export async function recordInvoice(
     .insert(invoices)
     .values({
       studioId: input.studioId,
-      midtransOrderId: input.midtransOrderId,
+      orderId: input.orderId,
       planType: input.planType,
       amount: input.amount,
       status: input.status,
       paidAt,
     })
     .onConflictDoUpdate({
-      target: invoices.midtransOrderId,
+      target: invoices.orderId,
       set: {
         planType: input.planType,
         amount: input.amount,

@@ -95,7 +95,7 @@ export async function activatePaidOrder(input: ActivatePaidOrderInput) {
     await recordInvoice(
       {
         studioId,
-        midtransOrderId: input.orderId,
+        orderId: input.orderId,
         planType,
         amount,
         status: "paid",
@@ -108,7 +108,7 @@ export async function activatePaidOrder(input: ActivatePaidOrderInput) {
       {
         studioId,
         planType,
-        midtransOrderId: input.orderId,
+        orderId: input.orderId,
         months,
       },
       tx,
@@ -254,7 +254,7 @@ export async function confirmOrderPayment(input: {
       grossAmount: status.amount,
       customField1: JSON.stringify({ studioId: input.studioId, planType: input.planType }),
       paymentStatus: {
-        merchantCode: process.env.DUITKU_MERCHANT_CODE,
+        merchantCode: process.env.DUITKU_MERCHANT_CODE?.replace(/^["']|["']$/g, ""),
         amount: status.amount,
         merchantOrderId: input.orderId,
         resultCode: status.statusCode,
@@ -268,7 +268,7 @@ export async function confirmOrderPayment(input: {
   return {
     studioId: input.studioId,
     planType: input.planType,
-    transactionStatus: status.statusCode === "00" ? "settlement" : "pending",
+    transactionStatus: status.statusCode === "00" ? "paid" : "pending",
     paid: isSuccessfulPayment(status),
     activated,
   }

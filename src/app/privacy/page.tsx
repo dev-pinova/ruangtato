@@ -65,8 +65,8 @@ export default async function PrivacyPage() {
               </li>
               <li>
                 <span className="font-medium text-foreground">Payment Data:</span>{" "}
-                transaction history via Midtrans. We do not store your credit card number
-                - sensitive data is processed directly by Midtrans.
+                transaction history via Duitku. We do not store your credit card number
+                - sensitive data is processed directly by Duitku.
               </li>
               <li>
                 <span className="font-medium text-foreground">Analytics Data:</span>{" "}
@@ -99,7 +99,7 @@ export default async function PrivacyPage() {
             <ul className="ml-6 list-disc space-y-2">
               <li>
                 <span className="font-medium text-foreground">Service Providers:</span>{" "}
-                Midtrans (payments), cloud infrastructure providers, and analytics services.
+                Duitku (payments), cloud infrastructure providers, and analytics services.
                 They are bound by confidentiality agreements.
               </li>
               <li>
@@ -235,8 +235,8 @@ export default async function PrivacyPage() {
               </li>
               <li>
                 <span className="font-medium text-foreground">Data Pembayaran:</span>{" "}
-                riwayat transaksi via Midtrans. Kami tidak menyimpan nomor kartu
-                kredit Anda - data sensitif diproses langsung oleh Midtrans.
+                riwayat transaksi via Duitku. Kami tidak menyimpan nomor kartu
+                kredit Anda - data sensitif diproses langsung oleh Duitku.
               </li>
               <li>
                 <span className="font-medium text-foreground">Data Analitik:</span>{" "}
@@ -276,7 +276,7 @@ export default async function PrivacyPage() {
             <ul className="ml-6 list-disc space-y-2">
               <li>
                 <span className="font-medium text-foreground">Penyedia Layanan:</span>{" "}
-                Midtrans (pembayaran), penyedia infrastruktur cloud, dan layanan
+                Duitku (pembayaran), penyedia infrastruktur cloud, dan layanan
                 analitik. Mereka terikat perjanjian kerahasiaan.
               </li>
               <li>

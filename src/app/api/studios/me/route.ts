@@ -40,7 +40,7 @@ export async function GET(request: Request) {
           planType: subscription.planType,
           status: subscription.status,
           expiresAt: subscription.expiresAt?.toISOString() ?? null,
-          midtransOrderId: subscription.midtransOrderId ?? null,
+          orderId: subscription.lastOrderId ?? null,
           createdAt: subscription.createdAt.toISOString(),
         }
       : null,

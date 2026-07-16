@@ -139,7 +139,7 @@ export default async function TransactionDetailPage({
               <div className="flex flex-col gap-1">
                 <span className="flex items-center gap-1.5 text-muted-foreground">
                   <Hash className="size-4 text-muted-foreground/70" aria-hidden />
-                  Midtrans Transaction ID
+                  Transaction ID (Duitku Reference)
                 </span>
                 <span className="font-mono font-medium text-foreground">{payment.transactionId ?? "—"}</span>
               </div>

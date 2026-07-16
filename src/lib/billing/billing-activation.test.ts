@@ -102,7 +102,7 @@ describe("activatePaidOrder", () => {
     expect(recordInvoice).toHaveBeenCalledWith(
       expect.objectContaining({
         studioId: "studio-1",
-        midtransOrderId: "ORDER-123",
+        orderId: "ORDER-123",
         planType: "1month",
         amount: 149000,
         status: "paid",
@@ -115,7 +115,7 @@ describe("activatePaidOrder", () => {
       {
         studioId: "studio-1",
         planType: "1month",
-        midtransOrderId: "ORDER-123",
+        orderId: "ORDER-123",
         months: 1,
       },
       txStub,

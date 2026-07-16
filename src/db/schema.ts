@@ -76,8 +76,8 @@ export const subscriptions = pgTable(
     status: text("status").notNull().default("pending"),
     startsAt: timestamp("starts_at", { withTimezone: true }),
     expiresAt: timestamp("expires_at", { withTimezone: true }),
-    midtransOrderId: text("midtrans_order_id"),
-    midtransTransactionId: text("midtrans_transaction_id"),
+    lastOrderId: text("last_order_id"),
+    lastTransactionId: text("last_transaction_id"),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
@@ -95,7 +95,7 @@ export const invoices = pgTable("invoices", {
   studioId: uuid("studio_id")
     .notNull()
     .references(() => studios.id, { onDelete: "cascade" }),
-  midtransOrderId: text("midtrans_order_id").notNull().unique(),
+  orderId: text("order_id").notNull().unique(),
   planType: text("plan_type").notNull(),
   amount: integer("amount").notNull(),
   status: text("status").notNull().default("pending"),

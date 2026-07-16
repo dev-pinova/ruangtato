@@ -70,7 +70,7 @@ export default async function CookiesPage() {
             </p>
             <ul className="ml-6 list-disc space-y-2">
               <li>
-                <span className="font-medium text-foreground">Midtrans:</span>{" "}
+                <span className="font-medium text-foreground">Duitku:</span>{" "}
                 to securely process subscription payments.
               </li>
               <li>
@@ -186,7 +186,7 @@ export default async function CookiesPage() {
             </p>
             <ul className="ml-6 list-disc space-y-2">
               <li>
-                <span className="font-medium text-foreground">Midtrans:</span>{" "}
+                <span className="font-medium text-foreground">Duitku:</span>{" "}
                 untuk memproses pembayaran langganan dengan aman.
               </li>
               <li>

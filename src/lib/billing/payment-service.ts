@@ -219,10 +219,10 @@ export async function listPayments(input: {
     .where(whereClause)
 
   const data: AdminPaymentRow[] = rows.map((row) => {
-    const raw = row.payment.rawPayload as { planType?: string; custom_field1?: string; additionalParam?: string } | null
+    const raw = row.payment.rawPayload as { planType?: string; additionalParam?: string } | null
     let planType = raw?.planType ?? null
     if (!planType) {
-      const metadata = parsePaymentMetadata(raw?.additionalParam ?? raw?.custom_field1)
+      const metadata = parsePaymentMetadata(raw?.additionalParam)
       if (metadata) planType = metadata.planType
     }
     return {
@@ -266,10 +266,10 @@ export async function getPaymentById(paymentId: string) {
 
   if (!row) return null
 
-  const raw = row.payment.rawPayload as { planType?: string; custom_field1?: string; additionalParam?: string } | null
+  const raw = row.payment.rawPayload as { planType?: string; additionalParam?: string } | null
   let planType = raw?.planType ?? null
   if (!planType) {
-    const metadata = parsePaymentMetadata(raw?.additionalParam ?? raw?.custom_field1)
+    const metadata = parsePaymentMetadata(raw?.additionalParam)
     if (metadata) planType = metadata.planType
   }
 
@@ -305,7 +305,7 @@ export async function backfillPaymentsFromInvoices() {
       .insert(payments)
       .values({
         studioId: invoice.studioId,
-        orderId: invoice.midtransOrderId,
+        orderId: invoice.orderId,
         amount: invoice.amount,
         transactionStatus: status,
         rawPayload: {

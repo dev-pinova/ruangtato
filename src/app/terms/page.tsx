@@ -131,7 +131,7 @@ export default async function TermsPage() {
           <LegalSection title="6. Subscriptions & Payments">
             <p>
               The platform uses a paid subscription model with several duration
-              options (3, 6, and 12 months). Payments are processed through Midtrans
+              options (3, 6, and 12 months). Payments are processed through Duitku
               and charged in Rupiah (IDR), including VAT in accordance with
               applicable regulations.
             </p>
@@ -337,7 +337,7 @@ export default async function TermsPage() {
           <LegalSection title="6. Langganan & Pembayaran">
             <p>
               Platform menggunakan model langganan berbayar dengan beberapa pilihan
-              durasi (3, 6, dan 12 bulan). Pembayaran diproses melalui Midtrans dan
+              durasi (3, 6, dan 12 bulan). Pembayaran diproses melalui Duitku dan
               dikenakan dalam Rupiah (IDR), sudah termasuk PPN sesuai peraturan
               yang berlaku.
             </p>

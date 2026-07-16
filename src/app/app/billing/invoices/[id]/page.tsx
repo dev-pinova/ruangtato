@@ -233,7 +233,7 @@ export default async function InvoiceDetailPage({
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">{t.invoice.meta.orderId}</span>
             <span className="font-mono text-xs text-foreground bg-muted/50 px-2 py-0.5 rounded">
-              {inv.midtransOrderId}
+              {inv.orderId}
             </span>
           </div>
           <div className="flex items-center justify-between text-sm">

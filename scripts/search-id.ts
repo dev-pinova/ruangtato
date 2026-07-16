@@ -44,7 +44,7 @@ async function search() {
     const subs = await db.select().from(subscriptions).where(
       or(
         eq(subscriptions.id, queryStr),
-        eq(subscriptions.midtransOrderId, queryStr)
+        eq(subscriptions.lastOrderId, queryStr)
       )
     )
     if (subs.length > 0) console.log("Found in subscriptions:", subs)
@@ -56,7 +56,7 @@ async function search() {
     const invs = await db.select().from(invoices).where(
       or(
         eq(invoices.id, queryStr),
-        eq(invoices.midtransOrderId, queryStr)
+        eq(invoices.orderId, queryStr)
       )
     )
     if (invs.length > 0) console.log("Found in invoices:", invs)
