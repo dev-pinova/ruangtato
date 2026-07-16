@@ -214,39 +214,71 @@ export function verifyNotificationSignature(
     return false
   }
 
-  // Option 1: Raw String(amount) (e.g. "149000.00" or "149000")
-  const amountStrRaw = String(amount)
-  const expectedSourceRaw = `${merchantCode}${amountStrRaw}${merchantOrderId}${apiKey}`
-  const expectedRaw = createHash("md5")
-    .update(expectedSourceRaw)
-    .digest("hex")
+  const cleanSignature = signature.trim().toLowerCase()
+  const isSha256 = cleanSignature.length === 64
 
-  // Option 2: Rounded integer representation (e.g. "149000")
-  const amountStrInt = Math.round(Number(amount)).toString()
-  const expectedSourceInt = `${merchantCode}${amountStrInt}${merchantOrderId}${apiKey}`
-  const expectedInt = createHash("md5")
-    .update(expectedSourceInt)
-    .digest("hex")
+  if (isSha256) {
+    // Duitku POP / Invoices API uses HMAC-SHA256 signature in callbacks
+    // Formula: HMAC-SHA256(merchantCode + amount + merchantOrderId, apiKey)
+    
+    // Try both raw string amount (e.g. "149000.00") and integer amount (e.g. "149000")
+    const amountStrRaw = String(amount)
+    const expectedRaw = createHmac("sha256", apiKey)
+      .update(`${merchantCode}${amountStrRaw}${merchantOrderId}`)
+      .digest("hex")
 
-  const matchesRaw = expectedRaw.toLowerCase() === signature.toLowerCase()
-  const matchesInt = expectedInt.toLowerCase() === signature.toLowerCase()
+    const amountStrInt = Math.round(Number(amount)).toString()
+    const expectedInt = createHmac("sha256", apiKey)
+      .update(`${merchantCode}${amountStrInt}${merchantOrderId}`)
+      .digest("hex")
 
-  if (!matchesRaw && !matchesInt) {
-    console.error("[verifyNotificationSignature] Signature mismatch detail:", {
-      merchantCode,
-      merchantOrderId,
-      payloadAmount: amount,
-      amountStrRaw,
-      amountStrInt,
-      receivedSignature: signature,
-      expectedRaw,
-      expectedInt,
-      apiKeyLength: apiKey.length,
-      apiKeyStart: apiKey.slice(0, 4) + "...",
-    })
+    const matchesRaw = expectedRaw.toLowerCase() === cleanSignature
+    const matchesInt = expectedInt.toLowerCase() === cleanSignature
+
+    if (!matchesRaw && !matchesInt) {
+      console.error("[verifyNotificationSignature] HMAC-SHA256 signature mismatch:", {
+        merchantCode,
+        merchantOrderId,
+        payloadAmount: amount,
+        receivedSignature: signature,
+        expectedRaw,
+        expectedInt,
+      })
+    }
+
+    return matchesRaw || matchesInt
+  } else {
+    // Traditional Duitku Web API uses MD5
+    // Formula: MD5(merchantCode + amount + merchantOrderId + apiKey)
+    
+    const amountStrRaw = String(amount)
+    const expectedSourceRaw = `${merchantCode}${amountStrRaw}${merchantOrderId}${apiKey}`
+    const expectedRaw = createHash("md5")
+      .update(expectedSourceRaw)
+      .digest("hex")
+
+    const amountStrInt = Math.round(Number(amount)).toString()
+    const expectedSourceInt = `${merchantCode}${amountStrInt}${merchantOrderId}${apiKey}`
+    const expectedInt = createHash("md5")
+      .update(expectedSourceInt)
+      .digest("hex")
+
+    const matchesRaw = expectedRaw.toLowerCase() === cleanSignature
+    const matchesInt = expectedInt.toLowerCase() === cleanSignature
+
+    if (!matchesRaw && !matchesInt) {
+      console.error("[verifyNotificationSignature] MD5 signature mismatch:", {
+        merchantCode,
+        merchantOrderId,
+        payloadAmount: amount,
+        receivedSignature: signature,
+        expectedRaw,
+        expectedInt,
+      })
+    }
+
+    return matchesRaw || matchesInt
   }
-
-  return matchesRaw || matchesInt
 }
 
 export function isSuccessfulPayment(payload: DuitkuNotificationPayload | DuitkuTransactionStatus): boolean {
