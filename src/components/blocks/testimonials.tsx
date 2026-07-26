@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, Quote, Star } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 
 import type { TestimonialsData } from "@/lib/types"
+import { getLocalizedText } from "@/lib/studio/i18n-block-utils"
 
 const DEFAULT_REVIEWS = [
   {
@@ -30,8 +31,16 @@ const DEFAULT_REVIEWS = [
   },
 ]
 
-export function BlockTestimonials({ data }: { data: TestimonialsData }) {
+export function BlockTestimonials({
+  data,
+  locale = "id",
+}: {
+  data: TestimonialsData
+  locale?: string
+}) {
   const reviews = data?.reviews?.length ? data.reviews : DEFAULT_REVIEWS
+  const eyebrow = getLocalizedText(data, "eyebrow", locale, "Testimonial")
+  const headline = getLocalizedText(data, "headline", locale, locale === "en" ? "What Clients Say" : "Kata Klien Kami")
   const [activeIndex, setActiveIndex] = useState(0)
   const [isHovered, setIsHovered] = useState(false)
 
@@ -63,10 +72,10 @@ export function BlockTestimonials({ data }: { data: TestimonialsData }) {
       <div className="mx-auto max-w-5xl px-6 py-24 md:px-10 md:py-32">
         <div className="text-center">
           <p className="font-display text-[11px] uppercase tracking-[0.4em] text-white/60">
-            — {data?.eyebrow || "Testimonial"}
+            — {eyebrow}
           </p>
           <h2 className="mt-5 font-display text-4xl font-light uppercase tracking-[0.16em] md:text-6xl">
-            {data?.headline || "What Clients Say"}
+            {headline}
           </h2>
         </div>
 
@@ -107,7 +116,7 @@ export function BlockTestimonials({ data }: { data: TestimonialsData }) {
 
                 {/* Testimonial Quote */}
                 <blockquote className="font-display text-lg italic leading-relaxed text-white/90 md:text-2xl">
-                  &ldquo;{activeReview.text}&rdquo;
+                  &ldquo;{getLocalizedText(activeReview, "text", locale)}&rdquo;
                 </blockquote>
 
                 {/* Avatar and Figcaption */}

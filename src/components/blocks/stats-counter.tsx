@@ -1,5 +1,6 @@
 import type { StatsCounterData } from "@/lib/types"
 import { NumberTicker } from "@/components/ui/number-ticker"
+import { getLocalizedText } from "@/lib/studio/i18n-block-utils"
 
 const DEFAULT_STATS = [
   { value: "2,500", label: "Tatos Done" },
@@ -26,19 +27,27 @@ function parseStatValue(raw: string): {
   return { prefix, value, suffix }
 }
 
-export function BlockStatsCounter({ data }: { data: StatsCounterData }) {
+export function BlockStatsCounter({
+  data,
+  locale = "id",
+}: {
+  data: StatsCounterData
+  locale?: string
+}) {
   const stats = data?.stats?.length ? data.stats : DEFAULT_STATS
+  const headline = getLocalizedText(data, "headline", locale)
 
   return (
     <section className="border-b border-white/10 bg-black text-white">
       <div className="mx-auto max-w-7xl px-6 py-20 md:px-10 md:py-24">
-        {data?.headline && (
+        {headline && (
           <h2 className="mb-12 text-center font-display text-3xl font-light uppercase tracking-[0.2em] text-white md:text-5xl">
-            {data.headline}
+            {headline}
           </h2>
         )}
         <div className="grid grid-cols-2 gap-px border border-white/10 bg-white/10 md:grid-cols-4">
           {stats.map((stat, i) => {
+            const label = getLocalizedText(stat, "label", locale)
             const { prefix, value, suffix } = parseStatValue(stat.value ?? "")
             return (
               <div
@@ -62,7 +71,7 @@ export function BlockStatsCounter({ data }: { data: StatsCounterData }) {
                   )}
                 </p>
                 <p className="mt-4 text-[10px] uppercase tracking-[0.4em] text-white/60 md:text-xs">
-                  {stat.label}
+                  {label}
                 </p>
               </div>
             )
@@ -72,3 +81,4 @@ export function BlockStatsCounter({ data }: { data: StatsCounterData }) {
     </section>
   )
 }
+

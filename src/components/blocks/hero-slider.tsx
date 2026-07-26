@@ -6,8 +6,9 @@ import { ChevronLeft, ChevronRight } from "lucide-react"
 import type { HeroSliderData } from "@/lib/types"
 
 import { trackStudioClick } from "@/components/studio/studio-tracker"
+import { getLocalizedText } from "@/lib/studio/i18n-block-utils"
 
-const DEFAULT_SLIDES = [
+const DEFAULT_SLIDES_ID = [
   {
     headline: "Art Studio",
     subheadline: "Unique Tatos",
@@ -17,19 +18,38 @@ const DEFAULT_SLIDES = [
   },
 ]
 
+const DEFAULT_SLIDES_EN = [
+  {
+    headline: "Art Studio",
+    subheadline: "Unique Tattoos",
+    ctaText: "Book Consultation",
+    image:
+      "https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?q=80&w=1600&auto=format&fit=crop",
+  },
+]
+
 export function BlockHeroSlider({
   data,
   waNumber,
   slug,
+  locale = "id",
 }: {
   data: HeroSliderData
   waNumber?: string
   slug?: string
+  locale?: string
 }) {
-  const slides = data?.slides?.length ? data.slides : DEFAULT_SLIDES
+  const defaultSlides = locale === "en" ? DEFAULT_SLIDES_EN : DEFAULT_SLIDES_ID
+  const slides = data?.slides?.length ? data.slides : defaultSlides
 
   const [active, setActive] = useState(0)
-  const slide = slides[active]
+  const rawSlide = slides[active]
+  const slide = {
+    ...rawSlide,
+    headline: getLocalizedText(rawSlide, "headline", locale),
+    subheadline: getLocalizedText(rawSlide, "subheadline", locale),
+    ctaText: getLocalizedText(rawSlide, "ctaText", locale, locale === "en" ? "Book Consultation" : "Get a Tato"),
+  }
   const waUrl = waNumber
     ? `https://wa.me/${waNumber}?text=Halo,%20saya%20tertarik%20untuk%20konsultasi%20tato`
     : undefined
