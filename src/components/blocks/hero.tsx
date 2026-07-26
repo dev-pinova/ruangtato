@@ -2,19 +2,29 @@
 
 import { trackStudioClick } from "@/components/studio/studio-tracker"
 import type { HeroData } from "@/lib/types"
+import { getLocalizedText } from "@/lib/studio/i18n-block-utils"
 
 export function BlockHero({
   data,
   waNumber,
   slug,
+  locale = "id",
 }: {
   data: HeroData
   waNumber?: string
   slug?: string
+  locale?: string
 }) {
-  const headline = data?.headline || "Tato yang menceritakan siapa Anda."
-  const subheadline = data?.subheadline || "Studio tato profesional dengan standar sterilisasi tinggi dan desain custom."
-  const ctaText = data?.ctaText || "Konsultasi Sekarang"
+  const headline = getLocalizedText(data, "headline", locale, locale === "en" ? "Eyes Wide Open" : "Tato yang menceritakan siapa Anda.")
+  const subheadline = getLocalizedText(
+    data,
+    "subheadline",
+    locale,
+    locale === "en"
+      ? "Professional tattoo studio with unique designs, deep consultation, and high safety standards."
+      : "Studio tato profesional dengan standar sterilisasi tinggi dan desain custom."
+  )
+  const ctaText = getLocalizedText(data, "ctaText", locale, locale === "en" ? "Book Now" : "Konsultasi Sekarang")
   const image = data?.image || "https://images.unsplash.com/photo-1565058379802-bbe93b2f703a?q=80&w=1200&auto=format&fit=crop"
 
   const waUrl = waNumber
@@ -76,7 +86,7 @@ export function BlockHero({
             href="#gallery"
             className="font-display text-[11px] uppercase tracking-[0.4em] text-white/90 underline underline-offset-8 transition-colors hover:text-white hover:underline"
           >
-            Lihat Portofolio
+            {locale === "en" ? "View Portfolio" : "Lihat Portofolio"}
           </a>
         </div>
       </div>
