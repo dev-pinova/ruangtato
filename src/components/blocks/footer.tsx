@@ -4,7 +4,7 @@ import { normalizeGoogleMapsEmbedUrl } from "@/lib/google-maps-embed"
 import type { FooterData } from "@/lib/types"
 
 
-export function BlockFooter({ data }: { data: FooterData }) {
+export function BlockFooter({ data, locale = "id" }: { data: FooterData; locale?: string }) {
   const title = data?.title || "Studio Name"
   const address = data?.address || "Jakarta, Indonesia"
   const instagram = data?.instagram

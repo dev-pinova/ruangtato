@@ -12,10 +12,12 @@ export function BlockAppointmentForm({
   data,
   studioSlug,
   studioName,
+  locale = "id",
 }: {
   data: AppointmentFormData
   studioSlug?: string
   studioName?: string
+  locale?: string
 }) {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")

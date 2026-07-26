@@ -32,7 +32,7 @@ const DEFAULT_IMAGES: { src: string; alt?: string }[] = [
   },
 ]
 
-export function BlockGallery({ data }: { data: GalleryData }) {
+export function BlockGallery({ data, locale = "id" }: { data: GalleryData; locale?: string }) {
   const images = data?.images?.length ? data.images : DEFAULT_IMAGES
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
 
@@ -57,10 +57,10 @@ export function BlockGallery({ data }: { data: GalleryData }) {
       <div className="mx-auto max-w-7xl px-6 py-20 md:px-10 md:py-28">
         <div className="text-center">
           <p className="font-display text-[11px] uppercase tracking-[0.4em] text-white/60">
-            — {data?.eyebrow || "Portfolio"}
+            — {data?.eyebrow || (locale === "en" ? "Portfolio" : "Portofolio")}
           </p>
           <h2 className="mt-5 font-display text-4xl font-light uppercase tracking-[0.16em] md:text-6xl">
-            {data?.headline || "Our Gallery"}
+            {data?.headline || (locale === "en" ? "Our Gallery" : "Galeri Kami")}
           </h2>
           {data?.subheadline && (
             <p className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-white/60 md:text-base">
@@ -69,7 +69,7 @@ export function BlockGallery({ data }: { data: GalleryData }) {
           )}
         </div>
 
-        <div className="mt-14 grid grid-cols-1 gap-px border border-white/10 bg-white/10 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-14 grid grid-cols-2 gap-px border border-white/10 bg-white/10 sm:grid-cols-2 lg:grid-cols-3">
           {images.map((img, i) => {
             const src = img.src?.trim()
             return (

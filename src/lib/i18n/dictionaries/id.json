@@ -397,5 +397,25 @@
   "notFoundStudio": {
     "title": "Studio Tidak Ditemukan",
     "description": "Halaman studio yang Anda cari tidak tersedia atau belum dipublikasikan."
+  },
+  "tenant": {
+    "views": "views",
+    "clicks": "clicks",
+    "dilihat": "dilihat",
+    "diklik": "diklik",
+    "booking": "Booking",
+    "about": "Tentang",
+    "services": "Layanan",
+    "artists": "Artist",
+    "clients": "Klien",
+    "faq": "FAQ",
+    "gallery": "Galeri",
+    "news": "Berita",
+    "contact": "Kontak",
+    "home": "Beranda",
+    "features": "Fitur",
+    "selectLanguage": "Pilih Bahasa",
+    "indonesian": "Bahasa Indonesia",
+    "english": "English"
   }
 }

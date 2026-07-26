@@ -397,5 +397,25 @@
   "notFoundStudio": {
     "title": "Studio Not Found",
     "description": "The studio page you are looking for is unavailable or has not been published yet."
+  },
+  "tenant": {
+    "views": "views",
+    "clicks": "clicks",
+    "dilihat": "views",
+    "diklik": "clicks",
+    "booking": "Book Now",
+    "about": "About",
+    "services": "Services",
+    "artists": "Artists",
+    "clients": "Clients",
+    "faq": "FAQ",
+    "gallery": "Gallery",
+    "news": "News",
+    "contact": "Contact",
+    "home": "Home",
+    "features": "Features",
+    "selectLanguage": "Select Language",
+    "indonesian": "Bahasa Indonesia",
+    "english": "English"
   }
 }

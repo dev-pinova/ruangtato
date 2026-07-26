@@ -1,14 +1,26 @@
 import type { HeaderOverlayLink } from "@/lib/types"
+import { LanguageSwitcher } from "@/components/ui/language-switcher"
+import type { Locale } from "@/lib/i18n/actions"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function BlockHeader({ data }: { data: any }) {
-  const links: HeaderOverlayLink[] = data?.links || [
-    { label: "Tentang", href: "#about" },
-    { label: "Layanan", href: "#services" },
-    { label: "Artist", href: "#artists" },
-    { label: "Klien", href: "#testimonials" },
-    { label: "FAQ", href: "#faq" },
-  ]
+export function BlockHeader({ data, locale = "id" }: { data: any; locale?: Locale }) {
+  const defaultLinks: HeaderOverlayLink[] = locale === "en"
+    ? [
+        { label: "About", href: "#about" },
+        { label: "Services", href: "#services" },
+        { label: "Artists", href: "#artists" },
+        { label: "Clients", href: "#testimonials" },
+        { label: "FAQ", href: "#faq" },
+      ]
+    : [
+        { label: "Tentang", href: "#about" },
+        { label: "Layanan", href: "#services" },
+        { label: "Artist", href: "#artists" },
+        { label: "Klien", href: "#testimonials" },
+        { label: "FAQ", href: "#faq" },
+      ]
+
+  const links: HeaderOverlayLink[] = data?.links || defaultLinks
 
   return (
     <header className="sticky top-0 z-40 border-b border-white/10 bg-black/85 backdrop-blur-md text-white">
@@ -37,13 +49,17 @@ export function BlockHeader({ data }: { data: any }) {
           ))}
         </nav>
 
-        <a
-          href="#contact"
-          className="inline-flex h-8 items-center bg-white px-4 text-[10px] uppercase tracking-[0.2em] font-semibold text-black transition-colors hover:bg-white/90"
-        >
-          {data?.ctaText || "Booking"}
-        </a>
+        <div className="flex items-center gap-3">
+          <LanguageSwitcher defaultLocale={locale} />
+          <a
+            href="#contact"
+            className="inline-flex h-8 items-center bg-white px-4 text-[10px] uppercase tracking-[0.2em] font-semibold text-black transition-colors hover:bg-white/90"
+          >
+            {data?.ctaText || (locale === "en" ? "Booking" : "Booking")}
+          </a>
+        </div>
       </div>
     </header>
   )
 }
+

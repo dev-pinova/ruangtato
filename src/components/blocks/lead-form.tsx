@@ -14,10 +14,12 @@ export function BlockLeadForm({
   studioName,
   studioSlug,
   data,
+  locale = "id",
 }: {
   studioName: string
   studioSlug?: string
   data?: LeadFormData
+  locale?: string
 }) {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
@@ -27,9 +29,13 @@ export function BlockLeadForm({
   const [error, setError] = useState<string | null>(null)
   const errorRef = useRef<HTMLParagraphElement>(null)
 
-  const title = data?.title || "Hubungi kami"
-  const description = data?.description || "Punya pertanyaan atau ingin konsultasi? Kirim pesan dan kami akan segera menghubungi Anda."
-  const ctaText = data?.ctaText || "Kirim Pesan"
+  const title = data?.title || (locale === "en" ? "Contact Us" : "Hubungi kami")
+  const description =
+    data?.description ||
+    (locale === "en"
+      ? "Have questions or want a consultation? Send us a message and we will get back to you shortly."
+      : "Punya pertanyaan atau ingin konsultasi? Kirim pesan dan kami akan segera menghubungi Anda.")
+  const ctaText = data?.ctaText || (locale === "en" ? "Send Message" : "Kirim Pesan")
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()

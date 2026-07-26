@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react"
 import { Menu, X } from "lucide-react"
 
 import type { HeaderOverlayData, HeaderOverlayLink } from "@/lib/types"
+import { LanguageSwitcher } from "@/components/ui/language-switcher"
+import type { Locale } from "@/lib/i18n/actions"
 
 const DEFAULT_LEFT: HeaderOverlayLink[] = [
   { label: "Demos", href: "#" },
@@ -32,7 +34,13 @@ function NavLink({ link }: { link: HeaderOverlayLink }) {
  * Transparent overlay header dengan logo center dan menu kiri-kanan.
  * Cocok untuk hero full-bleed di belakangnya.
  */
-export function BlockHeaderOverlay({ data }: { data: HeaderOverlayData }) {
+export function BlockHeaderOverlay({
+  data,
+  locale = "id",
+}: {
+  data: HeaderOverlayData
+  locale?: Locale
+}) {
   const [open, setOpen] = useState(false)
   const toggleRef = useRef<HTMLButtonElement>(null)
   const drawerNavRef = useRef<HTMLElement>(null)
@@ -105,14 +113,15 @@ export function BlockHeaderOverlay({ data }: { data: HeaderOverlayData }) {
           <div className="shrink-0 px-6" />
         )}
 
-        {/* Desktop: nav kanan */}
+        {/* Desktop: nav kanan + LanguageSwitcher */}
         <nav className="hidden flex-1 items-center justify-start gap-8 md:flex lg:gap-12">
           {rightLinks.map((link, i) => (
             <NavLink key={`r-${i}`} link={link} />
           ))}
+          <LanguageSwitcher defaultLocale={locale} />
         </nav>
 
-        {/* Mobile: logo kiri + hamburger */}
+        {/* Mobile: logo kiri + LanguageSwitcher + hamburger */}
         <a
           href="#"
           className="font-display text-base font-semibold uppercase tracking-[0.3em] text-white md:hidden"
@@ -127,17 +136,20 @@ export function BlockHeaderOverlay({ data }: { data: HeaderOverlayData }) {
             logoText
           )}
         </a>
-        <button
-          ref={toggleRef}
-          type="button"
-          onClick={() => setOpen((v) => !v)}
-          className="inline-flex size-10 items-center justify-center rounded-full border border-white/20 text-white md:hidden"
-          aria-label={open ? "Tutup menu" : "Buka menu"}
-          aria-expanded={open}
-          aria-controls="mobile-nav"
-        >
-          {open ? <X className="size-4" /> : <Menu className="size-4" />}
-        </button>
+        <div className="flex items-center gap-2 md:hidden">
+          <LanguageSwitcher defaultLocale={locale} />
+          <button
+            ref={toggleRef}
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            className="inline-flex size-10 items-center justify-center rounded-full border border-white/20 text-white"
+            aria-label={open ? "Tutup menu" : "Buka menu"}
+            aria-expanded={open}
+            aria-controls="mobile-nav"
+          >
+            {open ? <X className="size-4" /> : <Menu className="size-4" />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile drawer */}
@@ -160,10 +172,14 @@ export function BlockHeaderOverlay({ data }: { data: HeaderOverlayData }) {
                   {link.label}
                 </a>
               ))}
+              <div className="pt-2 flex items-center justify-between">
+                <span className="text-[10px] uppercase tracking-[0.2em] text-white/50">Language</span>
+                <LanguageSwitcher defaultLocale={locale} />
+              </div>
               <button
                 type="button"
                 onClick={closeDrawer}
-                className="mt-2 inline-flex items-center justify-center gap-2 self-start rounded-full border border-white/20 px-4 py-2 text-[10px] uppercase tracking-[0.32em] text-white/70"
+                className="mt-3 inline-flex items-center justify-center gap-2 self-start rounded-full border border-white/20 px-4 py-2 text-[10px] uppercase tracking-[0.32em] text-white/70"
               >
                 <X className="size-3" />
                 Close
@@ -175,3 +191,4 @@ export function BlockHeaderOverlay({ data }: { data: HeaderOverlayData }) {
     </header>
   )
 }
+

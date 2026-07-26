@@ -93,12 +93,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   })
 }
 
+import { LanguageSwitcher } from "@/components/ui/language-switcher"
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type BlockComponent = React.ComponentType<{ data: any; waNumber?: string; slug?: string }>
+type BlockComponent = React.ComponentType<{ data: any; waNumber?: string; slug?: string; locale?: string }>
 
 const BLOCK_COMPONENTS: Partial<Record<BlockType, BlockComponent>> = {
-  Header: BlockHeader,
-  HeaderOverlay: BlockHeaderOverlay,
+  Header: BlockHeader as any,
+  HeaderOverlay: BlockHeaderOverlay as any,
   Hero: BlockHero,
   HeroSlider: BlockHeroSlider,
   Goals: BlockGoals,
@@ -165,6 +167,7 @@ export default async function StudioRendererPage({ params }: PageProps) {
 
   const visibleBlocks = getVisibleBlocks(studio)
   const hasAppointmentBlock = visibleBlocks.some((b) => b.type === "AppointmentForm")
+  const hasHeaderBlock = visibleBlocks.some((b) => b.type === "Header" || b.type === "HeaderOverlay")
 
   return (
     <main className="studio-template relative min-h-screen bg-black font-body text-white">
@@ -179,6 +182,11 @@ export default async function StudioRendererPage({ params }: PageProps) {
         })}
       />
       <StudioTracker slug={slug} />
+      {!hasHeaderBlock && (
+        <div className="fixed top-4 right-4 z-50 rounded-full border border-white/20 bg-black/80 p-1 backdrop-blur-md">
+          <LanguageSwitcher defaultLocale={locale} />
+        </div>
+      )}
       {visibleBlocks.map((block) => {
         const anchorId = BLOCK_ANCHOR_IDS[block.type]
         const wrapperProps = anchorId ? { id: anchorId } : {}
@@ -190,6 +198,7 @@ export default async function StudioRendererPage({ params }: PageProps) {
                 data={block.data as AppointmentFormData}
                 studioSlug={slug}
                 studioName={studio.name}
+                locale={locale}
               />
             </div>
           )
@@ -202,6 +211,7 @@ export default async function StudioRendererPage({ params }: PageProps) {
                 data={block.data as LeadFormData}
                 studioSlug={slug}
                 studioName={studio.name}
+                locale={locale}
               />
             </div>
           )
@@ -220,6 +230,7 @@ export default async function StudioRendererPage({ params }: PageProps) {
             <Component
               data={block.data}
               waNumber={studio.waNumber}
+              locale={locale}
               {...(usesSlug ? { slug } : {})}
             />
             {block.type === "Header" && (
@@ -227,12 +238,12 @@ export default async function StudioRendererPage({ params }: PageProps) {
                 <div className="mx-auto flex max-w-6xl items-center justify-center gap-6 px-4 py-2.5 text-[10px] uppercase tracking-[0.32em] text-white/50 md:px-6">
                   <span className="inline-flex items-center gap-1.5">
                     <Eye className="size-3" />
-                    {studio.viewCount.toLocaleString(locale === "en" ? "en-US" : "id-ID")} views
+                    {studio.viewCount.toLocaleString(locale === "en" ? "en-US" : "id-ID")} {locale === "en" ? "views" : "dilihat"}
                   </span>
                   <span className="text-white/20">•</span>
                   <span className="inline-flex items-center gap-1.5">
                     <MousePointerClick className="size-3" />
-                    {studio.clickCount.toLocaleString(locale === "en" ? "en-US" : "id-ID")} clicks
+                    {studio.clickCount.toLocaleString(locale === "en" ? "en-US" : "id-ID")} {locale === "en" ? "clicks" : "diklik"}
                   </span>
                 </div>
               </div>
