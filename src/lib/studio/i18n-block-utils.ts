@@ -227,7 +227,7 @@ const ID_TO_EN_MAP: Record<string, string> = {
   "Berapa lama proses healing?": "How long is the healing process?",
   "Umumnya 2-4 minggu tergantung ukuran dan area.": "Generally 2-4 weeks depending on size and area.",
   "Apakah bisa cover-up?": "Can I get a cover-up?",
-  "Bisa, setelah review desain lama di konsultasi.",
+  "Bisa, setelah review desain lama di konsultasi.": "Yes, after reviewing the old design in a consultation.",
   "Minimal usia?": "Minimum age?",
   "Minimal 18 tahun dengan identitas valid.": "Minimum 18 years old with valid ID.",
 
