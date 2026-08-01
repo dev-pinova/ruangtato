@@ -10,6 +10,7 @@ import { LaurelWreath } from "@/components/showcase/laurel-wreath"
 import { VerifiedCheck } from "@/components/showcase/verified-check"
 import { Button } from "@/components/ui/button"
 import { SITE_NAME } from "@/lib/site"
+import { useLanguage } from "@/lib/i18n/language-provider"
 import type { Studio } from "@/lib/types"
 
 const GRID_PREVIEW_LIMIT = 8 // 4 kolom × 2 baris
@@ -31,6 +32,10 @@ export function ExploreGrid({
   selectedCity: string
   onResetFilters?: () => void
 }) {
+  const { t, locale } = useLanguage()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const c = (t as any).catalog || {}
+
   const [showAll, setShowAll] = useState(false)
   const query = searchQuery.toLowerCase()
 
@@ -76,10 +81,10 @@ export function ExploreGrid({
               <SlidersHorizontal className="size-5" />
             </div>
             <p className="text-base font-medium text-neutral-900">
-              Tidak ada studio yang cocok dengan filtermu
+              {c.noMatchTitle || (locale === "en" ? "No studios match your filter" : "Tidak ada studio yang cocok dengan filtermu")}
             </p>
             <p className="mt-1 max-w-sm text-sm text-neutral-500">
-              Coba ganti kota, hapus filter terverifikasi, atau ubah kata kunci pencarianmu.
+              {c.noMatchDesc || (locale === "en" ? "Try changing the city, clearing verified filters, or changing your search keywords." : "Coba ganti kota, hapus filter terverifikasi, atau ubah kata kunci pencarianmu.")}
             </p>
             {onResetFilters && (
               <Button
@@ -88,7 +93,7 @@ export function ExploreGrid({
                 onClick={onResetFilters}
                 className="mt-6 border-neutral-300 text-neutral-700 hover:bg-neutral-100"
               >
-                Reset filter
+                {c.resetFilter || (locale === "en" ? "Reset filter" : "Reset filter")}
               </Button>
             )}
           </>
@@ -98,10 +103,14 @@ export function ExploreGrid({
               <Store className="size-5" />
             </div>
             <p className="text-base font-medium text-neutral-900">
-              Belum ada studio yang tampil
+              {c.noStudiosTitle || (locale === "en" ? "No studios listed yet" : "Belum ada studio yang tampil")}
             </p>
             <p className="mt-1 max-w-sm text-sm text-neutral-500">
-              Direktori sedang bertumbuh. Jadilah studio pertama yang tampil di {SITE_NAME}.
+              {c.noStudiosDesc
+                ? c.noStudiosDesc.replace("{siteName}", SITE_NAME)
+                : locale === "en"
+                ? `Directory is growing. Be the first studio listed on ${SITE_NAME}.`
+                : `Direktori sedang bertumbuh. Jadilah studio pertama yang tampil di ${SITE_NAME}.`}
             </p>
             <Button
               size="sm"
@@ -109,7 +118,7 @@ export function ExploreGrid({
               className="mt-6 gap-2 border-neutral-300 text-neutral-700 bg-white hover:bg-neutral-50"
               render={<Link href="/register" />}
             >
-              Tampilkan Studiomu
+              {c.listStudioBtn || (locale === "en" ? "List Your Studio" : "Tampilkan Studiomu")}
               <ArrowRight className="size-3.5" />
             </Button>
           </>
@@ -145,7 +154,7 @@ export function ExploreGrid({
             onClick={() => setShowAll(true)}
             className="gap-2 border-neutral-300 text-neutral-700 hover:bg-neutral-50"
           >
-            Lihat Semua Studio
+            {c.viewAllStudios || (locale === "en" ? "View All Studios" : "Lihat Semua Studio")}
             <ArrowRight className="size-4" />
           </Button>
         </div>
@@ -155,6 +164,7 @@ export function ExploreGrid({
 }
 
 function ExploreCard({ studio }: { studio: Studio }) {
+  const { locale } = useLanguage()
   const avatarSrc = studio.artistImage || studio.image
   const displayTags = [
     ...studio.tags.slice(0, 3),
@@ -198,7 +208,7 @@ function ExploreCard({ studio }: { studio: Studio }) {
                 {studio.name}
               </p>
               <p className="hidden sm:block mt-1 text-[11px] md:text-xs leading-none text-white/55">
-                Built with{" "}
+                {locale === "en" ? "Built with" : "Built with"}{" "}
                 <span className="font-medium text-white/90">{SITE_NAME}</span>
               </p>
             </div>
@@ -220,7 +230,7 @@ function ExploreCard({ studio }: { studio: Studio }) {
               />
             )}
             <p className="min-w-0 text-xs md:text-sm text-neutral-500">
-              By{" "}
+              {locale === "en" ? "By" : "Oleh"}{" "}
               <span className="font-semibold text-neutral-800">
                 {studio.artist}
               </span>

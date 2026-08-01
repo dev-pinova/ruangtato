@@ -9,6 +9,7 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select"
+import { useLanguage } from "@/lib/i18n/language-provider"
 
 export function ExploreSidebar({
   cities,
@@ -29,12 +30,16 @@ export function ExploreSidebar({
   trustedOnly: boolean
   onTrustedToggle: () => void
 }) {
+  const { t, locale } = useLanguage()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const c = (t as any).catalog || {}
+
   return (
     <div className="flex flex-col space-y-6">
       {/* Urutkan / Sort section */}
       <div>
         <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-neutral-400">
-          Urutkan
+          {c.sortLabel || (locale === "en" ? "Sort By" : "Urutkan")}
         </h3>
         <Select value={sortBy} onValueChange={(v: string | null) => { if (v) onSortChange(v as "views" | "clicks" | "name") }}>
           <SelectTrigger className="h-9 w-full bg-white border border-neutral-200 text-neutral-800 rounded-lg">
@@ -42,9 +47,9 @@ export function ExploreSidebar({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="views">Paling dilihat</SelectItem>
-            <SelectItem value="clicks">Paling diklik</SelectItem>
-            <SelectItem value="name">Nama (A-Z)</SelectItem>
+            <SelectItem value="views">{c.sortByViews || (locale === "en" ? "Most viewed" : "Paling dilihat")}</SelectItem>
+            <SelectItem value="clicks">{c.sortByClicks || (locale === "en" ? "Most clicked" : "Paling diklik")}</SelectItem>
+            <SelectItem value="name">{c.sortByName || (locale === "en" ? "Name (A-Z)" : "Nama (A-Z)")}</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -52,7 +57,7 @@ export function ExploreSidebar({
       {/* Filter / Trusted section */}
       <div>
         <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-neutral-400">
-          Status
+          {c.statusLabel || "Status"}
         </h3>
         <button
           type="button"
@@ -65,18 +70,18 @@ export function ExploreSidebar({
           )}
         >
           <BadgeCheck className={cn("size-4 shrink-0", trustedOnly ? "text-neutral-900" : "text-neutral-300")} />
-          <span>Hanya Trusted</span>
+          <span>{c.trustedOnly || (locale === "en" ? "Trusted Only" : "Hanya Trusted")}</span>
         </button>
       </div>
 
       {/* Filter by City section */}
       <div>
         <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-neutral-400">
-          Filter By City
+          {c.filterCity || (locale === "en" ? "Filter By City" : "Filter Berdasarkan Kota")}
         </h3>
         <div className="flex flex-col space-y-1">
           <FilterRadio
-            label="Semua Kota"
+            label={c.allCities || (locale === "en" ? "All Cities" : "Semua Kota")}
             isActive={!selectedCity || selectedCity === "all"}
             onClick={() => onCityChange("")}
           />

@@ -417,5 +417,27 @@
     "selectLanguage": "Pilih Bahasa",
     "indonesian": "Bahasa Indonesia",
     "english": "English"
+  },
+  "catalog": {
+    "title": "Katalog Studio Tato",
+    "sortLabel": "Urutkan",
+    "sortByViews": "Paling dilihat",
+    "sortByClicks": "Paling diklik",
+    "sortByName": "Nama (A-Z)",
+    "statusLabel": "Status",
+    "trustedOnly": "Hanya Trusted",
+    "filterCity": "Filter Berdasarkan Kota",
+    "allCities": "Semua Kota",
+    "studiosListed": "studio terdaftar",
+    "verified": "terverifikasi",
+    "noMatchTitle": "Tidak ada studio yang cocok dengan filtermu",
+    "noMatchDesc": "Coba ganti kota, hapus filter terverifikasi, atau ubah kata kunci pencarianmu.",
+    "resetFilter": "Reset filter",
+    "noStudiosTitle": "Belum ada studio yang tampil",
+    "noStudiosDesc": "Direktori sedang bertumbuh. Jadilah studio pertama yang tampil di {siteName}.",
+    "listStudioBtn": "Tampilkan Studiomu",
+    "viewAllStudios": "Lihat Semua Studio",
+    "builtWith": "Built with",
+    "by": "By"
   }
 }

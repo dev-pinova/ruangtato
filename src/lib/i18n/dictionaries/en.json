@@ -417,5 +417,27 @@
     "selectLanguage": "Select Language",
     "indonesian": "Bahasa Indonesia",
     "english": "English"
+  },
+  "catalog": {
+    "title": "Tattoo Studio Catalog",
+    "sortLabel": "Sort By",
+    "sortByViews": "Most viewed",
+    "sortByClicks": "Most clicked",
+    "sortByName": "Name (A-Z)",
+    "statusLabel": "Status",
+    "trustedOnly": "Trusted Only",
+    "filterCity": "Filter By City",
+    "allCities": "All Cities",
+    "studiosListed": "studios listed",
+    "verified": "verified",
+    "noMatchTitle": "No studios match your filter",
+    "noMatchDesc": "Try changing the city, clearing verified filters, or changing your search keywords.",
+    "resetFilter": "Reset filter",
+    "noStudiosTitle": "No studios listed yet",
+    "noStudiosDesc": "Directory is growing. Be the first studio listed on {siteName}.",
+    "listStudioBtn": "List Your Studio",
+    "viewAllStudios": "View All Studios",
+    "builtWith": "Built with",
+    "by": "By"
   }
 }
