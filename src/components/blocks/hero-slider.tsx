@@ -103,7 +103,7 @@ export function BlockHeroSlider({
           >
             [&nbsp; {slide.ctaText || "Buy Template"} &nbsp;]
           </a>
-          {/* Text-only CTA — "Get A Tato" style */}
+          {/* Text-only CTA */}
           {waUrl ? (
             <a
               href={waUrl}
@@ -112,14 +112,14 @@ export function BlockHeroSlider({
               onClick={() => slug && trackStudioClick(slug)}
               className="font-display text-[11px] uppercase tracking-[0.4em] text-white/90 underline-offset-8 transition-colors hover:text-white hover:underline"
             >
-              Get a Tato
+              {getLocalizedText(rawSlide, "secondaryCtaText", locale, locale === "en" ? "Book Now" : "Konsultasi Sekarang")}
             </a>
           ) : (
             <a
               href="#appointment"
               className="font-display text-[11px] uppercase tracking-[0.4em] text-white/90 underline-offset-8 transition-colors hover:text-white hover:underline"
             >
-              Get a Tato
+              {getLocalizedText(rawSlide, "secondaryCtaText", locale, locale === "en" ? "Book Now" : "Konsultasi Sekarang")}
             </a>
           )}
         </div>

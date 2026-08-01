@@ -86,7 +86,7 @@ export function BlockHero({
             href="#gallery"
             className="font-display text-[11px] uppercase tracking-[0.4em] text-white/90 underline underline-offset-8 transition-colors hover:text-white hover:underline"
           >
-            {locale === "en" ? "View Portfolio" : "Lihat Portofolio"}
+            {getLocalizedText(data, "secondaryCtaText", locale, locale === "en" ? "View Portfolio" : "Lihat Portofolio")}
           </a>
         </div>
       </div>
