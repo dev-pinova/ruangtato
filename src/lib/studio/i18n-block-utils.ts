@@ -6,6 +6,8 @@ import type { Locale } from "@/lib/i18n/actions"
  */
 const ID_TO_EN_MAP: Record<string, string> = {
   // Navigation & Menu Labels
+  "Nama Studio": "Studio Name",
+  "Booking Sekarang": "Book Now",
   "Tentang": "About",
   "Layanan": "Services",
   "Artist": "Artists",
@@ -19,21 +21,25 @@ const ID_TO_EN_MAP: Record<string, string> = {
   "Demos": "Demos",
   "About Us": "About Us",
   "Contact Us": "Contact Us",
+  "Tentang Kami": "About Us",
+  "Portofolio": "Portfolio",
+  "Galeri Kami": "Our Gallery",
 
   // Section Headers & Titles
   "Layanan & keahlian": "Services & Expertise",
+  "Layanan & Keahlian": "Services & Expertise",
   "Layanan Kami": "Our Services",
   "What We Do": "What We Do",
   "Our Services": "Our Services",
   "Cara kerja": "How It Works",
   "Hubungi kami": "Contact Us",
   "Hubungi Kami": "Contact Us",
-  "Galeri Kami": "Our Gallery",
-  "Portofolio": "Portfolio",
   "Berita & Artikel": "Blog & News",
+  "Blog & Berita": "Blog & News",
   "Berita Terbaru": "Latest News",
   "Meet Our Artists": "Meet Our Artists",
   "Artist Kami": "Meet Our Artists",
+  "Temui Artist Kami": "Meet Our Artists",
   "Tim Kami": "Our Team",
   "Our Team": "Our Team",
   "Pertanyaan Umum": "Frequently Asked Questions",
@@ -48,9 +54,11 @@ const ID_TO_EN_MAP: Record<string, string> = {
   "Subscribe to our newsletter": "Subscribe to our newsletter",
   "Kata Klien Kami": "What Clients Say",
   "What Clients Say": "What Clients Say",
+  "Testimoni": "Testimonial",
 
   // Hero & Subheadlines
   "Tato yang menceritakan siapa Anda.": "Tattoos that tell your story.",
+  "Tato yang Menceritakan Siapa Anda": "Tattoos That Tell Your Story",
   "Eyes Wide Open": "Eyes Wide Open",
   "Studio tato profesional dengan fokus desain unik, konsultasi mendalam, dan standar keamanan tinggi.":
     "Professional tattoo studio focusing on unique designs, deep consultation, and high safety standards.",
@@ -61,25 +69,33 @@ const ID_TO_EN_MAP: Record<string, string> = {
   "Artist berpengalaman": "Experienced artists",
   "Get a Tato": "Book Now",
   "Konsultasi Sekarang": "Book Now",
+  "Buat Janji Konsultasi": "Book Consultation",
   "Lihat Portofolio": "View Portfolio",
   "Tato Like Art": "Tattoo Like Art",
+  "Studio Seni Tato": "Tattoo Art Studio",
+  "Desain Unik & Personal": "Unique & Personal Designs",
+  "Karya Seni Tato": "Tattoo Artwork",
+  "Desain Kustom Eksklusif": "Exclusive Custom Designs",
+  "Studio Terpercaya": "Trusted Studio",
+  "Aman & Steril": "Safe & Sterile",
 
   // Goals & About Us
+  "Seni Tato Abadi": "Timeless Tattoo Art",
   "Setiap karya lahir dari konsultasi mendalam dengan klien, kemudian diwujudkan jadi tato yang personal dan tahan waktu.":
     "Every tattoo originates from in-depth client consultation, then transformed into a personal and timeless piece of art.",
   "Setiap tato lahir dari percakapan panjang dengan klien, kemudian kami terjemahkan menjadi karya yang personal, presisi, dan tahan waktu.":
     "Every tattoo originates from in-depth client consultation, then transformed into a personal, precise, and timeless piece of art.",
   "Unique Tatos": "Unique Tattoos",
+  "Desain Kustom": "Custom Design",
   "Desain custom dibuat khusus untuk Anda.": "Custom designs tailored specifically for you.",
   "Desain dibuat khusus untuk setiap klien.": "Custom designs made specifically for each client.",
   "Piercing & Art": "Piercing & Art",
   "Piercing aman dan koleksi karya seni studio.": "Safe piercing and studio art collection.",
-  "Trusted Studio": "Trusted Studio",
   "Standar sterilisasi tinggi dan aftercare lengkap.": "High sterilization standards and full aftercare.",
   "Standar sterilisasi tinggi & aftercare lengkap.": "High sterilization standards & full aftercare.",
   "Tim spesialis dengan portofolio nyata.": "Specialist team with a real portfolio.",
 
-  // Overview
+  // Overview & Features
   "Ruang yang nyaman untuk setiap cerita": "A comfortable space for every story",
   "Kami menghadirkan pengalaman studio yang mengutamakan kenyamanan, keamanan, dan ekspresi artistik.":
     "We deliver a studio experience prioritizing comfort, safety, and artistic expression.",
@@ -89,9 +105,8 @@ const ID_TO_EN_MAP: Record<string, string> = {
     "We designed this studio so you feel right at home. Far from intimidating, we welcome every client with a calm and professional atmosphere.",
   "Dilengkapi peralatan sterilisasi kelas medis (autoclave), setiap jarum bersifat single-use dan dibuang setelah dipakai.":
     "Equipped with medical-grade sterilization equipment (autoclave), every needle is single-use and disposed of after use.",
-
-  // Features & Items
-  "Specific Style Tatos": "Specific Style Tattoos",
+  "Gaya Spesialis Tato": "Specialized Tattoo Styles",
+  "Specific Style Tatos": "Specialized Tattoo Styles",
   "Pinup": "Pinup",
   "Gaya klasik dan bold.": "Classic and bold style.",
   "Japanese": "Japanese",
@@ -104,7 +119,7 @@ const ID_TO_EN_MAP: Record<string, string> = {
   "Detail realistis dan shading dalam.": "Realistic details and deep shading.",
   "Custom": "Custom",
   "Desain sepenuhnya personal.": "Fully personalized designs.",
-  "Custom Design": "Custom Design",
+  "Exclusive Custom Design": "Exclusive Custom Design",
   "Desain eksklusif dibuat 100% untuk Anda.": "Exclusive designs 100% created for you.",
   "Vegan Ink": "Vegan Ink",
   "Tinta vegan premium yang aman untuk segala jenis kulit.": "Premium vegan ink safe for all skin types.",
@@ -114,6 +129,8 @@ const ID_TO_EN_MAP: Record<string, string> = {
   "Panduan dan kit perawatan gratis setelah sesi selesai.": "Free aftercare guide and kit after the session.",
 
   // Services Cards
+  "Tato": "Tattoo",
+  "Piercing": "Piercing",
   "Custom design, blackwork, fine line, Japanese, hingga realism — dikerjakan oleh artist spesialis.":
     "Custom design, blackwork, fine line, Japanese, to realism — crafted by specialist artists.",
   "Piercing profesional dengan peralatan steril dan jewellery berkualitas.":
@@ -124,6 +141,7 @@ const ID_TO_EN_MAP: Record<string, string> = {
   "Koleksi karya seni dan merchandise studio.": "Studio art collection and merchandise.",
   "Learn More": "Learn More",
   "Read More": "Read More",
+  "Selengkapnya": "Read More",
 
   // How It Works
   "Konsultasi": "Consultation",
@@ -146,9 +164,12 @@ const ID_TO_EN_MAP: Record<string, string> = {
     "Four simple steps from initial idea to completed tattoo.",
 
   // Creator & Artists
+  "Artist Tato": "Tattoo Artist",
   "Tatoist": "Tattoo Artist",
   "Piercing Artist": "Piercing Artist",
+  "Spesialis Fine Line": "Fine Line Specialist",
   "Fine Line Specialist": "Fine Line Specialist",
+  "Artist Black & Grey": "Black & Grey Artist",
   "Black & Grey Artist": "Black & Grey Artist",
   "Spesialis blackwork dan custom piece dengan pengalaman lebih dari 8 tahun.":
     "Blackwork and custom piece specialist with over 8 years of experience.",
@@ -158,25 +179,35 @@ const ID_TO_EN_MAP: Record<string, string> = {
     "Experienced team of artists ready to realize your dream design.",
 
   // Testimonials & Stats
+  "2.500+ Tato Selesai": "2,500+ Tattoos Done",
+  "1.800+ Klien Puas": "1,800+ Happy Clients",
+  "15 Tahun Pengalaman": "15 Years Experience",
+  "50+ Desain Kustom": "50+ Custom Designs",
+  "Tato Selesai": "Tattoos Done",
+  "Klien Puas": "Happy Clients",
+  "Tahun Pengalaman": "Years Experience",
   "Pengalaman tato terbaik yang pernah saya punya. Artist sangat profesional dan studionya nyaman.":
     "Best tattoo experience I've ever had. Very professional artist and comfortable studio.",
   "Studio bersih, suasana tenang, dan hasil akhirnya melebihi ekspektasi saya.":
     "Clean studio, quiet atmosphere, and the end result exceeded my expectations.",
   "Konsultasi mendalam, desainnya benar-benar personal — saya akan kembali untuk piece berikutnya.":
     "In-depth consultation, truly personal design — I'll be back for my next piece.",
-  "Tatos Done": "Tattoos Done",
-  "Happy Clients": "Happy Clients",
-  "Years Experience": "Years Experience",
-  "Custom Designs": "Custom Designs",
+  "Tato Pertama": "First Tattoo",
+  "Cover-up": "Cover-up",
+  "Sleeve": "Sleeve",
 
   // Latest News & Newsletter
-  "How To Care Your New Tato": "How To Care For Your New Tattoo",
-  "Choosing The Right Tato Style": "Choosing The Right Tattoo Style",
-  "Behind The Ink: Studio Tour": "Behind The Ink: Studio Tour",
-  "Fine Line Tato: Less Is More": "Fine Line Tattoo: Less Is More",
-  "Pain Guide: Where Does It Hurt?": "Pain Guide: Where Does It Hurt?",
+  "Cara Merawat Tato Baru Agar Tahan Lama": "How To Care For Your New Tattoo",
+  "Memilih Gaya Tato Yang Tepat Untuk Anda": "Choosing The Right Tattoo Style",
+  "Di Balik Tinta: Tur Studio Kami": "Behind The Ink: Studio Tour",
+  "Perawatan": "Aftercare",
+  "Gaya Tato": "Tattoo Style",
+  "Studio": "Studio",
   "Dapatkan info promo, event, dan inspirasi tato terbaru langsung ke email Anda.":
     "Get the latest promos, events, and tattoo inspiration straight to your inbox.",
+  "Masukkan email Anda": "Enter your email",
+  "Berlangganan": "Subscribe",
+  "Lihat Semua": "View All",
 
   // FAQ & Form Strings
   "Apakah perlu konsultasi dulu?": "Do I need a consultation first?",
@@ -196,7 +227,7 @@ const ID_TO_EN_MAP: Record<string, string> = {
   "Berapa lama proses healing?": "How long is the healing process?",
   "Umumnya 2-4 minggu tergantung ukuran dan area.": "Generally 2-4 weeks depending on size and area.",
   "Apakah bisa cover-up?": "Can I get a cover-up?",
-  "Bisa, setelah review desain lama di konsultasi.": "Yes, after reviewing the old design in a consultation.",
+  "Bisa, setelah review desain lama di konsultasi.",
   "Minimal usia?": "Minimum age?",
   "Minimal 18 tahun dengan identitas valid.": "Minimum 18 years old with valid ID.",
 
@@ -207,8 +238,10 @@ const ID_TO_EN_MAP: Record<string, string> = {
   "Siap mengukir cerita Anda?": "Ready to carve your story?",
   "Jadwal konsultasi kami cepat penuh. Booking slot Anda sekarang sebelum kehabisan.":
     "Our consultation schedule fills up quickly. Book your slot now before it's gone.",
+  "Hubungi Kami Untuk Estimasi Biaya": "Contact Us For A Quote",
   "Buat janji konsultasi dan wujudkan desain tato impian Anda.":
     "Book a consultation appointment and make your dream tattoo a reality.",
+  "Konsultasi via WA": "Consult via WA",
   "Booking via WhatsApp": "Book via WhatsApp",
   "Get a Quote via WA": "Get a Quote via WhatsApp",
   "Punya pertanyaan atau ingin konsultasi? Kirim pesan dan kami akan segera menghubungi Anda.":
@@ -216,9 +249,9 @@ const ID_TO_EN_MAP: Record<string, string> = {
   "Kirim Pesan": "Send Message",
   "Kirim Permintaan": "Send Request",
   "Mengirim…": "Sending…",
-  "Selengkapnya": "Read More",
-  "Lihat Semua": "View All",
   "Apakah Anda berusia 18 tahun atau lebih?": "Are you 18 years old or older?",
+  "Studio Tato": "Tattoo Studio",
+  "Tato Studio": "Tattoo Studio",
   "Studio tato profesional dengan fokus desain unik, sterilisasi ketat, dan ekspresi artistik personal.":
     "Professional tattoo studio focusing on unique designs, strict sterilization, and personal artistic expression.",
   "Peta lokasi dinonaktifkan. Aktifkan fitur peta lokasi pada panel kustomisasi footer.":
