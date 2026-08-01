@@ -6,6 +6,7 @@ import { Menu, X } from "lucide-react"
 import type { HeaderOverlayData, HeaderOverlayLink } from "@/lib/types"
 import { LanguageSwitcher } from "@/components/ui/language-switcher"
 import type { Locale } from "@/lib/i18n/actions"
+import { getLocalizedText } from "@/lib/studio/i18n-block-utils"
 
 const DEFAULT_LEFT: HeaderOverlayLink[] = [
   { label: "Demos", href: "#" },
@@ -19,13 +20,14 @@ const DEFAULT_RIGHT: HeaderOverlayLink[] = [
   { label: "Contact Us", href: "#contact" },
 ]
 
-function NavLink({ link }: { link: HeaderOverlayLink }) {
+function NavLink({ link, locale }: { link: HeaderOverlayLink; locale: Locale }) {
+  const label = getLocalizedText(link, "label", locale, link.label)
   return (
     <a
       href={link.href || "#"}
       className="font-display text-[11px] uppercase tracking-[0.32em] text-white/80 transition-colors hover:text-white"
     >
-      {link.label}
+      {label}
     </a>
   )
 }
@@ -67,10 +69,18 @@ export function BlockHeaderOverlay({
     toggleRef.current?.focus()
   }
 
-  const leftLinks = data?.leftLinks?.length ? data.leftLinks : DEFAULT_LEFT
-  const rightLinks = data?.rightLinks?.length ? data.rightLinks : DEFAULT_RIGHT
-  const logoText = data?.logoText ?? "Studio"
-  const tagline = data?.tagline
+  const rawLeft = data?.leftLinks?.length ? data.leftLinks : DEFAULT_LEFT
+  const rawRight = data?.rightLinks?.length ? data.rightLinks : DEFAULT_RIGHT
+  const leftLinks = rawLeft.map((link) => ({
+    ...link,
+    label: getLocalizedText(link, "label", locale, link.label),
+  }))
+  const rightLinks = rawRight.map((link) => ({
+    ...link,
+    label: getLocalizedText(link, "label", locale, link.label),
+  }))
+  const logoText = getLocalizedText(data, "logoText", locale, data?.logoText ?? "Studio")
+  const tagline = getLocalizedText(data, "tagline", locale, data?.tagline)
   const showCenterLogo = data?.showCenterLogo !== false
 
   return (
@@ -79,7 +89,7 @@ export function BlockHeaderOverlay({
         {/* Desktop: nav kiri */}
         <nav className="hidden flex-1 items-center justify-end gap-8 md:flex lg:gap-12">
           {leftLinks.map((link, i) => (
-            <NavLink key={`l-${i}`} link={link} />
+            <NavLink key={`l-${i}`} link={link} locale={locale} />
           ))}
         </nav>
 
@@ -91,6 +101,7 @@ export function BlockHeaderOverlay({
             className="hidden shrink-0 flex-col items-center justify-center px-6 md:flex"
           >
             {data?.logoImage ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
               <img
                 src={data.logoImage}
                 alt={logoText}
@@ -116,7 +127,7 @@ export function BlockHeaderOverlay({
         {/* Desktop: nav kanan + LanguageSwitcher */}
         <nav className="hidden flex-1 items-center justify-start gap-8 md:flex lg:gap-12">
           {rightLinks.map((link, i) => (
-            <NavLink key={`r-${i}`} link={link} />
+            <NavLink key={`r-${i}`} link={link} locale={locale} />
           ))}
           <LanguageSwitcher defaultLocale={locale} />
         </nav>
