@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { X, ChevronLeft, ChevronRight } from "lucide-react"
 import type { GalleryData } from "@/lib/types"
 import { BlurFade } from "@/components/ui/blur-fade"
+import { getLocalizedText } from "@/lib/studio/i18n-block-utils"
 
 const DEFAULT_IMAGES: { src: string; alt?: string }[] = [
   {
@@ -36,6 +37,10 @@ export function BlockGallery({ data, locale = "id" }: { data: GalleryData; local
   const images = data?.images?.length ? data.images : DEFAULT_IMAGES
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
 
+  const eyebrow = getLocalizedText(data, "eyebrow", locale, locale === "en" ? "Portfolio" : "Portofolio")
+  const headline = getLocalizedText(data, "headline", locale, locale === "en" ? "Our Gallery" : "Galeri Kami")
+  const subheadline = getLocalizedText(data, "subheadline", locale)
+
   // Escape key support to close lightbox
   useEffect(() => {
     if (lightboxIndex === null) return
@@ -57,14 +62,14 @@ export function BlockGallery({ data, locale = "id" }: { data: GalleryData; local
       <div className="mx-auto max-w-7xl px-6 py-20 md:px-10 md:py-28">
         <div className="text-center">
           <p className="font-display text-[11px] uppercase tracking-[0.4em] text-white/60">
-            — {data?.eyebrow || (locale === "en" ? "Portfolio" : "Portofolio")}
+            — {eyebrow}
           </p>
           <h2 className="mt-5 font-display text-4xl font-light uppercase tracking-[0.16em] md:text-6xl">
-            {data?.headline || (locale === "en" ? "Our Gallery" : "Galeri Kami")}
+            {headline}
           </h2>
-          {data?.subheadline && (
+          {subheadline && (
             <p className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-white/60 md:text-base">
-              {data.subheadline}
+              {subheadline}
             </p>
           )}
         </div>
@@ -92,7 +97,7 @@ export function BlockGallery({ data, locale = "id" }: { data: GalleryData; local
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center bg-muted text-xs uppercase tracking-widest text-muted-foreground">
-                      Tambah URL gambar
+                      {locale === "en" ? "Add image URL" : "Tambah URL gambar"}
                     </div>
                   )}
                   <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
@@ -112,7 +117,7 @@ export function BlockGallery({ data, locale = "id" }: { data: GalleryData; local
           <button 
             onClick={(e) => { e.stopPropagation(); setLightboxIndex(null); }}
             className="absolute right-6 top-6 text-white/60 hover:text-white transition-colors p-2"
-            title="Tutup (Esc)"
+            title={locale === "en" ? "Close (Esc)" : "Tutup (Esc)"}
           >
             <X className="size-8" />
           </button>
@@ -123,7 +128,7 @@ export function BlockGallery({ data, locale = "id" }: { data: GalleryData; local
               setLightboxIndex((prev) => (prev !== null && prev > 0 ? prev - 1 : images.length - 1))
             }}
             className="absolute left-6 text-white/60 hover:text-white transition-colors p-3 bg-zinc-950/40 rounded-full hover:bg-zinc-950/80 border border-white/5"
-            title="Sebelumnya"
+            title={locale === "en" ? "Previous" : "Sebelumnya"}
           >
             <ChevronLeft className="size-8" />
           </button>
@@ -148,7 +153,7 @@ export function BlockGallery({ data, locale = "id" }: { data: GalleryData; local
               setLightboxIndex((prev) => (prev !== null && prev < images.length - 1 ? prev + 1 : 0))
             }}
             className="absolute right-6 text-white/60 hover:text-white transition-colors p-3 bg-zinc-950/40 rounded-full hover:bg-zinc-950/80 border border-white/5"
-            title="Berikutnya"
+            title={locale === "en" ? "Next" : "Berikutnya"}
           >
             <ChevronRight className="size-8" />
           </button>

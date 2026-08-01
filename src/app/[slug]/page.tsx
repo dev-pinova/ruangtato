@@ -249,7 +249,7 @@ export default async function StudioRendererPage({ params }: PageProps) {
               </div>
             )}
             {block.type === "FAQ" && !hasAppointmentBlock && (
-              <BlockLeadForm studioSlug={slug} studioName={studio.name} />
+              <BlockLeadForm studioSlug={slug} studioName={studio.name} locale={locale} />
             )}
           </div>
         )

@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
 import type { LeadFormData } from "@/lib/types"
+import { getLocalizedText } from "@/lib/studio/i18n-block-utils"
 
 export function BlockLeadForm({
   studioName,
@@ -29,13 +30,16 @@ export function BlockLeadForm({
   const [error, setError] = useState<string | null>(null)
   const errorRef = useRef<HTMLParagraphElement>(null)
 
-  const title = data?.title || (locale === "en" ? "Contact Us" : "Hubungi kami")
-  const description =
-    data?.description ||
-    (locale === "en"
+  const title = getLocalizedText(data, "title", locale, locale === "en" ? "Contact Us" : "Hubungi kami")
+  const description = getLocalizedText(
+    data,
+    "description",
+    locale,
+    locale === "en"
       ? "Have questions or want a consultation? Send us a message and we will get back to you shortly."
-      : "Punya pertanyaan atau ingin konsultasi? Kirim pesan dan kami akan segera menghubungi Anda.")
-  const ctaText = data?.ctaText || (locale === "en" ? "Send Message" : "Kirim Pesan")
+      : "Punya pertanyaan atau ingin konsultasi? Kirim pesan dan kami akan segera menghubungi Anda."
+  )
+  const ctaText = getLocalizedText(data, "ctaText", locale, locale === "en" ? "Send Message" : "Kirim Pesan")
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -59,7 +63,7 @@ export function BlockLeadForm({
 
     if (!res.ok) {
       const body = await res.json().catch(() => ({}))
-      setError(body.error ?? "Gagal mengirim pesan.")
+      setError(body.error ?? (locale === "en" ? "Failed to send message." : "Gagal mengirim pesan."))
       requestAnimationFrame(() => errorRef.current?.focus())
       return
     }
@@ -75,11 +79,12 @@ export function BlockLeadForm({
             <CheckCircle className="size-5 text-white" />
           </div>
           <h2 className="font-display text-2xl font-light uppercase tracking-[0.16em] text-white md:text-3xl">
-            Pesan terkirim
+            {locale === "en" ? "Message Sent" : "Pesan terkirim"}
           </h2>
           <p className="mt-4 text-sm text-white/60">
-            Terima kasih sudah menghubungi {studioName}. Kami akan segera
-            merespons pesan Anda.
+            {locale === "en"
+              ? `Thank you for contacting ${studioName}. We will respond to your message shortly.`
+              : `Terima kasih sudah menghubungi ${studioName}. Kami akan segera merespons pesan Anda.`}
           </p>
         </div>
       </section>
@@ -103,10 +108,12 @@ export function BlockLeadForm({
           className="mt-10 space-y-5 rounded-xl border border-white/10 bg-zinc-950 p-6 md:p-8"
         >
           <div className="space-y-2">
-            <Label htmlFor="lead-name" className="text-xs uppercase tracking-wider text-white/70">Nama</Label>
+            <Label htmlFor="lead-name" className="text-xs uppercase tracking-wider text-white/70">
+              {locale === "en" ? "Name" : "Nama"}
+            </Label>
             <Input
               id="lead-name"
-              placeholder="Nama lengkap Anda"
+              placeholder={locale === "en" ? "Your full name" : "Nama lengkap Anda"}
               autoComplete="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -117,12 +124,12 @@ export function BlockLeadForm({
 
           <div className="space-y-2">
             <Label htmlFor="lead-email" className="text-xs uppercase tracking-wider text-white/70">
-              Email <span className="text-zinc-500">(opsional)</span>
+              Email <span className="text-zinc-500">({locale === "en" ? "optional" : "opsional"})</span>
             </Label>
             <Input
               id="lead-email"
               type="email"
-              placeholder="email@contoh.com"
+              placeholder="email@example.com"
               autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -131,10 +138,16 @@ export function BlockLeadForm({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="lead-message" className="text-xs uppercase tracking-wider text-white/70">Pesan</Label>
+            <Label htmlFor="lead-message" className="text-xs uppercase tracking-wider text-white/70">
+              {locale === "en" ? "Message" : "Pesan"}
+            </Label>
             <Textarea
               id="lead-message"
-              placeholder="Ceritakan ide tato Anda, pertanyaan, atau hal lain yang ingin ditanyakan..."
+              placeholder={
+                locale === "en"
+                  ? "Tell us about your tattoo idea, questions, or anything else you'd like to ask…"
+                  : "Ceritakan ide tato Anda, pertanyaan, atau hal lain yang ingin ditanyakan…"
+              }
               className="min-h-28 bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-600 focus:border-white focus:ring-white rounded-none"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
@@ -159,7 +172,7 @@ export function BlockLeadForm({
             disabled={loading}
           >
             <Send className="size-3.5" data-icon="inline-start" />
-            {loading ? "Mengirim…" : ctaText}
+            {loading ? (locale === "en" ? "Sending…" : "Mengirim…") : ctaText}
           </Button>
         </form>
       </div>

@@ -2,11 +2,12 @@
 
 import { normalizeGoogleMapsEmbedUrl } from "@/lib/google-maps-embed"
 import type { FooterData } from "@/lib/types"
-
+import { getLocalizedText } from "@/lib/studio/i18n-block-utils"
 
 export function BlockFooter({ data, locale = "id" }: { data: FooterData; locale?: string }) {
-  const title = data?.title || "Studio Name"
-  const address = data?.address || "Jakarta, Indonesia"
+  const title = getLocalizedText(data, "title", locale, "Studio Name")
+  const address = getLocalizedText(data, "address", locale, "Jakarta, Indonesia")
+  const description = getLocalizedText(data, "description", locale)
   const instagram = data?.instagram
   const whatsapp = data?.whatsapp
   const facebook = data?.facebook
@@ -30,7 +31,7 @@ export function BlockFooter({ data, locale = "id" }: { data: FooterData; locale?
           {/* Column 1: Contact Info */}
           <div className="space-y-6">
             <h3 className="font-display text-sm font-semibold uppercase tracking-[0.3em] text-white">
-              Contact
+              {locale === "en" ? "Contact" : "Kontak"}
             </h3>
             <div className="space-y-4 font-sans text-sm text-white/70">
               {data?.logoImage ? (
@@ -45,9 +46,9 @@ export function BlockFooter({ data, locale = "id" }: { data: FooterData; locale?
                   {title}
                 </p>
               )}
-              {data?.description && (
+              {description && (
                 <p className="leading-relaxed text-xs text-white/50">
-                  {data.description}
+                  {description}
                 </p>
               )}
               {address && (
@@ -58,10 +59,10 @@ export function BlockFooter({ data, locale = "id" }: { data: FooterData; locale?
             </div>
           </div>
 
-          {/* Column 2: Social Media Platforms (Icons vertically stacked with usernames) */}
+          {/* Column 2: Social Media Platforms */}
           <div className="space-y-6">
             <h3 className="font-display text-sm font-semibold uppercase tracking-[0.3em] text-white">
-              Social Media
+              {locale === "en" ? "Social Media" : "Media Sosial"}
             </h3>
             <div className="flex flex-col gap-4">
               {instagram && (
@@ -160,7 +161,7 @@ export function BlockFooter({ data, locale = "id" }: { data: FooterData; locale?
           {/* Column 3: Google Maps Snippet */}
           <div className="space-y-6 sm:col-span-2 md:col-span-1">
             <h3 className="font-display text-sm font-semibold uppercase tracking-[0.3em] text-white">
-              Location
+              {locale === "en" ? "Location" : "Lokasi"}
             </h3>
             {showMap && hasValidMap ? (
               <div
@@ -169,7 +170,7 @@ export function BlockFooter({ data, locale = "id" }: { data: FooterData; locale?
               >
                 <iframe
                   src={normalizedMapUrl!}
-                  title="Lokasi studio footer"
+                  title={locale === "en" ? "Studio location" : "Lokasi studio footer"}
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
                   className="h-full w-full border-0"
@@ -182,12 +183,16 @@ export function BlockFooter({ data, locale = "id" }: { data: FooterData; locale?
                 style={{ height: mapHeight, minHeight: 150 }}
               >
                 <p className="font-display text-[10px] uppercase tracking-[0.28em] text-white/40">
-                  {mapEmbedUrl ? "URL embed tidak valid" : "Masukkan URL Google Maps"}
+                  {mapEmbedUrl
+                    ? (locale === "en" ? "Invalid embed URL" : "URL embed tidak valid")
+                    : (locale === "en" ? "Enter Google Maps URL" : "Masukkan URL Google Maps")}
                 </p>
               </div>
             ) : (
               <p className="font-sans text-sm text-white/55 leading-relaxed">
-                Peta lokasi dinonaktifkan. Aktifkan fitur peta lokasi pada panel kustomisasi footer.
+                {locale === "en"
+                  ? "Location map is disabled. Enable location map in footer settings."
+                  : "Peta lokasi dinonaktifkan. Aktifkan fitur peta lokasi pada panel kustomisasi footer."}
               </p>
             )}
           </div>
@@ -196,7 +201,7 @@ export function BlockFooter({ data, locale = "id" }: { data: FooterData; locale?
         {/* Footer Bottom copyright info */}
         <div className="mt-16 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-8 text-[10px] uppercase tracking-[0.32em] text-white/40 md:flex-row">
           <p suppressHydrationWarning>
-            © {new Date().getFullYear()} {title}. All Rights Reserved.
+            © {new Date().getFullYear()} {title}. {locale === "en" ? "All Rights Reserved." : "Hak Cipta Dilindungi."}
           </p>
           <p>Powered By Ruang Tato</p>
         </div>
