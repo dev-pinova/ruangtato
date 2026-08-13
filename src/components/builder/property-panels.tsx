@@ -29,10 +29,46 @@ import type {
   FooterData,
   HeaderOverlayLink,
   LeadFormData,
+  FontStyle,
 } from "@/lib/types"
 
 const inputClass = ""
 const textareaClass = "min-h-[80px]"
+
+const FONT_OPTIONS: { value: FontStyle; label: string }[] = [
+  { value: "syne", label: "Syne — Modern & Edgy Display" },
+  { value: "cormorant", label: "Cormorant Garamond — Classic & Elegant Serif" },
+  { value: "inter", label: "Inter — Clean & Minimalist Sans" },
+  { value: "oswald", label: "Oswald — Bold & Urban Display" },
+  { value: "cinzel", label: "Cinzel — Gothic & Vintage Serif" },
+]
+
+function FontStyleSelector({
+  value,
+  onChange,
+}: {
+  value?: FontStyle
+  onChange: (val: FontStyle) => void
+}) {
+  const selectId = useId()
+  return (
+    <div className="flex flex-col gap-2">
+      <FieldLabel htmlFor={selectId}>Gaya Font Studio</FieldLabel>
+      <select
+        id={selectId}
+        value={value || "syne"}
+        onChange={(e) => onChange(e.target.value as FontStyle)}
+        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+      >
+        {FONT_OPTIONS.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
+      </select>
+    </div>
+  )
+}
 
 function FieldLabel({ children, htmlFor }: { children: React.ReactNode; htmlFor?: string }) {
   return (
@@ -55,6 +91,10 @@ export function HeaderPanel({ data, onChange }: PanelProps<HeaderData>) {
 
   return (
     <>
+      <FontStyleSelector
+        value={data.fontStyle}
+        onChange={(val) => onChange('fontStyle', val)}
+      />
       <div className="flex flex-col gap-2">
         <FieldLabel htmlFor={titleId}>Title</FieldLabel>
         <Input id={titleId} className={inputClass} value={data.title || ''} onChange={(e) => onChange('title', e.target.value)} />
@@ -228,6 +268,10 @@ export function HeaderOverlayPanel({ data, onChange }: PanelProps<HeaderOverlayD
 
   return (
     <>
+      <FontStyleSelector
+        value={data.fontStyle}
+        onChange={(val) => onChange('fontStyle', val)}
+      />
       <div className="flex flex-col gap-2">
         <FieldLabel htmlFor={logoTextId}>Logo Text</FieldLabel>
         <Input id={logoTextId} className={inputClass} value={data.logoText || ''} onChange={(e) => onChange('logoText', e.target.value)} />

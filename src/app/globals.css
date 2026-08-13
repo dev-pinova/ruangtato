@@ -241,6 +241,21 @@
     text-transform: uppercase;
     letter-spacing: 0.16em;
   }
+  .studio-template[data-font="syne"] {
+    --font-display: var(--font-syne), sans-serif;
+  }
+  .studio-template[data-font="cormorant"] {
+    --font-display: var(--font-cormorant), ui-serif, Georgia, serif;
+  }
+  .studio-template[data-font="inter"] {
+    --font-display: var(--font-inter), system-ui, sans-serif;
+  }
+  .studio-template[data-font="oswald"] {
+    --font-display: var(--font-oswald), sans-serif;
+  }
+  .studio-template[data-font="cinzel"] {
+    --font-display: var(--font-cinzel), serif;
+  }
   ::selection {
     @apply bg-primary/30 text-foreground;
   }

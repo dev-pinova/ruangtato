@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Cormorant_Garamond, Inter, Syne } from "next/font/google";
+import { Geist, Geist_Mono, Cormorant_Garamond, Inter, Syne, Oswald, Cinzel } from "next/font/google";
 import "./globals.css";
 import { rootMetadata } from "@/lib/seo";
 import { getLocale } from "@/lib/i18n/actions";
@@ -38,6 +38,20 @@ const syne = Syne({
   display: "swap",
 });
 
+// Oswald font for bold urban display
+const oswald = Oswald({
+  variable: "--font-oswald",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+// Cinzel font for gothic vintage serif
+const cinzel = Cinzel({
+  variable: "--font-cinzel",
+  subsets: ["latin"],
+  display: "swap",
+});
+
 export const metadata: Metadata = rootMetadata;
 
 export const viewport: Viewport = {
@@ -57,7 +71,7 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
-      className={`dark ${geistSans.variable} ${geistMono.variable} ${cormorant.variable} ${inter.variable} ${syne.variable} h-full antialiased`}
+      className={`dark ${geistSans.variable} ${geistMono.variable} ${cormorant.variable} ${inter.variable} ${syne.variable} ${oswald.variable} ${cinzel.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <LanguageProvider locale={locale} dictionary={dictionary}>

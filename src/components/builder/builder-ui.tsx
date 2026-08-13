@@ -592,6 +592,10 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
             style={{ transform: `scale(${zoom})`, transformOrigin: "top center" }}
           >
             {(() => {
+              const headerBlock = blocks.find((b) => b.type === "Header" || b.type === "HeaderOverlay")
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const fontStyle = (headerBlock?.data as any)?.fontStyle || "syne"
+
               const blocksContent = (
                 <>
                   {blocks.filter(b => b.visible).length === 0 && (
@@ -661,7 +665,7 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
                       <div className="h-1.5 w-12 bg-zinc-950 rounded-full" />
                     </div>
                     {/* Screen Content */}
-                    <div className="flex-1 overflow-y-auto scrollbar-none pt-4 bg-black relative builder-preview studio-template font-body text-white">
+                    <div className="flex-1 overflow-y-auto scrollbar-none pt-4 bg-black relative builder-preview studio-template font-body text-white" data-font={fontStyle}>
                       {blocksContent}
                       <FloatingWhatsAppButton
                         waNumber={initialStudio.waNumber}
@@ -680,7 +684,7 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
                 return (
                   <div className="relative mx-auto my-4 border-[16px] border-zinc-800 rounded-[24px] shadow-2xl bg-black w-[768px] h-[960px] flex flex-col overflow-hidden shrink-0">
                     {/* Screen Content */}
-                    <div className="flex-1 overflow-y-auto scrollbar-none bg-black relative builder-preview studio-template font-body text-white">
+                    <div className="flex-1 overflow-y-auto scrollbar-none bg-black relative builder-preview studio-template font-body text-white" data-font={fontStyle}>
                       {blocksContent}
                       <FloatingWhatsAppButton
                         waNumber={initialStudio.waNumber}
@@ -695,6 +699,7 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
               return (
                 <div
                   style={previewStyle}
+                  data-font={fontStyle}
                   className={cn(
                     "builder-preview studio-template relative bg-black font-body text-white w-full shadow-lg border border-zinc-900/60"
                   )}

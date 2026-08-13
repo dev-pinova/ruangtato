@@ -1,3 +1,8 @@
+"use client"
+
+import { useState, useRef, useEffect } from "react"
+import { Menu, X } from "lucide-react"
+
 import type { HeaderOverlayLink } from "@/lib/types"
 import { LanguageSwitcher } from "@/components/ui/language-switcher"
 import type { Locale } from "@/lib/i18n/actions"
@@ -5,6 +10,32 @@ import { getLocalizedText } from "@/lib/studio/i18n-block-utils"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function BlockHeader({ data, locale = "id" }: { data: any; locale?: Locale }) {
+  const [open, setOpen] = useState(false)
+  const toggleRef = useRef<HTMLButtonElement>(null)
+  const drawerNavRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+
+    const firstLink = drawerNavRef.current?.querySelector<HTMLAnchorElement>("a")
+    ;(firstLink ?? drawerNavRef.current)?.focus()
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setOpen(false)
+        toggleRef.current?.focus()
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown)
+    return () => document.removeEventListener("keydown", handleKeyDown)
+  }, [open])
+
+  function closeDrawer() {
+    setOpen(false)
+    toggleRef.current?.focus()
+  }
+
   const defaultLinks: HeaderOverlayLink[] = locale === "en"
     ? [
         { label: "About", href: "#about" },
@@ -45,18 +76,6 @@ export function BlockHeader({ data, locale = "id" }: { data: any; locale?: Local
           )}
         </div>
 
-        <nav className="hidden items-center gap-6 text-xs uppercase tracking-widest text-white/65 md:flex">
-          {links.map((link, idx) => (
-            <a
-              key={idx}
-              href={link.href}
-              className="transition-colors hover:text-white"
-            >
-              {link.label}
-            </a>
-          ))}
-        </nav>
-
         <div className="flex items-center gap-3">
           <LanguageSwitcher defaultLocale={locale} />
           <a
@@ -65,9 +84,59 @@ export function BlockHeader({ data, locale = "id" }: { data: any; locale?: Local
           >
             {ctaText}
           </a>
+          <button
+            ref={toggleRef}
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            className="inline-flex size-9 items-center justify-center rounded-full border border-white/20 text-white transition-colors hover:border-white hover:bg-white/10"
+            aria-label={open ? "Tutup menu" : "Buka menu"}
+            aria-expanded={open}
+            aria-controls="header-nav-drawer"
+          >
+            {open ? <X className="size-4" /> : <Menu className="size-4" />}
+          </button>
         </div>
       </div>
+
+      {/* Navigation drawer (Desktop & Mobile) */}
+      {open && (
+        <div className="border-t border-white/10 bg-black/90 backdrop-blur-lg">
+          <nav
+            ref={drawerNavRef}
+            id="header-nav-drawer"
+            tabIndex={-1}
+            className="mx-auto flex max-w-6xl flex-col gap-1 px-6 py-6"
+          >
+            {links.map((link, idx) => (
+              <a
+                key={idx}
+                href={link.href || "#"}
+                onClick={closeDrawer}
+                className="block py-3 font-display text-sm uppercase tracking-[0.3em] text-white/80 transition-colors hover:text-white"
+              >
+                {link.label}
+              </a>
+            ))}
+            <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-4">
+              <a
+                href="#contact"
+                onClick={closeDrawer}
+                className="inline-flex h-10 items-center justify-center bg-white px-6 font-display text-xs uppercase tracking-[0.2em] font-semibold text-black transition-colors hover:bg-white/90"
+              >
+                {ctaText}
+              </a>
+              <button
+                type="button"
+                onClick={closeDrawer}
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-white/20 px-4 py-2 text-[10px] uppercase tracking-[0.3em] text-white/70 hover:text-white"
+              >
+                <X className="size-3.5" />
+                Close
+              </button>
+            </div>
+          </nav>
+        </div>
+      )}
     </header>
   )
 }
-

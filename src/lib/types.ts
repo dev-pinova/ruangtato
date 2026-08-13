@@ -22,11 +22,14 @@ export type BlockType =
   | "LeadForm"
 
 
+export type FontStyle = "syne" | "cormorant" | "inter" | "oswald" | "cinzel"
+
 export interface HeaderData {
   title?: string
   logoImage?: string
   ctaText?: string
   links?: HeaderOverlayLink[]
+  fontStyle?: FontStyle
 }
 
 
@@ -47,6 +50,7 @@ export interface HeaderOverlayData {
   rightLinks?: HeaderOverlayLink[]
   /** Tampilkan logo center di antara nav kiri-kanan */
   showCenterLogo?: boolean
+  fontStyle?: FontStyle
 }
 
 export interface HeroData {

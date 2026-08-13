@@ -86,120 +86,86 @@ export function BlockHeaderOverlay({
   return (
     <header className="absolute inset-x-0 top-0 z-40 text-white">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-6 md:px-10 md:py-8">
-        {/* Desktop: nav kiri */}
-        <nav className="hidden flex-1 items-center justify-end gap-8 md:flex lg:gap-12">
-          {leftLinks.map((link, i) => (
-            <NavLink key={`l-${i}`} link={link} locale={locale} />
-          ))}
-        </nav>
-
-        {/* Logo center */}
-        {showCenterLogo ? (
-          <a
-            href="#"
-            aria-label={logoText}
-            className="hidden shrink-0 flex-col items-center justify-center px-6 md:flex"
-          >
-            {data?.logoImage ? (
-              /* eslint-disable-next-line @next/next/no-img-element */
-              <img
-                src={data.logoImage}
-                alt={logoText}
-                className="h-10 max-w-[180px] object-contain"
-              />
-            ) : (
-              <>
-                <span className="font-display text-lg font-semibold uppercase tracking-[0.4em] text-white">
-                  {logoText}
-                </span>
-                {tagline && (
-                  <span className="mt-1 text-[9px] uppercase tracking-[0.3em] text-white/60">
-                    {tagline}
-                  </span>
-                )}
-              </>
-            )}
-          </a>
-        ) : (
-          <div className="shrink-0 px-6" />
-        )}
-
-        {/* Desktop: nav kanan + LanguageSwitcher */}
-        <nav className="hidden flex-1 items-center justify-start gap-8 md:flex lg:gap-12">
-          {rightLinks.map((link, i) => (
-            <NavLink key={`r-${i}`} link={link} locale={locale} />
-          ))}
-          <LanguageSwitcher defaultLocale={locale} />
-        </nav>
-
-        {/* Mobile: logo kiri + LanguageSwitcher + hamburger */}
+        {/* Logo */}
         <a
           href="#"
-          className="font-display text-base font-semibold uppercase tracking-[0.3em] text-white md:hidden"
+          aria-label={logoText}
+          className="flex shrink-0 flex-col items-start md:items-center justify-center"
         >
           {data?.logoImage ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
             <img
               src={data.logoImage}
               alt={logoText}
-              className="h-8 max-w-[120px] object-contain"
+              className="h-8 md:h-10 max-w-[150px] md:max-w-[180px] object-contain"
             />
           ) : (
-            logoText
+            <>
+              <span className="font-display text-base md:text-lg font-semibold uppercase tracking-[0.4em] text-white">
+                {logoText}
+              </span>
+              {tagline && (
+                <span className="mt-0.5 text-[9px] uppercase tracking-[0.3em] text-white/60">
+                  {tagline}
+                </span>
+              )}
+            </>
           )}
         </a>
-        <div className="flex items-center gap-2 md:hidden">
+
+        {/* Right side: LanguageSwitcher + Hamburger toggle */}
+        <div className="flex items-center gap-3">
           <LanguageSwitcher defaultLocale={locale} />
           <button
             ref={toggleRef}
             type="button"
             onClick={() => setOpen((v) => !v)}
-            className="inline-flex size-10 items-center justify-center rounded-full border border-white/20 text-white"
+            className="inline-flex size-10 items-center justify-center rounded-full border border-white/20 text-white transition-colors hover:border-white hover:bg-white/10"
             aria-label={open ? "Tutup menu" : "Buka menu"}
             aria-expanded={open}
-            aria-controls="mobile-nav"
+            aria-controls="overlay-nav-drawer"
           >
             {open ? <X className="size-4" /> : <Menu className="size-4" />}
           </button>
         </div>
       </div>
 
-      {/* Mobile drawer */}
+      {/* Navigation drawer (Desktop & Mobile) */}
       {open && (
-        <div className="md:hidden">
-          <div className="border-y border-white/10 bg-black/85 backdrop-blur-md">
-            <nav
-              ref={drawerNavRef}
-              id="mobile-nav"
-              tabIndex={-1}
-              className="mx-auto flex max-w-7xl flex-col gap-1 px-6 py-4"
-            >
-              {[...leftLinks, ...rightLinks].map((link, i) => (
-                <a
-                  key={i}
-                  href={link.href || "#"}
-                  onClick={closeDrawer}
-                  className="block py-3 font-display text-xs uppercase tracking-[0.32em] text-white/80 transition-colors hover:text-white"
-                >
-                  {link.label}
-                </a>
-              ))}
-              <div className="pt-2 flex items-center justify-between">
-                <span className="text-[10px] uppercase tracking-[0.2em] text-white/50">Language</span>
-                <LanguageSwitcher defaultLocale={locale} />
-              </div>
-              <button
-                type="button"
+        <div className="border-y border-white/10 bg-black/90 backdrop-blur-md">
+          <nav
+            ref={drawerNavRef}
+            id="overlay-nav-drawer"
+            tabIndex={-1}
+            className="mx-auto flex max-w-7xl flex-col gap-1 px-6 py-6 md:px-10"
+          >
+            {[...leftLinks, ...rightLinks].map((link, i) => (
+              <a
+                key={i}
+                href={link.href || "#"}
                 onClick={closeDrawer}
-                className="mt-3 inline-flex items-center justify-center gap-2 self-start rounded-full border border-white/20 px-4 py-2 text-[10px] uppercase tracking-[0.32em] text-white/70"
+                className="block py-3 font-display text-xs md:text-sm uppercase tracking-[0.32em] text-white/80 transition-colors hover:text-white"
               >
-                <X className="size-3" />
-                Close
-              </button>
-            </nav>
-          </div>
+                {link.label}
+              </a>
+            ))}
+            <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-4">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-white/50">Language</span>
+              <LanguageSwitcher defaultLocale={locale} />
+            </div>
+            <button
+              type="button"
+              onClick={closeDrawer}
+              className="mt-4 inline-flex items-center justify-center gap-2 self-start rounded-full border border-white/20 px-4 py-2 text-[10px] uppercase tracking-[0.32em] text-white/70 hover:text-white"
+            >
+              <X className="size-3.5" />
+              Close
+            </button>
+          </nav>
         </div>
       )}
     </header>
   )
+}
 }
 

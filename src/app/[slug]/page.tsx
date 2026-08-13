@@ -167,10 +167,13 @@ export default async function StudioRendererPage({ params }: PageProps) {
 
   const visibleBlocks = getVisibleBlocks(studio)
   const hasAppointmentBlock = visibleBlocks.some((b) => b.type === "AppointmentForm")
-  const hasHeaderBlock = visibleBlocks.some((b) => b.type === "Header" || b.type === "HeaderOverlay")
+  const headerBlock = visibleBlocks.find((b) => b.type === "Header" || b.type === "HeaderOverlay")
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const fontStyle = (headerBlock?.data as any)?.fontStyle || "syne"
+  const hasHeaderBlock = Boolean(headerBlock)
 
   return (
-    <main className="studio-template relative min-h-screen bg-black font-body text-white">
+    <main className="studio-template relative min-h-screen bg-black font-body text-white" data-font={fontStyle}>
       <JsonLd
         data={buildStudioJsonLd({
           name: studio.name,
