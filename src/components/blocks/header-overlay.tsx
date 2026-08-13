@@ -167,5 +167,4 @@ export function BlockHeaderOverlay({
     </header>
   )
 }
-}
 
