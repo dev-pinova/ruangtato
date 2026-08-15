@@ -10,21 +10,31 @@ if [ -z "$DATABASE_URL" ]; then
   exit 1
 fi
 
-echo "DATABASE_URL: ${DATABASE_URL:0:40}..."
+echo "DATABASE_URL configured: ${DATABASE_URL:0:30}..."
 
-# Parse DATABASE_URL to extract host and port
-# Format: postgres://user:pass@host:port/db
-DB_HOST=$(echo "$DATABASE_URL" | sed -n 's|.*://[^:]*:[^@]*@\([^:]*\):.*|\1|p')
-DB_PORT=$(echo "$DATABASE_URL" | sed -n 's|.*://[^:]*:[^@]*@[^\:]*:\([0-9]*\)/.*|\1|p')
+# Use node to parse DATABASE_URL reliably
+DB_CONFIG=$(node -e "
+const url = new URL(process.env.DATABASE_URL);
+console.log(url.hostname + ':' + (url.port || '5432'));
+")
+
+DB_HOST=$(echo "$DB_CONFIG" | cut -d: -f1)
+DB_PORT=$(echo "$DB_CONFIG" | cut -d: -f2)
 
 echo "Connecting to database: $DB_HOST:$DB_PORT"
 
-# Wait for database to be ready using pg_isready
+# Wait for database to be ready using node
 echo "Waiting for database to be ready..."
 MAX_RETRIES=30
 RETRY_COUNT=0
 while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-  if pg_isready -h "$DB_HOST" -p "${DB_PORT:-5432}" -U postgres >/dev/null 2>&1; then
+  if node -e "
+    const { Client } = require('pg');
+    const client = new Client({ connectionString: process.env.DATABASE_URL });
+    client.connect()
+      .then(() => { client.end(); process.exit(0); })
+      .catch(() => process.exit(1));
+  " 2>/dev/null; then
     echo "Database is ready!"
     break
   fi
