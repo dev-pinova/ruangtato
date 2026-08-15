@@ -12,12 +12,11 @@ import { SITE_DOMAIN, SITE_URL } from "@/lib/site"
 import { cn } from "@/lib/utils"
 
 
-
 function MarketingHeader() {
   const { t } = useLanguage()
-  
+
   const PRIMARY_NAV = [{ href: "/app", label: t.navigation.studios }]
-  
+
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-black/50 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:px-6">
@@ -87,29 +86,29 @@ function MarketingFooter() {
   }
 
   return (
-    <footer className="border-t border-border bg-background">
+    <footer className="border-t border-neutral-800 bg-neutral-950">
       <div className="mx-auto max-w-6xl px-4 py-12 md:px-6 md:py-16">
         <div className="grid gap-8 md:grid-cols-4">
           <div className="md:col-span-1">
             <PlatformLogo variant="footer" />
-            <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
+            <p className="mt-4 max-w-xs text-sm leading-relaxed text-neutral-500">
               {t.footer.desc}{" "}
               <a
                 href={SITE_URL}
-                className="font-medium text-foreground/80 underline-offset-4 hover:text-foreground hover:underline"
+                className="font-medium text-neutral-400 underline-offset-4 hover:text-neutral-200 hover:underline"
               >
                 {SITE_DOMAIN}
               </a>
             </p>
-            <div className="mt-6 space-y-2 text-sm text-muted-foreground">
+            <div className="mt-6 space-y-2 text-sm text-neutral-600">
               <p>Jalan Bunisari Nomor 22, Desa Kuta, Kec. Kuta, Kab. Badung, Provinsi Bali</p>
               <p>
-                <a href="mailto:Info@ruangtato.com" className="hover:text-foreground hover:underline">
+                <a href="mailto:Info@ruangtato.com" className="hover:text-neutral-400 hover:underline">
                   Info@ruangtato.com
                 </a>
               </p>
               <p>
-                <a href="https://wa.me/628133985462" className="hover:text-foreground hover:underline">
+                <a href="https://wa.me/628133985462" className="hover:text-neutral-400 hover:underline">
                   +62 813-3985-462
                 </a>
               </p>
@@ -123,7 +122,7 @@ function MarketingFooter() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-foreground/80 transition-colors hover:text-foreground"
+                    className="text-sm text-neutral-500 transition-colors hover:text-neutral-300"
                   >
                     {link.label}
                   </Link>
@@ -139,7 +138,7 @@ function MarketingFooter() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-foreground/80 transition-colors hover:text-foreground"
+                    className="text-sm text-neutral-500 transition-colors hover:text-neutral-300"
                   >
                     {link.label}
                   </Link>
@@ -157,7 +156,7 @@ function MarketingFooter() {
                     href={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-foreground/80 transition-colors hover:text-foreground"
+                    className="text-sm text-neutral-500 transition-colors hover:text-neutral-300"
                   >
                     {link.label}
                   </a>
@@ -167,8 +166,8 @@ function MarketingFooter() {
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-border pt-6 md:flex-row md:items-center">
-          <p className="text-xs text-muted-foreground">
+        <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-neutral-800 pt-6 md:flex-row md:items-center">
+          <p className="text-xs text-neutral-600">
             &copy; {new Date().getFullYear()}{" "}
             <a
               href={SITE_URL}
@@ -178,7 +177,7 @@ function MarketingFooter() {
             </a>
             . {t.footer.copyright}
           </p>
-          <p className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+          <p className="inline-flex items-center gap-1 text-xs text-neutral-600">
             {t.footer.madeWith}
             <Heart
               className="size-3 fill-red-500 text-red-500"
@@ -200,7 +199,7 @@ export function MarketingShell({
   className?: string
 }) {
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-screen flex-col bg-neutral-950 text-neutral-200">
       <MarketingHeader />
       <main className={cn("flex-1", className)}>{children}</main>
       <MarketingFooter />

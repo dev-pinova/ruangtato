@@ -2,127 +2,141 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { ArrowRight, Sparkles } from "lucide-react"
+import { Search, ArrowRight, ChevronRight } from "lucide-react"
+import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
-import type { Studio } from "@/lib/types"
+import { Input } from "@/components/ui/input"
 import { VerifiedCheck } from "@/components/showcase/verified-check"
-import { Marquee } from "@/components/ui/marquee"
 import { useLanguage } from "@/lib/i18n/language-provider"
-
-const HERO_BACKGROUND_IMAGE = "/image/ruang-tato.jpg"
-
-function StudioChip({ studio }: { studio: Studio }) {
-  return (
-    <Link
-      href={`/${studio.slug}`}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="group/chip flex min-w-[140px] shrink-0 items-center gap-2 rounded-full border border-white/15 bg-black/40 px-3 py-1.5 text-sm text-white backdrop-blur-sm transition-all duration-200 hover:border-white/30 hover:bg-black/60"
-    >
-      {studio.image && (
-        /* eslint-disable-next-line @next/next/no-img-element */
-        <img
-          src={studio.image}
-          alt=""
-          className="size-5 shrink-0 rounded-full object-cover"
-        />
-      )}
-      <span className="max-w-[110px] truncate font-medium">{studio.name}</span>
-      {studio.isVerified && <VerifiedCheck className="size-3.5 shrink-0" />}
-      <ArrowRight className="ml-auto size-3 shrink-0 text-white/40 transition-transform duration-200 group-hover/chip:translate-x-0.5" />
-    </Link>
-  )
-}
+import type { Studio } from "@/lib/types"
 
 export function ExploreHero({
   featuredStudios = [],
   popularTags = [],
+  onSearch,
 }: {
   featuredStudios?: Studio[]
   popularTags?: string[]
+  onSearch?: (q: string) => void
 }) {
   const { t, locale } = useLanguage()
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const c = (t as any).catalog || {}
+  const [searchValue, setSearchValue] = useState("")
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (searchValue.trim()) onSearch?.(searchValue.trim())
+  }
 
   return (
-    <section
-      aria-label="Cari studio tato"
-      className="relative isolate overflow-hidden border-b border-border"
-    >
-      {/* Background image */}
+    <section className="relative isolate overflow-hidden bg-black text-white">
+      {/* Background */}
       <div className="absolute inset-0 -z-10">
         <Image
-          src={HERO_BACKGROUND_IMAGE}
+          src="/image/ruang-tato.jpg"
           alt=""
           fill
           priority
-          quality={85}
+          quality={80}
           sizes="100vw"
-          className="object-cover object-[65%_center] md:object-[70%_center]"
+          className="object-cover object-[65%_center]"
         />
-        <div className="absolute inset-0 bg-black/50" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/70" />
+        <div className="absolute inset-0 bg-black/70" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/90" />
       </div>
 
-      {/* Main content */}
-      <div className="relative z-10 mx-auto max-w-4xl px-4 py-12 text-center md:px-6 md:py-20">
-
+      <div className="relative mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24 lg:py-32">
         {/* Badge */}
-        <div className="flex justify-center">
-          <div className="flex items-center gap-1.5 rounded-full border border-white/20 bg-black/30 px-4 py-1.5 text-xs text-white/80 backdrop-blur-sm">
-            <Sparkles className="size-3 text-brand-scarlet" />
-            <span className="font-medium tracking-wide">{t.hero.badge}</span>
+        <div className="flex justify-center mb-6">
+          <div className="flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs text-white/70 backdrop-blur-sm">
+            <span className="flex items-center gap-1">
+              <span className="text-yellow-400">★★★★★</span>
+              <span className="text-white/90">5.0</span>
+            </span>
+            <span className="h-3 w-px bg-white/20" />
+            <span>{t.hero.badge}</span>
           </div>
         </div>
 
-        {/* Heading */}
-        <h1 className="mt-5 text-2xl font-semibold leading-tight tracking-tight text-white md:text-4xl md:leading-tight">
+        {/* Headline */}
+        <h1 className="mx-auto max-w-2xl text-center text-3xl font-semibold leading-tight tracking-tight text-white md:text-4xl lg:text-5xl">
           {t.hero.title1}{" "}
           <span className="font-bold">{t.hero.title2}</span>
+          <br className="hidden sm:block" />
+          {t.hero.title3} {t.hero.title4}
         </h1>
-        <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-white/70 md:text-base">
+        <p className="mx-auto mt-4 max-w-lg text-center text-sm text-white/60 md:text-base">
           {t.hero.subtitle}
         </p>
 
-        {/* Studio Marquee */}
+        {/* Search Bar */}
+        <form
+          onSubmit={handleSearch}
+          className="mx-auto mt-8 max-w-xl"
+        >
+          <div className="relative flex items-center rounded-xl bg-white/10 backdrop-blur-md border border-white/20 focus-within:border-white/40 focus-within:bg-white/15 transition-all">
+            <Search className="pointer-events-none absolute left-4 size-4 text-white/50" />
+            <Input
+              aria-label={t.hero.searchPlaceholder}
+              placeholder={t.hero.searchPlaceholder}
+              className="h-12 w-full rounded-xl border-0 bg-transparent pl-11 pr-12 text-sm text-white placeholder:text-white/40 focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none"
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+            />
+            <Button
+              type="submit"
+              size="sm"
+              className="absolute right-1.5 h-9 rounded-lg bg-white text-black hover:bg-white/90"
+            >
+              <ArrowRight className="size-3.5" />
+            </Button>
+          </div>
+        </form>
+
+        {/* Popular Studios */}
         {featuredStudios.length > 0 && (
           <div className="mt-8">
-            <div className="flex items-center justify-between px-1 mb-3">
-              <p className="text-xs text-white/60">{t.hero.featured}</p>
-              <Link
-                href="#browse"
-                className="text-xs text-white/60 hover:text-white transition-colors flex items-center gap-1"
-              >
-                {c.viewAllStudios || (locale === "en" ? "View All Studios" : "Lihat Semua Studio")}
-                <ArrowRight className="size-3" />
-              </Link>
-            </div>
-            <Marquee
-              pauseOnHover
-              className="-mx-4 [--duration:25s] [--gap:0.5rem]"
-            >
-              {featuredStudios.map((studio) => (
-                <StudioChip key={studio.id} studio={studio} />
+            <p className="mb-3 text-center text-xs text-white/50">{t.hero.featured}</p>
+            <div className="flex flex-wrap justify-center gap-2">
+              {featuredStudios.slice(0, 8).map((studio) => (
+                <Link
+                  key={studio.id}
+                  href={`/${studio.slug}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-sm text-white/80 backdrop-blur-sm transition-all hover:border-white/30 hover:bg-white/10"
+                >
+                  {studio.image && (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={studio.image}
+                      alt=""
+                      className="size-5 rounded-full object-cover"
+                    />
+                  )}
+                  <span className="max-w-[120px] truncate font-medium">{studio.name}</span>
+                  {studio.isVerified && <VerifiedCheck className="size-3.5 shrink-0" />}
+                  <ChevronRight className="ml-1 size-3 text-white/40 transition-transform group-hover:translate-x-0.5" />
+                </Link>
               ))}
-            </Marquee>
+            </div>
           </div>
         )}
 
-        {/* Popular tags */}
+        {/* Popular Tags */}
         {popularTags.length > 0 && (
           <div className="mt-5">
-            <p className="mb-2 text-xs text-white/60">{t.hero.popularSearch}</p>
+            <p className="mb-2 text-center text-xs text-white/40">{t.hero.popularSearch}</p>
             <div className="flex flex-wrap justify-center gap-2">
-              {popularTags.map((tag) => (
-                <span
+              {popularTags.slice(0, 10).map((tag) => (
+                <button
                   key={tag}
-                  className="rounded-full border border-white/20 bg-black/30 px-3 py-1 text-xs text-white/80 backdrop-blur-sm"
+                  type="button"
+                  onClick={() => onSearch?.(tag)}
+                  className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs text-white/70 backdrop-blur-sm transition-all hover:border-white/30 hover:bg-white/10 hover:text-white"
                 >
                   {tag}
-                </span>
+                </button>
               ))}
             </div>
           </div>
@@ -130,8 +144,8 @@ export function ExploreHero({
       </div>
 
       {/* Bottom tagline */}
-      <div className="relative z-10 border-t border-white/10 bg-black/40 px-4 py-2.5 text-center">
-        <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-white/50">
+      <div className="border-t border-white/10 bg-black/60 px-4 py-2.5 text-center">
+        <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-white/40">
           {t.hero.bottomTagline}
         </p>
       </div>

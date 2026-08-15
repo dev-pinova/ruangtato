@@ -70,13 +70,13 @@ export function ExploreGrid({
     const hasActiveFilters = Boolean(query || selectedCity || trustedOnly)
 
     return (
-      <div className="flex flex-col items-center rounded-2xl border border-neutral-200 bg-neutral-50 px-8 py-16 text-center text-neutral-900">
+      <div className="flex flex-col items-center rounded-2xl border border-neutral-800 bg-neutral-900/50 px-8 py-16 text-center text-neutral-400">
         {hasActiveFilters ? (
           <>
-            <div className="mb-4 inline-flex size-11 items-center justify-center rounded-lg border border-neutral-200 bg-white text-neutral-500">
+            <div className="mb-4 inline-flex size-11 items-center justify-center rounded-lg border border-neutral-800 bg-neutral-900 text-neutral-500">
               <SlidersHorizontal className="size-5" />
             </div>
-            <p className="text-base font-medium text-neutral-900">
+            <p className="text-base font-medium text-neutral-200">
               {c.noMatchTitle || (locale === "en" ? "No studios match your filter" : "Tidak ada studio yang cocok dengan filtermu")}
             </p>
             <p className="mt-1 max-w-sm text-sm text-neutral-500">
@@ -87,7 +87,7 @@ export function ExploreGrid({
                 variant="outline"
                 size="sm"
                 onClick={onResetFilters}
-                className="mt-6 border-neutral-300 text-neutral-700 hover:bg-neutral-100"
+                className="mt-6 border-neutral-700 text-neutral-300 hover:bg-neutral-800"
               >
                 {c.resetFilter || (locale === "en" ? "Reset filter" : "Reset filter")}
               </Button>
@@ -95,10 +95,10 @@ export function ExploreGrid({
           </>
         ) : (
           <>
-            <div className="mb-4 inline-flex size-11 items-center justify-center rounded-lg border border-neutral-200 bg-white text-neutral-500">
+            <div className="mb-4 inline-flex size-11 items-center justify-center rounded-lg border border-neutral-800 bg-neutral-900 text-neutral-500">
               <Store className="size-5" />
             </div>
-            <p className="text-base font-medium text-neutral-900">
+            <p className="text-base font-medium text-neutral-200">
               {c.noStudiosTitle || (locale === "en" ? "No studios listed yet" : "Belum ada studio yang tampil")}
             </p>
             <p className="mt-1 max-w-sm text-sm text-neutral-500">
@@ -111,7 +111,7 @@ export function ExploreGrid({
             <Button
               size="sm"
               nativeButton={false}
-              className="mt-6 gap-2 border-neutral-300 text-neutral-700 bg-white hover:bg-neutral-50"
+              className="mt-6 gap-2 border-neutral-700 text-neutral-300 bg-neutral-900 hover:bg-neutral-800"
               render={<Link href="/register" />}
             >
               {c.listStudioBtn || (locale === "en" ? "List Your Studio" : "Tampilkan Studiomu")}
@@ -125,7 +125,7 @@ export function ExploreGrid({
 
   return (
     <div id="browse" className="scroll-mt-16">
-      <div className="grid grid-cols-3 gap-3 md:gap-6 lg:gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
         {sorted.map((studio, index) => {
           return (
             <BlurFade
@@ -158,10 +158,10 @@ function ExploreCard({ studio }: { studio: Studio }) {
       href={`/${studio.slug}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="group relative flex h-full w-full flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 text-neutral-900"
+      className="group relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950 transition-all duration-300 hover:border-neutral-700 hover:shadow-xl hover:shadow-black/50 text-neutral-200"
     >
       {/* Image */}
-      <div className="relative overflow-hidden bg-neutral-100 w-full aspect-[4/3]">
+      <div className="relative overflow-hidden bg-neutral-900 w-full aspect-[4/3]">
         {studio.image && (
           /* eslint-disable-next-line @next/next/no-img-element */
           <img
@@ -171,10 +171,13 @@ function ExploreCard({ studio }: { studio: Studio }) {
           />
         )}
 
+        {/* Overlay gradient */}
+        <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-transparent opacity-60" />
+
         {/* Trust badge */}
         {studio.isTrusted && (
-          <div className="absolute right-2 top-2">
-            <span className="inline-flex items-center gap-1 rounded-full border border-white/20 bg-black/50 px-2 py-0.5 text-[10px] font-medium text-white backdrop-blur-sm">
+          <div className="absolute right-3 top-3">
+            <span className="inline-flex items-center gap-1 rounded-full border border-yellow-500/30 bg-yellow-500/10 px-2 py-0.5 text-[10px] font-medium text-yellow-400 backdrop-blur-sm">
               <BadgeCheck className="size-2.5" />
               Trusted
             </span>
@@ -183,39 +186,45 @@ function ExploreCard({ studio }: { studio: Studio }) {
       </div>
 
       {/* Content */}
-      <div className="flex flex-1 flex-col p-2.5 md:p-4">
+      <div className="flex flex-1 flex-col p-3 md:p-4">
+        {/* Studio name */}
+        <h3 className="text-sm md:text-base font-semibold text-white leading-tight line-clamp-1 mb-1.5">
+          {studio.name}
+        </h3>
+
         {/* Artist info */}
-        <div className="flex items-center gap-2 mb-1.5 md:mb-2">
+        <div className="flex items-center gap-2 mb-2">
           {avatarSrc && (
             /* eslint-disable-next-line @next/next/no-img-element */
             <img
               src={avatarSrc}
               alt={studio.artist}
-              className="size-5 md:size-7 shrink-0 rounded-full object-cover ring-1 ring-neutral-200"
+              className="size-5 md:size-6 shrink-0 rounded-full object-cover ring-1 ring-neutral-700"
             />
           )}
-          <p className="min-w-0 text-[10px] md:text-xs text-neutral-500">
-            <span className="font-semibold text-neutral-800">
-              {studio.artist}
+          <p className="min-w-0 text-[11px] md:text-xs text-neutral-500">
+            <span className="font-medium text-neutral-400">
+              {locale === "en" ? "By" : "Oleh"}{" "}
+              <span className="text-neutral-300">{studio.artist}</span>
             </span>
             {studio.isVerified && (
-              <VerifiedCheck className="ml-0.5 inline size-3 md:size-3.5 align-[-1px]" />
+              <VerifiedCheck className="ml-0.5 inline size-3 md:size-3.5 align-[-1px] text-blue-400" />
             )}
           </p>
         </div>
 
         {/* Description */}
-        <p className="line-clamp-2 text-[10px] md:text-xs leading-relaxed text-neutral-600 flex-1">
+        <p className="text-[11px] md:text-xs leading-relaxed text-neutral-500 line-clamp-2 flex-1">
           {studio.description}
         </p>
 
         {/* Tags */}
         {displayTags.length > 0 && (
-          <div className="mt-2 flex flex-wrap gap-1">
+          <div className="mt-3 flex flex-wrap gap-1">
             {displayTags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-full border border-neutral-200 px-2 py-0.5 text-[10px] font-medium text-neutral-600 bg-neutral-50"
+                className="rounded-full border border-neutral-800 bg-neutral-900/80 px-2 py-0.5 text-[10px] font-medium text-neutral-500"
               >
                 {tag}
               </span>
