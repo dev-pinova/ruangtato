@@ -2,18 +2,15 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { ArrowRight, BadgeCheck, Store, SlidersHorizontal } from "lucide-react"
+import { BadgeCheck, SlidersHorizontal, Store, ArrowRight, Search } from "lucide-react"
 
 import { BlurFade } from "@/components/ui/blur-fade"
-import { MagicSpotlight } from "@/components/ui/magic-spotlight"
-import { LaurelWreath } from "@/components/showcase/laurel-wreath"
-import { VerifiedCheck } from "@/components/showcase/verified-check"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { SITE_NAME } from "@/lib/site"
 import { useLanguage } from "@/lib/i18n/language-provider"
 import type { Studio } from "@/lib/types"
-
-const GRID_PREVIEW_LIMIT = 8 // 4 kolom × 2 baris
+import { VerifiedCheck } from "@/components/showcase/verified-check"
 
 type SortBy = "views" | "clicks" | "name"
 
@@ -23,6 +20,10 @@ export function ExploreGrid({
   sortBy,
   trustedOnly,
   selectedCity,
+  onSearch,
+  onSortChange,
+  onTrustedToggle,
+  onCityChange,
   onResetFilters,
 }: {
   studios: Studio[]
@@ -30,19 +31,17 @@ export function ExploreGrid({
   sortBy: SortBy
   trustedOnly: boolean
   selectedCity: string
+  onSearch?: (query: string) => void
+  onSortChange?: (sort: SortBy) => void
+  onTrustedToggle?: () => void
+  onCityChange?: (city: string) => void
   onResetFilters?: () => void
 }) {
   const { t, locale } = useLanguage()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const c = (t as any).catalog || {}
 
-  const [showAll, setShowAll] = useState(false)
   const query = searchQuery.toLowerCase()
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- reset pagination to collapsed view whenever filter/sort inputs change
-    setShowAll(false)
-  }, [searchQuery, sortBy, trustedOnly, selectedCity])
 
   const filtered = studios.filter((studio) => {
     if (trustedOnly && !studio.isTrusted) return false
@@ -66,9 +65,6 @@ export function ExploreGrid({
     if (sortBy === "clicks") return b.clickCount - a.clickCount
     return a.name.localeCompare(b.name)
   })
-
-  const hasMore = false
-  const visibleStudios = sorted
 
   if (sorted.length === 0) {
     const hasActiveFilters = Boolean(query || selectedCity || trustedOnly)
@@ -130,14 +126,14 @@ export function ExploreGrid({
   return (
     <div id="browse" className="scroll-mt-16">
       <div className="grid grid-cols-3 gap-3 md:gap-6 lg:gap-8">
-        {visibleStudios.map((studio, index) => {
+        {sorted.map((studio, index) => {
           return (
             <BlurFade
               key={studio.id}
               inView
-              delay={index * 0.07}
-              duration={0.45}
-              blur="8px"
+              delay={index * 0.05}
+              duration={0.4}
+              blur="6px"
               direction="up"
             >
               <ExploreCard studio={studio} />
@@ -145,20 +141,6 @@ export function ExploreGrid({
           )
         })}
       </div>
-
-      {hasMore && !showAll && (
-        <div className="mt-10 flex justify-center">
-          <Button
-            variant="outline"
-            size="lg"
-            onClick={() => setShowAll(true)}
-            className="gap-2 border-neutral-300 text-neutral-700 hover:bg-neutral-50"
-          >
-            {c.viewAllStudios || (locale === "en" ? "View All Studios" : "Lihat Semua Studio")}
-            <ArrowRight className="size-4" />
-          </Button>
-        </div>
-      )}
     </div>
   )
 }
@@ -167,90 +149,73 @@ function ExploreCard({ studio }: { studio: Studio }) {
   const { locale } = useLanguage()
   const avatarSrc = studio.artistImage || studio.image
   const displayTags = [
-    ...studio.tags.slice(0, 3),
+    ...studio.tags.slice(0, 2),
     ...(studio.city && !studio.tags.includes(studio.city) ? [studio.city] : []),
-  ].slice(0, 4)
+  ].slice(0, 3)
 
   return (
     <Link
       href={`/${studio.slug}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="group relative flex h-full w-full flex-col overflow-hidden rounded-lg border border-neutral-200 bg-white transition-shadow duration-300 hover:shadow-md text-neutral-900"
+      className="group relative flex h-full w-full flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 text-neutral-900"
     >
-      <MagicSpotlight size={300} />
+      {/* Image */}
       <div className="relative overflow-hidden bg-neutral-100 w-full aspect-[4/3]">
         {studio.image && (
           /* eslint-disable-next-line @next/next/no-img-element */
           <img
             src={studio.image}
             alt={studio.name}
-            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+            className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
           />
         )}
 
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent transition-opacity duration-300 group-hover:from-black/90" />
-
+        {/* Trust badge */}
         {studio.isTrusted && (
-          <div className="absolute left-2 top-2">
-            <span className="inline-flex items-center gap-0.5 rounded-full border border-white/15 bg-black/40 px-1.5 py-0.5 text-[9px] font-medium text-white backdrop-blur-sm">
+          <div className="absolute right-2 top-2">
+            <span className="inline-flex items-center gap-1 rounded-full border border-white/20 bg-black/50 px-2 py-0.5 text-[10px] font-medium text-white backdrop-blur-sm">
               <BadgeCheck className="size-2.5" />
               Trusted
             </span>
           </div>
         )}
-
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 px-2 pb-2 pt-8 md:pb-4 md:px-4 text-center">
-          <div className="flex items-center justify-center gap-1 md:gap-3">
-            <LaurelWreath side="left" className="h-4 md:h-7 w-auto shrink-0 text-white/60" />
-            <div className="min-w-0">
-              <p className="line-clamp-2 text-[10px] md:text-lg lg:text-xl font-bold leading-snug tracking-tight text-white">
-                {studio.name}
-              </p>
-              <p className="hidden sm:block mt-0.5 text-[9px] md:text-xs leading-none text-white/55">
-                {locale === "en" ? "Built with" : "Built with"}{" "}
-                <span className="font-medium text-white/90">{SITE_NAME}</span>
-              </p>
-            </div>
-            <LaurelWreath side="right" className="h-4 md:h-7 w-auto shrink-0 text-white/60" />
-          </div>
-        </div>
       </div>
 
-      <div className="relative z-10 flex flex-col justify-between p-2 md:p-4 w-full flex-1">
-        <div className="flex flex-col gap-1.5 md:gap-3">
-
-          <div className="flex items-center gap-1.5 md:gap-3">
-            {avatarSrc && (
-              /* eslint-disable-next-line @next/next/no-img-element */
-              <img
-                src={avatarSrc}
-                alt={studio.artist}
-                className="size-5 md:size-8 shrink-0 rounded-full object-cover ring-1 ring-neutral-200"
-              />
+      {/* Content */}
+      <div className="flex flex-1 flex-col p-2.5 md:p-4">
+        {/* Artist info */}
+        <div className="flex items-center gap-2 mb-1.5 md:mb-2">
+          {avatarSrc && (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={avatarSrc}
+              alt={studio.artist}
+              className="size-5 md:size-7 shrink-0 rounded-full object-cover ring-1 ring-neutral-200"
+            />
+          )}
+          <p className="min-w-0 text-[10px] md:text-xs text-neutral-500">
+            <span className="font-semibold text-neutral-800">
+              {studio.artist}
+            </span>
+            {studio.isVerified && (
+              <VerifiedCheck className="ml-0.5 inline size-3 md:size-3.5 align-[-1px]" />
             )}
-            <p className="min-w-0 text-[10px] md:text-sm text-neutral-500">
-              {locale === "en" ? "By" : "Oleh"}{" "}
-              <span className="font-semibold text-neutral-800">
-                {studio.artist}
-              </span>
-              {studio.isVerified && (
-                <VerifiedCheck className="ml-0.5 inline size-3 md:size-4 align-[-2px]" />
-              )}
-            </p>
-          </div>
-
-          <p className="line-clamp-2 text-[10px] md:text-base leading-normal md:leading-relaxed text-neutral-600">
-            {studio.description}
           </p>
         </div>
 
+        {/* Description */}
+        <p className="line-clamp-2 text-[10px] md:text-xs leading-relaxed text-neutral-600 flex-1">
+          {studio.description}
+        </p>
+
+        {/* Tags */}
         {displayTags.length > 0 && (
-          <div className="mt-2 flex flex-wrap gap-1 md:gap-1.5">
+          <div className="mt-2 flex flex-wrap gap-1">
             {displayTags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-full border border-neutral-200 px-2 py-0.5 text-[10px] md:text-sm font-medium text-neutral-600 bg-neutral-50"
+                className="rounded-full border border-neutral-200 px-2 py-0.5 text-[10px] font-medium text-neutral-600 bg-neutral-50"
               >
                 {tag}
               </span>

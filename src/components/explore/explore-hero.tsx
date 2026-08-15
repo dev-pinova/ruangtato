@@ -2,21 +2,14 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { ArrowRight, ChevronRight, Search, Sparkles } from "lucide-react"
+import { ArrowRight, Sparkles } from "lucide-react"
 
-import { AnimatedGradientText } from "@/components/ui/animated-gradient-text"
-import { AnimatedShinyText } from "@/components/ui/animated-shiny-text"
-import { Marquee } from "@/components/ui/marquee"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import type { Studio } from "@/lib/types"
 import { VerifiedCheck } from "@/components/showcase/verified-check"
-import { GradualSpacing } from "@/components/ui/gradual-spacing"
-import { RetroGrid } from "@/components/ui/retro-grid"
+import { Marquee } from "@/components/ui/marquee"
 import { useLanguage } from "@/lib/i18n/language-provider"
-
-const POPULAR_TAGS = ["Fine Line", "Blackwork", "Japanese", "Realism", "Jakarta", "Bali"]
 
 const HERO_BACKGROUND_IMAGE = "/image/ruang-tato.jpg"
 
@@ -38,23 +31,21 @@ function StudioChip({ studio }: { studio: Studio }) {
       )}
       <span className="max-w-[110px] truncate font-medium">{studio.name}</span>
       {studio.isVerified && <VerifiedCheck className="size-3.5 shrink-0" />}
-      <ChevronRight className="ml-auto size-3 shrink-0 text-white/40 transition-transform duration-200 group-hover/chip:translate-x-0.5" />
+      <ArrowRight className="ml-auto size-3 shrink-0 text-white/40 transition-transform duration-200 group-hover/chip:translate-x-0.5" />
     </Link>
   )
 }
 
 export function ExploreHero({
-  searchQuery,
-  onSearch,
   featuredStudios = [],
-  popularTags = POPULAR_TAGS,
+  popularTags = [],
 }: {
-  searchQuery: string
-  onSearch: (query: string) => void
   featuredStudios?: Studio[]
   popularTags?: string[]
 }) {
-  const { t } = useLanguage()
+  const { t, locale } = useLanguage()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const c = (t as any).catalog || {}
 
   return (
     <section
@@ -72,68 +63,46 @@ export function ExploreHero({
           sizes="100vw"
           className="object-cover object-[65%_center] md:object-[70%_center]"
         />
-        <div className="absolute inset-0 bg-black/40" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/30 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60" />
-        <RetroGrid className="opacity-20 z-0" />
+        <div className="absolute inset-0 bg-black/50" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/70" />
       </div>
 
       {/* Main content */}
-      <div className="relative z-10 mx-auto max-w-4xl px-4 py-20 text-center md:px-6 md:py-28">
+      <div className="relative z-10 mx-auto max-w-4xl px-4 py-12 text-center md:px-6 md:py-20">
 
         {/* Badge */}
         <div className="flex justify-center">
-          <div className="group relative flex items-center gap-1.5 rounded-full border border-white/20 bg-black/30 px-4 py-1.5 text-sm text-white/80 backdrop-blur-sm transition-all duration-300 hover:border-white/30 hover:bg-black/40">
-            <Sparkles className="size-3.5 text-brand-scarlet" />
-            <AnimatedShinyText className="text-xs font-medium text-white/80" shimmerWidth={80}>
-              {t.hero.badge}
-            </AnimatedShinyText>
-            <ArrowRight className="size-3 text-white/50" />
+          <div className="flex items-center gap-1.5 rounded-full border border-white/20 bg-black/30 px-4 py-1.5 text-xs text-white/80 backdrop-blur-sm">
+            <Sparkles className="size-3 text-brand-scarlet" />
+            <span className="font-medium tracking-wide">{t.hero.badge}</span>
           </div>
         </div>
 
         {/* Heading */}
-        <h1 className="mt-6 text-4xl font-semibold leading-tight tracking-tight text-white md:text-5xl md:leading-tight flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1">
-          <span className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
-            <GradualSpacing text={t.hero.title1} />
-            <AnimatedGradientText className="[--bg-size:200%] font-semibold leading-tight tracking-tight">
-              {t.hero.title2}
-            </AnimatedGradientText>
-          </span>
-          <GradualSpacing text={t.hero.title3} />
-          <GradualSpacing text={t.hero.title4} />
+        <h1 className="mt-5 text-2xl font-semibold leading-tight tracking-tight text-white md:text-4xl md:leading-tight">
+          {t.hero.title1}{" "}
+          <span className="font-bold">{t.hero.title2}</span>
         </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-white/70 md:text-lg">
+        <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-white/70 md:text-base">
           {t.hero.subtitle}
         </p>
 
-        {/* Search bar */}
-        <div className="relative mx-auto mt-10 max-w-2xl rounded-2xl bg-white shadow-xl">
-          <div className="relative flex items-center bg-white rounded-2xl">
-            <Search className="pointer-events-none absolute left-4 size-5 text-neutral-400" />
-            <Input
-              aria-label={t.hero.searchPlaceholder}
-              placeholder={t.hero.searchPlaceholder}
-              className="h-14 w-full rounded-2xl border-0 bg-transparent pl-12 pr-10 text-sm text-neutral-900 placeholder:text-neutral-400 focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none"
-              value={searchQuery}
-              onChange={(e) => onSearch(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault()
-                }
-              }}
-            />
-            <ChevronRight className="pointer-events-none absolute right-4 size-4 text-neutral-400" />
-          </div>
-        </div>
-
         {/* Studio Marquee */}
         {featuredStudios.length > 0 && (
-          <div className="mt-6">
-            <p className="mb-3 text-xs text-white/60">{t.hero.featured}</p>
+          <div className="mt-8">
+            <div className="flex items-center justify-between px-1 mb-3">
+              <p className="text-xs text-white/60">{t.hero.featured}</p>
+              <Link
+                href="#browse"
+                className="text-xs text-white/60 hover:text-white transition-colors flex items-center gap-1"
+              >
+                {c.viewAllStudios || (locale === "en" ? "View All Studios" : "Lihat Semua Studio")}
+                <ArrowRight className="size-3" />
+              </Link>
+            </div>
             <Marquee
               pauseOnHover
-              className="-mx-4 [--duration:35s] [--gap:0.5rem]"
+              className="-mx-4 [--duration:25s] [--gap:0.5rem]"
             >
               {featuredStudios.map((studio) => (
                 <StudioChip key={studio.id} studio={studio} />
@@ -143,34 +112,25 @@ export function ExploreHero({
         )}
 
         {/* Popular tags */}
-        <div className="mt-5">
-          <p className="mb-3 text-xs text-white/60">{t.hero.popularSearch}</p>
-          <div
-            className={cn(
-              "relative -mx-4 px-4 md:mx-0 md:px-0",
-              "[mask-image:linear-gradient(to_right,transparent,black_12px,black_calc(100%-12px),transparent)] md:[mask-image:linear-gradient(to_right,transparent,black_24px,black_calc(100%-24px),transparent)]",
-            )}
-          >
-            <div className="flex gap-2 overflow-x-auto pb-1 snap-x snap-mandatory scrollbar-hide justify-center flex-wrap">
+        {popularTags.length > 0 && (
+          <div className="mt-5">
+            <p className="mb-2 text-xs text-white/60">{t.hero.popularSearch}</p>
+            <div className="flex flex-wrap justify-center gap-2">
               {popularTags.map((tag) => (
-                <Button
+                <span
                   key={tag}
-                  type="button"
-                  variant="inverse"
-                  size="xs"
-                  className="shrink-0 snap-start rounded-full transition-transform duration-200 hover:scale-105"
-                  onClick={() => onSearch(tag)}
+                  className="rounded-full border border-white/20 bg-black/30 px-3 py-1 text-xs text-white/80 backdrop-blur-sm"
                 >
                   {tag}
-                </Button>
+                </span>
               ))}
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Bottom tagline */}
-      <div className="relative z-10 border-t border-white/10 bg-black/40 px-4 py-3 text-center">
+      <div className="relative z-10 border-t border-white/10 bg-black/40 px-4 py-2.5 text-center">
         <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-white/50">
           {t.hero.bottomTagline}
         </p>
