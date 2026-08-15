@@ -39,8 +39,8 @@ export function ExploreCta({ featuredStudios = [], onFindMe }: ExploreCtaProps) 
     : "Studio kamu pantas\nmemiliki website yang semaju usahamu"
 
   const buttonText = locale === "en"
-    ? "Get your free studio site →"
-    : "Buat website studio gratis →"
+    ? "Register now — it's free →"
+    : "Daftar sekarang — gratis! →"
 
   // Use real studio data for visual cards
   const visualCards = featuredStudios.length > 0
