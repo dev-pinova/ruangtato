@@ -156,8 +156,7 @@ export function ExploreCta({ onFindMe }: { onFindMe?: () => void }) {
                 initial="hidden"
                 animate={isInView ? "visible" : "hidden"}
                 variants={CARD_VARIANTS}
-                whileHover="hover"
-                variants={CARD_HOVER_VARIANTS}
+                whileHover={{ scale: 1.02 }}
                 onHoverStart={() => setHoveredCard(card.id)}
                 onHoverEnd={() => setHoveredCard(null)}
                 className="relative overflow-hidden transition-shadow duration-300"
