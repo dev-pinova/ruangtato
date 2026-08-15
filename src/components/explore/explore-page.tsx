@@ -254,7 +254,7 @@ export function ExplorePage({
 
       {/* Cinematic CTA Section */}
       {!hideCta && (
-        <ExploreCta />
+        <ExploreCta featuredStudios={featuredStudios} />
       )}
     </MarketingShell>
   )

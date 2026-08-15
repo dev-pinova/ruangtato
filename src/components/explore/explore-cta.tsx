@@ -2,63 +2,14 @@
 
 import Link from "next/link"
 import { ArrowRight, Sparkles } from "lucide-react"
-import { useEffect, useRef, useState } from "react"
+import { useRef, useState } from "react"
 import { motion, useInView } from "framer-motion"
 
 import { useLanguage } from "@/lib/i18n/language-provider"
+import type { Studio } from "@/lib/types"
+import { VerifiedCheck } from "@/components/showcase/verified-check"
 
-// Visual cards data - alternating creator portraits and app screenshots
-const VISUAL_CARDS = [
-  {
-    id: 1,
-    type: "creator",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=600&fit=crop&crop=face",
-    label: "Creator",
-  },
-  {
-    id: 2,
-    type: "app",
-    image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&h=600&fit=crop",
-    label: "App UI",
-  },
-  {
-    id: 3,
-    type: "creator",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=600&fit=crop&crop=face",
-    label: "Creator",
-  },
-  {
-    id: 4,
-    type: "app",
-    image: "https://images.unsplash.com/photo-1551650975-87deedd9a40c?w=400&h=600&fit=crop",
-    label: "App UI",
-  },
-  {
-    id: 5,
-    type: "creator",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=600&fit=crop&crop=face",
-    label: "Creator",
-  },
-  {
-    id: 6,
-    type: "app",
-    image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&h=600&fit=crop",
-    label: "App UI",
-  },
-  {
-    id: 7,
-    type: "creator",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ff002741?w=400&h=600&fit=crop&crop=face",
-    label: "Creator",
-  },
-  {
-    id: 8,
-    type: "app",
-    image: "https://images.unsplash.com/photo-1555774698-0b77e0d5fac6?w=400&h=600&fit=crop",
-    label: "App UI",
-  },
-]
-
+// Animation variants
 const CARD_VARIANTS = {
   hidden: { opacity: 0, y: 40 },
   visible: (i: number) => ({
@@ -72,12 +23,12 @@ const CARD_VARIANTS = {
   }),
 }
 
-const CARD_HOVER_VARIANTS = {
-  rest: { scale: 1 },
-  hover: { scale: 1.02 },
+interface ExploreCtaProps {
+  featuredStudios?: Studio[]
+  onFindMe?: () => void
 }
 
-export function ExploreCta({ onFindMe }: { onFindMe?: () => void }) {
+export function ExploreCta({ featuredStudios = [], onFindMe }: ExploreCtaProps) {
   const { t, locale } = useLanguage()
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
@@ -90,6 +41,20 @@ export function ExploreCta({ onFindMe }: { onFindMe?: () => void }) {
   const buttonText = locale === "en"
     ? "Find best app for me"
     : "Temukan app untukku"
+
+  // Use real studio data for visual cards
+  const visualCards = featuredStudios.length > 0
+    ? featuredStudios.slice(0, 8).map((studio, i) => ({
+        id: studio.id,
+        type: i % 2 === 0 ? "creator" : "studio",
+        image: studio.image || studio.artistImage || "",
+        label: studio.name,
+        href: `/${studio.slug}`,
+      }))
+    : []
+
+  // Fallback to empty if no studios
+  const cardsToShow = visualCards.length > 0 ? visualCards : []
 
   return (
     <section
@@ -145,61 +110,101 @@ export function ExploreCta({ onFindMe }: { onFindMe?: () => void }) {
         </div>
       </div>
 
-      {/* Visual Strip - Creator/App Cards */}
+      {/* Visual Strip - Studio Cards */}
       <div className="relative z-20 -mb-32 px-4">
         <div className="mx-auto max-w-6xl">
-          <div className="flex items-end justify-center gap-3">
-            {VISUAL_CARDS.map((card, i) => (
-              <motion.div
-                key={card.id}
-                custom={i}
-                initial="hidden"
-                animate={isInView ? "visible" : "hidden"}
-                variants={CARD_VARIANTS}
-                whileHover={{ scale: 1.02 }}
-                onHoverStart={() => setHoveredCard(card.id)}
-                onHoverEnd={() => setHoveredCard(null)}
-                className="relative overflow-hidden transition-shadow duration-300"
-                style={{
-                  width: "170px",
-                  height: "240px",
-                  borderRadius: "28px",
-                  flexShrink: 0,
-                }}
-              >
-                {/* Card Image */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={card.image}
-                  alt={card.label}
-                  className="h-full w-full object-cover"
-                />
-
-                {/* Border overlay */}
-                <div
-                  className="absolute inset-0 rounded-[28px]"
+          {cardsToShow.length > 0 ? (
+            <div className="flex items-end justify-center gap-3">
+              {cardsToShow.map((card, i) => (
+                <Link
+                  key={card.id}
+                  href={card.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="relative overflow-hidden transition-shadow duration-300"
                   style={{
-                    border: "1px solid rgba(255,255,255,0.15)",
-                    pointerEvents: "none",
+                    width: "170px",
+                    height: "240px",
+                    borderRadius: "28px",
+                    flexShrink: 0,
                   }}
-                />
+                  onMouseEnter={() => setHoveredCard(card.id)}
+                  onMouseLeave={() => setHoveredCard(null)}
+                >
+                  <motion.div
+                    custom={i}
+                    initial="hidden"
+                    animate={isInView ? "visible" : "hidden"}
+                    variants={CARD_VARIANTS}
+                    whileHover={{ scale: 1.02 }}
+                    className="h-full w-full"
+                  >
+                    {/* Card Image */}
+                    {card.image ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img
+                        src={card.image}
+                        alt={card.label}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="h-full w-full bg-neutral-800" />
+                    )}
 
-                {/* Label badge */}
-                <div className="absolute bottom-3 left-3 right-3">
-                  <div className="rounded-full bg-black/60 backdrop-blur-md px-3 py-1.5 text-center">
-                    <span className="text-[10px] font-medium text-white/80">
-                      {card.label}
-                    </span>
+                    {/* Border overlay */}
+                    <div
+                      className="absolute inset-0 rounded-[28px]"
+                      style={{
+                        border: "1px solid rgba(255,255,255,0.15)",
+                        pointerEvents: "none",
+                      }}
+                    />
+
+                    {/* Label badge */}
+                    <div className="absolute bottom-3 left-3 right-3">
+                      <div className="rounded-full bg-black/60 backdrop-blur-md px-3 py-1.5 text-center">
+                        <span className="text-[10px] font-medium text-white/80">
+                          {card.label}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Hover glow */}
+                    {hoveredCard === card.id && (
+                      <div className="absolute inset-0 bg-white/5 rounded-[28px]" />
+                    )}
+                  </motion.div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            /* Fallback: show placeholder cards when no studios */
+            <div className="flex items-end justify-center gap-3">
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                <div
+                  key={i}
+                  className="relative overflow-hidden bg-neutral-900"
+                  style={{
+                    width: "170px",
+                    height: "240px",
+                    borderRadius: "28px",
+                    flexShrink: 0,
+                  }}
+                >
+                  <div className="flex h-full w-full items-center justify-center">
+                    <span className="text-xs text-neutral-600">Coming soon</span>
                   </div>
+                  <div
+                    className="absolute inset-0 rounded-[28px]"
+                    style={{
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      pointerEvents: "none",
+                    }}
+                  />
                 </div>
-
-                {/* Hover glow */}
-                {hoveredCard === card.id && (
-                  <div className="absolute inset-0 bg-white/5 rounded-[28px]" />
-                )}
-              </motion.div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
