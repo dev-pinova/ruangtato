@@ -98,14 +98,13 @@ export function ExploreCta({ featuredStudios = [], onFindMe }: ExploreCtaProps) 
             transition={{ delay: 0.15, duration: 0.4 }}
             className="mt-8 flex justify-center"
           >
-            <button
-              type="button"
-              onClick={onFindMe}
-              className="group flex items-center gap-2 rounded-full bg-[#1F1F1F] px-5 py-3 text-sm font-semibold text-white transition-all duration-180 hover:bg-[#2A2A2A]"
+            <Link
+              href="/register"
+              className="group flex items-center gap-2 rounded-full bg-[#FF4444] px-6 py-3 text-sm font-semibold text-white transition-all duration-180 hover:bg-[#FF5555] hover:shadow-lg hover:shadow-red-500/25"
             >
               <span>{buttonText}</span>
               <ArrowRight className="size-4 transition-transform duration-180 group-hover:translate-x-1" />
-            </button>
+            </Link>
           </motion.div>
         </div>
       </div>
