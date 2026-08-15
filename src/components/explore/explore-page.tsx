@@ -101,17 +101,17 @@ export function ExplorePage({
         />
       )}
 
-      <section className="bg-neutral-950 text-neutral-200 border-t border-neutral-800 min-h-screen">
+      <section className="bg-white text-neutral-900 border-t border-neutral-200 min-h-screen">
         <div className="mx-auto max-w-6xl px-4 py-8 md:px-6 md:py-12">
 
           {/* Search Bar — always visible */}
           <div className="mb-6 max-w-md">
-            <div className="relative flex items-center bg-neutral-900 border border-neutral-800 rounded-xl">
-              <Search className="pointer-events-none absolute left-3.5 size-4 text-neutral-600" />
+            <div className="relative flex items-center bg-white border border-neutral-200 rounded-xl shadow-sm">
+              <Search className="pointer-events-none absolute left-3.5 size-4 text-neutral-400" />
               <Input
                 aria-label={t.hero.searchPlaceholder}
                 placeholder={t.hero.searchPlaceholder}
-                className="h-10 w-full rounded-xl border-0 bg-transparent pl-10 pr-8 text-sm text-neutral-200 placeholder:text-neutral-600 focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none"
+                className="h-10 w-full rounded-xl border-0 bg-transparent pl-10 pr-8 text-sm text-neutral-900 placeholder:text-neutral-400 focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -125,7 +125,7 @@ export function ExplorePage({
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as SortBy)}
-                className="h-9 rounded-lg border border-neutral-800 bg-neutral-900 px-3 text-sm text-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-700"
+                className="h-9 rounded-lg border border-neutral-200 bg-white px-3 text-sm text-neutral-700 focus:outline-none focus:ring-2 focus:ring-neutral-300"
               >
                 <option value="views">{c.sortByViews || "Paling dilihat"}</option>
                 <option value="clicks">{c.sortByClicks || "Paling diklik"}</option>
@@ -140,8 +140,8 @@ export function ExplorePage({
               className={cn(
                 "shrink-0 flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm transition-colors",
                 trustedOnly
-                  ? "border-yellow-500/30 bg-yellow-500/10 text-yellow-400"
-                  : "border-neutral-800 bg-neutral-900 text-neutral-500 hover:bg-neutral-800"
+                  ? "border-neutral-300 bg-neutral-100 text-neutral-900 font-medium"
+                  : "border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50"
               )}
             >
               <SlidersHorizontal className="size-3.5" />
@@ -157,7 +157,7 @@ export function ExplorePage({
                   "flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm transition-colors",
                   selectedCity
                     ? "border-neutral-700 bg-neutral-800 text-neutral-200 font-medium"
-                    : "border-neutral-800 bg-neutral-900 text-neutral-500 hover:bg-neutral-800"
+                    : "border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50"
                 )}
               >
                 {selectedCity || (c.allCities || "Semua Kota")}
@@ -221,15 +221,15 @@ export function ExplorePage({
       {mobileFilterOpen && (
         <div className="fixed inset-0 z-50 md:hidden">
           <div
-            className="absolute inset-0 bg-black/60"
+            className="absolute inset-0 bg-black/50"
             onClick={() => setMobileFilterOpen(false)}
           />
-          <div className="absolute bottom-0 left-0 right-0 bg-neutral-950 border-t border-neutral-800 rounded-t-2xl p-6 pb-8 max-h-[70vh] overflow-y-auto">
+          <div className="absolute bottom-0 left-0 right-0 bg-white border-t border-neutral-200 rounded-t-2xl p-6 pb-8 max-h-[70vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-neutral-200">Filter Kota</h3>
+              <h3 className="font-semibold text-neutral-900">Filter Kota</h3>
               <button
                 onClick={() => setMobileFilterOpen(false)}
-                className="text-neutral-500 hover:text-neutral-300"
+                className="text-neutral-500 hover:text-neutral-900"
               >
                 Tutup
               </button>
@@ -239,7 +239,7 @@ export function ExplorePage({
                 onClick={() => { setSelectedCity(""); setMobileFilterOpen(false); }}
                 className={cn(
                   "w-full text-left px-4 py-3 rounded-lg text-sm transition-colors",
-                  !selectedCity ? "bg-neutral-800 font-medium text-neutral-200" : "text-neutral-500 hover:bg-neutral-900"
+                  !selectedCity ? "bg-neutral-100 font-medium text-neutral-900" : "text-neutral-600 hover:bg-neutral-50"
                 )}
               >
                 {c.allCities || "Semua Kota"}
@@ -250,7 +250,7 @@ export function ExplorePage({
                   onClick={() => { setSelectedCity(city); setMobileFilterOpen(false); }}
                   className={cn(
                     "w-full text-left px-4 py-3 rounded-lg text-sm transition-colors",
-                    selectedCity === city ? "bg-neutral-800 font-medium text-neutral-200" : "text-neutral-500 hover:bg-neutral-900"
+                    selectedCity === city ? "bg-neutral-100 font-medium text-neutral-900" : "text-neutral-600 hover:bg-neutral-50"
                   )}
                 >
                   {city} ({cityCounts[city] || 0})
@@ -263,25 +263,25 @@ export function ExplorePage({
 
       {/* Studio-owner conversion path */}
       {!hideCta && (
-        <section className="border-t border-neutral-800 bg-neutral-950">
+        <section className="border-t border-neutral-200 bg-white">
           <div className="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-20">
-            <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900 p-8 md:p-12">
+            <div className="relative overflow-hidden rounded-2xl border border-neutral-200 bg-card p-8 md:p-12">
               <div className="flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
                 <div className="max-w-xl">
-                  <div className="mb-4 inline-flex size-11 items-center justify-center rounded-lg border border-neutral-800 bg-neutral-950 text-neutral-400">
+                  <div className="mb-4 inline-flex size-11 items-center justify-center rounded-lg border border-neutral-200 bg-background text-foreground">
                     <Store className="size-5" />
                   </div>
-                  <h2 className="text-2xl font-semibold tracking-tight text-white md:text-3xl">
+                  <h2 className="text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
                     {t.cta.title}
                   </h2>
-                  <p className="mt-3 text-base leading-relaxed text-neutral-500">
+                  <p className="mt-3 text-base leading-relaxed text-muted-foreground">
                     {t.cta.subtitle}
                   </p>
                 </div>
                 <Button
                   size="lg"
                   nativeButton={false}
-                  className="shrink-0 gap-2 bg-white text-black hover:bg-neutral-200"
+                  className="shrink-0 gap-2 bg-[#FF4444] text-white hover:bg-[#FF5555]"
                   render={<Link href="/register" />}
                 >
                   {t.cta.button}
