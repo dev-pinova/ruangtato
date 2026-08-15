@@ -129,7 +129,7 @@ export function ExploreGrid({
 
   return (
     <div id="browse" className="scroll-mt-16">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+      <div className="grid grid-cols-3 gap-3 md:gap-6 lg:gap-8">
         {visibleStudios.map((studio, index) => {
           return (
             <BlurFade
@@ -176,7 +176,7 @@ function ExploreCard({ studio }: { studio: Studio }) {
       href={`/${studio.slug}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="group relative flex h-full w-full flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white transition-shadow duration-300 hover:shadow-md text-neutral-900"
+      className="group relative flex h-full w-full flex-col overflow-hidden rounded-lg border border-neutral-200 bg-white transition-shadow duration-300 hover:shadow-md text-neutral-900"
     >
       <MagicSpotlight size={300} />
       <div className="relative overflow-hidden bg-neutral-100 w-full aspect-[4/3]">
@@ -192,65 +192,65 @@ function ExploreCard({ studio }: { studio: Studio }) {
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent transition-opacity duration-300 group-hover:from-black/90" />
 
         {studio.isTrusted && (
-          <div className="absolute left-3 top-3">
-            <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/40 px-2 py-1 text-[10px] md:text-xs font-medium text-white backdrop-blur-sm">
-              <BadgeCheck className="size-3 md:size-3.5" />
+          <div className="absolute left-2 top-2">
+            <span className="inline-flex items-center gap-0.5 rounded-full border border-white/15 bg-black/40 px-1.5 py-0.5 text-[9px] font-medium text-white backdrop-blur-sm">
+              <BadgeCheck className="size-2.5" />
               Trusted
             </span>
           </div>
         )}
 
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 px-4 pb-4 pt-12 md:pb-6 text-center">
-          <div className="flex items-center justify-center gap-2 md:gap-3">
-            <LaurelWreath side="left" className="h-5 md:h-7 w-auto shrink-0 text-white/60" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 px-2 pb-2 pt-8 md:pb-4 md:px-4 text-center">
+          <div className="flex items-center justify-center gap-1 md:gap-3">
+            <LaurelWreath side="left" className="h-4 md:h-7 w-auto shrink-0 text-white/60" />
             <div className="min-w-0">
-              <p className="line-clamp-2 text-sm md:text-lg lg:text-xl font-bold leading-snug tracking-tight text-white">
+              <p className="line-clamp-2 text-[10px] md:text-lg lg:text-xl font-bold leading-snug tracking-tight text-white">
                 {studio.name}
               </p>
-              <p className="hidden sm:block mt-1 text-[11px] md:text-xs leading-none text-white/55">
+              <p className="hidden sm:block mt-0.5 text-[9px] md:text-xs leading-none text-white/55">
                 {locale === "en" ? "Built with" : "Built with"}{" "}
                 <span className="font-medium text-white/90">{SITE_NAME}</span>
               </p>
             </div>
-            <LaurelWreath side="right" className="h-5 md:h-7 w-auto shrink-0 text-white/60" />
+            <LaurelWreath side="right" className="h-4 md:h-7 w-auto shrink-0 text-white/60" />
           </div>
         </div>
       </div>
 
-      <div className="relative z-10 flex flex-col justify-between p-4 md:p-6 w-full flex-1">
-        <div className="flex flex-col gap-2 md:gap-3">
+      <div className="relative z-10 flex flex-col justify-between p-2 md:p-4 w-full flex-1">
+        <div className="flex flex-col gap-1.5 md:gap-3">
 
-          <div className="flex items-center gap-2 md:gap-3">
+          <div className="flex items-center gap-1.5 md:gap-3">
             {avatarSrc && (
               /* eslint-disable-next-line @next/next/no-img-element */
               <img
                 src={avatarSrc}
                 alt={studio.artist}
-                className="size-6 md:size-8 shrink-0 rounded-full object-cover ring-1 ring-neutral-200"
+                className="size-5 md:size-8 shrink-0 rounded-full object-cover ring-1 ring-neutral-200"
               />
             )}
-            <p className="min-w-0 text-xs md:text-sm text-neutral-500">
+            <p className="min-w-0 text-[10px] md:text-sm text-neutral-500">
               {locale === "en" ? "By" : "Oleh"}{" "}
               <span className="font-semibold text-neutral-800">
                 {studio.artist}
               </span>
               {studio.isVerified && (
-                <VerifiedCheck className="ml-1 inline size-3.5 md:size-4 align-[-2px]" />
+                <VerifiedCheck className="ml-0.5 inline size-3 md:size-4 align-[-2px]" />
               )}
             </p>
           </div>
 
-          <p className="line-clamp-2 text-xs md:text-base leading-normal md:leading-relaxed text-neutral-600">
+          <p className="line-clamp-2 text-[10px] md:text-base leading-normal md:leading-relaxed text-neutral-600">
             {studio.description}
           </p>
         </div>
 
         {displayTags.length > 0 && (
-          <div className="mt-4 flex flex-wrap gap-1.5">
+          <div className="mt-2 flex flex-wrap gap-1 md:gap-1.5">
             {displayTags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-full border border-neutral-200 px-2.5 py-0.5 text-xs md:text-sm font-medium text-neutral-600 bg-neutral-50"
+                className="rounded-full border border-neutral-200 px-2 py-0.5 text-[10px] md:text-sm font-medium text-neutral-600 bg-neutral-50"
               >
                 {tag}
               </span>
