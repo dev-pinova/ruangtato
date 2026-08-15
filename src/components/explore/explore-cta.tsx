@@ -86,7 +86,7 @@ export function ExploreCta({ featuredStudios = [], onFindMe }: ExploreCtaProps) 
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5 }}
             className="mx-auto max-w-xl text-2xl font-bold leading-[1.1] text-white tracking-tight md:text-3xl lg:text-[36px]"
-            style={{ whiteSpace: "pre-line" }}
+            style={{ whiteSpace: "pre-line", textWrap: "balance" }}
           >
             {headline}
           </motion.h2>
@@ -102,7 +102,7 @@ export function ExploreCta({ featuredStudios = [], onFindMe }: ExploreCtaProps) 
               href="https://ruangtato.com/register"
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center gap-2 rounded-full bg-[#FF4444] px-6 py-3 text-sm font-semibold text-white transition-all duration-180 hover:bg-[#FF5555] hover:shadow-lg hover:shadow-red-500/25 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-black"
+              className="group flex items-center gap-2 rounded-full bg-[#FF4444] px-6 py-3 text-sm font-semibold text-white transition-[background-color,box-shadow,transform] duration-180 hover:bg-[#FF5555] hover:shadow-lg hover:shadow-red-500/25 active:scale-[0.96] focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-black"
             >
               <span>{buttonText}</span>
               <ArrowRight className="size-4 transition-transform duration-180 group-hover:translate-x-1" />
@@ -152,11 +152,11 @@ export function ExploreCta({ featuredStudios = [], onFindMe }: ExploreCtaProps) 
                       <div className="h-full w-full bg-neutral-800" />
                     )}
 
-                    {/* Border overlay */}
+                    {/* Subtle outline for depth */}
                     <div
                       className="absolute inset-0 rounded-[28px]"
                       style={{
-                        border: "1px solid rgba(255,255,255,0.15)",
+                        boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.1)",
                         pointerEvents: "none",
                       }}
                     />
