@@ -10,6 +10,7 @@ import { ExploreHero } from "@/components/explore/explore-hero"
 import { ExploreSidebar } from "@/components/explore/explore-sidebar"
 import { ExploreHeader } from "@/components/explore/explore-header"
 import { ExploreGrid } from "@/components/explore/explore-grid"
+import { ExploreCta } from "@/components/explore/explore-cta"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { getCityCounts } from "@/lib/studio/studio-utils"
@@ -251,36 +252,9 @@ export function ExplorePage({
         </div>
       )}
 
-      {/* Studio-owner conversion path */}
+      {/* Cinematic CTA Section */}
       {!hideCta && (
-        <section className="border-t border-neutral-200 bg-white">
-          <div className="mx-auto max-w-[1280px] px-4 py-16 md:px-6 md:py-20">
-            <div className="relative overflow-hidden rounded-2xl border border-neutral-200 bg-card p-8 md:p-12">
-              <div className="flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
-                <div className="max-w-xl">
-                  <div className="mb-4 inline-flex size-11 items-center justify-center rounded-lg border border-neutral-200 bg-background text-foreground">
-                    <Store className="size-5" />
-                  </div>
-                  <h2 className="text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
-                    {t.cta.title}
-                  </h2>
-                  <p className="mt-3 text-base leading-relaxed text-muted-foreground">
-                    {t.cta.subtitle}
-                  </p>
-                </div>
-                <Button
-                  size="lg"
-                  nativeButton={false}
-                  className="shrink-0 gap-2 bg-[#FF4444] text-white hover:bg-[#FF5555]"
-                  render={<Link href="/register" />}
-                >
-                  {t.cta.button}
-                  <ArrowRight className="size-4" />
-                </Button>
-              </div>
-            </div>
-          </div>
-        </section>
+        <ExploreCta />
       )}
     </MarketingShell>
   )
