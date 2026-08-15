@@ -159,7 +159,7 @@ function ExploreCard({ studio }: { studio: Studio }) {
       href={`/${studio.slug}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="group relative flex h-full w-full flex-col overflow-hidden rounded-[18px] border border-neutral-200 bg-white transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 text-neutral-900"
+      className="group relative flex h-full w-full flex-col overflow-hidden rounded-[18px] border border-neutral-200 bg-white transition-[box-shadow,transform] duration-300 hover:shadow-lg hover:-translate-y-0.5 text-neutral-900"
     >
       {/* Large Visual Thumbnail - 4:3 portrait */}
       <div className="relative overflow-hidden bg-neutral-100 w-full aspect-[4/3] rounded-[18px]">

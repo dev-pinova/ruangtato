@@ -74,7 +74,7 @@ export function ExploreHero({
           onSubmit={handleSearch}
           className="mx-auto mt-8 max-w-xl"
         >
-          <div className="relative flex items-center rounded-xl bg-white/10 backdrop-blur-md border border-white/20 focus-within:border-white/40 focus-within:bg-white/15 transition-all">
+          <div className="relative flex items-center rounded-xl bg-white/10 backdrop-blur-md border border-white/20 focus-within:border-white/40 focus-within:bg-white/15 transition-[border-color,background-color]">
             <Search className="pointer-events-none absolute left-4 size-4 text-white/50" />
             <Input
               aria-label={t.hero.searchPlaceholder}
@@ -104,7 +104,7 @@ export function ExploreHero({
                   href={`/${studio.slug}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-sm text-white/80 backdrop-blur-sm transition-all hover:border-white/30 hover:bg-white/10"
+                  className="group flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-sm text-white/80 backdrop-blur-sm transition-[border-color,background-color] hover:border-white/30 hover:bg-white/10"
                 >
                   {studio.image && (
                     /* eslint-disable-next-line @next/next/no-img-element */
@@ -133,7 +133,7 @@ export function ExploreHero({
                   key={tag}
                   type="button"
                   onClick={() => onSearch?.(tag)}
-                  className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs text-white/70 backdrop-blur-sm transition-all hover:border-white/30 hover:bg-white/10 hover:text-white"
+                  className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs text-white/70 backdrop-blur-sm transition-[border-color,background-color,text-color] hover:border-white/30 hover:bg-white/10 hover:text-white"
                 >
                   {tag}
                 </button>
