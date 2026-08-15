@@ -32,7 +32,7 @@ export function ExploreCta({ featuredStudios = [], onFindMe }: ExploreCtaProps) 
   const { t, locale } = useLanguage()
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
-  const [hoveredCard, setHoveredCard] = useState<number | null>(null)
+  const [hoveredCard, setHoveredCard] = useState<string | null>(null)
 
   const headline = locale === "en"
     ? "Whatever your goal, Studio has\nthe perfect app for you"
