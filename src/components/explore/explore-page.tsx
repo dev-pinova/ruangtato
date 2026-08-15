@@ -48,7 +48,6 @@ export function ExplorePage({
   const [trustedOnly, setTrustedOnly] = useState(false)
   const [selectedCity, setSelectedCity] = useState("")
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false)
-  const [mobileScroll, setMobileScroll] = useState(false)
 
   useEffect(() => {
     setSearchQuery(urlQuery)
@@ -102,7 +101,7 @@ export function ExplorePage({
       )}
 
       <section className="bg-white text-neutral-900 border-t border-neutral-200 min-h-screen">
-        <div className="mx-auto max-w-6xl px-4 py-8 md:px-6 md:py-12">
+        <div className="mx-auto max-w-[1280px] px-4 py-8 md:px-6 md:py-12">
 
           {/* Search Bar — always visible */}
           <div className="mb-6 max-w-md">
@@ -156,7 +155,7 @@ export function ExplorePage({
                 className={cn(
                   "flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm transition-colors",
                   selectedCity
-                    ? "border-neutral-700 bg-neutral-800 text-neutral-200 font-medium"
+                    ? "border-neutral-300 bg-neutral-100 text-neutral-900 font-medium"
                     : "border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50"
                 )}
               >
@@ -167,18 +166,20 @@ export function ExplorePage({
           </div>
 
           <div className="flex flex-col md:flex-row gap-8 lg:gap-12 md:items-start">
-            {/* Desktop Sidebar */}
+            {/* Desktop Sidebar - fixed/sticky */}
             <aside className="hidden md:block w-full shrink-0 md:w-56 lg:w-64">
-              <ExploreSidebar
-                cities={cities}
-                cityCounts={cityCounts}
-                selectedCity={selectedCity}
-                onCityChange={setSelectedCity}
-                sortBy={sortBy}
-                onSortChange={setSortBy}
-                trustedOnly={trustedOnly}
-                onTrustedToggle={() => setTrustedOnly((prev) => !prev)}
-              />
+              <div className="sticky top-6">
+                <ExploreSidebar
+                  cities={cities}
+                  cityCounts={cityCounts}
+                  selectedCity={selectedCity}
+                  onCityChange={setSelectedCity}
+                  sortBy={sortBy}
+                  onSortChange={setSortBy}
+                  trustedOnly={trustedOnly}
+                  onTrustedToggle={() => setTrustedOnly((prev) => !prev)}
+                />
+              </div>
             </aside>
 
             {/* Main content */}
@@ -187,17 +188,6 @@ export function ExplorePage({
                 resultCount={resultCount}
                 verifiedCount={verifiedCount}
               />
-
-              {/* Mobile horizontal scroll hint */}
-              <div className="md:hidden mb-4 flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setMobileScroll(true)}
-                  className="flex items-center gap-1 text-xs text-neutral-600 hover:text-neutral-400 transition-colors"
-                >
-                  <span>↔ Geser untuk lihat semua</span>
-                </button>
-              </div>
 
               {/* Grid */}
               <ExploreGrid
@@ -264,7 +254,7 @@ export function ExplorePage({
       {/* Studio-owner conversion path */}
       {!hideCta && (
         <section className="border-t border-neutral-200 bg-white">
-          <div className="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-20">
+          <div className="mx-auto max-w-[1280px] px-4 py-16 md:px-6 md:py-20">
             <div className="relative overflow-hidden rounded-2xl border border-neutral-200 bg-card p-8 md:p-12">
               <div className="flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
                 <div className="max-w-xl">
