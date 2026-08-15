@@ -99,7 +99,9 @@ export function ExploreCta({ featuredStudios = [], onFindMe }: ExploreCtaProps) 
             className="mt-8 flex justify-center"
           >
             <Link
-              href="/register"
+              href="https://ruangtato.com/register"
+              target="_blank"
+              rel="noopener noreferrer"
               className="group flex items-center gap-2 rounded-full bg-[#FF4444] px-6 py-3 text-sm font-semibold text-white transition-all duration-180 hover:bg-[#FF5555] hover:shadow-lg hover:shadow-red-500/25"
             >
               <span>{buttonText}</span>
