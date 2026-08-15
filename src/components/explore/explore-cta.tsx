@@ -35,12 +35,12 @@ export function ExploreCta({ featuredStudios = [], onFindMe }: ExploreCtaProps) 
   const [hoveredCard, setHoveredCard] = useState<string | null>(null)
 
   const headline = locale === "en"
-    ? "Whatever your goal, Studio has\nthe perfect app for you"
-    : "Apa pun tujuanmu,\nStudio punya yang sempurna untukmu"
+    ? "Your studio deserves\na website that works as hard as you do"
+    : "Studio kamu pantas\nmemiliki website yang semaju usahamu"
 
   const buttonText = locale === "en"
-    ? "Find best app for me"
-    : "Temukan app untukku"
+    ? "Get your free studio site →"
+    : "Buat website studio gratis →"
 
   // Use real studio data for visual cards
   const visualCards = featuredStudios.length > 0
