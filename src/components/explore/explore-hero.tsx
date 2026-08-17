@@ -45,7 +45,7 @@ export function ExploreHero({
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/90" />
       </div>
 
-      <div className="relative mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24 lg:py-32">
+      <div className="relative mx-auto max-w-6xl px-4 py-14 sm:py-16 md:px-6 md:py-24 lg:py-28">
         {/* Badge */}
         <div className="flex justify-center mb-6">
           <div className="flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-3.5 py-1 text-xs text-white/70">
@@ -86,7 +86,7 @@ export function ExploreHero({
         {/* Search Bar */}
         <form
           onSubmit={handleSearch}
-          className="mx-auto mt-8 max-w-xl"
+          className="mx-auto mt-7 sm:mt-8 max-w-xl"
         >
           <div className="relative flex items-center rounded-lg bg-white/10 border border-white/20 focus-within:border-white/40 focus-within:bg-white/15 transition-colors">
             <Search className="pointer-events-none absolute left-4 size-4 text-white/50" />
@@ -109,28 +109,34 @@ export function ExploreHero({
 
         {/* Popular Studios */}
         {featuredStudios.length > 0 && (
-          <div className="mt-8">
-            <p className="mb-3 text-center text-xs text-white/50">{t.hero.featured}</p>
-            <div className="flex flex-wrap justify-center gap-2">
+          <div className="mt-7 sm:mt-8">
+            <p className="mb-2.5 text-center text-[11px] sm:text-xs font-medium uppercase tracking-wider text-white/50">
+              {t.hero.featured}
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-2.5 max-w-4xl mx-auto">
               {featuredStudios.slice(0, 8).map((studio) => (
                 <Link
                   key={studio.id}
                   href={`/${studio.slug}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-sm text-white/80 transition-colors hover:border-white/30 hover:bg-white/10"
+                  className="group inline-flex items-center gap-1.5 sm:gap-2 rounded-lg border border-white/15 bg-white/5 px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm text-white/85 transition-colors hover:border-white/35 hover:bg-white/10"
                 >
                   {studio.image && (
                     /* eslint-disable-next-line @next/next/no-img-element */
                     <img
                       src={studio.image}
                       alt=""
-                      className="size-5 rounded-full object-cover"
+                      className="size-4.5 sm:size-5 rounded-full object-cover shrink-0 ring-1 ring-white/20"
                     />
                   )}
-                  <span className="max-w-[120px] truncate font-medium">{studio.name}</span>
-                  {studio.isVerified && <VerifiedCheck className="size-3.5 shrink-0" />}
-                  <ChevronRight className="ml-1 size-3 text-white/40 transition-transform group-hover:translate-x-0.5" />
+                  <span className="max-w-[110px] sm:max-w-[150px] truncate font-medium text-white/90">
+                    {studio.name}
+                  </span>
+                  {studio.isVerified && (
+                    <VerifiedCheck className="size-3.5 shrink-0 text-blue-400" />
+                  )}
+                  <ChevronRight className="size-3 text-white/40 transition-transform group-hover:translate-x-0.5 group-hover:text-white/80 shrink-0" />
                 </Link>
               ))}
             </div>
@@ -139,15 +145,17 @@ export function ExploreHero({
 
         {/* Popular Tags */}
         {popularTags.length > 0 && (
-          <div className="mt-5">
-            <p className="mb-2 text-center text-xs text-white/40">{t.hero.popularSearch}</p>
-            <div className="flex flex-wrap justify-center gap-2">
+          <div className="mt-5 sm:mt-6">
+            <p className="mb-2 text-center text-[11px] sm:text-xs font-medium uppercase tracking-wider text-white/40">
+              {t.hero.popularSearch}
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 max-w-3xl mx-auto">
               {popularTags.slice(0, 10).map((tag) => (
                 <button
                   key={tag}
                   type="button"
                   onClick={() => onSearch?.(tag)}
-                  className="rounded-lg border border-white/15 bg-white/5 px-3 py-1 text-xs text-white/70 transition-colors hover:border-white/30 hover:bg-white/10 hover:text-white"
+                  className="rounded-lg border border-white/10 bg-white/[0.04] px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs text-white/70 transition-colors hover:border-white/25 hover:bg-white/10 hover:text-white"
                 >
                   {tag}
                 </button>
@@ -157,9 +165,9 @@ export function ExploreHero({
         )}
       </div>
 
-      {/* Bottom tagline */}
-      <div className="border-t border-white/10 bg-black/60 px-4 py-2.5 text-center">
-        <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-white/40">
+      {/* Bottom Announcement / Feature Strip */}
+      <div className="border-t border-white/10 bg-neutral-950/80 px-4 py-3 sm:py-3.5 text-center">
+        <p className="mx-auto max-w-4xl text-xs sm:text-sm text-neutral-300 font-normal leading-relaxed">
           {t.hero.bottomTagline}
         </p>
       </div>
