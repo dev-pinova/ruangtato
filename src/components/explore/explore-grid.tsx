@@ -126,7 +126,7 @@ export function ExploreGrid({
 
   return (
     <div id="browse" className="scroll-mt-16">
-      <div className="grid grid-cols-3 gap-4 md:gap-5 lg:gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 md:gap-5 lg:gap-6">
         {sorted.map((studio, index) => {
           return (
             <BlurFade
@@ -159,10 +159,10 @@ function ExploreCard({ studio }: { studio: Studio }) {
       href={`/${studio.slug}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="group relative flex h-full w-full flex-col overflow-hidden rounded-[18px] border border-neutral-200 bg-white transition-[box-shadow,transform] duration-300 hover:shadow-lg hover:-translate-y-0.5 text-neutral-900"
+      className="group relative flex h-full w-full flex-col overflow-hidden rounded-[14px] sm:rounded-[18px] border border-neutral-200 bg-white transition-[box-shadow,transform] duration-300 hover:shadow-lg hover:-translate-y-0.5 text-neutral-900"
     >
       {/* Large Visual Thumbnail - 4:3 portrait */}
-      <div className="relative overflow-hidden bg-neutral-100 w-full aspect-[4/3] rounded-[18px]">
+      <div className="relative overflow-hidden bg-neutral-100 w-full aspect-[4/3] rounded-[14px] sm:rounded-[18px]">
         {studio.image && (
           /* eslint-disable-next-line @next/next/no-img-element */
           <img
@@ -177,8 +177,8 @@ function ExploreCard({ studio }: { studio: Studio }) {
 
         {/* Trusted badge */}
         {studio.isTrusted && (
-          <div className="absolute right-3 top-3">
-            <span className="inline-flex items-center gap-1 rounded-full border border-yellow-400/40 bg-yellow-400/20 px-2 py-0.5 text-[10px] font-medium text-yellow-300 backdrop-blur-sm">
+          <div className="absolute right-2 top-2 sm:right-3 sm:top-3">
+            <span className="inline-flex items-center gap-1 rounded-full border border-yellow-400/40 bg-yellow-400/20 px-1.5 py-0.5 sm:px-2 text-[9px] sm:text-[10px] font-medium text-yellow-300 backdrop-blur-sm">
               <BadgeCheck className="size-2.5" />
               Trusted
             </span>
@@ -186,54 +186,54 @@ function ExploreCard({ studio }: { studio: Studio }) {
         )}
 
         {/* Marketing headline over image - bottom area */}
-        <div className="absolute inset-x-0 bottom-0 px-3 pb-3 pt-8">
-          <div className="flex items-center justify-center gap-1.5">
-            <LaurelWreath side="left" className="h-4 w-auto shrink-0 text-white/60" />
-            <p className="text-xs font-semibold leading-tight text-white text-center line-clamp-2">
+        <div className="absolute inset-x-0 bottom-0 px-2 sm:px-3 pb-2.5 sm:pb-3 pt-6 sm:pt-8">
+          <div className="flex items-center justify-center gap-1 sm:gap-1.5">
+            <LaurelWreath side="left" className="h-3.5 sm:h-4 w-auto shrink-0 text-white/60" />
+            <p className="text-xs sm:text-sm font-semibold leading-tight text-white text-center line-clamp-2">
               {studio.name}
             </p>
-            <LaurelWreath side="right" className="h-4 w-auto shrink-0 text-white/60" />
+            <LaurelWreath side="right" className="h-3.5 sm:h-4 w-auto shrink-0 text-white/60" />
           </div>
         </div>
       </div>
 
       {/* Creator Information Bar */}
-      <div className="px-3 py-2.5 border-b border-neutral-100">
-        <div className="flex items-center gap-2">
+      <div className="px-2.5 sm:px-3 py-2 sm:py-2.5 border-b border-neutral-100">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           {avatarSrc && (
             /* eslint-disable-next-line @next/next/no-img-element */
             <img
               src={avatarSrc}
               alt={studio.artist}
-              className="size-7 shrink-0 rounded-full object-cover ring-1 ring-neutral-200"
+              className="size-5 sm:size-7 shrink-0 rounded-full object-cover ring-1 ring-neutral-200"
             />
           )}
-          <p className="min-w-0 text-xs text-neutral-600">
+          <p className="min-w-0 text-[11px] sm:text-xs text-neutral-600 truncate">
             <span className="font-medium text-neutral-800 underline decoration-neutral-300 underline-offset-2">
               {locale === "en" ? "By" : "Oleh"}{" "}
               {studio.artist}
             </span>
             {studio.isVerified && (
-              <VerifiedCheck className="ml-0.5 inline size-3 align-[-1px] text-blue-500" />
+              <VerifiedCheck className="ml-0.5 inline size-2.5 sm:size-3 align-[-1px] text-blue-500" />
             )}
           </p>
         </div>
       </div>
 
       {/* Description */}
-      <div className="px-3 pb-2.5">
-        <p className="text-[13px] leading-relaxed text-neutral-600 line-clamp-3">
+      <div className="px-2.5 sm:px-3 pb-2 sm:pb-2.5">
+        <p className="text-[11px] sm:text-[13px] leading-relaxed text-neutral-600 line-clamp-2 sm:line-clamp-3">
           {studio.description}
         </p>
       </div>
 
       {/* Tags */}
       {displayTags.length > 0 && (
-        <div className="px-3 pb-3 flex flex-wrap gap-1.5">
+        <div className="px-2.5 sm:px-3 pb-2.5 sm:pb-3 flex flex-wrap gap-1 sm:gap-1.5">
           {displayTags.map((tag) => (
             <span
               key={tag}
-              className="rounded-full border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-[11px] font-medium text-neutral-600"
+              className="rounded-full border border-neutral-200 bg-neutral-50 px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-[11px] font-medium text-neutral-600"
             >
               {tag}
             </span>
