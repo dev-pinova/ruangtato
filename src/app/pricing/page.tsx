@@ -11,7 +11,6 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
-import { ShimmerButton } from "@/components/ui/shimmer-button"
 import { Particles } from "@/components/ui/particles"
 import { BorderBeam } from "@/components/ui/border-beam"
 import { SUBSCRIPTION_PLANS } from "@/lib/billing/billing-plans"
@@ -98,25 +97,16 @@ export default async function PricingPage() {
                   ))}
                 </ul>
 
-                {plan.popular ? (
-                  <ShimmerButton className="mt-6 w-full font-medium" shimmerColor="var(--brand-scarlet)">
-                    <Link href="/register" className="flex items-center justify-center gap-2 w-full">
-                      {t.pricing.selectPlan} {plan.name}
-                      <ArrowRight className="size-3.5" />
-                    </Link>
-                  </ShimmerButton>
-                ) : (
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    nativeButton={false}
-                    className="mt-6 w-full"
-                    render={<Link href="/register" />}
-                  >
-                    {t.pricing.selectPlan} {plan.name}
-                    <ArrowRight className="size-3.5" />
-                  </Button>
-                )}
+                <Button
+                  variant={plan.popular ? "default" : "outline"}
+                  size="lg"
+                  nativeButton={false}
+                  className="mt-6 w-full"
+                  render={<Link href="/register" />}
+                >
+                  {t.pricing.selectPlan} {plan.name}
+                  <ArrowRight className="size-3.5" />
+                </Button>
               </div>
             ))}
           </div>

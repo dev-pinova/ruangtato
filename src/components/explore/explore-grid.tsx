@@ -159,16 +159,16 @@ function ExploreCard({ studio }: { studio: Studio }) {
       href={`/${studio.slug}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="group relative flex h-full w-full flex-col overflow-hidden rounded-[14px] sm:rounded-[18px] border border-neutral-200 bg-white transition-[box-shadow,transform] duration-300 hover:shadow-lg hover:-translate-y-0.5 text-neutral-900"
+      className="group relative flex h-full w-full flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white transition-shadow duration-200 hover:shadow-md text-neutral-900"
     >
       {/* Large Visual Thumbnail - 4:3 portrait */}
-      <div className="relative overflow-hidden bg-neutral-100 w-full aspect-[4/3] rounded-[14px] sm:rounded-[18px]">
+      <div className="relative overflow-hidden bg-neutral-100 w-full aspect-[4/3] rounded-t-xl">
         {studio.image && (
           /* eslint-disable-next-line @next/next/no-img-element */
           <img
             src={studio.image}
             alt={studio.name}
-            className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+            className="h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-105"
           />
         )}
 
@@ -178,7 +178,7 @@ function ExploreCard({ studio }: { studio: Studio }) {
         {/* Trusted badge */}
         {studio.isTrusted && (
           <div className="absolute right-2 top-2 sm:right-3 sm:top-3">
-            <span className="inline-flex items-center gap-1 rounded-full border border-yellow-400/40 bg-yellow-400/20 px-1.5 py-0.5 sm:px-2 text-[9px] sm:text-[10px] font-medium text-yellow-300 backdrop-blur-sm">
+            <span className="inline-flex items-center gap-1 rounded-md border border-yellow-400/40 bg-yellow-400/20 px-1.5 py-0.5 sm:px-2 text-[9px] sm:text-[10px] font-medium text-yellow-300">
               <BadgeCheck className="size-2.5" />
               Trusted
             </span>
@@ -233,7 +233,7 @@ function ExploreCard({ studio }: { studio: Studio }) {
           {displayTags.map((tag) => (
             <span
               key={tag}
-              className="rounded-full border border-neutral-200 bg-neutral-50 px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-[11px] font-medium text-neutral-600"
+              className="rounded-md border border-neutral-200 bg-neutral-50 px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-[11px] font-medium text-neutral-600"
             >
               {tag}
             </span>

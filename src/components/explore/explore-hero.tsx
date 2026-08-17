@@ -48,7 +48,7 @@ export function ExploreHero({
       <div className="relative mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24 lg:py-32">
         {/* Badge */}
         <div className="flex justify-center mb-6">
-          <div className="flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs text-white/70 backdrop-blur-sm">
+          <div className="flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-3.5 py-1 text-xs text-white/70">
             <span className="flex items-center gap-1">
               <svg className="w-3.5 h-3.5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -88,12 +88,12 @@ export function ExploreHero({
           onSubmit={handleSearch}
           className="mx-auto mt-8 max-w-xl"
         >
-          <div className="relative flex items-center rounded-xl bg-white/10 backdrop-blur-md border border-white/20 focus-within:border-white/40 focus-within:bg-white/15 transition-[border-color,background-color]">
+          <div className="relative flex items-center rounded-lg bg-white/10 border border-white/20 focus-within:border-white/40 focus-within:bg-white/15 transition-colors">
             <Search className="pointer-events-none absolute left-4 size-4 text-white/50" />
             <Input
               aria-label={t.hero.searchPlaceholder}
               placeholder={t.hero.searchPlaceholder}
-              className="h-12 w-full rounded-xl border-0 bg-transparent pl-11 pr-12 text-sm text-white placeholder:text-white/40 focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none"
+              className="h-12 w-full rounded-lg border-0 bg-transparent pl-11 pr-12 text-sm text-white placeholder:text-white/40 focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none"
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
             />
@@ -118,7 +118,7 @@ export function ExploreHero({
                   href={`/${studio.slug}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-sm text-white/80 backdrop-blur-sm transition-[border-color,background-color] hover:border-white/30 hover:bg-white/10"
+                  className="group flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-sm text-white/80 transition-colors hover:border-white/30 hover:bg-white/10"
                 >
                   {studio.image && (
                     /* eslint-disable-next-line @next/next/no-img-element */
@@ -147,7 +147,7 @@ export function ExploreHero({
                   key={tag}
                   type="button"
                   onClick={() => onSearch?.(tag)}
-                  className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs text-white/70 backdrop-blur-sm transition-[border-color,background-color,text-color] hover:border-white/30 hover:bg-white/10 hover:text-white"
+                  className="rounded-lg border border-white/15 bg-white/5 px-3 py-1 text-xs text-white/70 transition-colors hover:border-white/30 hover:bg-white/10 hover:text-white"
                 >
                   {tag}
                 </button>

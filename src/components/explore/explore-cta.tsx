@@ -13,6 +13,7 @@ import {
   CheckCircle2,
 } from "lucide-react"
 
+import { Button } from "@/components/ui/button"
 import { useLanguage } from "@/lib/i18n/language-provider"
 import type { Studio } from "@/lib/types"
 
@@ -103,9 +104,7 @@ export function ExploreCta({ featuredStudios, onFindMe }: ExploreCtaProps = {}) 
       >
         {/* Ambient background glow & radial gradient */}
         <div className="pointer-events-none absolute inset-0 -z-10">
-          {/* Top center warm crimson/gold ambient glow */}
           <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/3 h-[320px] w-[550px] md:h-[450px] md:w-[800px] rounded-full bg-gradient-to-b from-red-600/20 via-orange-600/10 to-transparent blur-[100px] md:blur-[140px]" />
-          {/* Subtle grid pattern overlay */}
           <div
             className="absolute inset-0 opacity-[0.03]"
             style={{
@@ -113,7 +112,6 @@ export function ExploreCta({ featuredStudios, onFindMe }: ExploreCtaProps = {}) 
               backgroundSize: "32px 32px",
             }}
           />
-          {/* Bottom smooth fade to footer */}
           <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-neutral-950 to-transparent" />
         </div>
 
@@ -127,8 +125,8 @@ export function ExploreCta({ featuredStudios, onFindMe }: ExploreCtaProps = {}) 
               transition={{ duration: 0.4 }}
               className="flex justify-center mb-5"
             >
-              <div className="inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-red-500/10 px-3.5 py-1.5 text-[11px] sm:text-xs font-semibold tracking-wider text-red-400 backdrop-blur-md shadow-sm">
-                <Sparkles className="size-3.5 text-red-400 animate-pulse" />
+              <div className="inline-flex items-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-3.5 py-1.5 text-[11px] sm:text-xs font-semibold tracking-wider text-red-400">
+                <Sparkles className="size-3.5 text-red-400" />
                 <span>{content.badge}</span>
               </div>
             </motion.div>
@@ -161,24 +159,29 @@ export function ExploreCta({ featuredStudios, onFindMe }: ExploreCtaProps = {}) 
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3.5 sm:gap-4"
+              className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3.5"
             >
-              {/* Primary high-converting button */}
-              <Link
-                href="/register"
-                className="group relative flex h-12 sm:h-13 w-full sm:w-auto items-center justify-center gap-2 rounded-xl sm:rounded-full bg-gradient-to-r from-red-600 via-red-500 to-rose-600 px-7 py-3 text-sm sm:text-base font-semibold text-white shadow-lg shadow-red-600/30 transition-all duration-200 hover:shadow-red-600/50 hover:brightness-110 active:scale-[0.98]"
+              {/* Primary button */}
+              <Button
+                size="lg"
+                nativeButton={false}
+                className="w-full sm:w-auto h-11 px-7 text-sm sm:text-base font-semibold gap-2"
+                render={<Link href="/register" />}
               >
                 <span>{content.primaryBtn}</span>
-                <ArrowRight className="size-4.5 transition-transform duration-200 group-hover:translate-x-1" />
-              </Link>
+                <ArrowRight className="size-4" />
+              </Button>
 
-              {/* Secondary transparent button */}
-              <Link
-                href="/pricing"
-                className="flex h-12 sm:h-13 w-full sm:w-auto items-center justify-center gap-2 rounded-xl sm:rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm sm:text-base font-medium text-neutral-200 backdrop-blur-sm transition-all duration-200 hover:border-white/40 hover:bg-white/10 hover:text-white active:scale-[0.98]"
+              {/* Secondary button */}
+              <Button
+                size="lg"
+                variant="outline"
+                nativeButton={false}
+                className="w-full sm:w-auto h-11 px-6 text-sm sm:text-base font-medium border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white"
+                render={<Link href="/pricing" />}
               >
                 <span>{content.secondaryBtn}</span>
-              </Link>
+              </Button>
             </motion.div>
           </div>
 
@@ -194,9 +197,9 @@ export function ExploreCta({ featuredStudios, onFindMe }: ExploreCtaProps = {}) 
               return (
                 <div
                   key={i}
-                  className="group relative flex flex-col items-start rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5 backdrop-blur-sm transition-colors duration-300 hover:border-white/20 hover:bg-white/[0.06]"
+                  className="group relative flex flex-col items-start rounded-xl border border-white/10 bg-white/[0.03] p-4 sm:p-5 transition-colors duration-200 hover:border-white/20 hover:bg-white/[0.06]"
                 >
-                  <div className="mb-3 inline-flex size-10 items-center justify-center rounded-xl border border-red-500/20 bg-red-500/10 text-red-400 group-hover:border-red-500/40 group-hover:bg-red-500/20 transition-colors">
+                  <div className="mb-3 inline-flex size-10 items-center justify-center rounded-lg border border-red-500/20 bg-red-500/10 text-red-400 transition-colors">
                     <Icon className="size-5" />
                   </div>
                   <h3 className="text-sm sm:text-base font-semibold text-white">

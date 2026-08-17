@@ -107,7 +107,7 @@ function CheckoutContent() {
         )}
 
         {/* Premium Checkout Card */}
-        <Card className="border border-white/5 bg-card/40 shadow-2xl backdrop-blur-xl">
+        <Card className="border border-white/10 bg-card shadow-2xl">
           <CardHeader className="border-b border-white/5 pb-6">
             <div className="flex items-center gap-2 text-primary text-xs font-semibold uppercase tracking-wider mb-2">
               <ShieldCheck className="h-4 w-4" /> {t.checkout.secureCheckout}
@@ -127,7 +127,7 @@ function CheckoutContent() {
                 <button
                   key={plan.id}
                   onClick={() => setSelectedMonths(plan.months)}
-                  className={`flex flex-col rounded-xl border p-4 text-left transition-all ${
+                  className={`flex flex-col rounded-lg border p-4 text-left transition-colors ${
                     selectedMonths === plan.months
                       ? "border-primary bg-primary/10 ring-1 ring-primary/50"
                       : "border-white/10 bg-background/40 hover:bg-card/60"
@@ -144,7 +144,7 @@ function CheckoutContent() {
                   <div className="mt-1 flex w-full items-center justify-between text-xs text-muted-foreground">
                     <span>{getPlanDurationLabel(plan)}</span>
                     {plan.popular && (
-                      <span className="rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-medium text-primary">
+                      <span className="rounded-md bg-primary/20 px-2 py-0.5 text-[10px] font-medium text-primary">
                         {t.checkout.popularBadge}
                       </span>
                     )}

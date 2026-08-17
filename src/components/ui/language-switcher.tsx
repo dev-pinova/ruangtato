@@ -36,7 +36,7 @@ export function LanguageSwitcher({ defaultLocale = "id" }: { defaultLocale?: Loc
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button variant="ghost" size="sm" className="h-9 w-9 px-0 rounded-full">
+          <Button variant="ghost" size="icon" className="size-8 text-white/80 hover:text-white">
             <Globe className="size-4" />
             <span className="sr-only">Toggle language</span>
           </Button>
