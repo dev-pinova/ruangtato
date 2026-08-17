@@ -104,8 +104,8 @@ export function ExplorePage({
       <section className="bg-white text-neutral-900 border-t border-neutral-200 min-h-screen">
         <div className="mx-auto max-w-[1280px] px-4 py-8 md:px-6 md:py-12">
 
-          {/* Search Bar — always visible */}
-          <div className="mb-6 max-w-md">
+          {/* Mobile Search Bar */}
+          <div className="md:hidden mb-4 max-w-md">
             <div className="relative flex items-center bg-white border border-neutral-200 rounded-xl shadow-sm">
               <Search className="pointer-events-none absolute left-3.5 size-4 text-neutral-400" />
               <Input
@@ -168,19 +168,19 @@ export function ExplorePage({
 
           <div className="flex flex-col md:flex-row gap-8 lg:gap-12 md:items-start">
             {/* Desktop Sidebar - fixed/sticky */}
-            <aside className="hidden md:block w-full shrink-0 md:w-56 lg:w-64">
-              <div className="sticky top-6">
-                <ExploreSidebar
-                  cities={cities}
-                  cityCounts={cityCounts}
-                  selectedCity={selectedCity}
-                  onCityChange={setSelectedCity}
-                  sortBy={sortBy}
-                  onSortChange={setSortBy}
-                  trustedOnly={trustedOnly}
-                  onTrustedToggle={() => setTrustedOnly((prev) => !prev)}
-                />
-              </div>
+            <aside className="hidden md:block w-full shrink-0 md:w-56 lg:w-64 self-start sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto pr-1 pb-6">
+              <ExploreSidebar
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                cities={cities}
+                cityCounts={cityCounts}
+                selectedCity={selectedCity}
+                onCityChange={setSelectedCity}
+                sortBy={sortBy}
+                onSortChange={setSortBy}
+                trustedOnly={trustedOnly}
+                onTrustedToggle={() => setTrustedOnly((prev) => !prev)}
+              />
             </aside>
 
             {/* Main content */}

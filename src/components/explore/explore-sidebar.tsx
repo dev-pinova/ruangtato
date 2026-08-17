@@ -1,7 +1,8 @@
 "use client"
 
-import { Circle, CheckCircle2, BadgeCheck, ArrowUpDown } from "lucide-react"
+import { Circle, CheckCircle2, BadgeCheck, ArrowUpDown, Search } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectTrigger,
@@ -12,6 +13,8 @@ import {
 import { useLanguage } from "@/lib/i18n/language-provider"
 
 export function ExploreSidebar({
+  searchQuery,
+  onSearchChange,
   cities,
   cityCounts,
   selectedCity,
@@ -21,6 +24,8 @@ export function ExploreSidebar({
   trustedOnly,
   onTrustedToggle,
 }: {
+  searchQuery?: string
+  onSearchChange?: (query: string) => void
   cities: string[]
   cityCounts: Record<string, number>
   selectedCity: string
@@ -36,6 +41,25 @@ export function ExploreSidebar({
 
   return (
     <div className="flex flex-col space-y-6">
+      {/* Search Input for Desktop Sidebar */}
+      {typeof onSearchChange === "function" && (
+        <div>
+          <h3 className="mb-2.5 text-xs font-semibold uppercase tracking-wider text-neutral-400">
+            {c.searchLabel || (locale === "en" ? "Search" : "Cari")}
+          </h3>
+          <div className="relative flex items-center bg-white border border-neutral-200 rounded-lg shadow-xs focus-within:border-neutral-400 focus-within:ring-1 focus-within:ring-neutral-400 transition-all">
+            <Search className="pointer-events-none absolute left-3 size-3.5 text-neutral-400" />
+            <Input
+              aria-label={t.hero.searchPlaceholder}
+              placeholder={c.searchSidebarPlaceholder || (locale === "en" ? "Search studio..." : "Cari studio...")}
+              className="h-9 w-full rounded-lg border-0 bg-transparent pl-8.5 pr-3 text-xs text-neutral-900 placeholder:text-neutral-400 focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none"
+              value={searchQuery || ""}
+              onChange={(e) => onSearchChange(e.target.value)}
+            />
+          </div>
+        </div>
+      )}
+
       {/* Urutkan / Sort section */}
       <div>
         <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-neutral-400">
