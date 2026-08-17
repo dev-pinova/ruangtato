@@ -235,11 +235,15 @@
   }
   .studio-template h1,
   .studio-template h2,
-  .studio-template h3 {
+  .studio-template h3,
+  .studio-template h4 {
     font-family: var(--font-display);
     font-weight: 300;
     text-transform: uppercase;
     letter-spacing: 0.16em;
+  }
+  .studio-template .font-display {
+    font-family: var(--font-display);
   }
   .studio-template[data-font="syne"] {
     --font-display: var(--font-syne), sans-serif;

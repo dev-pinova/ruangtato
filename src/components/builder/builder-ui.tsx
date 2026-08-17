@@ -519,18 +519,18 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
 
       {/* Sidebar: Layer & Components */}
       <div className={cn(
-        "flex min-h-0 w-64 shrink-0 flex-col overflow-hidden border-r border-zinc-900 bg-zinc-950/90 backdrop-blur-md",
-        "max-md:absolute max-md:inset-y-0 max-md:left-0 max-md:z-50 max-md:w-[min(100vw-2rem,20rem)] max-md:transition-transform max-md:duration-300",
+        "flex min-h-0 w-[310px] shrink-0 flex-col overflow-hidden border-r border-zinc-900 bg-zinc-950/90 backdrop-blur-md",
+        "max-md:absolute max-md:inset-y-0 max-md:left-0 max-md:z-50 max-md:w-[min(100vw-2rem,22rem)] max-md:transition-transform max-md:duration-300",
         showMobileLeft ? "max-md:translate-x-0" : "max-md:-translate-x-full"
       )}>
         <Tabs defaultValue="layers" className="flex min-h-0 w-full flex-1 flex-col">
-          <TabsList className="w-full rounded-none border-b border-border h-12 bg-transparent p-0">
-            <TabsTrigger value="layers" className="flex-1 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary">Layers</TabsTrigger>
-            <TabsTrigger value="add" className="flex-1 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary">Add Block</TabsTrigger>
+          <TabsList className="w-full rounded-none border-b border-border h-11 bg-transparent p-0">
+            <TabsTrigger value="layers" className="flex-1 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary text-xs font-medium">Layers</TabsTrigger>
+            <TabsTrigger value="add" className="flex-1 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary text-xs font-medium">Add Block</TabsTrigger>
           </TabsList>
 
           <TabsContent value="layers" className="m-0 min-h-0 flex-1 overflow-hidden">
-            <ScrollArea className="h-full min-h-0 p-4">
+            <ScrollArea className="h-full min-h-0 p-3">
               <LayersList
                 blocks={blocks}
                 activeBlockId={activeBlockId}
@@ -545,8 +545,8 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
           </TabsContent>
 
           <TabsContent value="add" className="m-0 min-h-0 flex-1 overflow-hidden">
-            <ScrollArea className="h-full min-h-0 p-4">
-              <div className="flex flex-col gap-5">
+            <ScrollArea className="h-full min-h-0 p-3">
+              <div className="flex flex-col gap-4">
                 {BLOCK_CATEGORIES.map(cat => {
                   const blocksInCat = AVAILABLE_BLOCKS.filter(b => cat.types.includes(b.type))
                   if (blocksInCat.length === 0) return null
@@ -559,15 +559,15 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
                         {blocksInCat.map(block => (
                           <div 
                             key={block.type} 
-                            className="bg-card border border-border p-2.5 rounded-md hover:border-foreground/30 transition-colors cursor-pointer group flex items-center justify-between" 
+                            className="bg-card/70 border border-border/60 p-3 rounded-lg hover:border-primary/50 hover:bg-muted/40 transition-colors cursor-pointer group flex items-center justify-between" 
                             onClick={() => addBlock(block.type)}
                           >
-                            <div>
-                              <div className="font-semibold text-xs text-foreground">{block.name}</div>
-                              <div className="text-[10px] text-muted-foreground mt-0.5">{block.desc}</div>
+                            <div className="min-w-0 pr-2">
+                              <div className="font-semibold text-xs text-foreground truncate">{block.name}</div>
+                              <div className="text-[11px] text-muted-foreground mt-0.5 line-clamp-1">{block.desc}</div>
                             </div>
-                            <Button variant="ghost" size="icon" className="h-5 w-5 opacity-0 group-hover:opacity-100 text-primary shrink-0">
-                              <Plus className="w-3.5 h-3.5" />
+                            <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 text-primary shrink-0 transition-opacity">
+                              <Plus className="w-4 h-4" />
                             </Button>
                           </div>
                         ))}
@@ -718,27 +718,32 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
 
       {/* Properties Panel */}
       <div className={cn(
-        "flex min-h-0 w-72 shrink-0 flex-col overflow-hidden border-l border-zinc-900 bg-zinc-950/90 backdrop-blur-md",
-        "max-md:absolute max-md:inset-y-0 max-md:right-0 max-md:z-50 max-md:w-[min(100vw-2rem,20rem)] max-md:transition-transform max-md:duration-300",
+        "flex min-h-0 w-[360px] shrink-0 flex-col overflow-hidden border-l border-zinc-900 bg-zinc-950/90 backdrop-blur-md",
+        "max-md:absolute max-md:inset-y-0 max-md:right-0 max-md:z-50 max-md:w-[min(100vw-2rem,24rem)] max-md:transition-transform max-md:duration-300",
         showMobileRight ? "max-md:translate-x-0" : "max-md:translate-x-full"
       )}>
-        <div className="flex h-12 shrink-0 items-center border-b border-border px-4 text-sm font-semibold tracking-wide text-foreground">
-          {t.builder.propertiesTitle}
+        <div className="flex h-11 shrink-0 items-center justify-between border-b border-border px-4 text-xs font-semibold uppercase tracking-wider text-foreground">
+          <span>{t.builder.propertiesTitle}</span>
+          {activeBlock && (
+            <Badge variant="outline" className="text-[10px] font-mono border-primary/30 text-primary">
+              {activeBlock.type}
+            </Badge>
+          )}
         </div>
         <ScrollArea className="min-h-0 flex-1">
-          <div className="p-4 pb-6">
+          <div className="p-4 pb-8">
             {activeBlock ? (
-              <div className="flex flex-col gap-4 rounded-md border border-border bg-card p-4">
-                <div className="mb-2 flex items-center justify-between border-b border-border pb-4">
-                  <Badge variant="default" className="rounded-md bg-primary text-primary-foreground hover:bg-primary">{activeBlock.type}</Badge>
+              <div className="flex flex-col gap-4 rounded-xl border border-border/80 bg-card/60 p-4 shadow-sm">
+                <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                  <Badge variant="default" className="rounded-md bg-primary text-primary-foreground hover:bg-primary font-semibold text-xs">{activeBlock.type}</Badge>
                   <Small className="font-mono text-[10px] text-muted-foreground">{activeBlock.id}</Small>
                 </div>
                 <PropertyPanel block={activeBlock} onChange={updateActiveBlockData} />
               </div>
             ) : (
-              <div className="flex min-h-[12rem] flex-col items-center justify-center p-4 text-center text-muted-foreground">
-                <MousePointerClick className="mb-4 h-8 w-8 opacity-20" />
-                <P className="text-sm">{t.builder.emptyPropertiesDesc}</P>
+              <div className="flex min-h-[14rem] flex-col items-center justify-center p-6 text-center text-muted-foreground border border-dashed border-border/60 rounded-xl">
+                <MousePointerClick className="mb-3 h-8 w-8 opacity-25 text-primary" />
+                <P className="text-xs text-muted-foreground leading-relaxed">{t.builder.emptyPropertiesDesc}</P>
               </div>
             )}
           </div>

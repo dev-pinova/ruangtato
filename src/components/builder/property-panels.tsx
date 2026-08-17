@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { ImageUpload } from "./image-upload"
+import { cn } from "@/lib/utils"
 import type {
   HeaderData,
   HeaderOverlayData,
@@ -70,6 +71,66 @@ function FontStyleSelector({
   )
 }
 
+function LogoSizeControl({
+  value = 36,
+  onChange,
+}: {
+  value?: number
+  onChange: (val: number) => void
+}) {
+  const inputId = useId()
+  const currentVal = value || 36
+
+  return (
+    <div className="flex flex-col gap-2.5 rounded-lg border border-border/80 bg-muted/20 p-3">
+      <div className="flex items-center justify-between">
+        <FieldLabel htmlFor={inputId}>Tinggi Logo</FieldLabel>
+        <span className="rounded bg-secondary px-2 py-0.5 font-mono text-xs text-foreground font-semibold">
+          {currentVal}px
+        </span>
+      </div>
+
+      {/* Quick Presets */}
+      <div className="grid grid-cols-4 gap-1.5">
+        {[
+          { label: "Kecil", size: 28 },
+          { label: "Sedang", size: 36 },
+          { label: "Besar", size: 48 },
+          { label: "Ekstra", size: 64 },
+        ].map((preset) => (
+          <button
+            key={preset.size}
+            type="button"
+            onClick={() => onChange(preset.size)}
+            className={cn(
+              "rounded border px-1.5 py-1 text-[11px] font-medium transition-colors text-center",
+              currentVal === preset.size
+                ? "border-primary bg-primary/10 text-primary font-semibold"
+                : "border-border bg-background text-muted-foreground hover:bg-muted hover:text-foreground"
+            )}
+          >
+            {preset.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Fine-grained slider */}
+      <div className="flex items-center gap-3 pt-1">
+        <input
+          id={inputId}
+          type="range"
+          min={20}
+          max={120}
+          step={2}
+          value={currentVal}
+          onChange={(e) => onChange(Number(e.target.value))}
+          className="h-2 w-full cursor-pointer rounded-lg bg-secondary accent-primary"
+        />
+      </div>
+    </div>
+  )
+}
+
 function FieldLabel({ children, htmlFor }: { children: React.ReactNode; htmlFor?: string }) {
   return (
     <label htmlFor={htmlFor} className="text-xs font-medium text-muted-foreground">
@@ -90,16 +151,21 @@ export function HeaderPanel({ data, onChange }: PanelProps<HeaderData>) {
   const baseId = useId()
 
   return (
-    <>
+    <div className="flex flex-col gap-4">
       <FontStyleSelector
         value={data.fontStyle}
         onChange={(val) => onChange('fontStyle', val)}
       />
       <div className="flex flex-col gap-2">
-        <FieldLabel htmlFor={titleId}>Title</FieldLabel>
+        <FieldLabel htmlFor={titleId}>Title / Nama Studio</FieldLabel>
         <Input id={titleId} className={inputClass} value={data.title || ''} onChange={(e) => onChange('title', e.target.value)} />
       </div>
-      <ImageUpload value={data.logoImage || ''} onChange={(url) => onChange('logoImage', url)} label="Logo Gambar Studio (Opsional)" />
+      <div className="flex flex-col gap-2.5">
+        <ImageUpload value={data.logoImage || ''} onChange={(url) => onChange('logoImage', url)} label="Logo Gambar Studio (Opsional)" />
+        {data.logoImage && (
+          <LogoSizeControl value={data.logoHeight || 36} onChange={(val) => onChange('logoHeight', val)} />
+        )}
+      </div>
       <div className="flex flex-col gap-2">
         <FieldLabel htmlFor={ctaTextId}>CTA Text</FieldLabel>
         <Input id={ctaTextId} className={inputClass} value={data.ctaText || ''} onChange={(e) => onChange('ctaText', e.target.value)} />
@@ -134,7 +200,102 @@ export function HeaderPanel({ data, onChange }: PanelProps<HeaderData>) {
           )
         })}
       </div>
-    </>
+    </div>
+  )
+}
+
+export function HeaderOverlayPanel({ data, onChange }: PanelProps<HeaderOverlayData>) {
+  const logoTextId = useId()
+  const taglineId = useId()
+  const leftLinks = data.leftLinks || []
+  const rightLinks = data.rightLinks || []
+  const baseId = useId()
+
+  return (
+    <div className="flex flex-col gap-4">
+      <FontStyleSelector
+        value={data.fontStyle}
+        onChange={(val) => onChange('fontStyle', val)}
+      />
+      <div className="flex flex-col gap-2">
+        <FieldLabel htmlFor={logoTextId}>Logo Teks / Nama Studio</FieldLabel>
+        <Input id={logoTextId} value={data.logoText || ''} onChange={(e) => onChange('logoText', e.target.value)} />
+      </div>
+      <div className="flex flex-col gap-2">
+        <FieldLabel htmlFor={taglineId}>Tagline (opsional)</FieldLabel>
+        <Input id={taglineId} value={data.tagline || ''} onChange={(e) => onChange('tagline', e.target.value)} />
+      </div>
+      <div className="flex flex-col gap-2.5">
+        <ImageUpload value={data.logoImage || ''} onChange={(url) => onChange('logoImage', url)} label="Logo Gambar Studio (Opsional)" />
+        {data.logoImage && (
+          <LogoSizeControl value={data.logoHeight || 40} onChange={(val) => onChange('logoHeight', val)} />
+        )}
+      </div>
+
+      {/* Nav Left Links */}
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center justify-between">
+          <FieldLabel>Link Menu Kiri ({leftLinks.length})</FieldLabel>
+          <Button variant="ghost" size="sm" className="h-7 text-xs text-primary" onClick={() => onChange('leftLinks', [...leftLinks, { label: '', href: '#' }])}>
+            <Plus className="w-3 h-3 mr-1" /> Tambah
+          </Button>
+        </div>
+        {leftLinks.map((l, i) => {
+          const labelId = `${baseId}-lleft-${i}-label`
+          const hrefId = `${baseId}-lleft-${i}-href`
+          return (
+            <div key={i} className="p-3 border border-border rounded-md bg-muted/30 flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono text-muted-foreground">#{i + 1}</span>
+                <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => onChange('leftLinks', leftLinks.filter((_, idx) => idx !== i))}>
+                  <Trash2 className="w-3 h-3" />
+                </Button>
+              </div>
+              <div className="flex flex-col gap-1">
+                <FieldLabel htmlFor={labelId}>Label</FieldLabel>
+                <Input id={labelId} placeholder="Label" value={l.label || ''} onChange={(e) => { const u = [...leftLinks]; u[i] = { ...u[i], label: e.target.value }; onChange('leftLinks', u) }} />
+              </div>
+              <div className="flex flex-col gap-1">
+                <FieldLabel htmlFor={hrefId}>Href (Tujuan Link)</FieldLabel>
+                <Input id={hrefId} placeholder="Href (mis. #about)" value={l.href || ''} onChange={(e) => { const u = [...leftLinks]; u[i] = { ...u[i], href: e.target.value }; onChange('leftLinks', u) }} />
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Nav Right Links */}
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center justify-between">
+          <FieldLabel>Link Menu Kanan ({rightLinks.length})</FieldLabel>
+          <Button variant="ghost" size="sm" className="h-7 text-xs text-primary" onClick={() => onChange('rightLinks', [...rightLinks, { label: '', href: '#' }])}>
+            <Plus className="w-3 h-3 mr-1" /> Tambah
+          </Button>
+        </div>
+        {rightLinks.map((l, i) => {
+          const labelId = `${baseId}-lright-${i}-label`
+          const hrefId = `${baseId}-lright-${i}-href`
+          return (
+            <div key={i} className="p-3 border border-border rounded-md bg-muted/30 flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono text-muted-foreground">#{i + 1}</span>
+                <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => onChange('rightLinks', rightLinks.filter((_, idx) => idx !== i))}>
+                  <Trash2 className="w-3 h-3" />
+                </Button>
+              </div>
+              <div className="flex flex-col gap-1">
+                <FieldLabel htmlFor={labelId}>Label</FieldLabel>
+                <Input id={labelId} placeholder="Label" value={l.label || ''} onChange={(e) => { const u = [...rightLinks]; u[i] = { ...u[i], label: e.target.value }; onChange('rightLinks', u) }} />
+              </div>
+              <div className="flex flex-col gap-1">
+                <FieldLabel htmlFor={hrefId}>Href (Tujuan Link)</FieldLabel>
+                <Input id={hrefId} placeholder="Href (mis. #contact)" value={l.href || ''} onChange={(e) => { const u = [...rightLinks]; u[i] = { ...u[i], href: e.target.value }; onChange('rightLinks', u) }} />
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
   )
 }
 
@@ -219,80 +380,6 @@ export function GoalsPanel({ data, onChange }: PanelProps<GoalsData>) {
           )
         })}
       </div>
-    </>
-  )
-}
-
-export function HeaderOverlayPanel({ data, onChange }: PanelProps<HeaderOverlayData>) {
-  const logoTextId = useId()
-  const taglineId = useId()
-  const showCenterLogoId = useId()
-  const leftLinks = data.leftLinks || []
-  const rightLinks = data.rightLinks || []
-  const baseId = useId()
-
-  function renderLinks(field: 'leftLinks' | 'rightLinks', items: HeaderOverlayLink[]) {
-    return (
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between">
-          <FieldLabel>{field === 'leftLinks' ? 'Link Kiri' : 'Link Kanan'} ({items.length})</FieldLabel>
-          <Button variant="ghost" size="sm" className="h-7 text-xs text-primary" onClick={() => onChange(field, [...items, { label: '', href: '#' }])}>
-            <Plus className="w-3 h-3 mr-1" /> Tambah
-          </Button>
-        </div>
-        {items.map((l, i) => {
-          const labelId = `${baseId}-${field}-${i}-label`
-          const hrefId = `${baseId}-${field}-${i}-href`
-          return (
-            <div key={i} className="p-3 border border-border rounded-md bg-muted/30 flex flex-col gap-2">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-mono text-muted-foreground">#{i + 1}</span>
-                <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => onChange(field, items.filter((_, idx) => idx !== i))}>
-                  <Trash2 className="w-3 h-3" />
-                </Button>
-              </div>
-              <div className="flex flex-col gap-1">
-                <FieldLabel htmlFor={labelId}>Label</FieldLabel>
-                <Input id={labelId} placeholder="Label" value={l.label || ''} onChange={(e) => { const u = [...items]; u[i] = { ...u[i], label: e.target.value }; onChange(field, u) }} />
-              </div>
-              <div className="flex flex-col gap-1">
-                <FieldLabel htmlFor={hrefId}>Href (Tujuan Link)</FieldLabel>
-                <Input id={hrefId} placeholder="Href (mis. #about)" value={l.href || ''} onChange={(e) => { const u = [...items]; u[i] = { ...u[i], href: e.target.value }; onChange(field, u) }} />
-              </div>
-            </div>
-          )
-        })}
-      </div>
-    )
-  }
-
-  return (
-    <>
-      <FontStyleSelector
-        value={data.fontStyle}
-        onChange={(val) => onChange('fontStyle', val)}
-      />
-      <div className="flex flex-col gap-2">
-        <FieldLabel htmlFor={logoTextId}>Logo Text</FieldLabel>
-        <Input id={logoTextId} className={inputClass} value={data.logoText || ''} onChange={(e) => onChange('logoText', e.target.value)} />
-      </div>
-      <ImageUpload value={data.logoImage || ''} onChange={(url) => onChange('logoImage', url)} label="Logo Gambar Studio (Opsional)" />
-      <div className="flex flex-col gap-2">
-        <FieldLabel htmlFor={taglineId}>Tagline (opsional)</FieldLabel>
-        <Input id={taglineId} className={inputClass} value={data.tagline || ''} onChange={(e) => onChange('tagline', e.target.value)} placeholder="Tato • Piercing • Art" />
-      </div>
-      <label htmlFor={showCenterLogoId} className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
-        <input
-          id={showCenterLogoId}
-          type="checkbox"
-          className="h-3.5 w-3.5"
-          checked={data.showCenterLogo !== false}
-          onChange={(e) => onChange('showCenterLogo', e.target.checked)}
-        />
-        Tampilkan logo di tengah
-      </label>
-      {renderLinks('leftLinks', leftLinks)}
-      {renderLinks('rightLinks', rightLinks)}
     </>
   )
 }

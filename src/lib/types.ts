@@ -27,6 +27,7 @@ export type FontStyle = "syne" | "cormorant" | "inter" | "oswald" | "cinzel"
 export interface HeaderData {
   title?: string
   logoImage?: string
+  logoHeight?: number
   ctaText?: string
   links?: HeaderOverlayLink[]
   fontStyle?: FontStyle
@@ -42,6 +43,7 @@ export interface HeaderOverlayData {
   /** Teks logo center (default: nama studio) */
   logoText?: string
   logoImage?: string
+  logoHeight?: number
   /** Tagline kecil di bawah logo (opsional) */
   tagline?: string
   /** Link kiri (default 3 item) */

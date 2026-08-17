@@ -97,7 +97,8 @@ export function BlockHeaderOverlay({
             <img
               src={data.logoImage}
               alt={logoText}
-              className="h-8 md:h-10 max-w-[150px] md:max-w-[180px] object-contain"
+              style={{ height: `${data.logoHeight || 40}px` }}
+              className="max-h-[120px] max-w-[280px] object-contain transition-[height] duration-150"
             />
           ) : (
             <>

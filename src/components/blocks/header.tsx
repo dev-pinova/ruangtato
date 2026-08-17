@@ -62,14 +62,15 @@ export function BlockHeader({ data, locale = "id" }: { data: any; locale?: Local
 
   return (
     <header className="sticky top-0 z-40 border-b border-white/10 bg-black/85 backdrop-blur-md text-white">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 md:px-6">
-        <div className="font-sans text-base font-medium tracking-wider text-white">
+      <div className="mx-auto flex min-h-14 py-2 max-w-6xl items-center justify-between px-4 md:px-6">
+        <div className="font-display text-base font-medium tracking-wider text-white flex items-center">
           {data?.logoImage ? (
             /* eslint-disable-next-line @next/next/no-img-element */
             <img
               src={data.logoImage}
               alt={data?.title || "Logo"}
-              className="h-8 max-w-[150px] object-contain"
+              style={{ height: `${data.logoHeight || 36}px` }}
+              className="max-h-[120px] max-w-[280px] object-contain transition-[height] duration-150"
             />
           ) : (
             data?.title || "Studio Name"
