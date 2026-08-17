@@ -3,15 +3,7 @@
 import Link from "next/link"
 import { useRef } from "react"
 import { motion, useInView } from "framer-motion"
-import {
-  ArrowRight,
-  Sparkles,
-  Zap,
-  MessageSquare,
-  Percent,
-  ShieldCheck,
-  CheckCircle2,
-} from "lucide-react"
+import { ArrowRight, Sparkles } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { useLanguage } from "@/lib/i18n/language-provider"
@@ -38,62 +30,6 @@ export function ExploreCta({ featuredStudios, onFindMe }: ExploreCtaProps = {}) 
       : "Tampilkan portofolio terbaik, dapatkan lencana terverifikasi, dan terima booking calon klien langsung lewat WhatsApp tanpa potongan komisi.",
     primaryBtn: isEn ? "List Your Studio Now" : "Daftarkan Studio Sekarang",
     secondaryBtn: isEn ? "View Pricing & Plans" : "Lihat Paket & Harga",
-    features: isEn
-      ? [
-          {
-            icon: Zap,
-            title: "5-Min Setup",
-            desc: "Instant live page, no technical skills needed",
-          },
-          {
-            icon: MessageSquare,
-            title: "Direct WhatsApp",
-            desc: "Clients chat directly to your studio number",
-          },
-          {
-            icon: Percent,
-            title: "0% Commission",
-            desc: "Keep 100% of your tattoo booking revenue",
-          },
-          {
-            icon: ShieldCheck,
-            title: "Verified Badge",
-            desc: "Build trust with hygiene & studio verification",
-          },
-        ]
-      : [
-          {
-            icon: Zap,
-            title: "Setup < 5 Menit",
-            desc: "Halaman langsung online tanpa perlu koding",
-          },
-          {
-            icon: MessageSquare,
-            title: "WhatsApp Langsung",
-            desc: "Calon klien chat langsung ke kontak studio",
-          },
-          {
-            icon: Percent,
-            title: "0% Komisi",
-            desc: "Semua pendapatan 100% milik studio Anda",
-          },
-          {
-            icon: ShieldCheck,
-            title: "Lencana Terverifikasi",
-            desc: "Tingkatkan reputasi & kepercayaan klien",
-          },
-        ],
-    trustBadges: isEn
-      ? [
-          "Instant portfolio showcase",
-          "SEO & Google discovery ready",
-          "Cancel or upgrade anytime",
-        ]
-      : [
-          "Portofolio HD tanpa batas",
-          "Terindeks di Google & SEO",
-          "Bebas upgrade kapan saja",
-        ],
   }
 
   return (
@@ -184,49 +120,6 @@ export function ExploreCta({ featuredStudios, onFindMe }: ExploreCtaProps = {}) 
               </Button>
             </motion.div>
           </div>
-
-          {/* Feature Grid / 4 High-Conversion Pillars */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="mt-12 sm:mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"
-          >
-            {content.features.map((feature, i) => {
-              const Icon = feature.icon
-              return (
-                <div
-                  key={i}
-                  className="group relative flex flex-col items-start rounded-xl border border-white/10 bg-white/[0.03] p-4 sm:p-5 transition-colors duration-200 hover:border-white/20 hover:bg-white/[0.06]"
-                >
-                  <div className="mb-3 inline-flex size-10 items-center justify-center rounded-lg border border-red-500/20 bg-red-500/10 text-red-400 transition-colors">
-                    <Icon className="size-5" />
-                  </div>
-                  <h3 className="text-sm sm:text-base font-semibold text-white">
-                    {feature.title}
-                  </h3>
-                  <p className="mt-1 text-xs sm:text-sm text-neutral-400 leading-snug">
-                    {feature.desc}
-                  </p>
-                </div>
-              )
-            })}
-          </motion.div>
-
-          {/* Social Proof / Micro Trust Bar */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={isInView ? { opacity: 1 } : {}}
-            transition={{ duration: 0.5, delay: 0.55 }}
-            className="mt-8 sm:mt-12 flex flex-wrap items-center justify-center gap-x-6 gap-y-2.5 text-xs text-neutral-400"
-          >
-            {content.trustBadges.map((badge, idx) => (
-              <div key={idx} className="flex items-center gap-1.5">
-                <CheckCircle2 className="size-3.5 text-emerald-400 shrink-0" />
-                <span>{badge}</span>
-              </div>
-            ))}
-          </motion.div>
         </div>
       </section>
     </div>

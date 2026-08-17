@@ -4,7 +4,6 @@ import Link from "next/link"
 import { Heart } from "lucide-react"
 
 import { PlatformLogo } from "@/components/brand/platform-logo"
-import { Tagline } from "@/components/design"
 import { Button } from "@/components/ui/button"
 import { LanguageSwitcher } from "@/components/ui/language-switcher"
 import { useLanguage } from "@/lib/i18n/language-provider"
@@ -86,43 +85,46 @@ function MarketingFooter() {
   }
 
   return (
-    <footer className="border-t border-neutral-800 bg-neutral-950">
-      <div className="mx-auto max-w-6xl px-4 py-12 md:px-6 md:py-16">
-        <div className="grid gap-8 md:grid-cols-4">
-          <div className="md:col-span-1">
+    <footer className="border-t border-neutral-900 bg-neutral-950 text-neutral-400">
+      <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16 md:px-6 md:py-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-8 sm:gap-10 lg:gap-12">
+          {/* Brand Info */}
+          <div className="sm:col-span-2 md:col-span-5 lg:col-span-5">
             <PlatformLogo variant="footer" />
-            <p className="mt-4 max-w-xs text-sm leading-relaxed text-neutral-500">
+            <p className="mt-4 max-w-sm text-sm leading-relaxed text-neutral-400">
               {t.footer.desc}{" "}
               <a
                 href={SITE_URL}
-                className="font-medium text-neutral-400 underline-offset-4 hover:text-neutral-200 hover:underline"
+                className="font-medium text-neutral-300 underline-offset-4 hover:text-white hover:underline"
               >
                 {SITE_DOMAIN}
               </a>
             </p>
-            <div className="mt-6 space-y-2 text-sm text-neutral-600">
-              <p>Jalan Bunisari Nomor 22, Desa Kuta, Kec. Kuta, Kab. Badung, Provinsi Bali</p>
-              <p>
-                <a href="mailto:Info@ruangtato.com" className="hover:text-neutral-400 hover:underline">
+            <div className="mt-5 space-y-1.5 text-xs text-neutral-500">
+              <p className="leading-relaxed">Jalan Bunisari Nomor 22, Desa Kuta, Kec. Kuta, Kab. Badung, Provinsi Bali</p>
+              <div className="flex flex-wrap gap-x-4 gap-y-1 pt-1">
+                <a href="mailto:Info@ruangtato.com" className="hover:text-neutral-300 transition-colors">
                   Info@ruangtato.com
                 </a>
-              </p>
-              <p>
-                <a href="https://wa.me/628133985462" className="hover:text-neutral-400 hover:underline">
+                <span className="text-neutral-700 hidden sm:inline">•</span>
+                <a href="https://wa.me/628133985462" target="_blank" rel="noopener noreferrer" className="hover:text-neutral-300 transition-colors">
                   +62 813-3985-462
                 </a>
-              </p>
+              </div>
             </div>
           </div>
 
-          <div>
-            <Tagline>Platform</Tagline>
+          {/* Platform Links */}
+          <div className="md:col-span-2 lg:col-span-2">
+            <p className="text-xs font-semibold uppercase tracking-wider text-neutral-300">
+              Platform
+            </p>
             <ul className="mt-4 space-y-2.5">
               {FOOTER_LINKS.platform.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-neutral-500 transition-colors hover:text-neutral-300"
+                    className="text-sm text-neutral-400 transition-colors hover:text-white"
                   >
                     {link.label}
                   </Link>
@@ -131,14 +133,17 @@ function MarketingFooter() {
             </ul>
           </div>
 
-          <div>
-            <Tagline>Legal</Tagline>
+          {/* Legal Links */}
+          <div className="md:col-span-2 lg:col-span-2">
+            <p className="text-xs font-semibold uppercase tracking-wider text-neutral-300">
+              Legal
+            </p>
             <ul className="mt-4 space-y-2.5">
               {FOOTER_LINKS.legal.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-neutral-500 transition-colors hover:text-neutral-300"
+                    className="text-sm text-neutral-400 transition-colors hover:text-white"
                   >
                     {link.label}
                   </Link>
@@ -147,8 +152,11 @@ function MarketingFooter() {
             </ul>
           </div>
 
-          <div>
-            <Tagline>Sosial</Tagline>
+          {/* Social Links */}
+          <div className="md:col-span-3 lg:col-span-3">
+            <p className="text-xs font-semibold uppercase tracking-wider text-neutral-300">
+              Sosial
+            </p>
             <ul className="mt-4 space-y-2.5">
               {FOOTER_LINKS.social.map((link) => (
                 <li key={link.label}>
@@ -156,7 +164,7 @@ function MarketingFooter() {
                     href={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-neutral-500 transition-colors hover:text-neutral-300"
+                    className="text-sm text-neutral-400 transition-colors hover:text-white"
                   >
                     {link.label}
                   </a>
@@ -166,21 +174,22 @@ function MarketingFooter() {
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-neutral-800 pt-6 md:flex-row md:items-center">
-          <p className="text-xs text-neutral-600">
+        {/* Bottom copyright */}
+        <div className="mt-12 sm:mt-16 flex flex-col items-center justify-between gap-3 border-t border-neutral-900 pt-6 sm:pt-8 md:flex-row text-center md:text-left">
+          <p className="text-xs text-neutral-500">
             &copy; {new Date().getFullYear()}{" "}
             <a
               href={SITE_URL}
-              className="underline-offset-4 hover:underline"
+              className="hover:text-neutral-300 transition-colors"
             >
               {SITE_DOMAIN}
             </a>
             . {t.footer.copyright}
           </p>
-          <p className="inline-flex items-center gap-1 text-xs text-neutral-600">
+          <p className="inline-flex items-center gap-1.5 text-xs text-neutral-500">
             {t.footer.madeWith}
             <Heart
-              className="size-3 fill-red-500 text-red-500"
+              className="size-3 fill-red-500 text-red-500 inline"
               aria-hidden
             />
             {t.footer.forArtists}
