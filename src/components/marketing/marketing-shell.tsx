@@ -46,7 +46,9 @@ function MarketingHeader() {
           </Button>
           <Button
             size="sm"
+            variant="default"
             nativeButton={false}
+            className="font-medium px-3.5 text-xs sm:text-sm transition-colors"
             render={<Link href="/register" />}
           >
             {t.cta.button}

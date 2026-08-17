@@ -28,8 +28,8 @@ export function ExploreCta({ featuredStudios, onFindMe }: ExploreCtaProps = {}) 
     subtitle: isEn
       ? "Join Indonesia's premier tattoo platform. Showcase HD portfolios, earn a verified trust badge, and receive client inquiries directly through WhatsApp with 0% commission."
       : "Tampilkan portofolio terbaik, dapatkan lencana terverifikasi, dan terima booking calon klien langsung lewat WhatsApp tanpa potongan komisi.",
-    primaryBtn: isEn ? "List Your Studio Now" : "Daftarkan Studio Sekarang",
-    secondaryBtn: isEn ? "View Pricing & Plans" : "Lihat Paket & Harga",
+    primaryBtn: isEn ? "Join Studio" : "Daftar Studio",
+    secondaryBtn: isEn ? "View Pricing" : "Lihat Paket",
   }
 
   return (
@@ -40,7 +40,7 @@ export function ExploreCta({ featuredStudios, onFindMe }: ExploreCtaProps = {}) 
       >
         {/* Ambient background glow & radial gradient */}
         <div className="pointer-events-none absolute inset-0 -z-10">
-          <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/3 h-[320px] w-[550px] md:h-[450px] md:w-[800px] rounded-full bg-gradient-to-b from-red-600/20 via-orange-600/10 to-transparent blur-[100px] md:blur-[140px]" />
+          <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/3 h-[320px] w-[550px] md:h-[450px] md:w-[800px] rounded-full bg-gradient-to-b from-white/10 via-neutral-500/5 to-transparent blur-[100px] md:blur-[140px]" />
           <div
             className="absolute inset-0 opacity-[0.03]"
             style={{
@@ -61,8 +61,8 @@ export function ExploreCta({ featuredStudios, onFindMe }: ExploreCtaProps = {}) 
               transition={{ duration: 0.4 }}
               className="flex justify-center mb-5"
             >
-              <div className="inline-flex items-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-3.5 py-1.5 text-[11px] sm:text-xs font-semibold tracking-wider text-red-400">
-                <Sparkles className="size-3.5 text-red-400" />
+              <div className="inline-flex items-center gap-2 rounded-lg border border-white/20 bg-white/10 px-3.5 py-1.5 text-[11px] sm:text-xs font-semibold tracking-wider text-white/90">
+                <Sparkles className="size-3.5 text-white/80" />
                 <span>{content.badge}</span>
               </div>
             </motion.div>
@@ -75,7 +75,7 @@ export function ExploreCta({ featuredStudios, onFindMe }: ExploreCtaProps = {}) 
               className="text-2xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl lg:text-[52px] lg:leading-[1.12]"
             >
               {content.titlePrimary}{" "}
-              <span className="bg-gradient-to-r from-red-400 via-rose-400 to-amber-300 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-white via-neutral-200 to-neutral-400 bg-clip-text text-transparent">
                 {content.titleHighlight}
               </span>
             </motion.h2>
@@ -100,8 +100,9 @@ export function ExploreCta({ featuredStudios, onFindMe }: ExploreCtaProps = {}) 
               {/* Primary button */}
               <Button
                 size="lg"
+                variant="default"
                 nativeButton={false}
-                className="w-full sm:w-auto h-11 px-7 text-sm sm:text-base font-semibold gap-2"
+                className="w-full sm:w-auto h-11 px-7 text-sm sm:text-base font-semibold gap-2 transition-colors"
                 render={<Link href="/register" />}
               >
                 <span>{content.primaryBtn}</span>

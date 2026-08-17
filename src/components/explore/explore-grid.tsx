@@ -115,7 +115,7 @@ export function ExploreGrid({
               className="mt-6 gap-2 border-neutral-300 text-neutral-700 bg-white hover:bg-neutral-50"
               render={<Link href="/register" />}
             >
-              {c.listStudioBtn || (locale === "en" ? "List Your Studio" : "Tampilkan Studiomu")}
+              {c.listStudioBtn || (locale === "en" ? "Join Studio" : "Daftar Studio")}
               <ArrowRight className="size-3.5" />
             </Button>
           </>
