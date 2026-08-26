@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
-import { ArrowRight, Store, Search, SlidersHorizontal, ChevronDown } from "lucide-react"
+import { ArrowRight, Store, SlidersHorizontal, ChevronDown } from "lucide-react"
 
 import { MarketingShell } from "@/components/marketing/marketing-shell"
 import { ExploreHero } from "@/components/explore/explore-hero"
@@ -12,7 +12,6 @@ import { ExploreHeader } from "@/components/explore/explore-header"
 import { ExploreGrid } from "@/components/explore/explore-grid"
 import { ExploreCta } from "@/components/explore/explore-cta"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { getCityCounts } from "@/lib/studio/studio-utils"
 import { useLanguage } from "@/lib/i18n/language-provider"
 import { cn } from "@/lib/utils"
@@ -103,20 +102,6 @@ export function ExplorePage({
 
       <section className="bg-white text-neutral-900 border-t border-neutral-200 min-h-screen">
         <div className="mx-auto max-w-[1280px] px-4 py-8 md:px-6 md:py-12">
-
-          {/* Mobile Search Bar */}
-          <div className="md:hidden mb-4 max-w-md">
-            <div className="relative flex items-center bg-white border border-neutral-200 rounded-xl shadow-sm">
-              <Search className="pointer-events-none absolute left-3.5 size-4 text-neutral-400" />
-              <Input
-                aria-label={t.hero.searchPlaceholder}
-                placeholder={t.hero.searchPlaceholder}
-                className="h-10 w-full rounded-xl border-0 bg-transparent pl-10 pr-8 text-sm text-neutral-900 placeholder:text-neutral-400 focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-          </div>
 
           {/* Mobile Filter Bar */}
           <div className="md:hidden mb-4 flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">

@@ -75,12 +75,13 @@ export function ExploreHero({
 
         {/* Headline */}
         <h1 className="mx-auto max-w-2xl text-center text-3xl font-semibold leading-tight tracking-tight text-white md:text-4xl lg:text-5xl">
-          {t.hero.title1}{" "}
+          <span>{t.hero.title1}</span>{" "}
           <span className="font-bold bg-gradient-to-r from-red-500 via-amber-400 via-emerald-400 via-sky-400 via-purple-500 to-red-500 bg-[length:200%_auto] bg-clip-text text-transparent animate-rainbow inline-block">
             {t.hero.title2}
-          </span>
-          <br className="hidden sm:block" />
-          {t.hero.title3} {t.hero.title4}
+          </span>{" "}
+          <br className="hidden sm:inline" />
+          <span>{t.hero.title3}</span>{" "}
+          <span>{t.hero.title4}</span>
         </h1>
         <p className="mx-auto mt-4 max-w-lg text-center text-sm text-white/60 md:text-base">
           {t.hero.subtitle}
