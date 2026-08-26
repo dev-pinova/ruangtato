@@ -75,7 +75,7 @@ export function ExploreCta({ featuredStudios, onFindMe }: ExploreCtaProps = {}) 
               className="text-2xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl lg:text-[52px] lg:leading-[1.12]"
             >
               {content.titlePrimary}{" "}
-              <span className="bg-gradient-to-r from-white via-neutral-200 to-neutral-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-red-500 via-amber-400 via-emerald-400 via-sky-400 via-purple-500 to-red-500 bg-[length:200%_auto] bg-clip-text text-transparent animate-rainbow inline-block">
                 {content.titleHighlight}
               </span>
             </motion.h2>
