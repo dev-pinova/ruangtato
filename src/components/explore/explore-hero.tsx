@@ -7,6 +7,7 @@ import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Marquee } from "@/components/ui/marquee"
 import { VerifiedCheck } from "@/components/showcase/verified-check"
 import { useLanguage } from "@/lib/i18n/language-provider"
 import type { Studio } from "@/lib/types"
@@ -75,7 +76,9 @@ export function ExploreHero({
         {/* Headline */}
         <h1 className="mx-auto max-w-2xl text-center text-3xl font-semibold leading-tight tracking-tight text-white md:text-4xl lg:text-5xl">
           {t.hero.title1}{" "}
-          <span className="font-bold">{t.hero.title2}</span>
+          <span className="font-bold bg-gradient-to-r from-red-500 via-amber-400 via-emerald-400 via-sky-400 via-purple-500 to-red-500 bg-[length:200%_auto] bg-clip-text text-transparent animate-rainbow inline-block">
+            {t.hero.title2}
+          </span>
           <br className="hidden sm:block" />
           {t.hero.title3} {t.hero.title4}
         </h1>
@@ -88,57 +91,61 @@ export function ExploreHero({
           onSubmit={handleSearch}
           className="mx-auto mt-7 sm:mt-8 max-w-xl"
         >
-          <div className="relative flex items-center rounded-lg bg-white/10 border border-white/20 focus-within:border-white/40 focus-within:bg-white/15 transition-colors">
-            <Search className="pointer-events-none absolute left-4 size-4 text-white/50" />
-            <Input
-              aria-label={t.hero.searchPlaceholder}
-              placeholder={t.hero.searchPlaceholder}
-              className="h-12 w-full rounded-lg border-0 bg-transparent pl-11 pr-12 text-sm text-white placeholder:text-white/40 focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none"
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-            />
-            <Button
-              type="submit"
-              size="sm"
-              className="absolute right-1.5 h-9 rounded-lg bg-white text-black hover:bg-white/90"
-            >
-              <ArrowRight className="size-3.5" />
-            </Button>
+          <div className="relative group p-[1.5px] rounded-xl overflow-hidden bg-gradient-to-r from-red-500 via-amber-400 via-emerald-400 via-sky-500 via-purple-500 to-red-500 bg-[length:300%_300%] animate-gradient-shift shadow-lg shadow-black/40">
+            <div className="relative flex items-center rounded-[10px] bg-neutral-950/85 backdrop-blur-md transition-colors group-focus-within:bg-neutral-950/95">
+              <Search className="pointer-events-none absolute left-4 size-4 text-white/60" />
+              <Input
+                aria-label={t.hero.searchPlaceholder}
+                placeholder={t.hero.searchPlaceholder}
+                className="h-12 w-full rounded-[10px] border-0 bg-transparent pl-11 pr-12 text-sm text-white placeholder:text-white/45 focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none"
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+              />
+              <Button
+                type="submit"
+                size="sm"
+                className="absolute right-1.5 h-9 rounded-lg bg-white text-black hover:bg-white/90 shadow-sm"
+              >
+                <ArrowRight className="size-3.5" />
+              </Button>
+            </div>
           </div>
         </form>
 
         {/* Popular Studios */}
         {featuredStudios.length > 0 && (
           <div className="mt-7 sm:mt-8">
-            <p className="mb-2.5 text-center text-[11px] sm:text-xs font-medium uppercase tracking-wider text-white/50">
+            <p className="mb-3 text-center text-[11px] sm:text-xs font-medium uppercase tracking-wider text-white/50">
               {t.hero.featured}
             </p>
-            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-2.5 max-w-4xl mx-auto">
-              {featuredStudios.slice(0, 8).map((studio) => (
-                <Link
-                  key={studio.id}
-                  href={`/${studio.slug}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group inline-flex items-center gap-1.5 sm:gap-2 rounded-lg border border-white/15 bg-white/5 px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm text-white/85 transition-colors hover:border-white/35 hover:bg-white/10"
-                >
-                  {studio.image && (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img
-                      src={studio.image}
-                      alt=""
-                      className="size-4.5 sm:size-5 rounded-full object-cover shrink-0 ring-1 ring-white/20"
-                    />
-                  )}
-                  <span className="max-w-[110px] sm:max-w-[150px] truncate font-medium text-white/90">
-                    {studio.name}
-                  </span>
-                  {studio.isVerified && (
-                    <VerifiedCheck className="size-3.5 shrink-0 text-blue-400" />
-                  )}
-                  <ChevronRight className="size-3 text-white/40 transition-transform group-hover:translate-x-0.5 group-hover:text-white/80 shrink-0" />
-                </Link>
-              ))}
+            <div className="relative w-full max-w-5xl mx-auto overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
+              <Marquee pauseOnHover className="[--duration:28s] [--gap:0.75rem] py-1">
+                {featuredStudios.map((studio) => (
+                  <Link
+                    key={studio.id}
+                    href={`/${studio.slug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group inline-flex items-center gap-1.5 sm:gap-2 rounded-lg border border-white/15 bg-white/5 px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm text-white/85 transition-colors hover:border-white/35 hover:bg-white/15 shrink-0 backdrop-blur-sm"
+                  >
+                    {studio.image && (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img
+                        src={studio.image}
+                        alt=""
+                        className="size-4.5 sm:size-5 rounded-full object-cover shrink-0 ring-1 ring-white/20"
+                      />
+                    )}
+                    <span className="max-w-[120px] sm:max-w-[160px] truncate font-medium text-white/90">
+                      {studio.name}
+                    </span>
+                    {studio.isVerified && (
+                      <VerifiedCheck className="size-3.5 shrink-0 text-blue-400" />
+                    )}
+                    <ChevronRight className="size-3 text-white/40 transition-transform group-hover:translate-x-0.5 group-hover:text-white/80 shrink-0" />
+                  </Link>
+                ))}
+              </Marquee>
             </div>
           </div>
         )}

@@ -62,6 +62,30 @@
   }
 }
 
+@keyframes rainbow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 
 
 @theme inline {
@@ -130,6 +154,8 @@
   --animate-border-beam: border-beam var(--duration, 15s) linear infinite;
   --animate-shimmer-button-shimmer: shimmer-button-shimmer var(--shimmer-duration, 3s) linear infinite;
   --animate-grid: grid 15s linear infinite;
+  --animate-rainbow: rainbow 6s ease infinite;
+  --animate-gradient-shift: gradient-shift 6s ease infinite;
 }
 
 
