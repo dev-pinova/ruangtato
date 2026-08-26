@@ -173,7 +173,7 @@ export function SettingsPanel() {
               <Input
                 id="assign-email"
                 type="email"
-                placeholder="admin@ruangtato.com"
+                placeholder="Info@ruangtato.com"
                 value={assignEmail}
                 onChange={(e) => setAssignEmail(e.target.value)}
                 required

@@ -62,6 +62,30 @@
   }
 }
 
+@keyframes rainbow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 
 
 @theme inline {
@@ -130,6 +154,8 @@
   --animate-border-beam: border-beam var(--duration, 15s) linear infinite;
   --animate-shimmer-button-shimmer: shimmer-button-shimmer var(--shimmer-duration, 3s) linear infinite;
   --animate-grid: grid 15s linear infinite;
+  --animate-rainbow: rainbow 6s ease infinite;
+  --animate-gradient-shift: gradient-shift 6s ease infinite;
 }
 
 
@@ -235,11 +261,30 @@
   }
   .studio-template h1,
   .studio-template h2,
-  .studio-template h3 {
+  .studio-template h3,
+  .studio-template h4 {
     font-family: var(--font-display);
     font-weight: 300;
     text-transform: uppercase;
     letter-spacing: 0.16em;
+  }
+  .studio-template .font-display {
+    font-family: var(--font-display);
+  }
+  .studio-template[data-font="syne"] {
+    --font-display: var(--font-syne), sans-serif;
+  }
+  .studio-template[data-font="cormorant"] {
+    --font-display: var(--font-cormorant), ui-serif, Georgia, serif;
+  }
+  .studio-template[data-font="inter"] {
+    --font-display: var(--font-inter), system-ui, sans-serif;
+  }
+  .studio-template[data-font="oswald"] {
+    --font-display: var(--font-oswald), sans-serif;
+  }
+  .studio-template[data-font="cinzel"] {
+    --font-display: var(--font-cinzel), serif;
   }
   ::selection {
     @apply bg-primary/30 text-foreground;

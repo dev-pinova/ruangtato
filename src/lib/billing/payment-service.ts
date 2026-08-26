@@ -6,27 +6,21 @@ import type { TxOrDb } from "@/lib/studio/studio-service"
 import {
   isSuccessfulPayment,
   parsePaymentMetadata,
-  type MidtransNotificationPayload,
-} from "@/lib/billing/midtrans"
+  type DuitkuNotificationPayload,
+} from "@/lib/billing/duitku"
 import { getSubscriptionPlanLabel } from "@/lib/billing/billing-plans"
 
 const STATUS_RANK: Record<string, number> = {
   pending: 1,
-  deny: 2,
-  cancel: 2,
-  expire: 2,
-  failure: 2,
-  capture: 3,
-  settlement: 4,
+  failed: 2,
   success: 4,
 }
 
-function normalizeTransactionStatus(payload: MidtransNotificationPayload): string {
-  const status = payload.transaction_status ?? "pending"
+function normalizeTransactionStatus(payload: DuitkuNotificationPayload): string {
   if (isSuccessfulPayment(payload)) return "success"
-  if (status === "expire") return "expired"
-  if (status === "deny" || status === "cancel" || status === "failure") return "failed"
-  return "pending"
+  const status = payload.resultCode ?? "pending"
+  if (status === "01") return "pending"
+  return "failed"
 }
 
 function shouldReplaceStatus(current: string | null | undefined, incoming: string): boolean {
@@ -38,19 +32,19 @@ function shouldReplaceStatus(current: string | null | undefined, incoming: strin
 }
 
 export async function recordPaymentEvent(
-  payload: MidtransNotificationPayload,
+  payload: DuitkuNotificationPayload,
   executor?: TxOrDb,
 ) {
   const d = executor ?? getDb()
 
-  const orderId = payload.order_id
-  if (!orderId) throw new Error("Missing order_id")
+  const orderId = payload.merchantOrderId
+  if (!orderId) throw new Error("Missing merchantOrderId")
 
-  const metadata = parsePaymentMetadata(payload.custom_field1)
+  const metadata = parsePaymentMetadata(payload.additionalParam)
   if (!metadata) throw new Error("Invalid payment metadata")
 
-  const amount = Number(payload.gross_amount)
-  if (!Number.isFinite(amount)) throw new Error("Invalid gross_amount")
+  const amount = Number(payload.amount)
+  if (!Number.isFinite(amount)) throw new Error("Invalid amount")
 
   const normalizedStatus = normalizeTransactionStatus(payload)
   const paidAt = normalizedStatus === "success" ? new Date() : null
@@ -71,15 +65,8 @@ export async function recordPaymentEvent(
     .where(eq(subscriptions.studioId, metadata.studioId))
     .limit(1)
 
-  const paymentMethod =
-    typeof (payload as Record<string, unknown>).payment_type === "string"
-      ? ((payload as Record<string, unknown>).payment_type as string)
-      : null
-
-  const transactionId =
-    typeof (payload as Record<string, unknown>).transaction_id === "string"
-      ? ((payload as Record<string, unknown>).transaction_id as string)
-      : null
+  const paymentMethod = payload.paymentCode ?? null
+  const transactionId = payload.reference ?? null
 
   const [row] = await d
     .insert(payments)
@@ -91,7 +78,7 @@ export async function recordPaymentEvent(
       amount: Math.round(amount),
       paymentMethod,
       transactionStatus: normalizedStatus,
-      fraudStatus: payload.fraud_status ?? null,
+      fraudStatus: null,
       rawPayload: payload as Record<string, unknown>,
       paidAt,
     })
@@ -102,7 +89,7 @@ export async function recordPaymentEvent(
         amount: Math.round(amount),
         paymentMethod,
         transactionStatus: normalizedStatus,
-        fraudStatus: payload.fraud_status ?? null,
+        fraudStatus: null,
         rawPayload: payload as Record<string, unknown>,
         paidAt: normalizedStatus === "success" ? sql`COALESCE(${payments.paidAt}, NOW())` : payments.paidAt,
       },
@@ -232,11 +219,11 @@ export async function listPayments(input: {
     .where(whereClause)
 
   const data: AdminPaymentRow[] = rows.map((row) => {
-    const raw = row.payment.rawPayload as { planType?: string; custom_field1?: string } | null
+    const raw = row.payment.rawPayload as { planType?: string; additionalParam?: string } | null
     let planType = raw?.planType ?? null
-    if (!planType && raw?.custom_field1) {
-      const parsed = parsePaymentMetadata(raw.custom_field1)
-      if (parsed) planType = parsed.planType
+    if (!planType) {
+      const metadata = parsePaymentMetadata(raw?.additionalParam)
+      if (metadata) planType = metadata.planType
     }
     return {
       id: row.payment.id,
@@ -279,11 +266,11 @@ export async function getPaymentById(paymentId: string) {
 
   if (!row) return null
 
-  const raw = row.payment.rawPayload as { planType?: string; custom_field1?: string } | null
+  const raw = row.payment.rawPayload as { planType?: string; additionalParam?: string } | null
   let planType = raw?.planType ?? null
-  if (!planType && raw?.custom_field1) {
-    const parsed = parsePaymentMetadata(raw.custom_field1)
-    if (parsed) planType = parsed.planType
+  if (!planType) {
+    const metadata = parsePaymentMetadata(raw?.additionalParam)
+    if (metadata) planType = metadata.planType
   }
 
   return {
@@ -318,7 +305,7 @@ export async function backfillPaymentsFromInvoices() {
       .insert(payments)
       .values({
         studioId: invoice.studioId,
-        orderId: invoice.midtransOrderId,
+        orderId: invoice.orderId,
         amount: invoice.amount,
         transactionStatus: status,
         rawPayload: {

@@ -1,12 +1,11 @@
 "use client"
 
-import { Suspense, useEffect, useState } from "react"
+import { Suspense, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { ShieldCheck, Lock, CheckCircle2, AlertCircle } from "lucide-react"
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 import { SubscribeButton } from "@/components/billing/subscribe-button"
-import { loadMidtransSnap } from "@/lib/billing/midtrans-snap"
 import { PlatformLogo } from "@/components/brand/platform-logo"
 import { SUBSCRIPTION_PLANS } from "@/lib/billing/billing-plans"
 import { useLanguage } from "@/lib/i18n/language-provider"
@@ -50,37 +49,11 @@ function CheckoutContent() {
   const isUnpaid = searchParams.get("status") === "unpaid"
   const isWelcome = searchParams.get("welcome") === "1"
 
-  const [snapReady, setSnapReady] = useState(false)
   const [orderMessage, setOrderMessage] = useState<string | null>(null)
   
   // Default to the popular plan (6 months, Pro)
   const [selectedMonths, setSelectedMonths] = useState<number>(6)
   const selectedPlan = SUBSCRIPTION_PLANS.find(p => p.months === selectedMonths) || SUBSCRIPTION_PLANS[2]
-
-  const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY ?? ""
-
-  useEffect(() => {
-    if (!clientKey) return
-    let cancelled = false
-
-    loadMidtransSnap()
-      .then(() => {
-        if (!cancelled) setSnapReady(true)
-      })
-      .catch((err: unknown) => {
-        if (cancelled) return
-        setSnapReady(false)
-        setOrderMessage(
-          err instanceof Error
-            ? err.message
-            : t.checkout.errorGateway,
-        )
-      })
-
-    return () => {
-      cancelled = true
-    }
-  }, [clientKey, t.checkout.errorGateway])
 
   const formatPrice = (amount: number) => {
     if (locale === "en") {
@@ -134,7 +107,7 @@ function CheckoutContent() {
         )}
 
         {/* Premium Checkout Card */}
-        <Card className="border border-white/5 bg-card/40 shadow-2xl backdrop-blur-xl">
+        <Card className="border border-white/10 bg-card shadow-2xl">
           <CardHeader className="border-b border-white/5 pb-6">
             <div className="flex items-center gap-2 text-primary text-xs font-semibold uppercase tracking-wider mb-2">
               <ShieldCheck className="h-4 w-4" /> {t.checkout.secureCheckout}
@@ -154,7 +127,7 @@ function CheckoutContent() {
                 <button
                   key={plan.id}
                   onClick={() => setSelectedMonths(plan.months)}
-                  className={`flex flex-col rounded-xl border p-4 text-left transition-all ${
+                  className={`flex flex-col rounded-lg border p-4 text-left transition-colors ${
                     selectedMonths === plan.months
                       ? "border-primary bg-primary/10 ring-1 ring-primary/50"
                       : "border-white/10 bg-background/40 hover:bg-card/60"
@@ -171,7 +144,7 @@ function CheckoutContent() {
                   <div className="mt-1 flex w-full items-center justify-between text-xs text-muted-foreground">
                     <span>{getPlanDurationLabel(plan)}</span>
                     {plan.popular && (
-                      <span className="rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-medium text-primary">
+                      <span className="rounded-md bg-primary/20 px-2 py-0.5 text-[10px] font-medium text-primary">
                         {t.checkout.popularBadge}
                       </span>
                     )}
@@ -212,12 +185,7 @@ function CheckoutContent() {
                   ? t.checkout.btnPay.replace("Rp {price}", formatPrice(selectedPlan.price))
                   : t.checkout.btnPay.replace("{price}", formatPrice(selectedPlan.price))
               }
-              snapReady={snapReady}
               onMessage={setOrderMessage}
-              onPaymentComplete={() => {
-                // When payment is done successfully, redirect user to the app dashboard
-                window.location.href = "/app/dashboard"
-              }}
             />
 
             <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
@@ -230,8 +198,8 @@ function CheckoutContent() {
         {/* Support links */}
         <p className="mt-8 text-center text-xs text-muted-foreground">
           {t.checkout.needHelp.split("{email}")[0]}
-          <a href="mailto:billing@ruangtato.com" className="text-muted-foreground hover:text-primary hover:underline">
-            billing@ruangtato.com
+          <a href="mailto:Info@ruangtato.com" className="text-muted-foreground hover:text-primary hover:underline">
+            Info@ruangtato.com
           </a>
           {t.checkout.needHelp.split("{email}")[1] || ""}
         </p>
@@ -256,4 +224,3 @@ export default function CheckoutPage() {
     </Suspense>
   )
 }
-

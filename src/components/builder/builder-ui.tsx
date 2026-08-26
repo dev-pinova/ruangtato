@@ -51,15 +51,16 @@ import { BlockArtistsGrid } from "@/components/blocks/artists-grid"
 import { BlockStatsCounter } from "@/components/blocks/stats-counter"
 import { BlockTestimonials } from "@/components/blocks/testimonials"
 import { BlockLatestNews } from "@/components/blocks/latest-news"
-import { BlockNewsletter } from "@/components/blocks/newsletter"
+
 import { BlockFAQ } from "@/components/blocks/faq"
 import { BlockAppointmentForm } from "@/components/blocks/appointment-form"
 import { BlockFinalCTA } from "@/components/blocks/final-cta"
 import { BlockFooter } from "@/components/blocks/footer"
+import { BlockLeadForm } from "@/components/blocks/lead-form"
 import { FloatingWhatsAppButton } from "@/components/studio/floating-whatsapp"
 
 import { DEFAULT_BLOCK_DATA } from "@/lib/studio/default-page-config"
-import type { AppointmentFormData, Block, BlockType, Studio } from "@/lib/types"
+import type { AppointmentFormData, LeadFormData, Block, BlockType, Studio } from "@/lib/types"
 
 import { LayersList } from "./layers-list"
 import { PropertyPanelContainer as PropertyPanel } from "./property-panel-container"
@@ -73,7 +74,7 @@ const PREVIEW_DEVICE_WIDTH: Record<PreviewDevice, number | null> = {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const BLOCK_COMPONENTS: Record<BlockType, React.ComponentType<{ data: any }>> = {
+const BLOCK_COMPONENTS: Partial<Record<BlockType, React.ComponentType<{ data: any }>>> = {
   Header: BlockHeader,
   HeaderOverlay: BlockHeaderOverlay,
   Hero: BlockHero,
@@ -89,11 +90,13 @@ const BLOCK_COMPONENTS: Record<BlockType, React.ComponentType<{ data: any }>> = 
   StatsCounter: BlockStatsCounter,
   Testimonials: BlockTestimonials,
   LatestNews: BlockLatestNews,
-  Newsletter: BlockNewsletter,
+
   FAQ: BlockFAQ,
   AppointmentForm: BlockAppointmentForm,
   FinalCTA: BlockFinalCTA,
   Footer: BlockFooter,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  LeadForm: BlockLeadForm as any,
 }
 
 const AVAILABLE_BLOCKS: { type: BlockType; name: string; desc: string }[] = [
@@ -112,11 +115,22 @@ const AVAILABLE_BLOCKS: { type: BlockType; name: string; desc: string }[] = [
   { type: 'CreatorBio', name: 'Creator Bio', desc: 'Profil artist tunggal' },
   { type: 'Testimonials', name: 'Testimonials', desc: 'Review klien dgn quote' },
   { type: 'LatestNews', name: 'Latest News', desc: 'Grid artikel/blog' },
-  { type: 'Newsletter', name: 'Newsletter', desc: 'Form subscribe email' },
+
   { type: 'FAQ', name: 'FAQ', desc: 'Tanya jawab' },
   { type: 'AppointmentForm', name: 'Appointment Form', desc: 'Form konsultasi + peta lokasi (opsional)' },
+  { type: 'LeadForm', name: 'Lead Form', desc: 'Form hubungi kami kustom' },
   { type: 'FinalCTA', name: 'Final CTA', desc: 'Tombol kontak akhir' },
   { type: 'Footer', name: 'Footer', desc: 'Bagian bawah' },
+]
+
+const BLOCK_CATEGORIES: { category: string; types: BlockType[] }[] = [
+  { category: "Header & Navigasi", types: ["HeaderOverlay", "Header"] },
+  { category: "Bagian Utama (Hero)", types: ["HeroSlider", "Hero"] },
+  { category: "Tentang & Profil", types: ["Goals", "Overview", "CreatorBio", "ArtistsGrid"] },
+  { category: "Layanan & Galeri", types: ["Gallery", "ServicesCards", "Features", "HowItWorks", "StatsCounter"] },
+  { category: "Ulasan & Berita", types: ["Testimonials", "LatestNews"] },
+  { category: "Form & Hubungi Kami", types: ["AppointmentForm", "LeadForm", "FinalCTA"] },
+  { category: "Bagian Bawah (Footer)", types: ["Footer"] },
 ]
 
 interface BuilderUIProps {
@@ -176,6 +190,26 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
 
   const toggleBlockVisibility = (id: string) => {
     setBlocks(blocks.map(b => b.id === id ? { ...b, visible: !b.visible } : b))
+  }
+
+  const moveBlockUp = (id: string) => {
+    setBlocks((items) => {
+      const index = items.findIndex((item) => item.id === id)
+      if (index > 0) {
+        return arrayMove(items, index, index - 1)
+      }
+      return items
+    })
+  }
+
+  const moveBlockDown = (id: string) => {
+    setBlocks((items) => {
+      const index = items.findIndex((item) => item.id === id)
+      if (index !== -1 && index < items.length - 1) {
+        return arrayMove(items, index, index + 1)
+      }
+      return items
+    })
   }
 
   const handleDiscard = () => {
@@ -260,6 +294,7 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
   const [showMobileLeft, setShowMobileLeft] = useState(false)
   const [showMobileRight, setShowMobileRight] = useState(false)
   const [previewDevice, setPreviewDevice] = useState<PreviewDevice>("desktop")
+  const [zoom, setZoom] = useState<number>(1.0)
 
   const previewWidth = PREVIEW_DEVICE_WIDTH[previewDevice]
   const previewStyle: CSSProperties | undefined = previewWidth
@@ -289,31 +324,58 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
           </Button>
         </div>
 
-        <div
-          className="flex items-center gap-1 rounded-md border border-border bg-muted/30 p-0.5"
-          role="group"
-          aria-label="Ukuran preview"
-        >
-          {(
-            [
-              { id: "mobile" as const, label: "Mobile", icon: Smartphone },
-              { id: "tablet" as const, label: "Tablet", icon: Tablet },
-              { id: "desktop" as const, label: "Desktop", icon: Monitor },
-            ] as const
-          ).map(({ id, label, icon: Icon }) => (
-            <Button
-              key={id}
-              type="button"
-              variant={previewDevice === id ? "default" : "ghost"}
-              size="sm"
-              className="h-7 gap-1 px-2 text-[10px] max-sm:px-1.5"
-              onClick={() => setPreviewDevice(id)}
-              title={`${label}${PREVIEW_DEVICE_WIDTH[id] ? ` (${PREVIEW_DEVICE_WIDTH[id]}px)` : ""}`}
-            >
-              <Icon className="size-3.5" />
-              <span className="hidden sm:inline">{label}</span>
-            </Button>
-          ))}
+        <div className="flex items-center gap-4">
+          <div
+            className="flex items-center gap-1 rounded-md border border-border bg-muted/30 p-0.5"
+            role="group"
+            aria-label="Ukuran preview"
+          >
+            {(
+              [
+                { id: "mobile" as const, label: "Mobile", icon: Smartphone },
+                { id: "tablet" as const, label: "Tablet", icon: Tablet },
+                { id: "desktop" as const, label: "Desktop", icon: Monitor },
+              ] as const
+            ).map(({ id, label, icon: Icon }) => (
+              <Button
+                key={id}
+                type="button"
+                variant={previewDevice === id ? "default" : "ghost"}
+                size="sm"
+                className="h-7 gap-1 px-2 text-[10px] max-sm:px-1.5"
+                onClick={() => setPreviewDevice(id)}
+                title={`${label}${PREVIEW_DEVICE_WIDTH[id] ? ` (${PREVIEW_DEVICE_WIDTH[id]}px)` : ""}`}
+              >
+                <Icon className="size-3.5" />
+                <span className="hidden sm:inline">{label}</span>
+              </Button>
+            ))}
+          </div>
+
+          <div
+            className="flex items-center gap-1 rounded-md border border-border bg-muted/30 p-0.5"
+            role="group"
+            aria-label="Zoom level"
+          >
+            {(
+              [
+                { value: 0.5, label: "50%" },
+                { value: 0.75, label: "75%" },
+                { value: 1.0, label: "100%" },
+              ] as const
+            ).map(({ value, label }) => (
+              <Button
+                key={value}
+                type="button"
+                variant={zoom === value ? "default" : "ghost"}
+                size="sm"
+                className="h-7 px-2 text-[10px]"
+                onClick={() => setZoom(value)}
+              >
+                {label}
+              </Button>
+            ))}
+          </div>
         </div>
 
         <div className="flex w-full items-center gap-2 text-xs text-muted-foreground md:hidden">
@@ -457,43 +519,62 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
 
       {/* Sidebar: Layer & Components */}
       <div className={cn(
-        "flex min-h-0 w-64 shrink-0 flex-col overflow-hidden border-r border-zinc-900 bg-zinc-950/90 backdrop-blur-md",
-        "max-md:absolute max-md:inset-y-0 max-md:left-0 max-md:z-50 max-md:w-[min(100vw-2rem,20rem)] max-md:transition-transform max-md:duration-300",
+        "flex min-h-0 w-[310px] shrink-0 flex-col overflow-hidden border-r border-zinc-900 bg-zinc-950/90 backdrop-blur-md",
+        "max-md:absolute max-md:inset-y-0 max-md:left-0 max-md:z-50 max-md:w-[min(100vw-2rem,22rem)] max-md:transition-transform max-md:duration-300",
         showMobileLeft ? "max-md:translate-x-0" : "max-md:-translate-x-full"
       )}>
         <Tabs defaultValue="layers" className="flex min-h-0 w-full flex-1 flex-col">
-          <TabsList className="w-full rounded-none border-b border-border h-12 bg-transparent p-0">
-            <TabsTrigger value="layers" className="flex-1 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary">Layers</TabsTrigger>
-            <TabsTrigger value="add" className="flex-1 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary">Add Block</TabsTrigger>
+          <TabsList className="w-full rounded-none border-b border-border h-11 bg-transparent p-0">
+            <TabsTrigger value="layers" className="flex-1 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary text-xs font-medium">Layers</TabsTrigger>
+            <TabsTrigger value="add" className="flex-1 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary text-xs font-medium">Add Block</TabsTrigger>
           </TabsList>
 
           <TabsContent value="layers" className="m-0 min-h-0 flex-1 overflow-hidden">
-            <ScrollArea className="h-full min-h-0 p-4">
+            <ScrollArea className="h-full min-h-0 p-3">
               <LayersList
                 blocks={blocks}
                 activeBlockId={activeBlockId}
                 onSelect={selectBlock}
                 onDelete={deleteBlock}
                 onToggleVisibility={toggleBlockVisibility}
+                onMoveUp={moveBlockUp}
+                onMoveDown={moveBlockDown}
                 onDragEnd={handleDragEnd}
               />
             </ScrollArea>
           </TabsContent>
 
           <TabsContent value="add" className="m-0 min-h-0 flex-1 overflow-hidden">
-            <ScrollArea className="h-full min-h-0 p-4">
-              <div className="flex flex-col gap-2">
-                {AVAILABLE_BLOCKS.map(block => (
-                  <div key={block.type} className="bg-card border border-border p-2.5 rounded-md hover:border-foreground/30 transition-colors cursor-pointer group flex items-center justify-between" onClick={() => addBlock(block.type)}>
-                    <div>
-                      <div className="font-semibold text-sm text-foreground">{block.name}</div>
-                      <div className="text-xs text-muted-foreground">{block.desc}</div>
+            <ScrollArea className="h-full min-h-0 p-3">
+              <div className="flex flex-col gap-4">
+                {BLOCK_CATEGORIES.map(cat => {
+                  const blocksInCat = AVAILABLE_BLOCKS.filter(b => cat.types.includes(b.type))
+                  if (blocksInCat.length === 0) return null
+                  return (
+                    <div key={cat.category} className="flex flex-col gap-2">
+                      <h4 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80 px-1">
+                        {cat.category}
+                      </h4>
+                      <div className="flex flex-col gap-1.5">
+                        {blocksInCat.map(block => (
+                          <div 
+                            key={block.type} 
+                            className="bg-card/70 border border-border/60 p-3 rounded-lg hover:border-primary/50 hover:bg-muted/40 transition-colors cursor-pointer group flex items-center justify-between" 
+                            onClick={() => addBlock(block.type)}
+                          >
+                            <div className="min-w-0 pr-2">
+                              <div className="font-semibold text-xs text-foreground truncate">{block.name}</div>
+                              <div className="text-[11px] text-muted-foreground mt-0.5 line-clamp-1">{block.desc}</div>
+                            </div>
+                            <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 text-primary shrink-0 transition-opacity">
+                              <Plus className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                    <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 text-primary">
-                      <Plus className="w-4 h-4" />
-                    </Button>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             </ScrollArea>
           </TabsContent>
@@ -502,97 +583,167 @@ export function BuilderUI({ studioId, initialStudio }: BuilderUIProps) {
 
       {/* Main Canvas (Live Preview) — Static Preview Panel */}
       <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-[#09090b]">
-        <div className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto">
+        <div className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto scrollbar-none">
           <div
             className={cn(
-              "mx-auto w-full",
+              "mx-auto w-full origin-top transition-all duration-200",
               previewDevice !== "desktop" && "flex justify-center p-6 md:p-10"
             )}
+            style={{ transform: `scale(${zoom})`, transformOrigin: "top center" }}
           >
-            <div
-              style={previewStyle}
-              className={cn(
-                "builder-preview studio-template relative bg-black font-body text-white w-full shadow-lg border border-zinc-900/60",
-                previewDevice !== "desktop" ? "shrink-0 rounded-md overflow-hidden" : ""
-              )}
-            >
-              {blocks.filter(b => b.visible).length === 0 && (
-                <div className="flex min-h-[24rem] items-center justify-center text-muted-foreground/30 bg-black">
-                  <div className="text-center p-6">
-                    <H2 className="font-sans tracking-tight text-zinc-600">{t.builder.emptyPreviewTitle}</H2>
-                    <P className="text-zinc-700 text-xs font-sans">{t.builder.emptyPreviewDesc}</P>
-                  </div>
-                </div>
-              )}
-              {blocks.map(b => {
-                if (!b.visible) return null
-                return (
-                  <div
-                    key={b.id}
-                    className={cn(
-                      "relative cursor-pointer transition-all",
-                      activeBlockId === b.id && "ring-2 ring-primary ring-inset"
-                    )}
-                    onClick={() => selectBlock(b.id)}
-                  >
-                    {b.type === "AppointmentForm" ? (
-                      <BlockAppointmentForm
-                        data={b.data as AppointmentFormData}
-                        studioName={initialStudio.name}
-                      />
-                    ) : (
-                      (() => {
-                        const Component = BLOCK_COMPONENTS[b.type]
-                        if (!Component) return null
-                        const usesWaNumber =
-                          b.type === "Hero" ||
-                          b.type === "HeroSlider" ||
-                          b.type === "FinalCTA"
-                        return (
-                          <Component
-                            data={b.data}
-                            {...(usesWaNumber
-                              ? { waNumber: initialStudio.waNumber }
-                              : {})}
+            {(() => {
+              const headerBlock = blocks.find((b) => b.type === "Header" || b.type === "HeaderOverlay")
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const fontStyle = (headerBlock?.data as any)?.fontStyle || "syne"
+
+              const blocksContent = (
+                <>
+                  {blocks.filter(b => b.visible).length === 0 && (
+                    <div className="flex min-h-[24rem] items-center justify-center text-muted-foreground/30 bg-black">
+                      <div className="text-center p-6">
+                        <H2 className="font-sans tracking-tight text-zinc-600">{t.builder.emptyPreviewTitle}</H2>
+                        <P className="text-zinc-700 text-xs font-sans">{t.builder.emptyPreviewDesc}</P>
+                      </div>
+                    </div>
+                  )}
+                  {blocks.map(b => {
+                    if (!b.visible) return null
+                    return (
+                      <div
+                        key={b.id}
+                        className={cn(
+                          "group relative cursor-pointer transition-all",
+                          activeBlockId === b.id ? "ring-2 ring-primary ring-inset" : "hover:ring-1 hover:ring-primary/40 hover:ring-inset"
+                        )}
+                        onClick={() => selectBlock(b.id)}
+                      >
+                        <div className={cn(
+                          "absolute right-2 top-2 z-30 pointer-events-none rounded bg-primary px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-primary-foreground opacity-0 group-hover:opacity-100 transition-opacity",
+                          activeBlockId === b.id && "opacity-100"
+                        )}>
+                          {AVAILABLE_BLOCKS.find(ab => ab.type === b.type)?.name || b.type}
+                        </div>
+                        {b.type === "AppointmentForm" ? (
+                          <BlockAppointmentForm
+                            data={b.data as AppointmentFormData}
+                            studioName={initialStudio.name}
                           />
-                        )
-                      })()
-                    )}
+                        ) : b.type === "LeadForm" ? (
+                          <BlockLeadForm
+                            data={b.data as LeadFormData}
+                            studioName={initialStudio.name}
+                          />
+                        ) : (
+                          (() => {
+                            const Component = BLOCK_COMPONENTS[b.type]
+                            if (!Component) return null
+                            const usesWaNumber =
+                              b.type === "Hero" ||
+                              b.type === "HeroSlider" ||
+                              b.type === "FinalCTA"
+                            return (
+                              <Component
+                                data={b.data}
+                                {...(usesWaNumber
+                                  ? { waNumber: initialStudio.waNumber }
+                                  : {})}
+                              />
+                            )
+                          })()
+                        )}
+                      </div>
+                    )
+                  })}
+                </>
+              )
+
+              if (previewDevice === "mobile") {
+                return (
+                  <div className="relative mx-auto my-4 border-[12px] border-zinc-800 rounded-[36px] shadow-2xl bg-black w-[395px] h-[780px] flex flex-col overflow-hidden shrink-0">
+                    {/* Status bar notch */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 h-5 w-36 bg-zinc-800 rounded-b-2xl z-40 flex items-center justify-center">
+                      <div className="h-1.5 w-12 bg-zinc-950 rounded-full" />
+                    </div>
+                    {/* Screen Content */}
+                    <div className="flex-1 overflow-y-auto scrollbar-none pt-4 bg-black relative builder-preview studio-template font-body text-white" data-font={fontStyle}>
+                      {blocksContent}
+                      <FloatingWhatsAppButton
+                        waNumber={initialStudio.waNumber}
+                        position="absolute"
+                      />
+                    </div>
+                    {/* Home indicator bar */}
+                    <div className="h-4 bg-black flex items-center justify-center shrink-0">
+                      <div className="h-1 w-28 bg-zinc-800 rounded-full" />
+                    </div>
                   </div>
                 )
-              })}
-              <FloatingWhatsAppButton
-                waNumber={initialStudio.waNumber}
-                position="absolute"
-              />
-            </div>
+              }
+
+              if (previewDevice === "tablet") {
+                return (
+                  <div className="relative mx-auto my-4 border-[16px] border-zinc-800 rounded-[24px] shadow-2xl bg-black w-[768px] h-[960px] flex flex-col overflow-hidden shrink-0">
+                    {/* Screen Content */}
+                    <div className="flex-1 overflow-y-auto scrollbar-none bg-black relative builder-preview studio-template font-body text-white" data-font={fontStyle}>
+                      {blocksContent}
+                      <FloatingWhatsAppButton
+                        waNumber={initialStudio.waNumber}
+                        position="absolute"
+                      />
+                    </div>
+                  </div>
+                )
+              }
+
+              // Desktop
+              return (
+                <div
+                  style={previewStyle}
+                  data-font={fontStyle}
+                  className={cn(
+                    "builder-preview studio-template relative bg-black font-body text-white w-full shadow-lg border border-zinc-900/60"
+                  )}
+                >
+                  {blocksContent}
+                  <FloatingWhatsAppButton
+                    waNumber={initialStudio.waNumber}
+                    position="absolute"
+                  />
+                </div>
+              )
+            })()}
           </div>
         </div>
       </div>
 
       {/* Properties Panel */}
       <div className={cn(
-        "flex min-h-0 w-72 shrink-0 flex-col overflow-hidden border-l border-zinc-900 bg-zinc-950/90 backdrop-blur-md",
-        "max-md:absolute max-md:inset-y-0 max-md:right-0 max-md:z-50 max-md:w-[min(100vw-2rem,20rem)] max-md:transition-transform max-md:duration-300",
+        "flex min-h-0 w-[360px] shrink-0 flex-col overflow-hidden border-l border-zinc-900 bg-zinc-950/90 backdrop-blur-md",
+        "max-md:absolute max-md:inset-y-0 max-md:right-0 max-md:z-50 max-md:w-[min(100vw-2rem,24rem)] max-md:transition-transform max-md:duration-300",
         showMobileRight ? "max-md:translate-x-0" : "max-md:translate-x-full"
       )}>
-        <div className="flex h-12 shrink-0 items-center border-b border-border px-4 text-sm font-semibold tracking-wide text-foreground">
-          {t.builder.propertiesTitle}
+        <div className="flex h-11 shrink-0 items-center justify-between border-b border-border px-4 text-xs font-semibold uppercase tracking-wider text-foreground">
+          <span>{t.builder.propertiesTitle}</span>
+          {activeBlock && (
+            <Badge variant="outline" className="text-[10px] font-mono border-primary/30 text-primary">
+              {activeBlock.type}
+            </Badge>
+          )}
         </div>
         <ScrollArea className="min-h-0 flex-1">
-          <div className="p-4 pb-6">
+          <div className="p-4 pb-8">
             {activeBlock ? (
-              <div className="flex flex-col gap-4 rounded-md border border-border bg-card p-4">
-                <div className="mb-2 flex items-center justify-between border-b border-border pb-4">
-                  <Badge variant="default" className="rounded-md bg-primary text-primary-foreground hover:bg-primary">{activeBlock.type}</Badge>
+              <div className="flex flex-col gap-4 rounded-xl border border-border/80 bg-card/60 p-4 shadow-sm">
+                <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                  <Badge variant="default" className="rounded-md bg-primary text-primary-foreground hover:bg-primary font-semibold text-xs">{activeBlock.type}</Badge>
                   <Small className="font-mono text-[10px] text-muted-foreground">{activeBlock.id}</Small>
                 </div>
                 <PropertyPanel block={activeBlock} onChange={updateActiveBlockData} />
               </div>
             ) : (
-              <div className="flex min-h-[12rem] flex-col items-center justify-center p-4 text-center text-muted-foreground">
-                <MousePointerClick className="mb-4 h-8 w-8 opacity-20" />
-                <P className="text-sm">{t.builder.emptyPropertiesDesc}</P>
+              <div className="flex min-h-[14rem] flex-col items-center justify-center p-6 text-center text-muted-foreground border border-dashed border-border/60 rounded-xl">
+                <MousePointerClick className="mb-3 h-8 w-8 opacity-25 text-primary" />
+                <P className="text-xs text-muted-foreground leading-relaxed">{t.builder.emptyPropertiesDesc}</P>
               </div>
             )}
           </div>

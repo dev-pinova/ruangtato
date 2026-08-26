@@ -163,7 +163,7 @@ export function buildPaymentSuccessEmail(params: PaymentSuccessEmailParams): {
                       Email ini dikirim otomatis sebagai konfirmasi pembayaran.
                       Simpan email ini sebagai bukti transaksi Anda.
                       Jika ada pertanyaan, hubungi kami di
-                      <a href="mailto:billing@ruangtato.com" style="color:rgba(255,255,255,0.5);">billing@ruangtato.com</a>.
+                      <a href="mailto:Info@ruangtato.com" style="color:rgba(255,255,255,0.5);">Info@ruangtato.com</a>.
                     </p>
                   </td>
                 </tr>
@@ -204,7 +204,7 @@ Order ID   : ${orderId}
 Mulai desain studio Anda: ${builderUrl}
 Dashboard: ${dashboardUrl}
 
-Ada pertanyaan? Hubungi billing@ruangtato.com
+Ada pertanyaan? Hubungi Info@ruangtato.com
 
 © ${new Date().getFullYear()} Ruang Tato`
 

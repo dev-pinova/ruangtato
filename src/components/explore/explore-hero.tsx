@@ -2,176 +2,179 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { ArrowRight, ChevronRight, Search, Sparkles } from "lucide-react"
+import { Search, ArrowRight, ChevronRight } from "lucide-react"
+import { useState } from "react"
 
-import { AnimatedGradientText } from "@/components/ui/animated-gradient-text"
-import { AnimatedShinyText } from "@/components/ui/animated-shiny-text"
-import { Marquee } from "@/components/ui/marquee"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { cn } from "@/lib/utils"
-import type { Studio } from "@/lib/types"
+import { Marquee } from "@/components/ui/marquee"
 import { VerifiedCheck } from "@/components/showcase/verified-check"
-import { GradualSpacing } from "@/components/ui/gradual-spacing"
-import { RetroGrid } from "@/components/ui/retro-grid"
 import { useLanguage } from "@/lib/i18n/language-provider"
-
-const POPULAR_TAGS = ["Fine Line", "Blackwork", "Japanese", "Realism", "Jakarta", "Bali"]
-
-const HERO_BACKGROUND_IMAGE = "/image/ruang-tato.jpg"
-
-function StudioChip({ studio }: { studio: Studio }) {
-  return (
-    <Link
-      href={`/app/studio/${studio.slug}`}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="group/chip flex min-w-[140px] shrink-0 items-center gap-2 rounded-full border border-white/15 bg-black/40 px-3 py-1.5 text-sm text-white backdrop-blur-sm transition-all duration-200 hover:border-white/30 hover:bg-black/60"
-    >
-      {studio.image && (
-        /* eslint-disable-next-line @next/next/no-img-element */
-        <img
-          src={studio.image}
-          alt=""
-          className="size-5 shrink-0 rounded-full object-cover"
-        />
-      )}
-      <span className="max-w-[110px] truncate font-medium">{studio.name}</span>
-      {studio.isVerified && <VerifiedCheck className="size-3.5 shrink-0" />}
-      <ChevronRight className="ml-auto size-3 shrink-0 text-white/40 transition-transform duration-200 group-hover/chip:translate-x-0.5" />
-    </Link>
-  )
-}
+import type { Studio } from "@/lib/types"
 
 export function ExploreHero({
-  searchQuery,
-  onSearch,
   featuredStudios = [],
-  popularTags = POPULAR_TAGS,
+  popularTags = [],
+  onSearch,
 }: {
-  searchQuery: string
-  onSearch: (query: string) => void
   featuredStudios?: Studio[]
   popularTags?: string[]
+  onSearch?: (q: string) => void
 }) {
-  const { t } = useLanguage()
+  const { t, locale } = useLanguage()
+  const [searchValue, setSearchValue] = useState("")
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (searchValue.trim()) onSearch?.(searchValue.trim())
+  }
 
   return (
-    <section
-      aria-label="Cari studio tato"
-      className="relative isolate overflow-hidden border-b border-border"
-    >
-      {/* Background image */}
+    <section className="relative isolate overflow-hidden bg-black text-white">
+      {/* Background */}
       <div className="absolute inset-0 -z-10">
         <Image
-          src={HERO_BACKGROUND_IMAGE}
+          src="/image/ruang-tato.jpg"
           alt=""
           fill
           priority
-          quality={85}
+          quality={80}
           sizes="100vw"
-          className="object-cover object-[65%_center] md:object-[70%_center]"
+          className="object-cover object-[65%_center]"
         />
-        <div className="absolute inset-0 bg-black/40" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/30 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60" />
-        <RetroGrid className="opacity-20 z-0" />
+        <div className="absolute inset-0 bg-black/70" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/90" />
       </div>
 
-      {/* Main content */}
-      <div className="relative z-10 mx-auto max-w-4xl px-4 py-20 text-center md:px-6 md:py-28">
-
+      <div className="relative mx-auto max-w-6xl px-4 py-14 sm:py-16 md:px-6 md:py-24 lg:py-28">
         {/* Badge */}
-        <div className="flex justify-center">
-          <div className="group relative flex items-center gap-1.5 rounded-full border border-white/20 bg-black/30 px-4 py-1.5 text-sm text-white/80 backdrop-blur-sm transition-all duration-300 hover:border-white/30 hover:bg-black/40">
-            <Sparkles className="size-3.5 text-brand-scarlet" />
-            <AnimatedShinyText className="text-xs font-medium text-white/80" shimmerWidth={80}>
-              {t.hero.badge}
-            </AnimatedShinyText>
-            <ArrowRight className="size-3 text-white/50" />
+        <div className="flex justify-center mb-6">
+          <div className="flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-3.5 py-1 text-xs text-white/70">
+            <span className="flex items-center gap-1">
+              <svg className="w-3.5 h-3.5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+              <svg className="w-3.5 h-3.5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+              <svg className="w-3.5 h-3.5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+              <svg className="w-3.5 h-3.5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+              <svg className="w-3.5 h-3.5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+              <span className="text-white/90">5.0</span>
+            </span>
+            <span className="h-3 w-px bg-white/20" />
+            <span>{t.hero.badge}</span>
           </div>
         </div>
 
-        {/* Heading */}
-        <h1 className="mt-6 text-4xl font-semibold leading-tight tracking-tight text-white md:text-5xl md:leading-tight flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1">
-          <span className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
-            <GradualSpacing text={t.hero.title1} />
-            <AnimatedGradientText className="[--bg-size:200%] font-semibold leading-tight tracking-tight">
-              {t.hero.title2}
-            </AnimatedGradientText>
+        {/* Headline */}
+        <h1 className="mx-auto max-w-2xl text-center text-3xl font-semibold leading-tight tracking-tight text-white md:text-4xl lg:text-5xl">
+          {t.hero.title1}{" "}
+          <span className="font-bold bg-gradient-to-r from-red-500 via-amber-400 via-emerald-400 via-sky-400 via-purple-500 to-red-500 bg-[length:200%_auto] bg-clip-text text-transparent animate-rainbow inline-block">
+            {t.hero.title2}
           </span>
-          <GradualSpacing text={t.hero.title3} />
-          <GradualSpacing text={t.hero.title4} />
+          <br className="hidden sm:block" />
+          {t.hero.title3} {t.hero.title4}
         </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-white/70 md:text-lg">
+        <p className="mx-auto mt-4 max-w-lg text-center text-sm text-white/60 md:text-base">
           {t.hero.subtitle}
         </p>
 
-        {/* Search bar */}
-        <div className="relative mx-auto mt-10 max-w-2xl rounded-2xl bg-white shadow-xl">
-          <div className="relative flex items-center bg-white rounded-2xl">
-            <Search className="pointer-events-none absolute left-4 size-5 text-neutral-400" />
-            <Input
-              aria-label={t.hero.searchPlaceholder}
-              placeholder={t.hero.searchPlaceholder}
-              className="h-14 w-full rounded-2xl border-0 bg-transparent pl-12 pr-10 text-sm text-neutral-900 placeholder:text-neutral-400 focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none"
-              value={searchQuery}
-              onChange={(e) => onSearch(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault()
-                }
-              }}
-            />
-            <ChevronRight className="pointer-events-none absolute right-4 size-4 text-neutral-400" />
+        {/* Search Bar */}
+        <form
+          onSubmit={handleSearch}
+          className="mx-auto mt-7 sm:mt-8 max-w-xl"
+        >
+          <div className="relative group p-[1.5px] rounded-xl overflow-hidden bg-gradient-to-r from-red-500 via-amber-400 via-emerald-400 via-sky-500 via-purple-500 to-red-500 bg-[length:300%_300%] animate-gradient-shift shadow-lg shadow-black/40">
+            <div className="relative flex items-center rounded-[10px] bg-neutral-950/85 backdrop-blur-md transition-colors group-focus-within:bg-neutral-950/95">
+              <Search className="pointer-events-none absolute left-4 size-4 text-white/60" />
+              <Input
+                aria-label={t.hero.searchPlaceholder}
+                placeholder={t.hero.searchPlaceholder}
+                className="h-12 w-full rounded-[10px] border-0 bg-transparent pl-11 pr-12 text-sm text-white placeholder:text-white/45 focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none"
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+              />
+              <Button
+                type="submit"
+                size="sm"
+                className="absolute right-1.5 h-9 rounded-lg bg-white text-black hover:bg-white/90 shadow-sm"
+              >
+                <ArrowRight className="size-3.5" />
+              </Button>
+            </div>
           </div>
-        </div>
+        </form>
 
-        {/* Studio Marquee */}
+        {/* Popular Studios */}
         {featuredStudios.length > 0 && (
-          <div className="mt-6">
-            <p className="mb-3 text-xs text-white/60">{t.hero.featured}</p>
-            <Marquee
-              pauseOnHover
-              className="-mx-4 [--duration:35s] [--gap:0.5rem]"
-            >
-              {featuredStudios.map((studio) => (
-                <StudioChip key={studio.id} studio={studio} />
-              ))}
-            </Marquee>
+          <div className="mt-7 sm:mt-8">
+            <p className="mb-3 text-center text-[11px] sm:text-xs font-medium uppercase tracking-wider text-white/50">
+              {t.hero.featured}
+            </p>
+            <div className="relative w-full max-w-5xl mx-auto overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
+              <Marquee pauseOnHover className="[--duration:28s] [--gap:0.75rem] py-1">
+                {featuredStudios.map((studio) => (
+                  <Link
+                    key={studio.id}
+                    href={`/${studio.slug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group inline-flex items-center gap-1.5 sm:gap-2 rounded-lg border border-white/15 bg-white/5 px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm text-white/85 transition-colors hover:border-white/35 hover:bg-white/15 shrink-0 backdrop-blur-sm"
+                  >
+                    {studio.image && (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img
+                        src={studio.image}
+                        alt=""
+                        className="size-4.5 sm:size-5 rounded-full object-cover shrink-0 ring-1 ring-white/20"
+                      />
+                    )}
+                    <span className="max-w-[120px] sm:max-w-[160px] truncate font-medium text-white/90">
+                      {studio.name}
+                    </span>
+                    {studio.isVerified && (
+                      <VerifiedCheck className="size-3.5 shrink-0 text-blue-400" />
+                    )}
+                    <ChevronRight className="size-3 text-white/40 transition-transform group-hover:translate-x-0.5 group-hover:text-white/80 shrink-0" />
+                  </Link>
+                ))}
+              </Marquee>
+            </div>
           </div>
         )}
 
-        {/* Popular tags */}
-        <div className="mt-5">
-          <p className="mb-3 text-xs text-white/60">{t.hero.popularSearch}</p>
-          <div
-            className={cn(
-              "relative -mx-4 px-4 md:mx-0 md:px-0",
-              "[mask-image:linear-gradient(to_right,transparent,black_12px,black_calc(100%-12px),transparent)] md:[mask-image:linear-gradient(to_right,transparent,black_24px,black_calc(100%-24px),transparent)]",
-            )}
-          >
-            <div className="flex gap-2 overflow-x-auto pb-1 snap-x snap-mandatory scrollbar-hide justify-center flex-wrap">
-              {popularTags.map((tag) => (
-                <Button
+        {/* Popular Tags */}
+        {popularTags.length > 0 && (
+          <div className="mt-5 sm:mt-6">
+            <p className="mb-2 text-center text-[11px] sm:text-xs font-medium uppercase tracking-wider text-white/40">
+              {t.hero.popularSearch}
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 max-w-3xl mx-auto">
+              {popularTags.slice(0, 10).map((tag) => (
+                <button
                   key={tag}
                   type="button"
-                  variant="inverse"
-                  size="xs"
-                  className="shrink-0 snap-start rounded-full transition-transform duration-200 hover:scale-105"
-                  onClick={() => onSearch(tag)}
+                  onClick={() => onSearch?.(tag)}
+                  className="rounded-lg border border-white/10 bg-white/[0.04] px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs text-white/70 transition-colors hover:border-white/25 hover:bg-white/10 hover:text-white"
                 >
                   {tag}
-                </Button>
+                </button>
               ))}
             </div>
           </div>
-        </div>
+        )}
       </div>
 
-      {/* Bottom tagline */}
-      <div className="relative z-10 border-t border-white/10 bg-black/40 px-4 py-3 text-center">
-        <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-white/50">
+      {/* Bottom Announcement / Feature Strip */}
+      <div className="border-t border-white/10 bg-neutral-950/80 px-4 py-3 sm:py-3.5 text-center">
+        <p className="mx-auto max-w-4xl text-xs sm:text-sm text-neutral-300 font-normal leading-relaxed">
           {t.hero.bottomTagline}
         </p>
       </div>

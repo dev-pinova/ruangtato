@@ -1,4 +1,5 @@
 import type { ArtistsGridData } from "@/lib/types"
+import { getLocalizedText } from "@/lib/studio/i18n-block-utils"
 
 const DEFAULT_ARTISTS = [
   {
@@ -27,8 +28,16 @@ const DEFAULT_ARTISTS = [
   },
 ]
 
-export function BlockArtistsGrid({ data }: { data: ArtistsGridData }) {
+export function BlockArtistsGrid({
+  data,
+  locale = "id",
+}: {
+  data: ArtistsGridData
+  locale?: string
+}) {
   const artists = data?.artists?.length ? data.artists : DEFAULT_ARTISTS
+  const headline = getLocalizedText(data, "headline", locale, locale === "en" ? "Meet Our Artists" : "Artist Kami")
+  const subheadline = getLocalizedText(data, "subheadline", locale)
 
   return (
     <section
@@ -38,43 +47,48 @@ export function BlockArtistsGrid({ data }: { data: ArtistsGridData }) {
       <div className="mx-auto max-w-7xl px-6 py-24 md:px-10 md:py-32">
         <div className="text-center">
           <p className="font-display text-[11px] uppercase tracking-[0.4em] text-white/60">
-            — Our Team
+            — {locale === "en" ? "Our Team" : "Tim Kami"}
           </p>
           <h2 className="mt-5 font-display text-4xl font-light uppercase tracking-[0.16em] md:text-6xl">
-            {data?.headline || "Meet Our Artists"}
+            {headline}
           </h2>
-          {data?.subheadline && (
+          {subheadline && (
             <p className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-white/60 md:text-base">
-              {data.subheadline}
+              {subheadline}
             </p>
           )}
         </div>
 
         <div className="mt-16 grid grid-cols-2 gap-px border border-white/10 bg-white/10 lg:grid-cols-4">
-          {artists.map((artist, i) => (
-            <div
-              key={i}
-              className="group flex flex-col bg-black p-6 text-center md:p-8"
-            >
-              <div className="relative aspect-[3/4] overflow-hidden bg-white/5">
-                {artist.image && (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img
-                    src={artist.image}
-                    alt={artist.name}
-                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
+          {artists.map((artist, i) => {
+            const name = getLocalizedText(artist, "name", locale)
+            const role = getLocalizedText(artist, "role", locale)
+            return (
+              <div
+                key={i}
+                className="group flex flex-col bg-black p-6 text-center md:p-8"
+              >
+                <div className="relative aspect-[3/4] overflow-hidden bg-white/5">
+                  {artist.image && (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={artist.image}
+                      alt={name}
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                  )}
+                </div>
+                <h3 className="mt-6 font-display text-lg uppercase tracking-[0.2em] text-white">
+                  {name}
+                </h3>
+                {role && (
+                  <p className="mt-1 text-xs uppercase tracking-[0.3em] text-white/60">
+                    {role}
+                  </p>
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
               </div>
-              <h3 className="mt-6 font-display text-base uppercase tracking-[0.32em] text-white md:text-lg">
-                {artist.name}
-              </h3>
-              <p className="mt-2 text-[11px] uppercase tracking-[0.3em] text-white/50">
-                {artist.role}
-              </p>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </div>
     </section>

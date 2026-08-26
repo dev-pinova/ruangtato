@@ -96,8 +96,8 @@ export default function AppLayoutClient({ children }: { children: React.ReactNod
     }
   }, [router])
 
-  // Public path exception
-  if (pathname.startsWith("/app/studio/") || pathname === "/app" || pathname === "/app/" || pathname === "/app/builder") {
+  // Studio pages sekarang berada di root /[slug], bukan /studio/[slug]
+  if (pathname === "/app" || pathname === "/app/" || pathname === "/app/builder") {
     return <>{children}</>
   }
 
@@ -121,7 +121,7 @@ export default function AppLayoutClient({ children }: { children: React.ReactNod
             label: "Publik",
             items: [
               {
-                href: `/app/studio/${studio.slug}`,
+                href: `/${studio.slug}`,
                 label: "Lihat Studio",
                 icon: ExternalLink,
                 external: true,

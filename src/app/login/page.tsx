@@ -35,17 +35,22 @@ function LoginForm() {
     setResendStatus(null)
     setLoading(true)
 
-    const { error: signInError } = await authClient.signIn.email({
-      email,
-      password,
-      rememberMe,
-    })
+    try {
+      const { error: signInError } = await authClient.signIn.email({
+        email,
+        password,
+        rememberMe,
+      })
 
-    setLoading(false)
-
-    if (signInError) {
-      setError(signInError.message ?? t.auth.errorSignIn)
+      if (signInError) {
+        setError(signInError.message ?? t.auth.errorSignIn)
+        return
+      }
+    } catch (err: any) {
+      setError(err?.message ?? t.auth.errorSignIn)
       return
+    } finally {
+      setLoading(false)
     }
 
     const nextPath = searchParams.get("next") ?? "/app/dashboard"

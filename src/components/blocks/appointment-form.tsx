@@ -5,6 +5,7 @@ import { ArrowRight, Check, CheckCircle } from "lucide-react"
 
 import { normalizeGoogleMapsEmbedUrl } from "@/lib/google-maps-embed"
 import type { AppointmentFormData } from "@/lib/types"
+import { getLocalizedText } from "@/lib/studio/i18n-block-utils"
 
 const DEFAULT_MAP_HEIGHT = 420
 
@@ -12,10 +13,12 @@ export function BlockAppointmentForm({
   data,
   studioSlug,
   studioName,
+  locale = "id",
 }: {
   data: AppointmentFormData
   studioSlug?: string
   studioName?: string
+  locale?: string
 }) {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
@@ -27,7 +30,33 @@ export function BlockAppointmentForm({
   const errorRef = useRef<HTMLParagraphElement>(null)
 
   const requireAge = data?.requireAge !== false
-  const ageLabel = data?.ageLabel || "Are you 18 years old?"
+  const ageLabel = getLocalizedText(
+    data,
+    "ageLabel",
+    locale,
+    locale === "en" ? "Are you 18 years old or older?" : "Apakah Anda berusia 18 tahun atau lebih?"
+  )
+  const headline = getLocalizedText(
+    data,
+    "headline",
+    locale,
+    locale === "en" ? "Book An Appointment" : "Buat Janji Temu"
+  )
+  const subheadline = getLocalizedText(
+    data,
+    "subheadline",
+    locale,
+    locale === "en"
+      ? "Fill out the form below for consultation and tattoo session scheduling."
+      : "Isi formulir di bawah untuk konsultasi dan penjadwalan sesi tato."
+  )
+  const ctaText = getLocalizedText(
+    data,
+    "ctaText",
+    locale,
+    locale === "en" ? "Send Request" : "Kirim Permintaan"
+  )
+
   const showMap = data?.showMap === true
   const mapHeight = data?.mapHeight ?? DEFAULT_MAP_HEIGHT
   const mapEmbedUrl = data?.mapEmbedUrl?.trim() ?? ""
@@ -40,7 +69,11 @@ export function BlockAppointmentForm({
     e.preventDefault()
     if (!name.trim() || !message.trim()) return
     if (requireAge && !ageOk) {
-      setError("Mohon konfirmasi bahwa Anda berusia 18 tahun atau lebih.")
+      setError(
+        locale === "en"
+          ? "Please confirm that you are 18 years old or older."
+          : "Mohon konfirmasi bahwa Anda berusia 18 tahun atau lebih."
+      )
       requestAnimationFrame(() => errorRef.current?.focus())
       return
     }
@@ -63,7 +96,10 @@ export function BlockAppointmentForm({
 
     if (!res.ok) {
       const body = await res.json().catch(() => ({}))
-      setError(body.error ?? "Gagal mengirim pesan.")
+      setError(
+        body.error ??
+          (locale === "en" ? "Failed to send request." : "Gagal mengirim pesan.")
+      )
       requestAnimationFrame(() => errorRef.current?.focus())
       return
     }
@@ -82,10 +118,12 @@ export function BlockAppointmentForm({
             <CheckCircle className="size-6 text-white" />
           </div>
           <h2 className="font-display text-4xl font-light uppercase tracking-[0.16em] text-white md:text-5xl">
-            Request Sent
+            {locale === "en" ? "Request Sent" : "Permintaan Terkirim"}
           </h2>
           <p className="mt-5 text-sm leading-relaxed text-white/60 md:text-base">
-            Terima kasih! {studioName ?? "Studio"} akan segera menghubungi Anda.
+            {locale === "en"
+              ? `Thank you! ${studioName ?? "Studio"} will contact you shortly.`
+              : `Terima kasih! ${studioName ?? "Studio"} akan segera menghubungi Anda.`}
           </p>
         </div>
       </section>
@@ -107,14 +145,13 @@ export function BlockAppointmentForm({
       >
         <div className="text-center">
           <p className="font-display text-[11px] uppercase tracking-[0.4em] text-white/60">
-            — Get In Touch
+            — {locale === "en" ? "Get In Touch" : "Hubungi Kami"}
           </p>
           <h2 className="mt-5 font-display text-4xl font-light uppercase tracking-[0.16em] text-white md:text-6xl">
-            {data?.headline || "Book An Appointment"}
+            {headline}
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-white/60 md:text-base">
-            {data?.subheadline ||
-              "Isi formulir di bawah untuk konsultasi dan penjadwalan sesi tato."}
+            {subheadline}
           </p>
         </div>
 
@@ -128,13 +165,13 @@ export function BlockAppointmentForm({
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="grid gap-8 md:grid-cols-2">
               <Field
-                label="Name"
+                label={locale === "en" ? "Name" : "Nama"}
                 value={name}
                 onChange={setName}
                 required
                 name="name"
                 autoComplete="name"
-                placeholder="Your full name"
+                placeholder={locale === "en" ? "Your full name" : "Nama lengkap Anda"}
               />
               <Field
                 label="Email"
@@ -148,11 +185,15 @@ export function BlockAppointmentForm({
             </div>
 
             <FieldTextarea
-              label="Tell Us About Your Tato Idea"
+              label={locale === "en" ? "Tell Us About Your Tattoo Idea" : "Ceritakan Ide Tato Anda"}
               value={message}
               onChange={setMessage}
               required
-              placeholder="Ukuran, lokasi, gaya, referensi, dan tanggal yang diinginkan…"
+              placeholder={
+                locale === "en"
+                  ? "Size, placement, style, references, and preferred dates…"
+                  : "Ukuran, lokasi, gaya, referensi, dan tanggal yang diinginkan…"
+              }
             />
 
             {requireAge && (
@@ -195,7 +236,7 @@ export function BlockAppointmentForm({
                 disabled={loading}
                 className="inline-flex h-12 items-center gap-3 border border-white/40 px-10 font-display text-[11px] uppercase tracking-[0.4em] text-white transition-colors hover:border-white hover:bg-white hover:text-black disabled:opacity-50"
               >
-                {loading ? "Sending…" : data?.ctaText || "Send Request"}
+                {loading ? (locale === "en" ? "Sending…" : "Mengirim…") : ctaText}
                 <ArrowRight className="size-3.5" />
               </button>
             </div>
@@ -205,8 +246,9 @@ export function BlockAppointmentForm({
             <MapEmbed
               embedUrl={normalizedMapUrl}
               rawInput={mapEmbedUrl}
-              address={data?.mapAddress}
+              address={getLocalizedText(data, "mapAddress", locale)}
               height={mapHeight}
+              locale={locale}
             />
           ) : null}
         </div>
@@ -220,16 +262,18 @@ function MapEmbed({
   rawInput,
   address,
   height,
+  locale = "id",
 }: {
   embedUrl: string | null
   rawInput: string
   address?: string
   height: number
+  locale?: string
 }) {
   if (!embedUrl) {
     const message = rawInput
-      ? "URL embed tidak valid"
-      : "Tambah URL embed Google Maps"
+      ? (locale === "en" ? "Invalid embed URL" : "URL embed tidak valid")
+      : (locale === "en" ? "Add Google Maps embed URL" : "Tambah URL embed Google Maps")
 
     return (
       <div

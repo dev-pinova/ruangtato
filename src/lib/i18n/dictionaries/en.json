@@ -22,12 +22,12 @@
     "searchPlaceholder": "Search studio, city, tattoo style, or artist...",
     "popularSearch": "Popular styles:",
     "featured": "Popular studios:",
-    "bottomTagline": "SAFETY & AESTHETIC STANDARDS FOR INDONESIAN TATTOOS"
+    "bottomTagline": "Introducing Drag & Drop Tattoo Studio Landing Page Builder Without Coding — Showcase your best portfolio, boost client trust & reputation"
   },
   "cta": {
     "title": "Own a tattoo studio?",
     "subtitle": "Showcase your portfolio on RuangTato, build your own studio page, and receive potential clients directly via WhatsApp — no middlemen.",
-    "button": "List Your Studio"
+    "button": "Join Studio"
   },
   "pricing": {
     "title": "Choose a Plan That Fits Your Needs",
@@ -41,7 +41,7 @@
     "headerTagline": "Transparent pricing",
     "headerTitle": "Simple pricing, full features.",
     "headerDesc": "Choose the subscription duration that fits best. No hidden fees, no vendor lock-in.",
-    "footerNote": "All prices include VAT. Secure payment via Midtrans.",
+    "footerNote": "All prices include VAT. Secure payment via Duitku.",
     "faqTitle": "Questions about pricing",
     "faqDescPrefix": "Still unclear? Our team is ready to help via email ",
     "faq": [
@@ -55,7 +55,7 @@
       },
       {
         "q": "How does payment work?",
-        "a": "Payments are securely processed via Midtrans. We accept credit/debit cards, bank transfers, e-wallets (GoPay, OVO, DANA), and QRIS."
+        "a": "Payments are securely processed via Duitku. We accept credit/debit cards, bank transfers, e-wallets (GoPay, OVO, DANA), and QRIS."
       },
       {
         "q": "Are subscriptions auto-renewed?",
@@ -179,11 +179,16 @@
       "cityLabel": "City",
       "waLabel": "WhatsApp Number",
       "coverLabel": "Studio Cover Photo",
+      "avatarLabel": "Profile Photo / Logo",
+      "avatarNote": "Will be displayed as your circular avatar in the directory and landing page. Leave blank to automatically use the artist photo from the builder.",
       "uploading": "Uploading...",
       "uploadBtn": "Upload",
       "coverNote": "Used in the studio directory. Leave blank to automatically use the Hero image from the builder.",
       "coverPreviewAlt": "Studio cover preview",
       "descLabel": "Description",
+      "tagsLabel": "Tattoo Styles (Tags/Styles)",
+      "tagsPlaceholder": "Type a style (e.g. Realism) and press Enter or comma",
+      "tagsNote": "These styles will appear on your landing page and help visitors find your studio.",
       "saveBtn": "Save Changes",
       "saving": "Saving…",
       "successMsg": "Studio profile saved successfully.",
@@ -239,7 +244,7 @@
     },
     "history": {
       "title": "Transaction History",
-      "desc": "Billing payment history from Midtrans.",
+      "desc": "Billing payment history from Duitku.",
       "noTransactions": "No transactions yet",
       "table": {
         "orderId": "Order ID",
@@ -271,7 +276,7 @@
       "duration": "Duration: {duration}"
     },
     "meta": {
-      "orderId": "Midtrans Order ID",
+      "orderId": "Duitku Order ID",
       "method": "Payment Method",
       "currency": "Currency",
       "currencyVal": "IDR (Indonesian Rupiah)"
@@ -294,7 +299,7 @@
     "planDuration": "{duration}",
     "popularBadge": "Most Popular",
     "whatYouGet": "What You Get ({name}):",
-    "paymentSecureNote": "Payments are securely processed by Midtrans",
+    "paymentSecureNote": "Payments are securely processed by Duitku",
     "needHelp": "Need help? Contact our billing support at {email}",
     "loading": "Loading checkout page...",
     "errorGateway": "Failed to load payment gateway. Please reload the page.",
@@ -305,7 +310,7 @@
     "success": "Payment Successful! 🎉",
     "pending": "Waiting for Payment Confirmation",
     "failed": "Payment Unsuccessful",
-    "loadingDesc": "Checking your payment status with Midtrans...",
+    "loadingDesc": "Checking your payment status with Duitku...",
     "successDesc": "Your studio subscription is now active. Welcome to Ruang Tato!",
     "pendingDesc": "Your payment is currently being processed. We will activate your subscription as soon as payment is confirmed.",
     "failedDesc": "Your payment could not be processed successfully. Please try again or contact support.",
@@ -365,7 +370,7 @@
   },
   "pendingPayment": {
     "title": "Payment Awaiting Confirmation",
-    "desc": "The {plan} plan (order {orderId}) is awaiting confirmation from Midtrans. Your subscription will activate automatically once the payment succeeds.",
+    "desc": "The {plan} plan (order {orderId}) is awaiting confirmation from Duitku. Your subscription will activate automatically once the payment succeeds.",
     "checkStatus": "Check Payment Status",
     "closeAlert": "Close banner",
     "durationLabel": "{duration} Month(s)",
@@ -392,5 +397,47 @@
   "notFoundStudio": {
     "title": "Studio Not Found",
     "description": "The studio page you are looking for is unavailable or has not been published yet."
+  },
+  "tenant": {
+    "views": "views",
+    "clicks": "clicks",
+    "dilihat": "views",
+    "diklik": "clicks",
+    "booking": "Book Now",
+    "about": "About",
+    "services": "Services",
+    "artists": "Artists",
+    "clients": "Clients",
+    "faq": "FAQ",
+    "gallery": "Gallery",
+    "news": "News",
+    "contact": "Contact",
+    "home": "Home",
+    "features": "Features",
+    "selectLanguage": "Select Language",
+    "indonesian": "Bahasa Indonesia",
+    "english": "English"
+  },
+  "catalog": {
+    "title": "Tattoo Studio Catalog",
+    "sortLabel": "Sort By",
+    "sortByViews": "Most viewed",
+    "sortByClicks": "Most clicked",
+    "sortByName": "Name (A-Z)",
+    "statusLabel": "Status",
+    "trustedOnly": "Trusted Only",
+    "filterCity": "Filter By City",
+    "allCities": "All Cities",
+    "studiosListed": "studios listed",
+    "verified": "verified",
+    "noMatchTitle": "No studios match your filter",
+    "noMatchDesc": "Try changing the city, clearing verified filters, or changing your search keywords.",
+    "resetFilter": "Reset filter",
+    "noStudiosTitle": "No studios listed yet",
+    "noStudiosDesc": "Directory is growing. Be the first studio listed on {siteName}.",
+    "listStudioBtn": "List Your Studio",
+    "viewAllStudios": "View All Studios",
+    "builtWith": "Built with",
+    "by": "By"
   }
 }

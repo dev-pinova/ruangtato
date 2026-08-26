@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { Mail, MessageCircle, ArrowRight } from "lucide-react"
+import { Mail, MessageCircle, ArrowRight, MapPin } from "lucide-react"
 
 import { SectionHeading } from "@/components/design"
 import { MarketingShell } from "@/components/marketing/marketing-shell"
@@ -11,7 +11,7 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion"
 import { staticPageMetadata } from "@/lib/seo"
-import { SITE_DOMAIN, SUPPORT_EMAIL, studioPublicPath } from "@/lib/site"
+import { SITE_DOMAIN, SUPPORT_EMAIL, SUPPORT_WHATSAPP, SUPPORT_WHATSAPP_DISPLAY, OFFICE_ADDRESS, studioPublicPath } from "@/lib/site"
 import { getLocale } from "@/lib/i18n/actions"
 import { getDictionary } from "@/lib/i18n/get-dictionary"
 
@@ -97,7 +97,7 @@ const CATEGORIES_ID: Category[] = [
     items: [
       {
         q: "Metode pembayaran apa saja yang diterima?",
-        a: "Kami menerima kartu kredit/debit, bank transfer (VA), e-wallet (GoPay, OVO, DANA, ShopeePay), dan QRIS. Semua pembayaran diproses aman melalui Midtrans.",
+        a: "Kami menerima kartu kredit/debit, bank transfer (VA), e-wallet (GoPay, OVO, DANA, ShopeePay), dan QRIS. Semua pembayaran diproses aman melalui Duitku.",
       },
       {
         q: "Bagaimana cara mendapatkan invoice?",
@@ -207,7 +207,7 @@ const CATEGORIES_EN: Category[] = [
     items: [
       {
         q: "What payment methods are accepted?",
-        a: "We accept credit/debit cards, bank transfers (VA), e-wallets (GoPay, OVO, DANA, ShopeePay), and QRIS. All payments are processed securely via Midtrans.",
+        a: "We accept credit/debit cards, bank transfers (VA), e-wallets (GoPay, OVO, DANA, ShopeePay), and QRIS. All payments are processed securely via Duitku.",
       },
       {
         q: "How do I get an invoice?",
@@ -305,13 +305,13 @@ export default async function HelpPage() {
               size="default"
             />
 
-            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+            <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               <a
                 href={`mailto:${SUPPORT_EMAIL}`}
                 className="group flex items-center justify-between rounded-md border border-border bg-background p-4 transition-colors hover:border-foreground/30"
               >
                 <div className="flex items-center gap-3">
-                  <span className="inline-flex size-9 items-center justify-center rounded-md bg-muted/60">
+                  <span className="inline-flex size-9 items-center justify-center rounded-md bg-muted/60 shrink-0">
                     <Mail className="size-4 text-foreground" />
                   </span>
                   <div>
@@ -319,26 +319,36 @@ export default async function HelpPage() {
                     <p className="text-xs text-muted-foreground">{SUPPORT_EMAIL}</p>
                   </div>
                 </div>
-                <ArrowRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
               </a>
 
               <a
-                href="https://wa.me/628000000000"
+                href={`https://wa.me/${SUPPORT_WHATSAPP.replace("+", "")}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group flex items-center justify-between rounded-md border border-border bg-background p-4 transition-colors hover:border-foreground/30"
               >
                 <div className="flex items-center gap-3">
-                  <span className="inline-flex size-9 items-center justify-center rounded-md bg-muted/60">
+                  <span className="inline-flex size-9 items-center justify-center rounded-md bg-muted/60 shrink-0">
                     <MessageCircle className="size-4 text-foreground" />
                   </span>
                   <div>
                     <p className="text-sm font-medium text-foreground">WhatsApp</p>
-                    <p className="text-xs text-muted-foreground">{locale === "en" ? "Monday - Friday, 09:00 - 18:00" : "Senin - Jumat, 09:00 - 18:00"}</p>
+                    <p className="text-xs text-muted-foreground">{SUPPORT_WHATSAPP_DISPLAY}</p>
                   </div>
                 </div>
-                <ArrowRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
               </a>
+
+              <div className="group flex items-center justify-between rounded-md border border-border bg-background p-4 sm:col-span-2 lg:col-span-1">
+                <div className="flex items-center gap-3">
+                  <span className="inline-flex size-9 items-center justify-center rounded-md bg-muted/60 shrink-0">
+                    <MapPin className="size-4 text-foreground" />
+                  </span>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Office</p>
+                    <p className="text-xs text-muted-foreground">{OFFICE_ADDRESS}</p>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="mt-6 flex flex-wrap items-center gap-3 text-sm">

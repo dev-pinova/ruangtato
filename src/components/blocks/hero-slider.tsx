@@ -6,8 +6,9 @@ import { ChevronLeft, ChevronRight } from "lucide-react"
 import type { HeroSliderData } from "@/lib/types"
 
 import { trackStudioClick } from "@/components/studio/studio-tracker"
+import { getLocalizedText } from "@/lib/studio/i18n-block-utils"
 
-const DEFAULT_SLIDES = [
+const DEFAULT_SLIDES_ID = [
   {
     headline: "Art Studio",
     subheadline: "Unique Tatos",
@@ -17,19 +18,38 @@ const DEFAULT_SLIDES = [
   },
 ]
 
+const DEFAULT_SLIDES_EN = [
+  {
+    headline: "Art Studio",
+    subheadline: "Unique Tattoos",
+    ctaText: "Book Consultation",
+    image:
+      "https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?q=80&w=1600&auto=format&fit=crop",
+  },
+]
+
 export function BlockHeroSlider({
   data,
   waNumber,
   slug,
+  locale = "id",
 }: {
   data: HeroSliderData
   waNumber?: string
   slug?: string
+  locale?: string
 }) {
-  const slides = data?.slides?.length ? data.slides : DEFAULT_SLIDES
+  const defaultSlides = locale === "en" ? DEFAULT_SLIDES_EN : DEFAULT_SLIDES_ID
+  const slides = data?.slides?.length ? data.slides : defaultSlides
 
   const [active, setActive] = useState(0)
-  const slide = slides[active]
+  const rawSlide = slides[active]
+  const slide = {
+    ...rawSlide,
+    headline: getLocalizedText(rawSlide, "headline", locale),
+    subheadline: getLocalizedText(rawSlide, "subheadline", locale),
+    ctaText: getLocalizedText(rawSlide, "ctaText", locale, locale === "en" ? "Book Consultation" : "Get a Tato"),
+  }
   const waUrl = waNumber
     ? `https://wa.me/${waNumber}?text=Halo,%20saya%20tertarik%20untuk%20konsultasi%20tato`
     : undefined
@@ -66,7 +86,7 @@ export function BlockHeroSlider({
 
       {/* Content */}
       <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center justify-center px-6 pb-24 pt-40 text-center md:pb-32 md:pt-44">
-        <h1 className="font-display text-5xl font-light uppercase tracking-[0.18em] text-white text-pretty md:text-7xl lg:text-8xl">
+        <h1 className="font-display text-2xl font-light uppercase tracking-wider text-white text-pretty max-w-[18ch] sm:max-w-2xl md:max-w-none sm:text-5xl md:text-7xl md:tracking-[0.18em] lg:text-8xl">
           {slide.headline}
         </h1>
         {slide.subheadline && (
@@ -83,7 +103,7 @@ export function BlockHeroSlider({
           >
             [&nbsp; {slide.ctaText || "Buy Template"} &nbsp;]
           </a>
-          {/* Text-only CTA — "Get A Tato" style */}
+          {/* Text-only CTA */}
           {waUrl ? (
             <a
               href={waUrl}
@@ -92,14 +112,14 @@ export function BlockHeroSlider({
               onClick={() => slug && trackStudioClick(slug)}
               className="font-display text-[11px] uppercase tracking-[0.4em] text-white/90 underline-offset-8 transition-colors hover:text-white hover:underline"
             >
-              Get a Tato
+              {getLocalizedText(rawSlide, "secondaryCtaText", locale, locale === "en" ? "Book Now" : "Konsultasi Sekarang")}
             </a>
           ) : (
             <a
               href="#appointment"
               className="font-display text-[11px] uppercase tracking-[0.4em] text-white/90 underline-offset-8 transition-colors hover:text-white hover:underline"
             >
-              Get a Tato
+              {getLocalizedText(rawSlide, "secondaryCtaText", locale, locale === "en" ? "Book Now" : "Konsultasi Sekarang")}
             </a>
           )}
         </div>

@@ -4,22 +4,35 @@ import { useState } from "react"
 import { Play, X } from "lucide-react"
 
 import type { GoalsData } from "@/lib/types"
+import { getLocalizedText } from "@/lib/studio/i18n-block-utils"
 
-const DEFAULT_FEATURES = [
+const DEFAULT_FEATURES_ID = [
   { title: "Unique Tatos", desc: "Desain custom dibuat khusus untuk Anda." },
   { title: "Piercing & Art", desc: "Piercing aman dan koleksi karya seni studio." },
   { title: "Trusted Studio", desc: "Standar sterilisasi tinggi dan aftercare lengkap." },
 ]
 
-export function BlockGoals({ data }: { data: GoalsData }) {
+const DEFAULT_FEATURES_EN = [
+  { title: "Unique Tattoos", desc: "Custom designs tailored specifically for you." },
+  { title: "Piercing & Art", desc: "Safe piercing and studio art collection." },
+  { title: "Trusted Studio", desc: "High sterilization standards and full aftercare." },
+]
+
+export function BlockGoals({ data, locale = "id" }: { data: GoalsData; locale?: string }) {
   const [open, setOpen] = useState(false)
 
-  const features = data?.features?.length ? data.features : DEFAULT_FEATURES
-  const eyebrow = data?.eyebrow ?? "About Us"
-  const headline = data?.headline ?? "Tato Like Art"
-  const description =
-    data?.description ??
-    "Setiap tato lahir dari percakapan panjang dengan klien, kemudian kami terjemahkan menjadi karya yang personal, presisi, dan tahan waktu."
+  const defaultFeatures = locale === "en" ? DEFAULT_FEATURES_EN : DEFAULT_FEATURES_ID
+  const features = data?.features?.length ? data.features : defaultFeatures
+  const eyebrow = getLocalizedText(data, "eyebrow", locale, "About Us")
+  const headline = getLocalizedText(data, "headline", locale, "Tato Like Art")
+  const description = getLocalizedText(
+    data,
+    "description",
+    locale,
+    locale === "en"
+      ? "Every tattoo originates from in-depth client consultation, then transformed into a personal, precise, and timeless piece of art."
+      : "Setiap tato lahir dari percakapan panjang dengan klien, kemudian kami terjemahkan menjadi karya yang personal, presisi, dan tahan waktu."
+  )
   const image =
     data?.image ||
     "https://images.unsplash.com/photo-1568515045052-f9a854d70bfd?q=80&w=1600&auto=format&fit=crop"
@@ -77,10 +90,10 @@ export function BlockGoals({ data }: { data: GoalsData }) {
                   </span>
                   <div>
                     <h3 className="font-display text-lg uppercase tracking-[0.2em] text-white">
-                      {feature.title}
+                      {getLocalizedText(feature, "title", locale)}
                     </h3>
                     <p className="mt-1 text-sm leading-relaxed text-white/60">
-                      {feature.desc}
+                      {getLocalizedText(feature, "desc", locale)}
                     </p>
                   </div>
                 </li>

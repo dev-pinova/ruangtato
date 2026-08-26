@@ -19,11 +19,20 @@ export type BlockType =
   | "AppointmentForm"
   | "FinalCTA"
   | "Footer"
+  | "LeadForm"
+
+
+export type FontStyle = "syne" | "cormorant" | "inter" | "oswald" | "cinzel"
 
 export interface HeaderData {
   title?: string
+  logoImage?: string
+  logoHeight?: number
   ctaText?: string
+  links?: HeaderOverlayLink[]
+  fontStyle?: FontStyle
 }
+
 
 export interface HeaderOverlayLink {
   label?: string
@@ -33,6 +42,8 @@ export interface HeaderOverlayLink {
 export interface HeaderOverlayData {
   /** Teks logo center (default: nama studio) */
   logoText?: string
+  logoImage?: string
+  logoHeight?: number
   /** Tagline kecil di bawah logo (opsional) */
   tagline?: string
   /** Link kiri (default 3 item) */
@@ -41,6 +52,7 @@ export interface HeaderOverlayData {
   rightLinks?: HeaderOverlayLink[]
   /** Tampilkan logo center di antara nav kiri-kanan */
   showCenterLogo?: boolean
+  fontStyle?: FontStyle
 }
 
 export interface HeroData {
@@ -169,7 +181,7 @@ export interface CreatorBioData {
 export interface TestimonialsData {
   eyebrow?: string
   headline?: string
-  reviews?: { text: string; name: string; type: string }[]
+  reviews?: { text: string; name: string; type: string; avatar?: string; rating?: number }[]
 }
 
 export interface NewsArticle {
@@ -208,20 +220,26 @@ export interface FinalCTAData {
 
 export interface FooterData {
   title?: string
+  logoImage?: string
+  description?: string
   address?: string
   instagram?: string
   whatsapp?: string
+  facebook?: string
+  tiktok?: string
   email?: string
-  /** Aktifkan form subscribe newsletter inline di footer (default: false). */
-  showNewsletter?: boolean
-  /** Teks kecil di atas form newsletter (default: "Newsletter"). */
-  newsletterEyebrow?: string
-  /** Headline di atas form newsletter (default: "Subscribe to our newsletter"). */
-  newsletterHeadline?: string
-  /** Placeholder input email (default: "Enter your email"). */
-  newsletterPlaceholder?: string
-  /** Label tombol subscribe (default: "Subscribe"). */
-  newsletterCta?: string
+  /** Tampilkan Google Maps di footer (default: false). */
+  showMap?: boolean
+  /** URL embed dari Google Maps (Share → Embed a map). */
+  mapEmbedUrl?: string
+  /** Tinggi peta dalam px (default: 200). */
+  mapHeight?: number
+}
+
+export interface LeadFormData {
+  title?: string
+  description?: string
+  ctaText?: string
 }
 
 export type BlockData =
@@ -245,6 +263,8 @@ export type BlockData =
   | AppointmentFormData
   | FinalCTAData
   | FooterData
+  | LeadFormData
+
 
 export interface Block {
   id: string

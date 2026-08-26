@@ -20,7 +20,7 @@ export async function GET(request: Request) {
     invoices: rows.map((row) => ({
       id: row.id,
       studioId: row.studioId,
-      midtransOrderId: row.midtransOrderId,
+      orderId: row.orderId,
       planType: row.planType,
       amount: row.amount,
       status: row.status,

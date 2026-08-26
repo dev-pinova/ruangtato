@@ -1,11 +1,12 @@
 "use client"
 
-import { useId } from "react"
+import { useId, useState } from "react"
 import { Plus, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { ImageUpload } from "./image-upload"
+import { cn } from "@/lib/utils"
 import type {
   HeaderData,
   HeaderOverlayData,
@@ -28,10 +29,107 @@ import type {
   FinalCTAData,
   FooterData,
   HeaderOverlayLink,
+  LeadFormData,
+  FontStyle,
 } from "@/lib/types"
 
 const inputClass = ""
 const textareaClass = "min-h-[80px]"
+
+const FONT_OPTIONS: { value: FontStyle; label: string }[] = [
+  { value: "syne", label: "Syne — Modern & Edgy Display" },
+  { value: "cormorant", label: "Cormorant Garamond — Classic & Elegant Serif" },
+  { value: "inter", label: "Inter — Clean & Minimalist Sans" },
+  { value: "oswald", label: "Oswald — Bold & Urban Display" },
+  { value: "cinzel", label: "Cinzel — Gothic & Vintage Serif" },
+]
+
+function FontStyleSelector({
+  value,
+  onChange,
+}: {
+  value?: FontStyle
+  onChange: (val: FontStyle) => void
+}) {
+  const selectId = useId()
+  return (
+    <div className="flex flex-col gap-2">
+      <FieldLabel htmlFor={selectId}>Gaya Font Studio</FieldLabel>
+      <select
+        id={selectId}
+        value={value || "syne"}
+        onChange={(e) => onChange(e.target.value as FontStyle)}
+        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+      >
+        {FONT_OPTIONS.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
+      </select>
+    </div>
+  )
+}
+
+function LogoSizeControl({
+  value = 36,
+  onChange,
+}: {
+  value?: number
+  onChange: (val: number) => void
+}) {
+  const inputId = useId()
+  const currentVal = value || 36
+
+  return (
+    <div className="flex flex-col gap-2.5 rounded-lg border border-border/80 bg-muted/20 p-3">
+      <div className="flex items-center justify-between">
+        <FieldLabel htmlFor={inputId}>Tinggi Logo</FieldLabel>
+        <span className="rounded bg-secondary px-2 py-0.5 font-mono text-xs text-foreground font-semibold">
+          {currentVal}px
+        </span>
+      </div>
+
+      {/* Quick Presets */}
+      <div className="grid grid-cols-4 gap-1.5">
+        {[
+          { label: "Kecil", size: 28 },
+          { label: "Sedang", size: 36 },
+          { label: "Besar", size: 48 },
+          { label: "Ekstra", size: 64 },
+        ].map((preset) => (
+          <button
+            key={preset.size}
+            type="button"
+            onClick={() => onChange(preset.size)}
+            className={cn(
+              "rounded border px-1.5 py-1 text-[11px] font-medium transition-colors text-center",
+              currentVal === preset.size
+                ? "border-primary bg-primary/10 text-primary font-semibold"
+                : "border-border bg-background text-muted-foreground hover:bg-muted hover:text-foreground"
+            )}
+          >
+            {preset.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Fine-grained slider */}
+      <div className="flex items-center gap-3 pt-1">
+        <input
+          id={inputId}
+          type="range"
+          min={20}
+          max={120}
+          step={2}
+          value={currentVal}
+          onChange={(e) => onChange(Number(e.target.value))}
+          className="h-2 w-full cursor-pointer rounded-lg bg-secondary accent-primary"
+        />
+      </div>
+    </div>
+  )
+}
 
 function FieldLabel({ children, htmlFor }: { children: React.ReactNode; htmlFor?: string }) {
   return (
@@ -49,18 +147,155 @@ interface PanelProps<T> {
 export function HeaderPanel({ data, onChange }: PanelProps<HeaderData>) {
   const titleId = useId()
   const ctaTextId = useId()
+  const links = data.links || []
+  const baseId = useId()
 
   return (
-    <>
+    <div className="flex flex-col gap-4">
+      <FontStyleSelector
+        value={data.fontStyle}
+        onChange={(val) => onChange('fontStyle', val)}
+      />
       <div className="flex flex-col gap-2">
-        <FieldLabel htmlFor={titleId}>Title</FieldLabel>
+        <FieldLabel htmlFor={titleId}>Title / Nama Studio</FieldLabel>
         <Input id={titleId} className={inputClass} value={data.title || ''} onChange={(e) => onChange('title', e.target.value)} />
+      </div>
+      <div className="flex flex-col gap-2.5">
+        <ImageUpload value={data.logoImage || ''} onChange={(url) => onChange('logoImage', url)} label="Logo Gambar Studio (Opsional)" />
+        {data.logoImage && (
+          <LogoSizeControl value={data.logoHeight || 36} onChange={(val) => onChange('logoHeight', val)} />
+        )}
       </div>
       <div className="flex flex-col gap-2">
         <FieldLabel htmlFor={ctaTextId}>CTA Text</FieldLabel>
         <Input id={ctaTextId} className={inputClass} value={data.ctaText || ''} onChange={(e) => onChange('ctaText', e.target.value)} />
       </div>
-    </>
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center justify-between">
+          <FieldLabel>Link Menu ({links.length})</FieldLabel>
+          <Button variant="ghost" size="sm" className="h-7 text-xs text-primary" onClick={() => onChange('links', [...links, { label: '', href: '#' }])}>
+            <Plus className="w-3 h-3 mr-1" /> Tambah
+          </Button>
+        </div>
+        {links.map((l, i) => {
+          const labelId = `${baseId}-link-${i}-label`
+          const hrefId = `${baseId}-link-${i}-href`
+          return (
+            <div key={i} className="p-3 border border-border rounded-md bg-muted/30 flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono text-muted-foreground">#{i + 1}</span>
+                <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => onChange('links', links.filter((_, idx) => idx !== i))}>
+                  <Trash2 className="w-3 h-3" />
+                </Button>
+              </div>
+              <div className="flex flex-col gap-1">
+                <FieldLabel htmlFor={labelId}>Label</FieldLabel>
+                <Input id={labelId} placeholder="Label" value={l.label || ''} onChange={(e) => { const u = [...links]; u[i] = { ...u[i], label: e.target.value }; onChange('links', u) }} />
+              </div>
+              <div className="flex flex-col gap-1">
+                <FieldLabel htmlFor={hrefId}>Href (Tujuan Link)</FieldLabel>
+                <Input id={hrefId} placeholder="Href (mis. #about)" value={l.href || ''} onChange={(e) => { const u = [...links]; u[i] = { ...u[i], href: e.target.value }; onChange('links', u) }} />
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+export function HeaderOverlayPanel({ data, onChange }: PanelProps<HeaderOverlayData>) {
+  const logoTextId = useId()
+  const taglineId = useId()
+  const leftLinks = data.leftLinks || []
+  const rightLinks = data.rightLinks || []
+  const baseId = useId()
+
+  return (
+    <div className="flex flex-col gap-4">
+      <FontStyleSelector
+        value={data.fontStyle}
+        onChange={(val) => onChange('fontStyle', val)}
+      />
+      <div className="flex flex-col gap-2">
+        <FieldLabel htmlFor={logoTextId}>Logo Teks / Nama Studio</FieldLabel>
+        <Input id={logoTextId} value={data.logoText || ''} onChange={(e) => onChange('logoText', e.target.value)} />
+      </div>
+      <div className="flex flex-col gap-2">
+        <FieldLabel htmlFor={taglineId}>Tagline (opsional)</FieldLabel>
+        <Input id={taglineId} value={data.tagline || ''} onChange={(e) => onChange('tagline', e.target.value)} />
+      </div>
+      <div className="flex flex-col gap-2.5">
+        <ImageUpload value={data.logoImage || ''} onChange={(url) => onChange('logoImage', url)} label="Logo Gambar Studio (Opsional)" />
+        {data.logoImage && (
+          <LogoSizeControl value={data.logoHeight || 40} onChange={(val) => onChange('logoHeight', val)} />
+        )}
+      </div>
+
+      {/* Nav Left Links */}
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center justify-between">
+          <FieldLabel>Link Menu Kiri ({leftLinks.length})</FieldLabel>
+          <Button variant="ghost" size="sm" className="h-7 text-xs text-primary" onClick={() => onChange('leftLinks', [...leftLinks, { label: '', href: '#' }])}>
+            <Plus className="w-3 h-3 mr-1" /> Tambah
+          </Button>
+        </div>
+        {leftLinks.map((l, i) => {
+          const labelId = `${baseId}-lleft-${i}-label`
+          const hrefId = `${baseId}-lleft-${i}-href`
+          return (
+            <div key={i} className="p-3 border border-border rounded-md bg-muted/30 flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono text-muted-foreground">#{i + 1}</span>
+                <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => onChange('leftLinks', leftLinks.filter((_, idx) => idx !== i))}>
+                  <Trash2 className="w-3 h-3" />
+                </Button>
+              </div>
+              <div className="flex flex-col gap-1">
+                <FieldLabel htmlFor={labelId}>Label</FieldLabel>
+                <Input id={labelId} placeholder="Label" value={l.label || ''} onChange={(e) => { const u = [...leftLinks]; u[i] = { ...u[i], label: e.target.value }; onChange('leftLinks', u) }} />
+              </div>
+              <div className="flex flex-col gap-1">
+                <FieldLabel htmlFor={hrefId}>Href (Tujuan Link)</FieldLabel>
+                <Input id={hrefId} placeholder="Href (mis. #about)" value={l.href || ''} onChange={(e) => { const u = [...leftLinks]; u[i] = { ...u[i], href: e.target.value }; onChange('leftLinks', u) }} />
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Nav Right Links */}
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center justify-between">
+          <FieldLabel>Link Menu Kanan ({rightLinks.length})</FieldLabel>
+          <Button variant="ghost" size="sm" className="h-7 text-xs text-primary" onClick={() => onChange('rightLinks', [...rightLinks, { label: '', href: '#' }])}>
+            <Plus className="w-3 h-3 mr-1" /> Tambah
+          </Button>
+        </div>
+        {rightLinks.map((l, i) => {
+          const labelId = `${baseId}-lright-${i}-label`
+          const hrefId = `${baseId}-lright-${i}-href`
+          return (
+            <div key={i} className="p-3 border border-border rounded-md bg-muted/30 flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono text-muted-foreground">#{i + 1}</span>
+                <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => onChange('rightLinks', rightLinks.filter((_, idx) => idx !== i))}>
+                  <Trash2 className="w-3 h-3" />
+                </Button>
+              </div>
+              <div className="flex flex-col gap-1">
+                <FieldLabel htmlFor={labelId}>Label</FieldLabel>
+                <Input id={labelId} placeholder="Label" value={l.label || ''} onChange={(e) => { const u = [...rightLinks]; u[i] = { ...u[i], label: e.target.value }; onChange('rightLinks', u) }} />
+              </div>
+              <div className="flex flex-col gap-1">
+                <FieldLabel htmlFor={hrefId}>Href (Tujuan Link)</FieldLabel>
+                <Input id={hrefId} placeholder="Href (mis. #contact)" value={l.href || ''} onChange={(e) => { const u = [...rightLinks]; u[i] = { ...u[i], href: e.target.value }; onChange('rightLinks', u) }} />
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
   )
 }
 
@@ -145,75 +380,6 @@ export function GoalsPanel({ data, onChange }: PanelProps<GoalsData>) {
           )
         })}
       </div>
-    </>
-  )
-}
-
-export function HeaderOverlayPanel({ data, onChange }: PanelProps<HeaderOverlayData>) {
-  const logoTextId = useId()
-  const taglineId = useId()
-  const showCenterLogoId = useId()
-  const leftLinks = data.leftLinks || []
-  const rightLinks = data.rightLinks || []
-  const baseId = useId()
-
-  function renderLinks(field: 'leftLinks' | 'rightLinks', items: HeaderOverlayLink[]) {
-    return (
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between">
-          <FieldLabel>{field === 'leftLinks' ? 'Link Kiri' : 'Link Kanan'} ({items.length})</FieldLabel>
-          <Button variant="ghost" size="sm" className="h-7 text-xs text-primary" onClick={() => onChange(field, [...items, { label: '', href: '#' }])}>
-            <Plus className="w-3 h-3 mr-1" /> Tambah
-          </Button>
-        </div>
-        {items.map((l, i) => {
-          const labelId = `${baseId}-${field}-${i}-label`
-          const hrefId = `${baseId}-${field}-${i}-href`
-          return (
-            <div key={i} className="p-3 border border-border rounded-md bg-muted/30 flex flex-col gap-2">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-mono text-muted-foreground">#{i + 1}</span>
-                <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => onChange(field, items.filter((_, idx) => idx !== i))}>
-                  <Trash2 className="w-3 h-3" />
-                </Button>
-              </div>
-              <div className="flex flex-col gap-1">
-                <FieldLabel htmlFor={labelId}>Label</FieldLabel>
-                <Input id={labelId} placeholder="Label" value={l.label || ''} onChange={(e) => { const u = [...items]; u[i] = { ...u[i], label: e.target.value }; onChange(field, u) }} />
-              </div>
-              <div className="flex flex-col gap-1">
-                <FieldLabel htmlFor={hrefId}>Href (Tujuan Link)</FieldLabel>
-                <Input id={hrefId} placeholder="Href (mis. #about)" value={l.href || ''} onChange={(e) => { const u = [...items]; u[i] = { ...u[i], href: e.target.value }; onChange(field, u) }} />
-              </div>
-            </div>
-          )
-        })}
-      </div>
-    )
-  }
-
-  return (
-    <>
-      <div className="flex flex-col gap-2">
-        <FieldLabel htmlFor={logoTextId}>Logo Text</FieldLabel>
-        <Input id={logoTextId} className={inputClass} value={data.logoText || ''} onChange={(e) => onChange('logoText', e.target.value)} />
-      </div>
-      <div className="flex flex-col gap-2">
-        <FieldLabel htmlFor={taglineId}>Tagline (opsional)</FieldLabel>
-        <Input id={taglineId} className={inputClass} value={data.tagline || ''} onChange={(e) => onChange('tagline', e.target.value)} placeholder="Tato • Piercing • Art" />
-      </div>
-      <label htmlFor={showCenterLogoId} className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
-        <input
-          id={showCenterLogoId}
-          type="checkbox"
-          className="h-3.5 w-3.5"
-          checked={data.showCenterLogo !== false}
-          onChange={(e) => onChange('showCenterLogo', e.target.checked)}
-        />
-        Tampilkan logo di tengah
-      </label>
-      {renderLinks('leftLinks', leftLinks)}
-      {renderLinks('rightLinks', rightLinks)}
     </>
   )
 }
@@ -459,6 +625,7 @@ export function TestimonialsPanel({ data, onChange }: PanelProps<TestimonialsDat
   const headlineId = useId()
   const reviews = data.reviews || []
   const baseId = useId()
+  const [openIndex, setOpenIndex] = useState<number | null>(0)
 
   return (
     <div className="flex flex-col gap-3">
@@ -470,9 +637,9 @@ export function TestimonialsPanel({ data, onChange }: PanelProps<TestimonialsDat
         <FieldLabel htmlFor={headlineId}>Headline</FieldLabel>
         <Input id={headlineId} value={data.headline || ''} onChange={(e) => onChange('headline', e.target.value)} placeholder="What Clients Say" />
       </div>
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between border-t border-border pt-3">
         <FieldLabel>Reviews ({reviews.length})</FieldLabel>
-        <Button variant="ghost" size="sm" className="h-7 text-xs text-primary" onClick={() => onChange('reviews', [...reviews, { text: '', name: '', type: '' }])}>
+        <Button variant="ghost" size="sm" className="h-7 text-xs text-primary" onClick={() => { onChange('reviews', [...reviews, { text: '', name: '', type: '' }]); setOpenIndex(reviews.length); }}>
           <Plus className="w-3 h-3 mr-1" /> Tambah
         </Button>
       </div>
@@ -480,26 +647,62 @@ export function TestimonialsPanel({ data, onChange }: PanelProps<TestimonialsDat
         const reviewTextId = `${baseId}-review-${i}-text`
         const reviewNameId = `${baseId}-review-${i}-name`
         const reviewTypeId = `${baseId}-review-${i}-type`
+        const isOpen = openIndex === i
         return (
-          <div key={i} className="p-3 border border-border rounded-md bg-muted/30 flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono text-muted-foreground">#{i + 1}</span>
-              <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => onChange('reviews', reviews.filter((_, idx) => idx !== i))}>
-                <Trash2 className="w-3 h-3" />
-              </Button>
+          <div key={i} className="border border-border rounded-md bg-muted/20 overflow-hidden">
+            {/* Accordion Header */}
+            <div 
+              className="flex items-center justify-between p-2.5 bg-zinc-900/60 cursor-pointer select-none"
+              onClick={() => setOpenIndex(isOpen ? null : i)}
+            >
+              <span className="text-[11px] font-medium truncate max-w-44">
+                {review.name || `Ulasan #${i + 1}`}
+              </span>
+              <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
+                <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => onChange('reviews', reviews.filter((_, idx) => idx !== i))}>
+                  <Trash2 className="w-3 h-3" />
+                </Button>
+              </div>
             </div>
-            <div className="flex flex-col gap-1">
-              <FieldLabel htmlFor={reviewTextId}>Teks Review</FieldLabel>
-              <Textarea id={reviewTextId} className={textareaClass} placeholder="Teks review" value={review.text} onChange={(e) => { const updated = [...reviews]; updated[i] = { ...updated[i], text: e.target.value }; onChange('reviews', updated) }} />
-            </div>
-            <div className="flex flex-col gap-1">
-              <FieldLabel htmlFor={reviewNameId}>Nama Klien</FieldLabel>
-              <Input id={reviewNameId} className={inputClass} placeholder="Nama klien" value={review.name} onChange={(e) => { const updated = [...reviews]; updated[i] = { ...updated[i], name: e.target.value }; onChange('reviews', updated) }} />
-            </div>
-            <div className="flex flex-col gap-1">
-              <FieldLabel htmlFor={reviewTypeId}>Tipe</FieldLabel>
-              <Input id={reviewTypeId} className={inputClass} placeholder="Tipe (e.g. First Tato)" value={review.type} onChange={(e) => { const updated = [...reviews]; updated[i] = { ...updated[i], type: e.target.value }; onChange('reviews', updated) }} />
-            </div>
+
+            {/* Accordion Content */}
+            {isOpen && (
+              <div className="p-3 border-t border-border flex flex-col gap-2">
+                <div className="flex flex-col gap-1">
+                  <FieldLabel htmlFor={reviewTextId}>Teks Review</FieldLabel>
+                  <Textarea id={reviewTextId} className={textareaClass} placeholder="Teks review" value={review.text} onChange={(e) => { const updated = [...reviews]; updated[i] = { ...updated[i], text: e.target.value }; onChange('reviews', updated) }} />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <ImageUpload value={review.avatar || ''} onChange={(url) => { const updated = [...reviews]; updated[i] = { ...updated[i], avatar: url }; onChange('reviews', updated) }} label="Avatar Klien" />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <FieldLabel htmlFor={reviewNameId}>Nama Klien</FieldLabel>
+                  <Input id={reviewNameId} className={inputClass} placeholder="Nama klien" value={review.name} onChange={(e) => { const updated = [...reviews]; updated[i] = { ...updated[i], name: e.target.value }; onChange('reviews', updated) }} />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <FieldLabel htmlFor={reviewTypeId}>Tipe</FieldLabel>
+                  <Input id={reviewTypeId} className={inputClass} placeholder="Tipe (e.g. First Tato)" value={review.type} onChange={(e) => { const updated = [...reviews]; updated[i] = { ...updated[i], type: e.target.value }; onChange('reviews', updated) }} />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <FieldLabel>Rating Bintang</FieldLabel>
+                  <select
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded px-3 py-2 text-xs text-white"
+                    value={review.rating ?? 5}
+                    onChange={(e) => {
+                      const updated = [...reviews]
+                      updated[i] = { ...updated[i], rating: Number(e.target.value) }
+                      onChange('reviews', updated)
+                    }}
+                  >
+                    {[5, 4, 3, 2, 1].map((r) => (
+                      <option key={r} value={r}>
+                        {r} Bintang
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            )}
           </div>
         )
       })}
@@ -510,34 +713,50 @@ export function TestimonialsPanel({ data, onChange }: PanelProps<TestimonialsDat
 export function FAQPanel({ data, onChange }: PanelProps<FAQData>) {
   const faqs = data.faqs || []
   const baseId = useId()
+  const [openIndex, setOpenIndex] = useState<number | null>(0)
 
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between">
         <FieldLabel>FAQ Items ({faqs.length})</FieldLabel>
-        <Button variant="ghost" size="sm" className="h-7 text-xs text-primary" onClick={() => onChange('faqs', [...faqs, { q: '', a: '' }])}>
+        <Button variant="ghost" size="sm" className="h-7 text-xs text-primary" onClick={() => { onChange('faqs', [...faqs, { q: '', a: '' }]); setOpenIndex(faqs.length); }}>
           <Plus className="w-3 h-3 mr-1" /> Tambah
         </Button>
       </div>
       {faqs.map((faq, i) => {
         const faqQId = `${baseId}-faq-${i}-q`
         const faqAId = `${baseId}-faq-${i}-a`
+        const isOpen = openIndex === i
         return (
-          <div key={i} className="p-3 border border-border rounded-md bg-muted/30 flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono text-muted-foreground">Q#{i + 1}</span>
-              <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => onChange('faqs', faqs.filter((_, idx) => idx !== i))}>
-                <Trash2 className="w-3 h-3" />
-              </Button>
+          <div key={i} className="border border-border rounded-md bg-muted/20 overflow-hidden">
+            {/* Accordion Header */}
+            <div 
+              className="flex items-center justify-between p-2.5 bg-zinc-900/60 cursor-pointer select-none"
+              onClick={() => setOpenIndex(isOpen ? null : i)}
+            >
+              <span className="text-[11px] font-medium truncate max-w-44">
+                {faq.q || `Pertanyaan #${i + 1}`}
+              </span>
+              <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
+                <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => onChange('faqs', faqs.filter((_, idx) => idx !== i))}>
+                  <Trash2 className="w-3 h-3" />
+                </Button>
+              </div>
             </div>
-            <div className="flex flex-col gap-1">
-              <FieldLabel htmlFor={faqQId}>Pertanyaan</FieldLabel>
-              <Input id={faqQId} className={inputClass} placeholder="Pertanyaan" value={faq.q} onChange={(e) => { const updated = [...faqs]; updated[i] = { ...updated[i], q: e.target.value }; onChange('faqs', updated) }} />
-            </div>
-            <div className="flex flex-col gap-1">
-              <FieldLabel htmlFor={faqAId}>Jawaban</FieldLabel>
-              <Textarea id={faqAId} className={textareaClass} placeholder="Jawaban" value={faq.a} onChange={(e) => { const updated = [...faqs]; updated[i] = { ...updated[i], a: e.target.value }; onChange('faqs', updated) }} />
-            </div>
+
+            {/* Accordion Content */}
+            {isOpen && (
+              <div className="p-3 border-t border-border flex flex-col gap-2">
+                <div className="flex flex-col gap-1">
+                  <FieldLabel htmlFor={faqQId}>Pertanyaan</FieldLabel>
+                  <Input id={faqQId} className={inputClass} placeholder="Pertanyaan" value={faq.q} onChange={(e) => { const updated = [...faqs]; updated[i] = { ...updated[i], q: e.target.value }; onChange('faqs', updated) }} />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <FieldLabel htmlFor={faqAId}>Jawaban</FieldLabel>
+                  <Textarea id={faqAId} className={textareaClass} placeholder="Jawaban" value={faq.a} onChange={(e) => { const updated = [...faqs]; updated[i] = { ...updated[i], a: e.target.value }; onChange('faqs', updated) }} />
+                </div>
+              </div>
+            )}
           </div>
         )
       })}
@@ -571,34 +790,46 @@ export function FinalCTAPanel({ data, onChange }: PanelProps<FinalCTAData>) {
 export function FooterPanel({ data, onChange }: PanelProps<FooterData>) {
   const titleId = useId()
   const addressId = useId()
+  const descriptionId = useId()
   const instagramId = useId()
   const whatsappId = useId()
+  const facebookId = useId()
+  const tiktokId = useId()
   const emailId = useId()
-  const newsletterCheckboxId = useId()
-  const newsletterEyebrowId = useId()
-  const newsletterHeadlineId = useId()
-  const newsletterPlaceholderId = useId()
-  const newsletterCtaId = useId()
-
-  const newsletterEnabled = data.showNewsletter !== false
+  const showMapId = useId()
+  const mapEmbedUrlId = useId()
+  const mapHeightId = useId()
 
   return (
     <>
       <div className="flex flex-col gap-2">
-        <FieldLabel htmlFor={titleId}>Title</FieldLabel>
+        <FieldLabel htmlFor={titleId}>Title / Nama Studio</FieldLabel>
         <Input id={titleId} className={inputClass} value={data.title || ''} onChange={(e) => onChange('title', e.target.value)} />
+      </div>
+      <ImageUpload value={data.logoImage || ''} onChange={(url) => onChange('logoImage', url)} label="Logo Gambar Footer (Opsional)" />
+      <div className="flex flex-col gap-2">
+        <FieldLabel htmlFor={descriptionId}>Deskripsi Singkat</FieldLabel>
+        <Textarea id={descriptionId} className={textareaClass} value={data.description || ''} onChange={(e) => onChange('description', e.target.value)} placeholder="Tulis deskripsi singkat studio tato..." />
       </div>
       <div className="flex flex-col gap-2">
         <FieldLabel htmlFor={addressId}>Alamat</FieldLabel>
         <Input id={addressId} className={inputClass} value={data.address || ''} onChange={(e) => onChange('address', e.target.value)} />
       </div>
       <div className="flex flex-col gap-2">
-        <FieldLabel htmlFor={instagramId}>Instagram URL</FieldLabel>
+        <FieldLabel htmlFor={whatsappId}>WhatsApp (No HP / Link)</FieldLabel>
+        <Input id={whatsappId} className={inputClass} value={data.whatsapp || ''} onChange={(e) => onChange('whatsapp', e.target.value)} />
+      </div>
+      <div className="flex flex-col gap-2">
+        <FieldLabel htmlFor={instagramId}>Instagram (Username / Link)</FieldLabel>
         <Input id={instagramId} className={inputClass} value={data.instagram || ''} onChange={(e) => onChange('instagram', e.target.value)} />
       </div>
       <div className="flex flex-col gap-2">
-        <FieldLabel htmlFor={whatsappId}>WhatsApp</FieldLabel>
-        <Input id={whatsappId} className={inputClass} value={data.whatsapp || ''} onChange={(e) => onChange('whatsapp', e.target.value)} />
+        <FieldLabel htmlFor={facebookId}>Facebook (Username / Link)</FieldLabel>
+        <Input id={facebookId} className={inputClass} value={data.facebook || ''} onChange={(e) => onChange('facebook', e.target.value)} />
+      </div>
+      <div className="flex flex-col gap-2">
+        <FieldLabel htmlFor={tiktokId}>TikTok (Username / Link)</FieldLabel>
+        <Input id={tiktokId} className={inputClass} value={data.tiktok || ''} onChange={(e) => onChange('tiktok', e.target.value)} />
       </div>
       <div className="flex flex-col gap-2">
         <FieldLabel htmlFor={emailId}>Email</FieldLabel>
@@ -606,33 +837,40 @@ export function FooterPanel({ data, onChange }: PanelProps<FooterData>) {
       </div>
 
       <div className="mt-2 border-t border-border pt-3 flex flex-col gap-3">
-        <label htmlFor={newsletterCheckboxId} className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
+        <label htmlFor={showMapId} className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
           <input
-            id={newsletterCheckboxId}
+            id={showMapId}
             type="checkbox"
             className="h-3.5 w-3.5"
-            checked={newsletterEnabled}
-            onChange={(e) => onChange('showNewsletter', e.target.checked)}
+            checked={data.showMap === true}
+            onChange={(e) => onChange('showMap', e.target.checked)}
           />
-          Tampilkan form newsletter di footer
+          Tampilkan Google Maps di Footer
         </label>
-        {newsletterEnabled && (
+        {data.showMap && (
           <>
             <div className="flex flex-col gap-2">
-              <FieldLabel htmlFor={newsletterEyebrowId}>Newsletter — Eyebrow</FieldLabel>
-              <Input id={newsletterEyebrowId} className={inputClass} value={data.newsletterEyebrow || ''} onChange={(e) => onChange('newsletterEyebrow', e.target.value)} placeholder="Newsletter" />
+              <FieldLabel htmlFor={mapEmbedUrlId}>Google Maps Embed URL</FieldLabel>
+              <Input
+                id={mapEmbedUrlId}
+                className={inputClass}
+                value={data.mapEmbedUrl || ''}
+                onChange={(e) => onChange('mapEmbedUrl', e.target.value)}
+                placeholder="https://www.google.com/maps/embed?pb=..."
+              />
+              <span className="text-[10px] text-muted-foreground leading-normal">
+                Buka Google Maps → Cari Lokasi → Bagikan → Sematkan Peta (Embed a map) → Copy URL src-nya saja.
+              </span>
             </div>
             <div className="flex flex-col gap-2">
-              <FieldLabel htmlFor={newsletterHeadlineId}>Newsletter — Headline</FieldLabel>
-              <Input id={newsletterHeadlineId} className={inputClass} value={data.newsletterHeadline || ''} onChange={(e) => onChange('newsletterHeadline', e.target.value)} placeholder="Subscribe to our newsletter" />
-            </div>
-            <div className="flex flex-col gap-2">
-              <FieldLabel htmlFor={newsletterPlaceholderId}>Placeholder Email</FieldLabel>
-              <Input id={newsletterPlaceholderId} className={inputClass} value={data.newsletterPlaceholder || ''} onChange={(e) => onChange('newsletterPlaceholder', e.target.value)} placeholder="Enter your email" />
-            </div>
-            <div className="flex flex-col gap-2">
-              <FieldLabel htmlFor={newsletterCtaId}>CTA Text</FieldLabel>
-              <Input id={newsletterCtaId} className={inputClass} value={data.newsletterCta || ''} onChange={(e) => onChange('newsletterCta', e.target.value)} placeholder="Subscribe" />
+              <FieldLabel htmlFor={mapHeightId}>Tinggi Peta (px)</FieldLabel>
+              <Input
+                id={mapHeightId}
+                type="number"
+                className={inputClass}
+                value={data.mapHeight ?? 200}
+                onChange={(e) => onChange('mapHeight', Number(e.target.value))}
+              />
             </div>
           </>
         )}
@@ -647,6 +885,7 @@ export function GalleryPanel({ data, onChange }: PanelProps<GalleryData>) {
   const subheadlineId = useId()
   const images = data.images || []
   const baseId = useId()
+  const [openIndex, setOpenIndex] = useState<number | null>(0)
 
   return (
     <>
@@ -662,28 +901,43 @@ export function GalleryPanel({ data, onChange }: PanelProps<GalleryData>) {
         <FieldLabel htmlFor={subheadlineId}>Subheadline (opsional)</FieldLabel>
         <Textarea id={subheadlineId} value={data.subheadline || ''} onChange={(e) => onChange('subheadline', e.target.value)} />
       </div>
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 border-t border-border pt-3">
         <div className="flex items-center justify-between">
           <FieldLabel>Images ({images.length})</FieldLabel>
-          <Button variant="ghost" size="sm" className="h-7 text-xs text-primary" onClick={() => onChange('images', [...images, { src: '', alt: '' }])}>
+          <Button variant="ghost" size="sm" className="h-7 text-xs text-primary" onClick={() => { onChange('images', [...images, { src: '', alt: '' }]); setOpenIndex(images.length); }}>
             <Plus className="w-3 h-3 mr-1" /> Tambah
           </Button>
         </div>
         {images.map((img, i) => {
           const altId = `${baseId}-image-${i}-alt`
+          const isOpen = openIndex === i
           return (
-            <div key={i} className="p-3 border border-border rounded-md bg-muted/30 flex flex-col gap-2">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-mono text-muted-foreground">#{i + 1}</span>
-                <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => onChange('images', images.filter((_, idx) => idx !== i))}>
-                  <Trash2 className="w-3 h-3" />
-                </Button>
+            <div key={i} className="border border-border rounded-md bg-muted/20 overflow-hidden">
+              {/* Accordion Header */}
+              <div 
+                className="flex items-center justify-between p-2.5 bg-zinc-900/60 cursor-pointer select-none"
+                onClick={() => setOpenIndex(isOpen ? null : i)}
+              >
+                <span className="text-[11px] font-medium truncate max-w-44">
+                  {img.alt || `Gambar #${i + 1}`}
+                </span>
+                <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
+                  <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => onChange('images', images.filter((_, idx) => idx !== i))}>
+                    <Trash2 className="w-3 h-3" />
+                  </Button>
+                </div>
               </div>
-              <ImageUpload value={img.src || ''} onChange={(url) => { const u = [...images]; u[i] = { ...u[i], src: url }; onChange('images', u) }} label="Foto" />
-              <div className="flex flex-col gap-1">
-                <FieldLabel htmlFor={altId}>Alt Text</FieldLabel>
-                <Input id={altId} placeholder="Alt text (opsional)" value={img.alt || ''} onChange={(e) => { const u = [...images]; u[i] = { ...u[i], alt: e.target.value }; onChange('images', u) }} />
-              </div>
+
+              {/* Accordion Content */}
+              {isOpen && (
+                <div className="p-3 border-t border-border flex flex-col gap-2">
+                  <ImageUpload value={img.src || ''} onChange={(url) => { const u = [...images]; u[i] = { ...u[i], src: url }; onChange('images', u) }} label="Foto" />
+                  <div className="flex flex-col gap-1">
+                    <FieldLabel htmlFor={altId}>Alt Text</FieldLabel>
+                    <Input id={altId} placeholder="Alt text (opsional)" value={img.alt || ''} onChange={(e) => { const u = [...images]; u[i] = { ...u[i], alt: e.target.value }; onChange('images', u) }} />
+                  </div>
+                </div>
+              )}
             </div>
           )
         })}
@@ -695,12 +949,13 @@ export function GalleryPanel({ data, onChange }: PanelProps<GalleryData>) {
 export function HeroSliderPanel({ data, onChange }: PanelProps<HeroSliderData>) {
   const slides = data.slides || []
   const baseId = useId()
+  const [openIndex, setOpenIndex] = useState<number | null>(0)
 
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between">
         <FieldLabel>Slides ({slides.length})</FieldLabel>
-        <Button variant="ghost" size="sm" className="h-7 text-xs text-primary" onClick={() => onChange('slides', [...slides, { headline: '', subheadline: '', ctaText: '', image: '' }])}>
+        <Button variant="ghost" size="sm" className="h-7 text-xs text-primary" onClick={() => { onChange('slides', [...slides, { headline: '', subheadline: '', ctaText: '', image: '' }]); setOpenIndex(slides.length); }}>
           <Plus className="w-3 h-3 mr-1" /> Tambah
         </Button>
       </div>
@@ -708,21 +963,42 @@ export function HeroSliderPanel({ data, onChange }: PanelProps<HeroSliderData>) 
         const headlineId = `${baseId}-slide-${i}-headline`
         const subheadlineId = `${baseId}-slide-${i}-subheadline`
         const ctaTextId = `${baseId}-slide-${i}-cta`
+        const isOpen = openIndex === i
         return (
-          <div key={i} className="p-3 border border-border rounded-md bg-muted/30 flex flex-col gap-2">
-            <div className="flex flex-col gap-1">
-              <FieldLabel htmlFor={headlineId}>Headline</FieldLabel>
-              <Input id={headlineId} placeholder="Headline" value={slide.headline || ''} onChange={(e) => { const u = [...slides]; u[i] = { ...u[i], headline: e.target.value }; onChange('slides', u) }} />
+          <div key={i} className="border border-border rounded-md bg-muted/20 overflow-hidden">
+            {/* Accordion Header */}
+            <div 
+              className="flex items-center justify-between p-2.5 bg-zinc-900/60 cursor-pointer select-none"
+              onClick={() => setOpenIndex(isOpen ? null : i)}
+            >
+              <span className="text-[11px] font-medium truncate max-w-44">
+                {slide.headline || `Slide #${i + 1}`}
+              </span>
+              <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
+                <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => onChange('slides', slides.filter((_, idx) => idx !== i))}>
+                  <Trash2 className="w-3 h-3" />
+                </Button>
+              </div>
             </div>
-            <div className="flex flex-col gap-1">
-              <FieldLabel htmlFor={subheadlineId}>Subheadline</FieldLabel>
-              <Textarea id={subheadlineId} placeholder="Subheadline" value={slide.subheadline || ''} onChange={(e) => { const u = [...slides]; u[i] = { ...u[i], subheadline: e.target.value }; onChange('slides', u) }} />
-            </div>
-            <div className="flex flex-col gap-1">
-              <FieldLabel htmlFor={ctaTextId}>CTA Text</FieldLabel>
-              <Input id={ctaTextId} placeholder="CTA Text" value={slide.ctaText || ''} onChange={(e) => { const u = [...slides]; u[i] = { ...u[i], ctaText: e.target.value }; onChange('slides', u) }} />
-            </div>
-            <ImageUpload value={slide.image || ''} onChange={(url) => { const u = [...slides]; u[i] = { ...u[i], image: url }; onChange('slides', u) }} label="Gambar Slide" />
+
+            {/* Accordion Content */}
+            {isOpen && (
+              <div className="p-3 border-t border-border flex flex-col gap-2">
+                <div className="flex flex-col gap-1">
+                  <FieldLabel htmlFor={headlineId}>Headline</FieldLabel>
+                  <Input id={headlineId} placeholder="Headline" value={slide.headline || ''} onChange={(e) => { const u = [...slides]; u[i] = { ...u[i], headline: e.target.value }; onChange('slides', u) }} />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <FieldLabel htmlFor={subheadlineId}>Subheadline</FieldLabel>
+                  <Textarea id={subheadlineId} placeholder="Subheadline" value={slide.subheadline || ''} onChange={(e) => { const u = [...slides]; u[i] = { ...u[i], subheadline: e.target.value }; onChange('slides', u) }} />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <FieldLabel htmlFor={ctaTextId}>CTA Text</FieldLabel>
+                  <Input id={ctaTextId} placeholder="CTA Text" value={slide.ctaText || ''} onChange={(e) => { const u = [...slides]; u[i] = { ...u[i], ctaText: e.target.value }; onChange('slides', u) }} />
+                </div>
+                <ImageUpload value={slide.image || ''} onChange={(url) => { const u = [...slides]; u[i] = { ...u[i], image: url }; onChange('slides', u) }} label="Gambar Slide" />
+              </div>
+            )}
           </div>
         )
       })}
@@ -941,6 +1217,29 @@ export function AppointmentFormPanel({ data, onChange }: PanelProps<AppointmentF
             onChange={(e) => onChange('mapHeight', Number(e.target.value) || 420)}
           />
         </div>
+      </div>
+    </>
+  )
+}
+
+export function LeadFormPanel({ data, onChange }: PanelProps<LeadFormData>) {
+  const titleId = useId()
+  const descriptionId = useId()
+  const ctaTextId = useId()
+
+  return (
+    <>
+      <div className="flex flex-col gap-2">
+        <FieldLabel htmlFor={titleId}>Headline / Judul</FieldLabel>
+        <Input id={titleId} value={data.title || ''} onChange={(e) => onChange('title', e.target.value)} placeholder="Hubungi kami" />
+      </div>
+      <div className="flex flex-col gap-2">
+        <FieldLabel htmlFor={descriptionId}>Deskripsi</FieldLabel>
+        <Textarea id={descriptionId} value={data.description || ''} onChange={(e) => onChange('description', e.target.value)} placeholder="Punya pertanyaan atau ingin konsultasi? Kirim pesan..." />
+      </div>
+      <div className="flex flex-col gap-2">
+        <FieldLabel htmlFor={ctaTextId}>CTA Text (Teks Tombol)</FieldLabel>
+        <Input id={ctaTextId} value={data.ctaText || ''} onChange={(e) => onChange('ctaText', e.target.value)} placeholder="Kirim Pesan" />
       </div>
     </>
   )

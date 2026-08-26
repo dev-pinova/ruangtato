@@ -182,7 +182,7 @@ export default async function InvoiceDetailPage({
             </p>
             <p className="font-semibold text-foreground">Ruang Tato</p>
             <p className="text-sm text-muted-foreground">{SITE_URL}</p>
-            <p className="text-sm text-muted-foreground">billing@ruangtato.com</p>
+            <p className="text-sm text-muted-foreground">Info@ruangtato.com</p>
           </div>
           <div>
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
@@ -233,12 +233,12 @@ export default async function InvoiceDetailPage({
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">{t.invoice.meta.orderId}</span>
             <span className="font-mono text-xs text-foreground bg-muted/50 px-2 py-0.5 rounded">
-              {inv.midtransOrderId}
+              {inv.orderId}
             </span>
           </div>
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">{t.invoice.meta.method}</span>
-            <span className="text-foreground">Midtrans Payment Gateway</span>
+            <span className="text-foreground">Duitku Payment Gateway</span>
           </div>
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">{t.invoice.meta.currency}</span>
@@ -249,7 +249,7 @@ export default async function InvoiceDetailPage({
         {/* Footer */}
         <div className="border-t border-border px-8 py-5 bg-muted/20">
           <p className="text-xs text-muted-foreground text-center leading-relaxed">
-            {t.invoice.footer.replace("{email}", "billing@ruangtato.com")}
+            {t.invoice.footer.replace("{email}", "Info@ruangtato.com")}
           </p>
         </div>
       </div>

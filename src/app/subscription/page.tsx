@@ -125,7 +125,7 @@ export default async function SubscriptionPage() {
 
           <LegalSection title="5. Payments">
             <p>
-              All transactions are processed through Midtrans in Indonesian Rupiah
+              All transactions are processed through Duitku in Indonesian Rupiah
               (IDR). Supported methods include credit/debit cards, bank transfers,
               e-wallets (GoPay, OVO, DANA), and QRIS, subject to availability in
               the payment gateway.
@@ -345,7 +345,7 @@ export default async function SubscriptionPage() {
 
           <LegalSection title="5. Pembayaran">
             <p>
-              Seluruh transaksi diproses melalui Midtrans dalam mata uang Rupiah
+              Seluruh transaksi diproses melalui Duitku dalam mata uang Rupiah
               (IDR). Metode yang didukung meliputi kartu kredit/debit, transfer
               bank, e-wallet (GoPay, OVO, DANA), dan QRIS, sesuai ketersediaan di
               gerbang pembayaran.

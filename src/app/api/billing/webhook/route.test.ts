@@ -2,9 +2,6 @@ import { createHash } from "crypto"
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-// The webhook delegates activation to billing-activation and non-success
-// persistence to payment-service. We mock those boundaries and assert the
-// route's HTTP contract + which helper it calls for each Midtrans status.
 const { activateMock, recordMock, BillingActivationError } = vi.hoisted(() => {
   class BillingActivationError extends Error {
     status: number
@@ -30,38 +27,37 @@ vi.mock("@/lib/billing/payment-service", () => ({
   recordPaymentEvent: recordMock,
 }))
 
-const SERVER_KEY = "test-server-key"
-process.env.MIDTRANS_SERVER_KEY = SERVER_KEY
-process.env.MIDTRANS_CLIENT_KEY = "test-client-key"
+const MERCHANT_CODE = "DS0001"
+const API_KEY = "test-api-key"
+process.env.DUITKU_MERCHANT_CODE = MERCHANT_CODE
+process.env.DUITKU_API_KEY = API_KEY
 
-function sign(orderId: string, statusCode: string, grossAmount: string): string {
-  return createHash("sha512")
-    .update(`${orderId}${statusCode}${grossAmount}${SERVER_KEY}`)
+function sign(merchantCode: string, amount: string, orderId: string): string {
+  return createHash("md5")
+    .update(`${merchantCode}${amount}${orderId}${API_KEY}`)
     .digest("hex")
 }
 
 function buildPayload(input: {
   orderId?: string
-  statusCode?: string
-  grossAmount: string
-  transactionStatus: string
-  fraudStatus?: string
-  customField1?: string
+  amount: string
+  resultCode?: string
+  additionalParam?: string
   signatureOverride?: string
 }): Record<string, unknown> {
   const orderId = input.orderId ?? "RT-test-001"
-  const statusCode = input.statusCode ?? "200"
+  const resultCode = input.resultCode ?? "00"
   const payload: Record<string, unknown> = {
-    order_id: orderId,
-    status_code: statusCode,
-    gross_amount: input.grossAmount,
-    transaction_status: input.transactionStatus,
-    fraud_status: input.fraudStatus,
-    custom_field1: input.customField1,
-    transaction_id: "txn-001",
-    payment_type: "qris",
-    signature_key:
-      input.signatureOverride ?? sign(orderId, statusCode, input.grossAmount),
+    merchantCode: MERCHANT_CODE,
+    amount: input.amount,
+    merchantOrderId: orderId,
+    productDetail: "Paket Langganan 6months",
+    additionalParam: input.additionalParam,
+    paymentCode: "VC",
+    resultCode,
+    reference: "DuitkuRef123",
+    signature:
+      input.signatureOverride ?? sign(MERCHANT_CODE, input.amount, orderId),
   }
   return payload
 }
@@ -97,117 +93,92 @@ describe("POST /api/billing/webhook", () => {
 
   it("rejects an invalid signature with 401", async () => {
     const payload = buildPayload({
-      grossAmount: "449000",
-      transactionStatus: "settlement",
-      customField1: META_6M,
+      amount: "749000",
+      resultCode: "00",
+      additionalParam: META_6M,
       signatureOverride: "deadbeef",
     })
     const res = await POST(makeRequest(payload))
     expect(res.status).toBe(401)
+    expect(await res.text()).toBe("Invalid signature")
     expect(activateMock).not.toHaveBeenCalled()
     expect(recordMock).not.toHaveBeenCalled()
   })
 
-  it("returns 503 when Midtrans is not configured", async () => {
-    vi.stubEnv("MIDTRANS_SERVER_KEY", "")
-    vi.stubEnv("MIDTRANS_CLIENT_KEY", "")
+  it("returns 503 when Duitku is not configured", async () => {
+    vi.stubEnv("DUITKU_MERCHANT_CODE", "")
+    vi.stubEnv("DUITKU_API_KEY", "")
     const payload = buildPayload({
-      grossAmount: "449000",
-      transactionStatus: "settlement",
-      customField1: META_6M,
+      amount: "749000",
+      resultCode: "00",
+      additionalParam: META_6M,
     })
     const res = await POST(makeRequest(payload))
     expect(res.status).toBe(503)
+    expect(await res.text()).toBe("Duitku not configured")
   })
 
   it("returns 400 for an unparseable payload", async () => {
     const res = await POST(makeRequest("{not-valid-json"))
     expect(res.status).toBe(400)
+    expect(await res.text()).toBe("Invalid payload")
   })
 
-  it("activates via billing-activation on a valid settlement", async () => {
+  it("activates via billing-activation on a valid resultCode=00", async () => {
     const payload = buildPayload({
-      grossAmount: "449000",
-      transactionStatus: "settlement",
-      customField1: META_6M,
+      amount: "749000",
+      resultCode: "00",
+      additionalParam: META_6M,
     })
     const res = await POST(makeRequest(payload))
-    const json = await res.json()
+    const text = await res.text()
 
     expect(res.status).toBe(200)
-    expect(json.message).toBe("Transaction processed successfully")
+    expect(text).toBe("OK")
     expect(activateMock).toHaveBeenCalledTimes(1)
     expect(recordMock).not.toHaveBeenCalled()
   })
 
-  it("activates on capture with fraud_status=accept", async () => {
-    const payload = buildPayload({
-      grossAmount: "449000",
-      transactionStatus: "capture",
-      fraudStatus: "accept",
-      customField1: META_6M,
-    })
-    const res = await POST(makeRequest(payload))
-    expect(res.status).toBe(200)
-    expect(activateMock).toHaveBeenCalledTimes(1)
-  })
-
-  it("does NOT activate on capture with fraud_status=challenge", async () => {
-    const payload = buildPayload({
-      grossAmount: "449000",
-      transactionStatus: "capture",
-      fraudStatus: "challenge",
-      customField1: META_6M,
-    })
-    const res = await POST(makeRequest(payload))
-    const json = await res.json()
-
-    expect(res.status).toBe(200)
-    expect(json.message).toBe("Status 'capture' logged")
-    expect(activateMock).not.toHaveBeenCalled()
-    // Non-success path persists the latest status without activating.
-    expect(recordMock).toHaveBeenCalledTimes(1)
-  })
-
-  it("acknowledges (200) but does not crash when activation is rejected", async () => {
+  it("acknowledges (200) with OK but does not crash when activation is rejected", async () => {
     activateMock.mockRejectedValueOnce(
       new BillingActivationError("Amount mismatch", 400),
     )
     const payload = buildPayload({
-      grossAmount: "99000",
-      transactionStatus: "settlement",
-      customField1: META_6M,
+      amount: "99000",
+      resultCode: "00",
+      additionalParam: META_6M,
     })
     const res = await POST(makeRequest(payload))
-    const json = await res.json()
+    const text = await res.text()
 
-    // 200 so Midtrans stops retrying a permanently-invalid notification.
+    // 200 OK so Duitku stops retrying a permanently-invalid notification.
     expect(res.status).toBe(200)
-    expect(json.error).toBe("Amount mismatch")
+    expect(text).toBe("OK")
   })
 
-  it("returns 500 on an unexpected activation failure (so Midtrans retries)", async () => {
+  it("returns 500 on an unexpected activation failure (so Duitku retries)", async () => {
     activateMock.mockRejectedValueOnce(new Error("db down"))
     const payload = buildPayload({
-      grossAmount: "449000",
-      transactionStatus: "settlement",
-      customField1: META_6M,
+      amount: "749000",
+      resultCode: "00",
+      additionalParam: META_6M,
     })
     const res = await POST(makeRequest(payload))
     expect(res.status).toBe(500)
+    expect(await res.text()).toBe("Failed to process webhook")
   })
 
-  it("records a non-success (deny) notification without activating", async () => {
+  it("records a non-success (01 pending) notification without activating, returning OK", async () => {
     const payload = buildPayload({
-      grossAmount: "449000",
-      transactionStatus: "deny",
-      customField1: META_6M,
+      amount: "749000",
+      resultCode: "01",
+      additionalParam: META_6M,
     })
     const res = await POST(makeRequest(payload))
-    const json = await res.json()
+    const text = await res.text()
 
     expect(res.status).toBe(200)
-    expect(json.message).toBe("Status 'deny' logged")
+    expect(text).toBe("OK")
     expect(activateMock).not.toHaveBeenCalled()
     expect(recordMock).toHaveBeenCalledTimes(1)
   })

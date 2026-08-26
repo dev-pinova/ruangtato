@@ -77,7 +77,7 @@ export function AdminDataTable<T>({
   return (
     <>
       {/* Mobile card list */}
-      <div className={cn("space-y-3 md:hidden", className)}>
+      <div className={cn("space-y-2 md:hidden", className)}>
         {rows.map((row) => (
           <div
             key={rowKey(row)}
@@ -95,7 +95,7 @@ export function AdminDataTable<T>({
                 : undefined
             }
             className={cn(
-              "rounded-xl border border-border bg-card p-4",
+              "rounded-lg border border-border bg-card p-3",
               onRowClick &&
                 "cursor-pointer transition-colors hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
             )}
@@ -103,13 +103,13 @@ export function AdminDataTable<T>({
             {mobileCard ? (
               mobileCard(row)
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 {desktopColumns.map((col) => (
-                  <div key={col.key} className="flex justify-between gap-3 text-sm">
-                    <span className="text-muted-foreground">{col.header}</span>
+                  <div key={col.key} className="flex justify-between gap-2 text-xs">
+                    <span className="shrink-0 text-muted-foreground">{col.header}</span>
                     <span
                       className={cn(
-                        "min-w-0 text-right font-medium",
+                        "min-w-0 text-right font-medium truncate",
                         col.numeric && "tabular-nums",
                       )}
                     >

@@ -7,8 +7,32 @@ import { CSS } from '@dnd-kit/utilities'
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
-import { GripVertical, Trash2 } from "lucide-react"
+import { GripVertical, Trash2, ChevronUp, ChevronDown } from "lucide-react"
 import type { Block, BlockType } from "@/lib/types"
+
+const BLOCK_NAMES: Record<BlockType, string> = {
+  HeaderOverlay: "Header Overlay",
+  Header: "Header / Nav",
+  HeroSlider: "Hero Slider",
+  Hero: "Hero Section",
+  Goals: "Tentang Kami (About)",
+  Gallery: "Galeri Portofolio",
+  ArtistsGrid: "Daftar Artist",
+  ServicesCards: "Layanan Tato",
+  StatsCounter: "Angka Pencapaian",
+  Overview: "Overview Studio",
+  Features: "Gaya Tato (Features)",
+  HowItWorks: "Cara Kerja",
+  CreatorBio: "Profil Artist",
+  Testimonials: "Review Klien",
+  LatestNews: "Berita & Artikel",
+  Newsletter: "Newsletter",
+  FAQ: "Tanya Jawab (FAQ)",
+  AppointmentForm: "Form Konsultasi",
+  FinalCTA: "CTA Penutup",
+  Footer: "Footer",
+  LeadForm: "Form Kontak",
+}
 
 interface LayerRowProps {
   type: BlockType
@@ -17,6 +41,10 @@ interface LayerRowProps {
   onSelect: () => void
   onDelete: () => void
   onToggleVisibility: () => void
+  onMoveUp?: () => void
+  onMoveDown?: () => void
+  canMoveUp?: boolean
+  canMoveDown?: boolean
   setNodeRef?: (node: HTMLElement | null) => void
   style?: CSSProperties
   dragHandleProps?: {
@@ -32,49 +60,113 @@ function LayerRow({
   onSelect,
   onDelete,
   onToggleVisibility,
+  onMoveUp,
+  onMoveDown,
+  canMoveUp,
+  canMoveDown,
   setNodeRef,
   style,
   dragHandleProps,
 }: LayerRowProps) {
+  const displayName = BLOCK_NAMES[type] || type
+
   return (
     <div
       ref={setNodeRef}
       style={style}
       className={cn(
-        "group/builder-item mb-1 flex items-center gap-1.5 rounded-md border px-2 py-1.5 transition-colors",
-        isActive ? "border-primary/40 bg-primary/5" : "border-transparent",
-        !visible && "opacity-50",
-        "hover:bg-muted/60"
+        "group/builder-item mb-1.5 flex items-center gap-2 rounded-lg border px-2.5 py-2 transition-all",
+        isActive
+          ? "border-primary/50 bg-primary/10 shadow-sm"
+          : "border-border/40 bg-card/60 hover:border-border hover:bg-muted/40",
+        !visible && "opacity-45"
       )}
     >
       {dragHandleProps ? (
         <div
           {...dragHandleProps.attributes}
           {...dragHandleProps.listeners}
-          className="cursor-grab p-1 text-muted-foreground hover:text-foreground"
+          className="cursor-grab p-1 text-muted-foreground/60 hover:text-foreground active:cursor-grabbing shrink-0"
+          title="Drag untuk mengubah urutan"
         >
-          <GripVertical className="size-3.5" />
+          <GripVertical className="size-4" />
         </div>
       ) : (
-        <div className="p-1 text-muted-foreground" aria-hidden>
-          <GripVertical className="size-3.5" />
+        <div className="p-1 text-muted-foreground/40 shrink-0" aria-hidden>
+          <GripVertical className="size-4" />
         </div>
       )}
-      <div className="min-w-0 flex-1 cursor-pointer" onClick={onSelect}>
-        <div className="truncate text-sm font-medium">{type}</div>
+
+      <div className="min-w-0 flex-1 cursor-pointer select-none" onClick={onSelect}>
+        <div className="truncate text-xs font-semibold text-foreground tracking-tight">
+          {displayName}
+        </div>
       </div>
-      <Switch size="sm" checked={visible} onCheckedChange={onToggleVisibility} />
-      <Button
-        variant="ghost"
-        size="icon"
-        className="h-7 w-7 text-muted-foreground opacity-0 transition-opacity hover:text-destructive group-hover/builder-item:opacity-100"
-        onClick={(e) => {
-          e.stopPropagation()
-          onDelete()
-        }}
-      >
-        <Trash2 className="size-3.5" />
-      </Button>
+
+      <div className="flex items-center gap-0.5 shrink-0">
+        {onMoveUp && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn(
+              "h-6 w-6 text-muted-foreground transition-opacity",
+              !canMoveUp
+                ? "opacity-20 pointer-events-none"
+                : "hover:text-foreground opacity-0 group-hover/builder-item:opacity-100"
+            )}
+            onClick={(e) => {
+              e.stopPropagation()
+              onMoveUp()
+            }}
+            disabled={!canMoveUp}
+            title="Pindah ke atas"
+          >
+            <ChevronUp className="size-3.5" />
+          </Button>
+        )}
+        {onMoveDown && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn(
+              "h-6 w-6 text-muted-foreground transition-opacity",
+              !canMoveDown
+                ? "opacity-20 pointer-events-none"
+                : "hover:text-foreground opacity-0 group-hover/builder-item:opacity-100"
+            )}
+            onClick={(e) => {
+              e.stopPropagation()
+              onMoveDown()
+            }}
+            disabled={!canMoveDown}
+            title="Pindah ke bawah"
+          >
+            <ChevronDown className="size-3.5" />
+          </Button>
+        )}
+
+        <div className="mx-1" onClick={(e) => e.stopPropagation()}>
+          <Switch
+            size="sm"
+            checked={visible}
+            onCheckedChange={onToggleVisibility}
+            aria-label={`Toggle visibility ${displayName}`}
+          />
+        </div>
+
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-6 w-6 text-muted-foreground/60 opacity-0 transition-opacity hover:text-destructive hover:bg-destructive/10 group-hover/builder-item:opacity-100"
+          onClick={(e) => {
+            e.stopPropagation()
+            onDelete()
+          }}
+          title="Hapus blok"
+        >
+          <Trash2 className="size-3.5" />
+        </Button>
+      </div>
     </div>
   )
 }
@@ -87,6 +179,10 @@ interface SortableLayerItemProps {
   onSelect: () => void
   onDelete: () => void
   onToggleVisibility: () => void
+  onMoveUp: () => void
+  onMoveDown: () => void
+  canMoveUp: boolean
+  canMoveDown: boolean
 }
 
 function SortableLayerItem({
@@ -97,6 +193,10 @@ function SortableLayerItem({
   onSelect,
   onDelete,
   onToggleVisibility,
+  onMoveUp,
+  onMoveDown,
+  canMoveUp,
+  canMoveDown,
 }: SortableLayerItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id })
 
@@ -108,6 +208,10 @@ function SortableLayerItem({
       onSelect={onSelect}
       onDelete={onDelete}
       onToggleVisibility={onToggleVisibility}
+      onMoveUp={onMoveUp}
+      onMoveDown={onMoveDown}
+      canMoveUp={canMoveUp}
+      canMoveDown={canMoveDown}
       setNodeRef={setNodeRef}
       style={{
         transform: CSS.Transform.toString(transform),
@@ -124,6 +228,8 @@ interface LayersListProps {
   onSelect: (id: string) => void
   onDelete: (id: string) => void
   onToggleVisibility: (id: string) => void
+  onMoveUp: (id: string) => void
+  onMoveDown: (id: string) => void
   onDragEnd: (event: DragEndEvent) => void
 }
 
@@ -133,6 +239,8 @@ export function LayersList({
   onSelect,
   onDelete,
   onToggleVisibility,
+  onMoveUp,
+  onMoveDown,
   onDragEnd,
 }: LayersListProps) {
   const [dndReady, setDndReady] = useState(false)
@@ -151,8 +259,8 @@ export function LayersList({
 
   if (!dndReady) {
     return (
-      <>
-        {blocks.map((block) => (
+      <div className="flex flex-col">
+        {blocks.map((block, i) => (
           <LayerRow
             key={block.id}
             type={block.type}
@@ -161,28 +269,38 @@ export function LayersList({
             onSelect={() => onSelect(block.id)}
             onDelete={() => onDelete(block.id)}
             onToggleVisibility={() => onToggleVisibility(block.id)}
+            onMoveUp={() => onMoveUp(block.id)}
+            onMoveDown={() => onMoveDown(block.id)}
+            canMoveUp={i > 0}
+            canMoveDown={i < blocks.length - 1}
             dragHandleProps={null}
           />
         ))}
-      </>
+      </div>
     )
   }
 
   return (
     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
       <SortableContext items={blocks.map((b) => b.id)} strategy={verticalListSortingStrategy}>
-        {blocks.map((block) => (
-          <SortableLayerItem
-            key={block.id}
-            id={block.id}
-            type={block.type}
-            isActive={activeBlockId === block.id}
-            visible={block.visible}
-            onSelect={() => onSelect(block.id)}
-            onDelete={() => onDelete(block.id)}
-            onToggleVisibility={() => onToggleVisibility(block.id)}
-          />
-        ))}
+        <div className="flex flex-col">
+          {blocks.map((block, i) => (
+            <SortableLayerItem
+              key={block.id}
+              id={block.id}
+              type={block.type}
+              isActive={activeBlockId === block.id}
+              visible={block.visible}
+              onSelect={() => onSelect(block.id)}
+              onDelete={() => onDelete(block.id)}
+              onToggleVisibility={() => onToggleVisibility(block.id)}
+              onMoveUp={() => onMoveUp(block.id)}
+              onMoveDown={() => onMoveDown(block.id)}
+              canMoveUp={i > 0}
+              canMoveDown={i < blocks.length - 1}
+            />
+          ))}
+        </div>
       </SortableContext>
     </DndContext>
   )

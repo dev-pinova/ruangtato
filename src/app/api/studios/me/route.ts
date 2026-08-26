@@ -40,7 +40,7 @@ export async function GET(request: Request) {
           planType: subscription.planType,
           status: subscription.status,
           expiresAt: subscription.expiresAt?.toISOString() ?? null,
-          midtransOrderId: subscription.midtransOrderId ?? null,
+          orderId: subscription.lastOrderId ?? null,
           createdAt: subscription.createdAt.toISOString(),
         }
       : null,
@@ -82,6 +82,15 @@ export async function PATCH(request: Request) {
   const description =
     typeof body.description === "string" ? body.description.trim() : ""
   const image = typeof body.image === "string" ? body.image.trim() : ""
+  const artistImage = typeof body.artistImage === "string" ? body.artistImage.trim() : undefined
+  
+  let tags: string[] | undefined = undefined
+  if ("tags" in body && Array.isArray(body.tags)) {
+    tags = body.tags
+      .map((t: unknown) => (typeof t === "string" ? t.trim() : ""))
+      .filter(Boolean)
+      .slice(0, 15)
+  }
 
   if (!name) {
     return NextResponse.json({ error: "Nama studio wajib diisi" }, { status: 400 })
@@ -95,6 +104,8 @@ export async function PATCH(request: Request) {
       waNumber,
       description,
       image,
+      tags,
+      artistImage,
     })
 
     if (!updated) {

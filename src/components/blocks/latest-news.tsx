@@ -1,6 +1,7 @@
 import { ArrowUpRight } from "lucide-react"
 
 import type { LatestNewsData } from "@/lib/types"
+import { getLocalizedText } from "@/lib/studio/i18n-block-utils"
 
 const DEFAULT_ARTICLES = [
   {
@@ -45,8 +46,17 @@ const DEFAULT_ARTICLES = [
   },
 ]
 
-export function BlockLatestNews({ data }: { data: LatestNewsData }) {
+export function BlockLatestNews({
+  data,
+  locale = "id",
+}: {
+  data: LatestNewsData
+  locale?: string
+}) {
   const articles = data?.articles?.length ? data.articles : DEFAULT_ARTICLES
+  const eyebrow = getLocalizedText(data, "eyebrow", locale, locale === "en" ? "Blog & News" : "Berita & Artikel")
+  const headline = getLocalizedText(data, "headline", locale, locale === "en" ? "Latest News" : "Berita Terbaru")
+  const ctaText = getLocalizedText(data, "ctaText", locale, locale === "en" ? "View All" : "Lihat Semua")
 
   return (
     <section
@@ -57,18 +67,18 @@ export function BlockLatestNews({ data }: { data: LatestNewsData }) {
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="font-display text-[11px] uppercase tracking-[0.4em] text-white/60">
-              — {data?.eyebrow || "Blog & News"}
+              — {eyebrow}
             </p>
             <h2 className="mt-5 font-display text-4xl font-light uppercase tracking-[0.16em] md:text-6xl">
-              {data?.headline || "Latest News"}
+              {headline}
             </h2>
           </div>
-          {data?.ctaText && (
+          {ctaText && (
             <a
               href={data.ctaHref || "#"}
               className="inline-flex items-center gap-2 self-start font-display text-[11px] uppercase tracking-[0.4em] text-white transition-colors hover:text-white/70 md:self-end"
             >
-              {data.ctaText}
+              {ctaText}
               <ArrowUpRight className="size-3.5" />
             </a>
           )}
@@ -76,44 +86,48 @@ export function BlockLatestNews({ data }: { data: LatestNewsData }) {
 
         <div className="mt-14 -mx-6 overflow-x-auto md:mx-0">
           <div className="flex min-w-max gap-px border border-white/10 bg-white/10 px-6 md:min-w-0 md:grid md:grid-cols-3 md:px-0 lg:grid-cols-5">
-            {articles.map((article, i) => (
-              <a
-                key={i}
-                href={article.href || "#"}
-                className="group flex w-72 shrink-0 flex-col bg-black md:w-auto"
-              >
-                <div className="relative aspect-[3/4] overflow-hidden">
-                  {article.image && (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img
-                      src={article.image}
-                      alt={article.title}
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
-                  {article.category && (
-                    <span className="absolute left-5 top-5 border border-white/40 bg-black/30 px-3 py-1 font-display text-[9px] uppercase tracking-[0.32em] text-white backdrop-blur-sm">
-                      {article.category}
+            {articles.map((article, i) => {
+              const title = getLocalizedText(article, "title", locale)
+              const category = getLocalizedText(article, "category", locale)
+              return (
+                <a
+                  key={i}
+                  href={article.href || "#"}
+                  className="group flex flex-col bg-black"
+                >
+                  <div className="relative aspect-[3/4] overflow-hidden">
+                    {article.image && (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img
+                        src={article.image}
+                        alt={title}
+                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+                    {category && (
+                      <span className="absolute left-5 top-5 border border-white/40 bg-black/30 px-3 py-1 font-display text-[9px] uppercase tracking-[0.32em] text-white backdrop-blur-sm">
+                        {category}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-1 flex-col p-6">
+                    {article.date && (
+                      <p className="font-display text-[10px] uppercase tracking-[0.4em] text-white/50">
+                        {article.date}
+                      </p>
+                    )}
+                    <h3 className="mt-3 font-display text-base uppercase tracking-[0.16em] text-white transition-colors group-hover:text-white/70 md:text-lg">
+                      {title}
+                    </h3>
+                    <span className="mt-6 inline-flex items-center gap-2 self-start border-b border-white/30 pb-1 font-display text-[10px] uppercase tracking-[0.4em] text-white/70 transition-colors group-hover:border-white group-hover:text-white">
+                      {locale === "en" ? "Read More" : "Selengkapnya"}
+                      <ArrowUpRight className="size-3" />
                     </span>
-                  )}
-                </div>
-                <div className="flex flex-1 flex-col p-6">
-                  {article.date && (
-                    <p className="font-display text-[10px] uppercase tracking-[0.4em] text-white/50">
-                      {article.date}
-                    </p>
-                  )}
-                  <h3 className="mt-3 font-display text-base uppercase tracking-[0.16em] text-white transition-colors group-hover:text-white/70 md:text-lg">
-                    {article.title}
-                  </h3>
-                  <span className="mt-6 inline-flex items-center gap-2 self-start border-b border-white/30 pb-1 font-display text-[10px] uppercase tracking-[0.4em] text-white/70 transition-colors group-hover:border-white group-hover:text-white">
-                    Read More
-                    <ArrowUpRight className="size-3" />
-                  </span>
-                </div>
-              </a>
-            ))}
+                  </div>
+                </a>
+              )
+            })}
           </div>
         </div>
       </div>

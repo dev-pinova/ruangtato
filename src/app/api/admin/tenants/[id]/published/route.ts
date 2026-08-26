@@ -72,7 +72,7 @@ export async function PATCH(
     // Visibility changed — refresh the statically cached homepage + studio page.
     revalidatePath("/")
     if (studio.slug) {
-      revalidatePath(`/app/studio/${studio.slug}`)
+      revalidatePath(`/studio/${studio.slug}`)
     }
 
     return NextResponse.json({ data: { id: studio.id, name: studio.name, isPublished } })

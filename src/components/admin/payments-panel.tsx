@@ -146,7 +146,7 @@ export function PaymentsPanel() {
     <div className="mx-auto max-w-7xl space-y-6">
       <AdminPageHeaderV2
         title="Payments"
-        description="Monitoring transaksi Midtrans di seluruh platform."
+        description="Monitoring transaksi Duitku di seluruh platform."
       />
 
       <AdminMetricStrip

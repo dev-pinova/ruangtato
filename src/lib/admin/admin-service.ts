@@ -264,7 +264,7 @@ export async function getTenantById(studioId: string): Promise<AdminTenantDetail
     clickCount: row.studio.clickCount,
     lastPayment: lastInvoice
       ? {
-          orderId: lastInvoice.midtransOrderId,
+          orderId: lastInvoice.orderId,
           amount: lastInvoice.amount,
           status: lastInvoice.status,
           paidAt: lastInvoice.paidAt?.toISOString() ?? null,

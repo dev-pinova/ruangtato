@@ -1,6 +1,7 @@
 import { ArrowUpRight } from "lucide-react"
 
 import type { ServicesCardsData } from "@/lib/types"
+import { getLocalizedText } from "@/lib/studio/i18n-block-utils"
 
 const DEFAULT_CARDS = [
   {
@@ -29,8 +30,16 @@ const DEFAULT_CARDS = [
   },
 ]
 
-export function BlockServicesCards({ data }: { data: ServicesCardsData }) {
+export function BlockServicesCards({
+  data,
+  locale = "id",
+}: {
+  data: ServicesCardsData
+  locale?: string
+}) {
   const cards = data?.cards?.length ? data.cards : DEFAULT_CARDS
+  const eyebrow = getLocalizedText(data, "eyebrow", locale, locale === "en" ? "What We Do" : "Layanan Kami")
+  const headline = getLocalizedText(data, "headline", locale, locale === "en" ? "Our Services" : "Layanan Kami")
 
   return (
     <section
@@ -40,17 +49,19 @@ export function BlockServicesCards({ data }: { data: ServicesCardsData }) {
       <div className="mx-auto max-w-7xl px-6 py-24 md:px-10 md:py-32">
         <div className="text-center">
           <p className="font-display text-[11px] uppercase tracking-[0.4em] text-white/60">
-            — {data?.eyebrow || "What We Do"}
+            — {eyebrow}
           </p>
           <h2 className="mt-5 font-display text-4xl font-light uppercase tracking-[0.16em] md:text-6xl">
-            {data?.headline || "Our Services"}
+            {headline}
           </h2>
         </div>
 
         <div className="mt-16 grid gap-px border border-white/10 bg-white/10 md:grid-cols-3">
           {cards.map((card, i) => {
             const ctaHref = card.ctaHref || "#"
-            const ctaText = card.ctaText || "Read More"
+            const ctaText = getLocalizedText(card, "ctaText", locale, locale === "en" ? "Read More" : "Selengkapnya")
+            const title = getLocalizedText(card, "title", locale)
+            const desc = getLocalizedText(card, "desc", locale)
             return (
               <article
                 key={i}
@@ -61,7 +72,7 @@ export function BlockServicesCards({ data }: { data: ServicesCardsData }) {
                     /* eslint-disable-next-line @next/next/no-img-element */
                     <img
                       src={card.image}
-                      alt={card.title}
+                      alt={title}
                       className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                   )}
@@ -72,11 +83,11 @@ export function BlockServicesCards({ data }: { data: ServicesCardsData }) {
                 </div>
                 <div className="flex flex-1 flex-col p-8 md:p-10">
                   <h3 className="font-display text-2xl uppercase tracking-[0.2em] text-white md:text-3xl">
-                    {card.title}
+                    {title}
                   </h3>
-                  {card.desc && (
+                  {desc && (
                     <p className="mt-4 flex-1 text-sm leading-relaxed text-white/60">
-                      {card.desc}
+                      {desc}
                     </p>
                   )}
                   <a

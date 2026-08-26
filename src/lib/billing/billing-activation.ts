@@ -1,16 +1,16 @@
 import { eq } from "drizzle-orm"
 import { getDb } from "@/db"
 import { user } from "@/db/auth-schema"
-import { studios, studioMemberships } from "@/db/schema"
+import { studios, studioMemberships, payments } from "@/db/schema"
 import {
   amountsMatchPlan,
   fetchTransactionStatus,
   isSuccessfulPayment,
   parsePaymentMetadata,
   PLAN_CATALOG,
-  type MidtransNotificationPayload,
-  type MidtransTransactionStatus,
-} from "@/lib/billing/midtrans"
+  type DuitkuNotificationPayload,
+  type DuitkuTransactionStatus,
+} from "@/lib/billing/duitku"
 import { recordPaymentEvent } from "@/lib/billing/payment-service"
 import {
   activateSubscription,
@@ -35,7 +35,7 @@ type ActivatePaidOrderInput = {
   orderId: string
   grossAmount: string | number | undefined
   customField1: string | undefined
-  paymentStatus: MidtransNotificationPayload
+  paymentStatus: DuitkuNotificationPayload
   expectedStudioId?: string
 }
 
@@ -80,7 +80,7 @@ export function validatePaidOrder(input: ActivatePaidOrderInput): {
 }
 
 /**
- * Canonical activation. Single source of truth used by the Midtrans webhook.
+ * Canonical activation. Single source of truth used by the Duitku webhook.
  * Writes payments + invoice + subscription + studio status atomically and
  * idempotently. Activation must only ever happen from the async webhook.
  */
@@ -95,7 +95,7 @@ export async function activatePaidOrder(input: ActivatePaidOrderInput) {
     await recordInvoice(
       {
         studioId,
-        midtransOrderId: input.orderId,
+        orderId: input.orderId,
         planType,
         amount,
         status: "paid",
@@ -108,7 +108,7 @@ export async function activatePaidOrder(input: ActivatePaidOrderInput) {
       {
         studioId,
         planType,
-        midtransOrderId: input.orderId,
+        orderId: input.orderId,
         months,
       },
       tx,
@@ -195,8 +195,8 @@ async function sendPaymentConfirmationEmail(input: {
 
 
 /**
- * Verification-only status check for the client (post-Snap polling).
- * NEVER activates — it only re-checks the Midtrans transaction server-side and
+ * Verification-only status check for the client (post-redirection polling).
+ * NEVER activates — it only re-checks the Duitku transaction server-side and
  * reports the current persisted subscription state. Activation is webhook-only
  * per the platform billing rules.
  */
@@ -205,48 +205,61 @@ export async function confirmOrderPayment(input: {
   planType: string
   studioId: string
 }) {
-  let status: MidtransTransactionStatus
+  let status: DuitkuTransactionStatus
 
   try {
     status = await fetchTransactionStatus(input.orderId)
   } catch (error) {
-    console.error("Midtrans status check failed:", error)
+    console.error("Duitku status check failed:", error)
     throw new BillingActivationError(
       "Gagal memverifikasi status pembayaran",
       502,
     )
   }
 
-  const metadata = parsePaymentMetadata(status.custom_field1)
-  if (!metadata) {
-    throw new BillingActivationError("Invalid payment metadata", 400)
-  }
+  // Fetch local payment info to retrieve planType and studioId if Duitku status doesn't contain it
+  const db = getDb()
+  const [existingPayment] = await db
+    .select({ studioId: payments.studioId, rawPayload: payments.rawPayload })
+    .from(payments)
+    .where(eq(payments.orderId, input.orderId))
+    .limit(1)
 
-  if (metadata.studioId !== input.studioId) {
+  const payloadStudioId = existingPayment?.studioId ?? input.studioId
+  const rawPayload = existingPayment?.rawPayload as { planType?: string } | null
+  const payloadPlanType = rawPayload?.planType ?? input.planType
+
+  if (payloadStudioId !== input.studioId) {
     throw new BillingActivationError("Order does not belong to this studio", 403)
   }
 
-  if (metadata.planType !== input.planType) {
+  if (payloadPlanType !== input.planType) {
     throw new BillingActivationError("Plan mismatch", 400)
   }
 
-  if (status.order_id && status.order_id !== input.orderId) {
+  if (status.merchantOrderId && status.merchantOrderId !== input.orderId) {
     throw new BillingActivationError("Order ID mismatch", 400)
   }
 
   const subscription = await getSubscriptionForStudio(input.studioId)
   let activated = subscription ? isActivePaidSubscription(subscription) : false
 
-  // Fallback activation: If Midtrans confirms the transaction is successful
+  // Fallback activation: If Duitku confirms the transaction is successful
   // but the subscription isn't marked as active yet (e.g. webhook failed/delayed),
   // activate it right now to prevent user lock-out.
   if (isSuccessfulPayment(status) && !activated) {
     console.info(`[billing:confirm] Fallback activation triggered for order ${input.orderId}`)
     await activatePaidOrder({
       orderId: input.orderId,
-      grossAmount: status.gross_amount,
-      customField1: status.custom_field1,
-      paymentStatus: status,
+      grossAmount: status.amount,
+      customField1: JSON.stringify({ studioId: input.studioId, planType: input.planType }),
+      paymentStatus: {
+        merchantCode: process.env.DUITKU_MERCHANT_CODE?.replace(/^["']|["']$/g, ""),
+        amount: status.amount,
+        merchantOrderId: input.orderId,
+        resultCode: status.statusCode,
+        reference: status.reference,
+      },
       expectedStudioId: input.studioId,
     })
     activated = true
@@ -255,28 +268,28 @@ export async function confirmOrderPayment(input: {
   return {
     studioId: input.studioId,
     planType: input.planType,
-    transactionStatus: status.transaction_status ?? "unknown",
+    transactionStatus: status.statusCode === "00" ? "paid" : "pending",
     paid: isSuccessfulPayment(status),
     activated,
   }
 }
 
 /**
- * Activate from a verified Midtrans webhook notification. The caller MUST have
+ * Activate from a verified Duitku webhook notification. The caller MUST have
  * already verified the notification signature.
  */
 export async function activateFromWebhookNotification(
-  body: MidtransNotificationPayload,
+  body: DuitkuNotificationPayload,
 ) {
-  const orderId = body.order_id
+  const orderId = body.merchantOrderId
   if (!orderId) {
-    throw new BillingActivationError("Missing order_id", 400)
+    throw new BillingActivationError("Missing merchantOrderId", 400)
   }
 
   return activatePaidOrder({
     orderId,
-    grossAmount: body.gross_amount,
-    customField1: body.custom_field1,
+    grossAmount: body.amount,
+    customField1: body.additionalParam,
     paymentStatus: body,
   })
 }

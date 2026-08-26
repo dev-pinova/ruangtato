@@ -105,6 +105,7 @@ Health check: `GET /api/health`
 - `BETTER_AUTH_SECRET`
 - `BETTER_AUTH_URL` (production URL)
 - `NEXT_PUBLIC_APP_URL`
+- `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY` — stable server action encryption key, required for Docker/multi-container deployments (generate with `openssl rand -base64 32`). Must be set as a **Build Variable** and **Runtime Variable** in Coolify.
 - `MIDTRANS_SERVER_KEY` / `MIDTRANS_CLIENT_KEY` (optional)
 - `S3_*` for Cloudflare R2 (optional, phase 2)
 

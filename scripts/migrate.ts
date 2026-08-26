@@ -30,7 +30,7 @@ async function main() {
     console.log("Migrations applied successfully.")
   } catch (error) {
     console.error("Migration failed:", error)
-    process.exitCode = 1
+    process.exit(1)
   } finally {
     await pool.end()
   }

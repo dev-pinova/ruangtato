@@ -87,12 +87,12 @@ export default async function BillingPage() {
 
   // Map orderId → invoiceId untuk link ke halaman detail
   const studioInvoices = await db
-    .select({ id: invoices.id, midtransOrderId: invoices.midtransOrderId })
+    .select({ id: invoices.id, orderId: invoices.orderId })
     .from(invoices)
     .where(eq(invoices.studioId, studio.id))
 
   const invoiceByOrderId = new Map(
-    studioInvoices.map((inv) => [inv.midtransOrderId, inv.id])
+    studioInvoices.map((inv) => [inv.orderId, inv.id])
   )
 
   const isActive = subscription?.status === "active"
